@@ -1,0 +1,76 @@
+{
+  "browsers": {
+    "fingerprints": [
+      {
+        "name": "Chrome 130-131 Win/Mac/Linux",
+        "tlsVersion": "TLSv1.3",
+        "tlsCipher": "AEAD-AES128-GCM-SHA256",
+        "weight": 30
+      },
+      {
+        "name": "Chrome 130-131 (PQ enabled)",
+        "tlsVersion": "TLSv1.3",
+        "tlsCipher": "AEAD-CHACHA20-POLY1305-SHA256",
+        "weight": 25
+      },
+      {
+        "name": "Safari 17/18 iOS/macOS",
+        "tlsVersion": "TLSv1.3",
+        "tlsCipher": "AEAD-AES256-GCM-SHA384",
+        "weight": 30
+      },
+      {
+        "name": "Firefox 122-130",
+        "tlsVersion": "TLSv1.3",
+        "tlsCipher": "AEAD-AES128-GCM-SHA256",
+        "weight": 30
+      },
+      {
+        "name": "Edge 130+",
+        "tlsVersion": "TLSv1.3",
+        "tlsCipher": "AEAD-AES128-GCM-SHA256",
+        "weight": 30
+      }
+    ]
+  },
+  "automation_tools": {
+    "fingerprints": [
+      {
+        "name": "curl 8.x default",
+        "tlsVersion": "TLSv1.3",
+        "tlsCipher": "TLS_AES_256_GCM_SHA384",
+        "weight": -80
+      },
+      {
+        "name": "Python urllib3 / requests (default)",
+        "tlsVersion": "TLSv1.2",
+        "tlsCipher": "ECDHE-RSA-AES128-GCM-SHA256",
+        "weight": -90
+      },
+      {
+        "name": "Go net/http",
+        "tlsVersion": "TLSv1.3",
+        "tlsCipher": "TLS_AES_128_GCM_SHA256",
+        "weight": -80
+      },
+      {
+        "name": "Node 20+ undici",
+        "tlsVersion": "TLSv1.3",
+        "tlsCipher": "TLS_AES_256_GCM_SHA384",
+        "weight": -75
+      },
+      {
+        "name": "Java OkHttp / HttpClient",
+        "tlsVersion": "TLSv1.3",
+        "tlsCipher": "TLS_AES_256_GCM_SHA384",
+        "weight": -85
+      },
+      {
+        "name": "HeadlessChrome (raw)",
+        "tlsVersion": "TLSv1.3",
+        "tlsCipher": "TLS_AES_128_GCM_SHA256",
+        "weight": -60
+      }
+    ]
+  }
+}

@@ -1,0 +1,46 @@
+# ─── PRODUCTION DEPLOY (Cloudflare in front of Hostinger) ────────────────────
+# Before `npm run deploy:worker`, change the 3 marked spots below:
+#   1. routes.pattern  → your Cloudflare-proxied hostname (a zone in YOUR account)
+#   2. the two kv_namespaces ids → IDs from `npx wrangler kv namespace create ...`
+#   3. set the secret:  `npx wrangler secret put EDGE_SECRET`
+# Default mode = Cloudflare serves the built SPA from [assets] (Hostinger not
+# needed). To instead let HOSTINGER serve the files: comment out [assets] below
+# and add  →  [vars]\n  ORIGIN_URL = "https://origin.<your-domain>"  (a SEPARATE
+# DNS-only/grey-cloud record pointing at Hostinger, so the Worker doesn't loop).
+# ─────────────────────────────────────────────────────────────────────────────
+name = "forexpassing-edge"
+main = "edge.ts"
+compatibility_date = "2026-01-01"
+
+workers_dev = false
+
+[[routes]]
+pattern = "forexpassing.com"  # ← (1) change to your hostname
+custom_domain = true
+
+[assets]
+directory = "../dist"
+binding = "ASSETS"
+# Only HTML pages, API endpoints, and honeypot trigger the Worker.
+# Static assets (JS/CSS/img/fonts) are served directly from CF edge cache → fast.
+run_worker_first = [
+  "/",
+  "/meta-funnel",
+  "/insta-funnel",
+  "/google-funnel",
+  "/tiktok-funnel",
+  "/api/*",
+  "/v1/migration/portal",
+]
+
+[[kv_namespaces]]
+binding = "USED_CLICKS"
+id = "local-used-clicks"  # ← (2) replace via `wrangler kv namespace create USED_CLICKS` (bin/deploy.sh auto-patches)
+
+[[kv_namespaces]]
+binding = "EDGE_LOG"
+id = "local-edge-log"  # ← (2) replace via `wrangler kv namespace create EDGE_LOG` (bin/deploy.sh auto-patches)
+
+[dev]
+port = 8787
+local_protocol = "http"

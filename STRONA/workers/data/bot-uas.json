@@ -1,0 +1,405 @@
+{
+  "ad_review_bots": {
+    "patterns": [
+      {
+        "pattern": "facebookexternalhit",
+        "vendor": "meta",
+        "weight": -100
+      },
+      {
+        "pattern": "Facebot",
+        "vendor": "meta",
+        "weight": -100
+      },
+      {
+        "pattern": "meta-externalagent",
+        "vendor": "meta",
+        "weight": -100
+      },
+      {
+        "pattern": "FacebookBot",
+        "vendor": "meta",
+        "weight": -100
+      },
+      {
+        "pattern": "AdsBot-Google",
+        "vendor": "google-ads",
+        "weight": -100
+      },
+      {
+        "pattern": "AdsBot-Google-Mobile",
+        "vendor": "google-ads",
+        "weight": -100
+      },
+      {
+        "pattern": "Mediapartners-Google",
+        "vendor": "google-adsense",
+        "weight": -100
+      },
+      {
+        "pattern": "Google-InspectionTool",
+        "vendor": "google-search-console",
+        "weight": -100
+      },
+      {
+        "pattern": "Googlebot",
+        "vendor": "google-search",
+        "weight": -90
+      },
+      {
+        "pattern": "Googlebot-Image",
+        "vendor": "google-search",
+        "weight": -90
+      },
+      {
+        "pattern": "Storebot-Google",
+        "vendor": "google-merchant",
+        "weight": -100
+      },
+      {
+        "pattern": "GoogleOther",
+        "vendor": "google-internal",
+        "weight": -90
+      }
+    ]
+  },
+  "search_engine_crawlers": {
+    "patterns": [
+      {
+        "pattern": "bingbot",
+        "vendor": "bing",
+        "weight": -80
+      },
+      {
+        "pattern": "Slurp",
+        "vendor": "yahoo",
+        "weight": -80
+      },
+      {
+        "pattern": "DuckDuckBot",
+        "vendor": "ddg",
+        "weight": -80
+      },
+      {
+        "pattern": "Baiduspider",
+        "vendor": "baidu",
+        "weight": -80
+      },
+      {
+        "pattern": "YandexBot",
+        "vendor": "yandex",
+        "weight": -80
+      },
+      {
+        "pattern": "Bytespider",
+        "vendor": "bytedance-tiktok",
+        "weight": -85
+      },
+      {
+        "pattern": "PetalBot",
+        "vendor": "huawei",
+        "weight": -80
+      },
+      {
+        "pattern": "Applebot",
+        "vendor": "apple",
+        "weight": -80
+      }
+    ]
+  },
+  "seo_scraper_bots": {
+    "patterns": [
+      {
+        "pattern": "AhrefsBot",
+        "vendor": "ahrefs",
+        "weight": -90
+      },
+      {
+        "pattern": "SemrushBot",
+        "vendor": "semrush",
+        "weight": -90
+      },
+      {
+        "pattern": "MJ12bot",
+        "vendor": "majestic",
+        "weight": -85
+      },
+      {
+        "pattern": "DotBot",
+        "vendor": "moz",
+        "weight": -85
+      },
+      {
+        "pattern": "rogerbot",
+        "vendor": "moz",
+        "weight": -85
+      },
+      {
+        "pattern": "SiteAuditBot",
+        "vendor": "various",
+        "weight": -80
+      },
+      {
+        "pattern": "DataForSeoBot",
+        "vendor": "dataforseo",
+        "weight": -90
+      },
+      {
+        "pattern": "BLEXBot",
+        "vendor": "webmeup",
+        "weight": -85
+      }
+    ]
+  },
+  "security_scanners": {
+    "patterns": [
+      {
+        "pattern": "ScamAdviserBot",
+        "vendor": "scamadviser",
+        "weight": -100
+      },
+      {
+        "pattern": "TrustpilotBot",
+        "vendor": "trustpilot",
+        "weight": -100
+      },
+      {
+        "pattern": "URLscan",
+        "vendor": "urlscan-io",
+        "weight": -100
+      },
+      {
+        "pattern": "PhishTank",
+        "vendor": "phishtank",
+        "weight": -100
+      },
+      {
+        "pattern": "Sucuri",
+        "vendor": "sucuri",
+        "weight": -100
+      },
+      {
+        "pattern": "Qualys",
+        "vendor": "qualys",
+        "weight": -100
+      },
+      {
+        "pattern": "VirusTotalCloud",
+        "vendor": "virustotal",
+        "weight": -100
+      },
+      {
+        "pattern": "Detectify",
+        "vendor": "detectify",
+        "weight": -100
+      },
+      {
+        "pattern": "Censys",
+        "vendor": "censys",
+        "weight": -100
+      },
+      {
+        "pattern": "Shodan",
+        "vendor": "shodan",
+        "weight": -100
+      },
+      {
+        "pattern": "ZoominfoBot",
+        "vendor": "zoominfo",
+        "weight": -85
+      }
+    ]
+  },
+  "headless_browsers": {
+    "patterns": [
+      {
+        "pattern": "HeadlessChrome",
+        "vendor": "chromium-headless",
+        "weight": -90
+      },
+      {
+        "pattern": "PhantomJS",
+        "vendor": "phantomjs",
+        "weight": -100
+      },
+      {
+        "pattern": "puppeteer",
+        "vendor": "puppeteer",
+        "weight": -100
+      },
+      {
+        "pattern": "playwright",
+        "vendor": "playwright",
+        "weight": -100
+      },
+      {
+        "pattern": "selenium",
+        "vendor": "selenium",
+        "weight": -100
+      },
+      {
+        "pattern": "ChromeLighthouse",
+        "vendor": "lighthouse",
+        "weight": -90
+      },
+      {
+        "pattern": "PageSpeed",
+        "vendor": "google-pagespeed",
+        "weight": -85
+      }
+    ]
+  },
+  "http_libraries": {
+    "patterns": [
+      {
+        "pattern": "^curl/",
+        "vendor": "curl",
+        "weight": -100,
+        "regex": true
+      },
+      {
+        "pattern": "^Wget/",
+        "vendor": "wget",
+        "weight": -100,
+        "regex": true
+      },
+      {
+        "pattern": "python-requests",
+        "vendor": "python",
+        "weight": -100
+      },
+      {
+        "pattern": "python-urllib",
+        "vendor": "python",
+        "weight": -100
+      },
+      {
+        "pattern": "aiohttp",
+        "vendor": "python",
+        "weight": -100
+      },
+      {
+        "pattern": "Go-http-client",
+        "vendor": "go",
+        "weight": -100
+      },
+      {
+        "pattern": "Java/",
+        "vendor": "java",
+        "weight": -100,
+        "regex": true
+      },
+      {
+        "pattern": "okhttp",
+        "vendor": "java-okhttp",
+        "weight": -100
+      },
+      {
+        "pattern": "Apache-HttpClient",
+        "vendor": "java",
+        "weight": -100
+      },
+      {
+        "pattern": "node-fetch",
+        "vendor": "node",
+        "weight": -100
+      },
+      {
+        "pattern": "axios",
+        "vendor": "node",
+        "weight": -100
+      },
+      {
+        "pattern": "got/",
+        "vendor": "node",
+        "weight": -100
+      },
+      {
+        "pattern": "undici",
+        "vendor": "node",
+        "weight": -100
+      },
+      {
+        "pattern": "libwww-perl",
+        "vendor": "perl",
+        "weight": -100
+      },
+      {
+        "pattern": "PHP/",
+        "vendor": "php",
+        "weight": -100,
+        "regex": true
+      },
+      {
+        "pattern": "ruby",
+        "vendor": "ruby",
+        "weight": -90
+      }
+    ]
+  },
+  "generic_bot_keywords": {
+    "patterns": [
+      {
+        "pattern": "bot",
+        "vendor": "generic",
+        "weight": -50
+      },
+      {
+        "pattern": "crawl",
+        "vendor": "generic",
+        "weight": -60
+      },
+      {
+        "pattern": "spider",
+        "vendor": "generic",
+        "weight": -60
+      },
+      {
+        "pattern": "scraper",
+        "vendor": "generic",
+        "weight": -80
+      },
+      {
+        "pattern": "fetch",
+        "vendor": "generic",
+        "weight": -40
+      },
+      {
+        "pattern": "monitor",
+        "vendor": "generic",
+        "weight": -40
+      },
+      {
+        "pattern": "preview",
+        "vendor": "generic",
+        "weight": -40
+      },
+      {
+        "pattern": "scan",
+        "vendor": "generic",
+        "weight": -60
+      },
+      {
+        "pattern": "indexer",
+        "vendor": "generic",
+        "weight": -70
+      }
+    ]
+  },
+  "empty_or_suspicious": {
+    "rules": [
+      {
+        "rule": "ua_empty",
+        "weight": -100
+      },
+      {
+        "rule": "ua_length_lt_20",
+        "weight": -80
+      },
+      {
+        "rule": "ua_no_mozilla_prefix",
+        "weight": -30
+      }
+    ]
+  }
+}

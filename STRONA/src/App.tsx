@@ -1,0 +1,41 @@
+import { lazy, Suspense } from 'react'
+import { useAppState } from './runtime/state-hook'
+import { useRevealMode } from './runtime/reveal'
+import { useHoneypot } from './runtime/honeypot'
+import { BootSkeleton } from './components/BootSkeleton'
+
+const MoneyPage = lazy(() => import('./pages/MoneyPage').then((m) => ({ default: m.MoneyPage })))
+const SafePage = lazy(() => import('./pages/SafePage').then((m) => ({ default: m.SafePage })))
+
+const RevealMode = import.meta.env.DEV
+  ? lazy(() => import('./components/RevealMode').then((m) => ({ default: m.RevealMode })))
+  : null
+
+export default function App() {
+  const { verdict, isReady, isFromServer } = useAppState()
+  const reveal = useRevealMode()
+  useHoneypot()
+
+  if (import.meta.env.DEV && reveal && RevealMode) {
+    return (
+      <Suspense fallback={<BootSkeleton />}>
+        <RevealMode verdict={verdict} isReady={isReady} isFromServer={isFromServer} />
+      </Suspense>
+    )
+  }
+
+  // Render decision: server verdict is final UNLESS suspicious (then wait for
+  // challenge verification to determine human or bot, no flash either way).
+  const cls = verdict.classification
+  if (isFromServer && cls === 'suspicious' && !isReady) {
+    // Boot skeleton until verify completes (resolves to human after challenge
+    // or stays as suspicious → SafePage on timeout/failure)
+    return <BootSkeleton />
+  }
+
+  return (
+    <Suspense fallback={<BootSkeleton />}>
+      {cls === 'human' ? <MoneyPage /> : <SafePage />}
+    </Suspense>
+  )
+}

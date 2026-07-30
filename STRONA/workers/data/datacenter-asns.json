@@ -1,0 +1,258 @@
+{
+  "ad_platforms": {
+    "asns": [
+      {
+        "asn": 32934,
+        "org": "FACEBOOK",
+        "platform": "meta",
+        "weight": -100
+      },
+      {
+        "asn": 63293,
+        "org": "FACEBOOK",
+        "platform": "meta",
+        "weight": -100
+      },
+      {
+        "asn": 15169,
+        "org": "GOOGLE",
+        "platform": "google",
+        "weight": -100
+      },
+      {
+        "asn": 396982,
+        "org": "GOOGLE-CLOUD-PLATFORM",
+        "platform": "google",
+        "weight": -100
+      },
+      {
+        "asn": 19527,
+        "org": "GOOGLE-2",
+        "platform": "google",
+        "weight": -100
+      },
+      {
+        "asn": 36040,
+        "org": "YOUTUBE",
+        "platform": "google",
+        "weight": -100
+      },
+      {
+        "asn": 13414,
+        "org": "TWITTER",
+        "platform": "twitter",
+        "weight": -100
+      },
+      {
+        "asn": 14907,
+        "org": "WIKIMEDIA",
+        "platform": "research",
+        "weight": -50
+      },
+      {
+        "asn": 54113,
+        "org": "FASTLY",
+        "platform": "cdn-bot",
+        "weight": -40
+      }
+    ]
+  },
+  "cloud_datacenters": {
+    "asns": [
+      {
+        "asn": 14618,
+        "org": "AMAZON-AES",
+        "platform": "aws",
+        "weight": -70
+      },
+      {
+        "asn": 16509,
+        "org": "AMAZON-02",
+        "platform": "aws",
+        "weight": -70
+      },
+      {
+        "asn": 39111,
+        "org": "AMAZON-EU",
+        "platform": "aws",
+        "weight": -70
+      },
+      {
+        "asn": 8075,
+        "org": "MICROSOFT-CORP-MSN-AS-BLOCK",
+        "platform": "azure",
+        "weight": -70
+      },
+      {
+        "asn": 14061,
+        "org": "DIGITALOCEAN-ASN",
+        "platform": "do",
+        "weight": -80
+      },
+      {
+        "asn": 16276,
+        "org": "OVH",
+        "platform": "ovh",
+        "weight": -60
+      },
+      {
+        "asn": 24940,
+        "org": "HETZNER-AS",
+        "platform": "hetzner",
+        "weight": -65
+      },
+      {
+        "asn": 63949,
+        "org": "LINODE-AP",
+        "platform": "linode",
+        "weight": -75
+      },
+      {
+        "asn": 20473,
+        "org": "AS-CHOOPA",
+        "platform": "vultr",
+        "weight": -75
+      },
+      {
+        "asn": 36352,
+        "org": "AS-COLOCROSSING",
+        "platform": "colocrossing",
+        "weight": -80
+      },
+      {
+        "asn": 46606,
+        "org": "UNIFIEDLAYER-AS-1",
+        "platform": "bluehost",
+        "weight": -50
+      },
+      {
+        "asn": 21859,
+        "org": "ZNET",
+        "platform": "cn-cloud",
+        "weight": -85
+      },
+      {
+        "asn": 45102,
+        "org": "ALIBABA-CN-NET",
+        "platform": "alibaba",
+        "weight": -85
+      }
+    ]
+  },
+  "security_vendors": {
+    "asns": [
+      {
+        "asn": 22616,
+        "org": "ZSCALER",
+        "platform": "zscaler",
+        "weight": -100
+      },
+      {
+        "asn": 53813,
+        "org": "ZSCALER",
+        "platform": "zscaler",
+        "weight": -100
+      },
+      {
+        "asn": 40009,
+        "org": "ZSCALER-CALI",
+        "platform": "zscaler",
+        "weight": -100
+      },
+      {
+        "asn": 16631,
+        "org": "PALO-ALTO-NETWORKS",
+        "platform": "palo-alto",
+        "weight": -100
+      },
+      {
+        "asn": 26415,
+        "org": "VERISIGN-AS-2",
+        "platform": "verisign",
+        "weight": -90
+      },
+      {
+        "asn": 14618,
+        "org": "CISCO-TALOS",
+        "platform": "cisco-talos",
+        "weight": -100
+      },
+      {
+        "asn": 13335,
+        "org": "CLOUDFLARE-RADAR",
+        "platform": "cf-research",
+        "weight": -30
+      },
+      {
+        "asn": 396998,
+        "org": "TREND-MICRO",
+        "platform": "trend-micro",
+        "weight": -100
+      },
+      {
+        "asn": 17012,
+        "org": "FORTINET-INC",
+        "platform": "fortinet",
+        "weight": -90
+      },
+      {
+        "asn": 23393,
+        "org": "SYMANTEC-AS",
+        "platform": "symantec",
+        "weight": -90
+      },
+      {
+        "asn": 26496,
+        "org": "GODADDY-SUCURI",
+        "platform": "sucuri",
+        "weight": -85
+      },
+      {
+        "asn": 32613,
+        "org": "iWeb-AS",
+        "platform": "iweb-scanner",
+        "weight": -70
+      },
+      {
+        "asn": 174,
+        "org": "COGENT-174",
+        "platform": "cogent-scanner",
+        "weight": -40
+      }
+    ]
+  },
+  "vpn_residential_proxy": {
+    "asns": [
+      {
+        "asn": 60068,
+        "org": "DATACAMP-LIMITED",
+        "platform": "datacamp-vpn",
+        "weight": -50
+      },
+      {
+        "asn": 9009,
+        "org": "M247-EUROPE",
+        "platform": "m247-vpn",
+        "weight": -50
+      },
+      {
+        "asn": 212238,
+        "org": "DATACAMP-LIMITED",
+        "platform": "nordvpn",
+        "weight": -45
+      },
+      {
+        "asn": 51847,
+        "org": "EXPRESSVPN",
+        "platform": "expressvpn",
+        "weight": -45
+      },
+      {
+        "asn": 202425,
+        "org": "INT-NETWORK",
+        "platform": "anonymous-proxy",
+        "weight": -55
+      }
+    ]
+  }
+}

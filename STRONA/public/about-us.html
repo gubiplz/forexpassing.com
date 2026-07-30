@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>About Us — Forex Passing</title>
+<meta
+  name="description"
+  content="Forex Passing provides educational mentorship for traders who want clearer structure, better market understanding, and a more disciplined learning process."
+/>
+<meta name="robots" content="index, follow" />
+<link rel="canonical" href="https://forexpassing.com/about-us.html" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#fff; --txt:#0f172a; --mut:#64748b; --line:#e2e8f0;
+  --blue:#2f6fe0; --blue-soft:#5ba4d9;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:var(--bg);color:var(--txt);
+  font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  line-height:1.6;-webkit-font-smoothing:antialiased;
+}
+.page{max-width:640px;margin:0 auto;padding:48px 24px 64px;text-align:center}
+.logo{display:inline-flex;margin-bottom:40px;text-decoration:none}
+.logo img{height:48px;width:auto}
+.h1{
+  font-family:'Anton',sans-serif;font-weight:400;
+  font-size:clamp(42px,10vw,56px);line-height:1;
+  letter-spacing:.02em;text-transform:uppercase;margin-bottom:24px;
+}
+.h1-us{color:var(--blue-soft)}
+.lead{font-size:16px;color:var(--mut);line-height:1.65;margin-bottom:36px}
+.card{
+  border:1px solid var(--line);border-radius:14px;
+  background:#fff;padding:32px 28px;margin-bottom:20px;text-align:center;
+}
+.card-h{
+  font-family:'Anton',sans-serif;font-weight:400;
+  font-size:clamp(22px,5vw,28px);text-transform:uppercase;
+  letter-spacing:.02em;margin-bottom:16px;
+}
+.card-p{font-size:15px;color:var(--mut);line-height:1.65}
+.card-sub{font-size:15px;color:var(--mut);margin-bottom:22px;line-height:1.55}
+.form{text-align:left;margin-top:4px}
+.field{display:grid;gap:8px;margin-bottom:16px}
+.field label{font-size:14px;font-weight:600;color:var(--txt)}
+.field label span{color:#ef4444}
+.input{
+  width:100%;border:1px solid var(--line);border-radius:10px;
+  padding:13px 14px;font-size:15px;font-family:inherit;background:#fff;color:var(--txt);
+}
+.input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(47,111,224,.12)}
+.input::placeholder{color:#94a3b8}
+.btn{
+  display:block;width:100%;margin-top:8px;
+  background:var(--blue);color:#fff;font-weight:700;font-size:15px;
+  border:1px solid var(--blue);border-radius:10px;padding:14px 20px;cursor:pointer;
+  transition:transform .12s ease,box-shadow .2s ease;
+}
+.btn:hover{transform:translateY(-1px);box-shadow:0 10px 24px rgba(47,111,224,.25)}
+.ok{
+  display:none;flex-direction:column;align-items:center;gap:8px;
+  border:1px solid rgba(47,111,224,.3);background:rgba(47,111,224,.05);
+  border-radius:14px;padding:28px 22px;margin-top:4px;
+}
+.ok-ico{width:42px;height:42px;border-radius:50%;background:var(--blue);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800}
+.ok-t{font-weight:700;font-size:17px}
+.ok-d{font-size:14px;color:var(--mut)}
+</style>
+</head>
+<body>
+
+<main class="page">
+  <a href="/safe.html" class="logo"><img src="/logo.svg" alt="Forex Passing" /></a>
+
+  <h1 class="h1">ABOUT <span class="h1-us">US</span></h1>
+  <p class="lead">
+    Forex Passing provides educational mentorship for traders who want clearer structure,
+    better market understanding, and a more disciplined learning process.
+  </p>
+
+  <section class="card">
+    <h2 class="card-h">Trader mentorship</h2>
+    <p class="card-p">
+      Our focus is education, mentorship, and helping traders build better habits.
+      We do not promise income, returns, or trading results. Trading involves risk,
+      and every trader is responsible for their own decisions.
+    </p>
+  </section>
+
+  <section class="card" id="apply">
+    <h2 class="card-h">Get mentorship info</h2>
+    <p class="card-sub">Fill out the form below and one of our educators will reach out with more information.</p>
+
+    <form class="form" id="mm-form">
+      <div class="field">
+        <label for="mm-name">Full Name <span>*</span></label>
+        <input id="mm-name" class="input" type="text" name="name" autocomplete="name" required placeholder="John Doe" />
+      </div>
+      <div class="field">
+        <label for="mm-email">Email <span>*</span></label>
+        <input id="mm-email" class="input" type="email" name="email" autocomplete="email" required placeholder="you@example.com" />
+      </div>
+      <div class="field">
+        <label for="mm-exp">Experience level</label>
+        <select id="mm-exp" class="input" name="experience">
+          <option value="" disabled selected>Select one…</option>
+          <option value="beginner">Beginner</option>
+          <option value="intermediate">Intermediate</option>
+          <option value="advanced">Advanced</option>
+        </select>
+      </div>
+      <button type="submit" class="btn">Request Information</button>
+    </form>
+
+    <div class="ok" id="mm-form-ok" role="status">
+      <span class="ok-ico">✓</span>
+      <span class="ok-t">Thanks — we'll be in touch.</span>
+      <span class="ok-d">One of our educators will reach out by email.</span>
+    </div>
+  </section>
+</main>
+
+<script>
+  var f = document.getElementById('mm-form');
+  if (f) f.addEventListener('submit', function (e) {
+    e.preventDefault();
+    f.style.display = 'none';
+    document.getElementById('mm-form-ok').style.display = 'flex';
+  });
+</script>
+</body>
+</html>
