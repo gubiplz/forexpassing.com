@@ -15,31 +15,43 @@ compatibility_date = "2026-01-01"
 workers_dev = false
 
 [[routes]]
-pattern = "forexpassing.com"  # ← (1) change to your hostname
+pattern = "forexpassing.com"  # ← (1) must be a zone in YOUR Cloudflare account
 custom_domain = true
 
 [assets]
 directory = "../dist"
 binding = "ASSETS"
+not_found_handling = "404-page"
 # Only HTML pages, API endpoints, and honeypot trigger the Worker.
 # Static assets (JS/CSS/img/fonts) are served directly from CF edge cache → fast.
+# /watch + /thank-you are money-side standalone pages → gated in edge.ts.
 run_worker_first = [
   "/",
   "/meta-funnel",
   "/insta-funnel",
   "/google-funnel",
   "/tiktok-funnel",
+  "/watch",
+  "/watch.html",
+  "/thank-you",
+  "/thank-you.html",
   "/api/*",
   "/v1/migration/portal",
 ]
 
 [[kv_namespaces]]
 binding = "USED_CLICKS"
-id = "local-used-clicks"  # ← (2) replace via `wrangler kv namespace create USED_CLICKS` (bin/deploy.sh auto-patches)
+id = "e674ce2834eb4d9692565d0be163a8bd"  # USED_CLICKS
 
 [[kv_namespaces]]
 binding = "EDGE_LOG"
-id = "local-edge-log"  # ← (2) replace via `wrangler kv namespace create EDGE_LOG` (bin/deploy.sh auto-patches)
+id = "38ca70ba071a446bb102db349c5789de"  # EDGE_LOG
+
+# Durable per-hit stats — every classification is inserted as one row (never rolls off).
+[[d1_databases]]
+binding = "STATS"
+database_name = "forexpassing-stats"
+database_id = "0c7d2be0-677f-409a-ab36-8b1ad3f13f9f"
 
 [dev]
 port = 8787

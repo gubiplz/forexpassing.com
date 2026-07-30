@@ -14,8 +14,7 @@ declare global {
   }
 }
 
-// Conversion tracking. Fires Meta Pixel + GA4. IDs live in index.html.
-// TODO(launch): swap placeholder GA4 (G-MM2026XXXX) + Pixel (000000000000000) for real IDs.
+// Conversion tracking. Fires Meta Pixel (1566242625059670) + GA4 (G-SP9H8Q95C1). IDs live in index.html.
 function track(fbEvent: string, gaEvent: string, params?: Record<string, unknown>, custom = false) {
   if (typeof window === 'undefined') return
   if (custom) window.fbq?.('trackCustom', fbEvent, params)
@@ -77,15 +76,15 @@ const WHOFOR: [string, string][] = [
 ]
 
 const FAQ = [
-  { q: 'Is this signals or a bot?', a: "No. That's the point. It's the brake between you and the click. You make the call; the system makes sure it's a good one before your hand moves." },
+  { q: 'Is this signals or a bot?', a: "No — and that's the point. It's the brake between you and the click. You make the call; the system makes sure it's a good one before your hand moves." },
   { q: 'Do I need to code?', a: 'No. Claude and Codex build the tools; you stay the operator. If you can copy and paste, you can run this.' },
-  { q: 'Will this get me funded?', a: "It won't trade for you. It removes the reason most traders fail a challenge: clicking when they shouldn't. The rest is you following the process." },
-  { q: 'Which markets is this for?', a: 'Built for US futures traders (NQ, ES, MNQ and the rest) running prop-firm challenges like Topstep and Apex. The process works on any liquid market.' },
+  { q: 'Will this get me funded?', a: "It won't trade for you. It removes the reason most traders fail a challenge — clicking when they shouldn't. The rest is you following the process." },
+  { q: 'Which markets is this for?', a: 'Built for US futures traders — NQ, ES, MNQ and the rest — running prop-firm challenges (Topstep, Apex and similar). The process works on any liquid market.' },
   { q: 'What exactly do I get?', a: 'The full six-part system: the AI Risk Officer process, the Prompt Pack, the Challenge Kill-Switch, the Failed-Challenge Autopsy, the Payout-Ready Routine and the 7-Day Prep Plan.' },
-  { q: 'How do I get access?', a: 'Instantly. The second your Stripe payment clears, the full system lands in your inbox. Nothing to wait for, nothing to ship.' },
+  { q: 'How do I get access?', a: 'Instantly. The second your Stripe payment clears, the full system lands in your inbox — nothing to wait for, nothing to ship.' },
   { q: 'Am I covered if it’s not for me?', a: '14-day refund, no interrogation. Run the process, and if it doesn’t change how you trade, email us inside two weeks and we refund you.' },
-  { q: 'I’m still early. Is this too advanced?', a: 'No. If you can read a chart well enough to take a setup, you can run this. It doesn’t teach you to trade. It stops you taking the trades that blow your account.' },
-  { q: 'Why is it only $49?', a: 'Founder price to get operators in and collect results. It’s built to feel like a no-brainer against one blown challenge, which costs you far more than $49.' },
+  { q: 'I’m still early — is this too advanced?', a: 'No. If you can read a chart well enough to take a setup, you can run this. It doesn’t teach you to trade — it stops you taking the trades that blow your account.' },
+  { q: 'Why is it only $49?', a: 'Founder price to get operators in and collect results. It’s built to feel like a no-brainer against one blown challenge — which costs you far more than $49.' },
 ]
 
 const REVIEWS = [
@@ -309,63 +308,67 @@ function AutoScroller({
   useEffect(() => {
     const el = ref.current
     if (!el) return
+    const track = el.firstElementChild as HTMLElement | null
+    if (!track) return
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
 
     let raf = 0
-    let acc = reverse ? el.scrollWidth / 2 : 0
-    el.scrollLeft = acc
+    let half = track.scrollWidth / 2
+    let acc = 0
     let resumeAt = 0
     const bump = () => { resumeAt = performance.now() + 1800 }
+    const wrap = (v: number) => (half > 0 ? ((v % half) + half) % half : 0)
+    // GPU-composited transform — no per-frame scrollLeft write or scrollWidth read,
+    // both of which force synchronous layout/paint on the main thread (mobile jank).
+    const apply = () => { track.style.transform = `translate3d(${-acc}px,0,0)` }
+
+    // Recompute the wrap distance only when late-loading images change the width.
+    const ro = new ResizeObserver(() => { half = track.scrollWidth / 2 })
+    ro.observe(track)
 
     let down = false
     let startX = 0
-    let startScroll = 0
+    let startAcc = 0
     const onDown = (e: PointerEvent) => {
       bump()
-      if (e.pointerType !== 'mouse') return
       down = true
       startX = e.clientX
-      startScroll = el.scrollLeft
+      startAcc = acc
       el.setPointerCapture(e.pointerId)
     }
     const onMove = (e: PointerEvent) => {
       if (!down) return
-      el.scrollLeft = startScroll - (e.clientX - startX)
-      acc = el.scrollLeft
+      acc = wrap(startAcc - (e.clientX - startX))
+      apply()
     }
     const onUp = () => { down = false; bump() }
 
     const frame = (now: number) => {
-      const half = el.scrollWidth / 2
-      if (half > 0) {
-        if (now >= resumeAt && !down) {
-          acc += reverse ? -speed : speed
-          if (acc >= half) acc -= half
-          else if (acc < 0) acc += half
-          el.scrollLeft = acc
-        } else {
-          acc = el.scrollLeft
-        }
+      if (half > 0 && now >= resumeAt && !down) {
+        acc = wrap(acc + (reverse ? -speed : speed))
+        apply()
       }
       raf = requestAnimationFrame(frame)
     }
+    track.style.willChange = 'transform'
+    apply()
     raf = requestAnimationFrame(frame)
 
-    // lock = auto-scroll only, no manual drag/swipe (overflow hidden in CSS).
+    // lock = auto-scroll only, no manual drag/swipe.
     if (!lock) {
       el.addEventListener('pointerdown', onDown)
       el.addEventListener('pointermove', onMove)
       window.addEventListener('pointerup', onUp)
-      el.addEventListener('touchstart', bump, { passive: true })
       el.addEventListener('wheel', bump, { passive: true })
     }
     return () => {
       if (raf) cancelAnimationFrame(raf)
+      ro.disconnect()
+      track.style.willChange = ''
       if (!lock) {
         el.removeEventListener('pointerdown', onDown)
         el.removeEventListener('pointermove', onMove)
         window.removeEventListener('pointerup', onUp)
-        el.removeEventListener('touchstart', bump)
         el.removeEventListener('wheel', bump)
       }
     }
@@ -430,6 +433,27 @@ export function MoneyPage() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
+  // Hide the sticky CTA whenever an in-page "Build Your AI Risk Officer" button
+  // is on screen — never show two buy buttons at once.
+  const [hideSticky, setHideSticky] = useState(false)
+  useEffect(() => {
+    const targets = document.querySelectorAll('.mm-buy-cta')
+    if (!targets.length || !('IntersectionObserver' in window)) return
+    const visible = new Set<Element>()
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) visible.add(e.target)
+          else visible.delete(e.target)
+        })
+        setHideSticky(visible.size > 0)
+      },
+      { rootMargin: '0px 0px -84px 0px', threshold: 0 }
+    )
+    targets.forEach((t) => io.observe(t))
+    return () => io.disconnect()
+  }, [])
+
   return (
     <div className="mm-root" ref={rootRef}>
       <style>{CSS}</style>
@@ -453,7 +477,7 @@ export function MoneyPage() {
               <li>The brake that kills the revenge sequence — no signals, no bot</li>
             </ul>
             <div className="mm-cta-row mm-cta-left">
-              <a href="#price" className="mm-btn mm-btn-lg" onClick={() => track('CTAClick', 'cta_click', { source: 'hero' }, true)}>Build Your AI Risk Officer — $49</a>
+              <a href="#price" className="mm-btn mm-btn-lg mm-buy-cta" onClick={() => track('CTAClick', 'cta_click', { source: 'hero' }, true)}>Build Your AI Risk Officer — $49</a>
               <a href="#fix" className="mm-btn mm-btn-ghost mm-btn-lg">See how it works</a>
             </div>
             <p className="mm-microtrust">No signals. No bots. No guru fantasy. Just a pre-trade process.</p>
@@ -621,7 +645,7 @@ export function MoneyPage() {
               <li>Failed-Challenge Autopsy — find what keeps blowing you up</li>
               <li>Payout-Ready Routine + 7-Day Challenge Prep Plan</li>
             </ul>
-            <a href={CHECKOUT_HREF} className="mm-btn mm-btn-lg mm-btn-full" rel="noopener nofollow" onClick={() => track('InitiateCheckout', 'begin_checkout', { value: 49, currency: 'USD', source: 'pricing' })}>Build Your AI Risk Officer — $49</a>
+            <a href={CHECKOUT_HREF} className="mm-btn mm-btn-lg mm-btn-full mm-buy-cta" rel="noopener nofollow" onClick={() => track('InitiateCheckout', 'begin_checkout', { value: 49, currency: 'USD', source: 'pricing' })}>Build Your AI Risk Officer — $49</a>
             <p className="mm-price-fine">14-day refund policy · Educational material.</p>
           </div>
           <div className="mm-price-side">
@@ -638,10 +662,10 @@ export function MoneyPage() {
       {/* PAYOUTS */}
       <section className="mm-section mm-payouts mm-reveal" id="payouts">
         <div className="mm-wrap">
-          <h2 className="mm-h2 mm-center">REAL PAYOUTS FROM THE EBOOK PROCESS</h2>
+          <h2 className="mm-h2 mm-center">THIS IS WHAT A CLEARED PAYOUT LOOKS LIKE</h2>
           <p className="mm-lead mm-center mm-lead-mid">
-            Traders who built their routine from this system passed funded accounts and cashed out.
-            This is what happens when someone actually runs the process you get inside.
+            Real certificates from real prop firms — the payout on the other side of a process,
+            run with discipline. This is the trade you're building toward.
           </p>
         </div>
 
@@ -672,9 +696,8 @@ export function MoneyPage() {
         <div className="mm-wrap">
           <h2 className="mm-h2 mm-center">THE PROCESS, ON A CHART</h2>
           <p className="mm-lead mm-center mm-lead-mid">
-            A real funded trader ran the pre-trade process built in this ebook. Verified equity
-            curve, month-by-month returns, and the full trade log showing the rules were followed,
-            not guessed.
+            What disciplined, process-driven trading looks like over time — equity curve,
+            monthly returns and the trade log behind it.
           </p>
 
           <div className="mm-fx">
@@ -796,10 +819,10 @@ export function MoneyPage() {
         <div className="mm-wrap">
           <div className="mm-letter-body">
             <p className="mm-letter-lead">Dear trader,</p>
-            <p>You buy the challenge, you start clean. Then one loss hits and your hand is already back on the mouse. Revenge trade. Bigger size. Random stop. Daily limit gone. Reset. Again. You've seen this movie before.</p>
+            <p>You buy the challenge, you start clean — then one loss hits and your hand is already back on the mouse. Revenge trade. Bigger size. Random stop. Daily limit gone. Reset. Again. You've seen this movie before.</p>
             <p className="mm-letter-punch">Another course won't fix that. Another Discord call won't either.</p>
-            <p>You're not untalented. You're trading without a brake, and every prop firm is built to punish exactly that. <strong>The AI Risk Officer System</strong> is the brake: it stops you <em>before</em> you click. Trade, wait, or stand down. No signals. No bot. Just a pre-trade process that keeps revenge mode from wrecking another account.</p>
-            <p className="mm-letter-punch">Your next payout starts before the entry, not after you rage-click into another reset.</p>
+            <p>You're not untalented — you're trading without a brake, and every prop firm is built to punish exactly that. <strong>The AI Risk Officer System</strong> is the brake: it stops you <em>before</em> you click — trade, wait, or stand down. No signals. No bot. Just a pre-trade process that keeps revenge mode from wrecking another account.</p>
+            <p className="mm-letter-punch">Your next payout starts before the entry — not after you rage-click into another reset.</p>
             <div className="mm-letter-cta-wrap">
               <a href="#price" className="mm-btn mm-btn-lg" onClick={() => track('CTAClick', 'cta_click', { source: 'letter' }, true)}>Lock in the founder price — $49</a>
             </div>
@@ -820,9 +843,7 @@ export function MoneyPage() {
         </div>
       </footer>
 
-      <div className="mm-sticky-bar">
-        <a href="#price" className="mm-sticky-cta" onClick={() => track('CTAClick', 'cta_click', { source: 'sticky' }, true)}>Get the System · $49</a>
-      </div>
+      <a href="#price" className={`mm-sticky-cta${hideSticky ? ' is-hidden' : ''}`} onClick={() => track('CTAClick', 'cta_click', { source: 'sticky' }, true)}>Get the System — $49</a>
     </div>
   )
 }
@@ -836,7 +857,7 @@ html{scroll-behavior:smooth}
   background:var(--bg); color:var(--txt);
   font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
   line-height:1.6; -webkit-font-smoothing:antialiased; overflow-x:hidden;
-  padding-top:42px;
+  padding-top:42px; padding-bottom:calc(70px + env(safe-area-inset-bottom));
 }
 .mm-root *{box-sizing:border-box;margin:0;padding:0}
 
@@ -1001,11 +1022,11 @@ html{scroll-behavior:smooth}
 
 /* PAYOUTS / REVIEWS SCROLLER (drag + auto-advance) */
 .mm-payouts{overflow:hidden}
-.mm-scroller{overflow-x:auto;overflow-y:hidden;touch-action:pan-x;cursor:grab;scrollbar-width:none;-ms-overflow-style:none;
+.mm-scroller{overflow:hidden;touch-action:pan-y;cursor:grab;
   -webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);
   mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
 .mm-scroller:active{cursor:grabbing}
-.mm-scroller-lock{overflow-x:hidden;touch-action:pan-y;cursor:default}
+.mm-scroller-lock{cursor:default}
 .mm-scroller::-webkit-scrollbar{display:none}
 .mm-scroller-track{display:flex;width:max-content}
 .mm-scroller-cert{margin:42px 0 28px}
@@ -1075,6 +1096,7 @@ html{scroll-behavior:smooth}
 @media(max-width:600px){.mm-fx-tabs{display:none}}
 .mm-fx-stats{display:grid;grid-template-columns:repeat(8,1fr);border-bottom:1px solid #eceeed}
 @media(max-width:760px){.mm-fx-stats{grid-template-columns:repeat(4,1fr)}}
+@media(max-width:420px){.mm-fx-stats{grid-template-columns:repeat(2,1fr)}}
 .mm-fx-stat{padding:14px 8px;text-align:center;border-right:1px solid #f1f3f2}
 .mm-fx-stat-v{display:block;font-weight:800;font-size:16px;color:#1f2d27}
 .mm-fx-stat-k{display:block;font-size:10px;color:#8a948e;margin-top:3px;text-transform:uppercase;letter-spacing:.04em}
@@ -1136,31 +1158,14 @@ html{scroll-behavior:smooth}
 .mm-letter-body p.mm-letter-punch{font-weight:800;font-size:clamp(17px,2.2vw,20px);color:var(--txt)}
 .mm-letter-cta-wrap{text-align:center;margin-top:2.2em}
 
-/* STICKY CTA — white bar + centered pill button */
-.mm-sticky-bar{
-  position:fixed;left:0;right:0;bottom:0;z-index:60;
-  display:flex;justify-content:center;align-items:center;
-  background:#fff;border-top:1px solid var(--line);
-  box-shadow:0 -4px 18px rgba(15,30,22,.06);
-  padding:16px 24px;padding-bottom:max(16px, env(safe-area-inset-bottom));
-}
-.mm-sticky-cta{
-  display:inline-block;background:var(--teal);color:#fff;
-  font-family:'Anton',sans-serif;font-weight:400;
-  font-size:clamp(15px,3.6vw,17px);letter-spacing:.04em;text-transform:uppercase;
-  text-decoration:none;text-align:center;border-radius:10px;
-  padding:16px 44px;border:none;
-  box-shadow:0 8px 22px rgba(22,163,74,.34);
-  transition:transform .15s ease, box-shadow .15s ease, background .15s ease;
-  width:auto;max-width:480px;
-}
-.mm-sticky-cta:hover{background:#15803d;transform:translateY(-1px);box-shadow:0 12px 28px rgba(22,163,74,.40)}
-.mm-sticky-cta:active{transform:translateY(0)}
-@media(max-width:760px){
-  .mm-sticky-bar{padding:14px 16px;padding-bottom:max(14px, env(safe-area-inset-bottom))}
-  .mm-sticky-cta{display:block;width:100%;max-width:100%;padding:18px 20px;font-size:16px}
-}
-.mm-root{padding-bottom:calc(88px + env(safe-area-inset-bottom))}
+/* STICKY CTA */
+.mm-sticky-cta{position:fixed;left:0;right:0;bottom:0;z-index:60;display:block;text-align:center;
+  background:var(--teal);color:#fff;font-weight:800;text-decoration:none;font-size:16px;
+  padding:18px 16px;padding-bottom:max(18px,env(safe-area-inset-bottom));
+  letter-spacing:.01em;box-shadow:0 -8px 30px rgba(0,0,0,.45);
+  transition:transform .3s cubic-bezier(.22,.61,.36,1),opacity .3s cubic-bezier(.22,.61,.36,1)}
+.mm-sticky-cta:hover{background:#15803d}
+.mm-sticky-cta.is-hidden{transform:translateY(130%);opacity:0;pointer-events:none}
 
 @media (prefers-reduced-motion: reduce){
   html{scroll-behavior:auto}

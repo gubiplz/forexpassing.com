@@ -1,10 +1,9 @@
 // ⚠ CASE STUDY — "safe" page. Cloaking gate (App.tsx) renders this for everyone
 // who is NOT classified `human` (reviewers, bots, suspicious). Calm, education-first
 // "educational company" variant modeled on a generic trading-education site (mgmtfx).
-// No purchase / no checkout on safe LP — Apply now links to /about-us.html for the form.
+// No purchase / no checkout — an application form instead. The face shown to reviewers.
 
-const ABOUT_US_HREF = '/about-us.html'
-const MONEY_LP_HREF = '/?__test=human'
+import { useEffect, useState, type FormEvent } from 'react'
 
 const STATS: [string, string][] = [
   ['500+', 'Students'],
@@ -32,6 +31,52 @@ function Icon({ k }: { k: IconKey }) {
 
 export function SafePage() {
   const year = new Date().getFullYear()
+  const [sent, setSent] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState('')
+  // Hide the sticky CTA whenever any in-page CTA (hero "Get Started" or the
+  // form "Apply now") is on screen — never show two buttons at once.
+  const [hideSticky, setHideSticky] = useState(false)
+  useEffect(() => {
+    const targets = document.querySelectorAll('.mm-cta-row .mm-btn:not(.mm-btn-ghost), .mm-form-btn')
+    if (!targets.length || !('IntersectionObserver' in window)) {
+      setHideSticky(false)
+      return
+    }
+    const visible = new Set<Element>()
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) visible.add(e.target)
+          else visible.delete(e.target)
+        })
+        setHideSticky(visible.size > 0)
+      },
+      { rootMargin: '0px 0px -84px 0px', threshold: 0 }
+    )
+    targets.forEach((t) => io.observe(t))
+    return () => io.disconnect()
+  }, [sent])
+  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    if (submitting) return
+    const data = Object.fromEntries(new FormData(e.currentTarget))
+    setSubmitting(true)
+    setError('')
+    try {
+      const res = await fetch('/api/event/subscribe', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(data),
+      })
+      if (!res.ok) throw new Error('failed')
+      setSent(true)
+    } catch {
+      setError('Something went wrong — please try again.')
+    } finally {
+      setSubmitting(false)
+    }
+  }
   return (
     <div className="mm-root">
       <style>{CSS}</style>
@@ -42,7 +87,7 @@ export function SafePage() {
           <a href="#top" className="mm-logo"><img className="mm-logo-img" src="/logo.svg" alt="Forex Passing" /></a>
           <nav className="mm-nav-links">
             <a href="#top">Home</a>
-            <a href={ABOUT_US_HREF}>About Us</a>
+            <a href="#why">About Us</a>
           </nav>
         </div>
       </header>
@@ -56,9 +101,10 @@ export function SafePage() {
             approach the markets with a clear, repeatable process.
           </p>
           <div className="mm-cta-row">
-            <a href={ABOUT_US_HREF} className="mm-btn mm-btn-lg">Get Started</a>
+            <a href="#apply" className="mm-btn mm-btn-lg">Get Started</a>
             <a href="#why" className="mm-btn mm-btn-ghost mm-btn-lg">Learn More</a>
           </div>
+          <p className="mm-microtrust">Education first · No signals · No profit promises</p>
         </div>
         <div className="mm-hero-glow" aria-hidden="true" />
       </section>
@@ -100,9 +146,51 @@ export function SafePage() {
             joining the program.
           </p>
 
-          <div className="mm-form mm-form-cta">
-            <a href={ABOUT_US_HREF} className="mm-btn mm-btn-lg mm-btn-full mm-form-btn">Apply now</a>
-          </div>
+          {sent ? (
+            <div className="mm-form-ok" role="status">
+              <span className="mm-form-ok-ico" aria-hidden="true">✓</span>
+              <span className="mm-form-ok-t">Thanks — your application is in.</span>
+              <span className="mm-form-ok-d">We'll reach out by email. No payment is required to apply.</span>
+            </div>
+          ) : (
+            <form className="mm-form" onSubmit={onSubmit}>
+              <input
+                className="mm-hp"
+                type="text"
+                name="company"
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+              />
+              <div className="mm-field">
+                <label htmlFor="mm-name">Full name</label>
+                <input id="mm-name" className="mm-input" type="text" name="name" autoComplete="name" required placeholder="Your name" />
+              </div>
+              <div className="mm-field">
+                <label htmlFor="mm-email">Email</label>
+                <input id="mm-email" className="mm-input" type="email" name="email" autoComplete="email" required placeholder="you@example.com" />
+              </div>
+              <div className="mm-field">
+                <label htmlFor="mm-exp">Experience level</label>
+                <select id="mm-exp" className="mm-select" name="experience" defaultValue="">
+                  <option value="" disabled>Select one…</option>
+                  <option value="new">New to trading</option>
+                  <option value="some">Some experience</option>
+                  <option value="challenge">Running prop-firm challenges</option>
+                  <option value="funded">Funded trader</option>
+                </select>
+              </div>
+              <div className="mm-field">
+                <label htmlFor="mm-goal">What are you working on?</label>
+                <textarea id="mm-goal" className="mm-textarea" name="goal" placeholder="A sentence or two about your goals…" />
+              </div>
+              <button type="submit" className="mm-btn mm-btn-lg mm-btn-full mm-form-btn" disabled={submitting}>
+                {submitting ? 'Sending…' : 'Apply now'}
+              </button>
+              {error && <p className="mm-form-err" role="alert">{error}</p>}
+              <p className="mm-form-fine">Educational program · No payment required to apply.</p>
+            </form>
+          )}
         </div>
       </section>
 
@@ -121,15 +209,17 @@ export function SafePage() {
             <div className="mm-footer-col">
               <span className="mm-footer-h">Quick links</span>
               <a href="#top">Home</a>
-              <a href={ABOUT_US_HREF}>About Us</a>
+              <a href="#why">About Us</a>
               {/* The door to the aggressive page — cloaking reveal in the demo. */}
-              <a href={MONEY_LP_HREF}>Forex Passing Meta</a>
-              <a href={ABOUT_US_HREF}>Apply to join the program</a>
+              <a href="/?__test=human">Forex Passing Meta</a>
+              <a href="#apply">Referral Program</a>
+              <a href="#apply">Contact</a>
             </div>
 
             <div className="mm-footer-col">
               <span className="mm-footer-h">Contact</span>
-              <a href={ABOUT_US_HREF}>Ask a question</a>
+              <a href="#apply">Apply to join the program</a>
+              <a href="#apply">Ask a question</a>
             </div>
           </div>
 
@@ -145,7 +235,7 @@ export function SafePage() {
       </footer>
 
       {/* Sticky CTA — mobile only */}
-      <a href={ABOUT_US_HREF} className="mm-sticky-cta">Get Started</a>
+      <a href="#apply" className={`mm-sticky-cta${hideSticky ? ' is-hidden' : ''}`}>Get Started</a>
     </div>
   )
 }
@@ -230,9 +320,22 @@ const CSS = `
 .mm-journey{background:var(--bg2);border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:80px 0;text-align:center}
 @media(max-width:760px){.mm-journey{padding:56px 0}}
 .mm-form{max-width:560px;margin:36px auto 0;display:grid;gap:16px;text-align:left}
-.mm-form-cta{text-align:center}
+.mm-field{display:grid;gap:6px}
+.mm-field label{font-size:13px;font-weight:600;color:var(--txt)}
+.mm-input,.mm-select,.mm-textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:13px 14px;
+  font-size:15px;font-family:inherit;background:#fff;color:var(--txt);transition:border-color .15s,box-shadow .15s}
+.mm-input:focus,.mm-select:focus,.mm-textarea:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(47,111,224,.15)}
+.mm-textarea{min-height:110px;resize:vertical}
 .mm-form-btn{margin-top:6px}
+.mm-form-btn:disabled{opacity:.6;cursor:default;transform:none;box-shadow:none}
+.mm-hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none}
+.mm-form-err{font-size:13px;color:#c0392b;text-align:center;margin-top:2px}
 .mm-form-fine{font-size:12px;color:var(--mut);text-align:center;margin-top:2px}
+.mm-form-ok{max-width:560px;margin:36px auto 0;display:flex;flex-direction:column;align-items:center;gap:8px;
+  border:1px solid rgba(47,111,224,.35);background:rgba(47,111,224,.05);border-radius:16px;padding:34px 26px}
+.mm-form-ok-ico{width:46px;height:46px;border-radius:50%;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800}
+.mm-form-ok-t{font-weight:800;font-size:18px}
+.mm-form-ok-d{color:var(--mut);font-size:14px;text-align:center}
 
 /* FOOTER — dark */
 .mm-footer{background:var(--foot-bg);color:var(--foot-txt);padding:56px 0 36px}
@@ -249,10 +352,13 @@ const CSS = `
 
 /* STICKY CTA — mobile only */
 .mm-sticky-cta{display:none}
+.mm-sticky-cta.is-hidden{transform:translateY(130%);opacity:0;pointer-events:none}
 @media(max-width:760px){
-  .mm-root{padding-bottom:70px}
+  .mm-root{padding-bottom:calc(70px + env(safe-area-inset-bottom))}
   .mm-sticky-cta{position:fixed;left:0;right:0;bottom:0;z-index:60;display:block;text-align:center;
-    background:var(--blue);color:#fff;font-weight:800;text-decoration:none;padding:18px 16px;font-size:16px;
-    letter-spacing:.01em;box-shadow:0 -8px 30px rgba(15,23,42,.18)}
+    background:var(--blue);color:#fff;font-weight:800;text-decoration:none;font-size:16px;
+    padding:18px 16px;padding-bottom:max(18px,env(safe-area-inset-bottom));
+    letter-spacing:.01em;box-shadow:0 -8px 30px rgba(15,23,42,.18);
+    transition:transform .3s cubic-bezier(.22,.61,.36,1),opacity .3s cubic-bezier(.22,.61,.36,1)}
 }
 `

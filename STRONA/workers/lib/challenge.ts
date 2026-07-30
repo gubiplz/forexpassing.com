@@ -6,7 +6,7 @@
 
 import type { Verdict, Env } from './types.ts';
 
-const ITERATIONS = 5_000;
+const ITERATIONS = 2_000;
 const TTL_MS = 120_000;
 
 export function shouldIssueChallenge(score: number, hasCookie: boolean): boolean {

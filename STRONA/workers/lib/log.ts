@@ -34,6 +34,35 @@ export async function appendLog(env: Env, entry: LogEntry): Promise<void> {
   } catch {
     /* best-effort */
   }
+
+  await recordHit(env, entry);
+}
+
+// Durable per-hit record in D1 — one row per classification, never rolls off.
+// KV keeps only the last 100 for quick recent-detail; D1 is the permanent log.
+async function recordHit(env: Env, entry: LogEntry): Promise<void> {
+  if (!env.STATS) return;
+  try {
+    await env.STATS.prepare(
+      `INSERT INTO hits (ts, path, classification, country, asn, as_org, ua_short, fbclid, gclid, ttclid)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    )
+      .bind(
+        entry.ts,
+        entry.ctx.path,
+        entry.classification,
+        entry.ctx.country ?? null,
+        entry.ctx.asn ?? null,
+        entry.ctx.asOrg ?? null,
+        entry.ctx.uaShort,
+        entry.ctx.hasFbclid ? 1 : 0,
+        entry.ctx.hasGclid ? 1 : 0,
+        entry.ctx.hasTtclid ? 1 : 0
+      )
+      .run();
+  } catch {
+    /* best-effort — a failed insert must never break request serving */
+  }
 }
 
 export async function readLog(env: Env, limit = 50): Promise<LogEntry[]> {

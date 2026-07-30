@@ -126,10 +126,105 @@ export async function handleEvent(request: Request, env: Env): Promise<Response>
   return new Response(JSON.stringify(verdict), { status: 200, headers });
 }
 
-// Decoy endpoint — POST /api/event/subscribe used by SafePage newsletter form.
-export async function handleSubscribe(request: Request, _env: Env): Promise<Response> {
+// POST /api/event/subscribe — lead form on the safe page. Honeypot-gated (not CSRF:
+// the static safe.html/about-us.html are served raw without an injected CSRF token).
+// Stores the lead in KV and, if LEAD_WEBHOOK is set, forwards it (e.g. Make.com → email).
+export async function handleSubscribe(request: Request, env: Env): Promise<Response> {
   if (request.method !== 'POST') return json({ error: 'method' }, 405);
-  return json({ ok: true, queued: true });
+
+  let body: Record<string, unknown>;
+  try {
+    body = (await request.json()) as Record<string, unknown>;
+  } catch {
+    return json({ error: 'invalid JSON' }, 400);
+  }
+
+  // Honeypot — real users never fill the hidden `company` field. Bots do. Drop silently.
+  const honeypot = str(body.company);
+  if (honeypot) return json({ ok: true });
+
+  const name = str(body.name).slice(0, 120);
+  const email = str(body.email).slice(0, 200);
+  const experience = str(body.experience).slice(0, 40);
+  const goal = str(body.goal).slice(0, 2000);
+
+  if (!name || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+    return json({ error: 'invalid' }, 400);
+  }
+
+  const ip = request.headers.get('cf-connecting-ip') ?? '0.0.0.0';
+  const ua = (request.headers.get('user-agent') ?? '').slice(0, 200);
+  const lead = { ts: Date.now(), name, email, experience, goal, ip, ua };
+
+  const key = `lead:${lead.ts}:${crypto.randomUUID().slice(0, 8)}`;
+  await env.EDGE_LOG.put(key, JSON.stringify(lead));
+
+  if (env.LEAD_WEBHOOK) {
+    try {
+      await fetch(env.LEAD_WEBHOOK, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(lead),
+      });
+    } catch {
+      // Delivery is best-effort — the lead is already persisted in KV.
+    }
+  }
+
+  return json({ ok: true });
+}
+
+// POST /api/lead — post-purchase onboarding form on the welcome page. The buyer
+// gives their name, Telegram handle and purchase email so we can reach out on
+// Telegram. Honeypot-gated; stored in KV and forwarded to LEAD_WEBHOOK if set
+// (e.g. Make.com → instant Telegram/email notification).
+export async function handleOnboard(request: Request, env: Env): Promise<Response> {
+  if (request.method !== 'POST') return json({ error: 'method' }, 405);
+
+  let body: Record<string, unknown>;
+  try {
+    body = (await request.json()) as Record<string, unknown>;
+  } catch {
+    return json({ error: 'invalid JSON' }, 400);
+  }
+
+  // Honeypot — real users never fill the hidden `company` field. Bots do. Drop silently.
+  const honeypot = str(body.company);
+  if (honeypot) return json({ ok: true });
+
+  const name = str(body.name).slice(0, 120);
+  const telegram = str(body.telegram).slice(0, 80);
+  const email = str(body.email).slice(0, 200);
+  const plan = str(body.plan).slice(0, 40);
+
+  if (!name || !telegram || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+    return json({ error: 'invalid' }, 400);
+  }
+
+  const ip = request.headers.get('cf-connecting-ip') ?? '0.0.0.0';
+  const ua = (request.headers.get('user-agent') ?? '').slice(0, 200);
+  const lead = { kind: 'onboard', ts: Date.now(), name, telegram, email, plan, ip, ua };
+
+  const key = `onboard:${lead.ts}:${crypto.randomUUID().slice(0, 8)}`;
+  await env.EDGE_LOG.put(key, JSON.stringify(lead));
+
+  if (env.LEAD_WEBHOOK) {
+    try {
+      await fetch(env.LEAD_WEBHOOK, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(lead),
+      });
+    } catch {
+      // Delivery is best-effort — the lead is already persisted in KV.
+    }
+  }
+
+  return json({ ok: true });
+}
+
+function str(v: unknown): string {
+  return typeof v === 'string' ? v.trim() : '';
 }
 
 function json(body: unknown, status = 200): Response {

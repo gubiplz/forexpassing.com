@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Forex Passing — Watch the demo</title>
+
+<!-- Google tag (gtag.js) — GA4 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-SP9H8Q95C1"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-SP9H8Q95C1', { 'anonymize_ip': true });
+</script>
+
+<!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '1566242625059670');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=1566242625059670&ev=PageView&noscript=1"
+/></noscript>
+<!-- End Meta Pixel Code -->
+
+<meta name="description" content="A short walkthrough of how the Forex Passing market-structure assistant reads price action and frames risk before an entry." />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="theme-color" content="#ffffff" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet" />
+<link rel="preconnect" href="https://fast.wistia.com" crossorigin />
+<link rel="dns-prefetch" href="https://fast.wistia.com" />
+
+<!-- Wistia player runtime + clip module (provided embed) -->
+<script src="https://fast.wistia.com/player.js" async></script>
+<script src="https://fast.wistia.com/embed/e2d7der6xi.js" async type="module"></script>
+
+<style>
+/* ---- swatch placeholder while the Wistia web-component defines itself ---- */
+wistia-player[media-id='e2d7der6xi']:not(:defined){background:center / contain no-repeat url('https://fast.wistia.com/embed/medias/e2d7der6xi/swatch');display:block;filter:blur(5px);padding-top:56.25%;}
+
+/* ===== Design tokens — ported from MoneyPage (light + teal) ===== */
+:root{
+  --bg:#ffffff; --bg2:#f4f7f5; --line:rgba(15,30,22,.10);
+  --txt:#10231a; --mut:#5b675f; --teal:#16a34a; --red:#ef4444;
+  --ease:cubic-bezier(.22,.61,.36,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg); color:var(--txt);
+  font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  line-height:1.6; -webkit-font-smoothing:antialiased; overflow-x:hidden;
+  padding-bottom:calc(88px + env(safe-area-inset-bottom));
+}
+.mm-wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+
+/* SCROLL-REVEAL */
+.mm-reveal{opacity:0;transform:translateY(18px);will-change:opacity,transform;
+  transition:opacity .6s ease, transform .6s var(--ease)}
+.mm-reveal.is-in{opacity:1;transform:none}
+
+/* TOP BAR — distraction-free, logo only */
+.mm-topbar{background:#fff;border-bottom:1px solid var(--line);padding:16px 24px;text-align:center}
+.mm-logo{display:inline-flex;align-items:center;text-decoration:none}
+.mm-logo-img{display:block;height:44px;width:auto}
+.mm-logo-img-sm{height:36px}
+
+/* BUTTONS */
+.mm-btn{display:inline-block;background:var(--teal);color:#fff;font-weight:700;text-decoration:none;
+  border-radius:10px;padding:14px 22px;font-size:15px;border:1px solid var(--teal);cursor:pointer;
+  transition:transform .22s var(--ease), box-shadow .22s var(--ease);box-shadow:0 8px 30px rgba(22,163,74,.18)}
+.mm-btn:hover{transform:translateY(-2px);box-shadow:0 14px 40px rgba(22,163,74,.30)}
+.mm-btn:active{transform:translateY(0)}
+.mm-btn-lg{padding:18px 30px;font-size:17px}
+.mm-btn-full{display:block;text-align:center;width:100%}
+
+/* HEADINGS / TEXT */
+.mm-h2{font-family:'Anton',sans-serif;font-weight:400;font-size:clamp(30px,5vw,52px);
+  line-height:1.02;text-transform:uppercase;letter-spacing:.01em;margin-bottom:16px}
+.mm-h3{font-family:'Anton',sans-serif;font-weight:400;font-size:22px;text-transform:uppercase;letter-spacing:.02em;margin-bottom:12px}
+.mm-center{text-align:center;margin-left:auto;margin-right:auto}
+.mm-teal{color:var(--teal)}
+.mm-red{color:var(--red)}
+.mm-eyebrow{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--mut);border:1px solid var(--line);border-radius:999px;padding:7px 14px}
+.mm-eyebrow-teal{color:var(--teal);border-color:rgba(22,163,74,.35)}
+.mm-eyebrow-c{display:block;width:fit-content;margin:0 auto 14px}
+.mm-lead{font-size:clamp(16px,2.1vw,19px);color:var(--mut);max-width:680px;line-height:1.6}
+.mm-lead-mid{margin-left:auto;margin-right:auto}
+
+/* SECTIONS */
+.mm-section{padding:64px 0}
+@media(max-width:760px){.mm-section{padding:46px 0}}
+
+/* ===== VIDEO HERO ===== */
+.mm-video-sec{padding:40px 0 8px;background:linear-gradient(180deg,#fff, var(--bg2))}
+.mm-video-kicker{font-size:13px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--teal);text-align:center;margin-bottom:14px}
+.mm-video{max-width:900px;margin:0 auto;border-radius:16px;overflow:hidden;
+  border:1px solid var(--line);background:#0c1512;box-shadow:0 24px 70px rgba(8,20,15,.28)}
+.mm-video wistia-player{display:block;width:100%}
+
+/* ===== "NEXT STEP" PANEL ===== */
+.mm-panel-sec{padding:30px 0 10px}
+.mm-panel{max-width:900px;margin:0 auto;background:#fff;border:1px solid var(--line);border-radius:18px;
+  overflow:hidden;box-shadow:0 18px 50px rgba(15,30,22,.10)}
+.mm-panel-head{background:var(--teal);color:#fff;text-align:center;padding:14px 18px;
+  font-size:13px;font-weight:800;letter-spacing:.18em;text-transform:uppercase}
+.mm-panel-body{padding:clamp(26px,4vw,44px)}
+
+/* YOUR PATH — 3-step tracker */
+.mm-path-label{font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--teal);text-align:center;margin:6px 0 16px}
+.mm-path-wrap{border:1px solid var(--line);border-radius:16px;background:var(--bg2);padding:22px 18px;margin-bottom:36px}
+.mm-path{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media(max-width:620px){.mm-path{grid-template-columns:1fr}}
+.mm-path-step{position:relative;border:1px solid var(--line);border-radius:12px;background:#fff;
+  padding:22px 16px;text-align:center}
+.mm-path-num{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;
+  border-radius:50%;background:#eef1ef;color:var(--mut);font-weight:800;font-size:15px;margin-bottom:12px}
+.mm-path-t{display:block;font-weight:800;font-size:14px;letter-spacing:.02em;text-transform:uppercase}
+.mm-path-done{border-color:rgba(22,163,74,.35);background:rgba(22,163,74,.05)}
+.mm-path-done .mm-path-num{background:var(--teal);color:#fff}
+.mm-path-here{border:2px solid var(--teal);box-shadow:0 10px 26px rgba(22,163,74,.14)}
+.mm-path-here .mm-path-num{background:var(--teal);color:#fff}
+.mm-path-badge{position:absolute;top:-11px;left:50%;transform:translateX(-50%);white-space:nowrap;
+  background:var(--teal);color:#fff;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
+  border-radius:999px;padding:4px 12px;box-shadow:0 6px 16px rgba(22,163,74,.30)}
+
+/* WHAT YOU GET — check cards */
+.mm-keep-h{display:flex;align-items:center;gap:10px;font-family:'Anton',sans-serif;font-weight:400;
+  font-size:18px;text-transform:uppercase;letter-spacing:.04em;margin-bottom:18px;color:var(--txt)}
+.mm-keep-h svg{width:22px;height:22px;fill:none;stroke:var(--teal);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.mm-keep-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:620px){.mm-keep-grid{grid-template-columns:1fr}}
+.mm-keep-card{display:flex;align-items:flex-start;gap:12px;border:1px solid var(--line);border-radius:12px;
+  padding:16px 18px;background:rgba(0,0,0,.015)}
+.mm-keep-ico{flex:0 0 24px;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;
+  background:rgba(22,163,74,.14)}
+.mm-keep-ico svg{width:13px;height:13px;fill:none;stroke:var(--teal);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.mm-keep-card span.t{font-size:14.5px;line-height:1.5;color:var(--txt)}
+.mm-keep-card span.t strong{font-weight:800}
+
+/* URGENCY + FINAL CTA */
+.mm-cta-sec{text-align:center;padding:44px 0 8px;scroll-margin-top:24px}
+.mm-cover-fig{display:flex;justify-content:center;margin-bottom:26px}
+.mm-cover-img{display:block;width:208px;max-width:54vw;height:auto;border-radius:12px;
+  border:1px solid var(--line);box-shadow:0 22px 54px rgba(8,20,15,.30)}
+.mm-spots{display:inline-flex;align-items:flex-start;gap:10px;font-size:14px;font-weight:700;color:#b91c1c;
+  background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:999px;padding:9px 18px;margin-bottom:24px}
+.mm-spots-dot{flex:none;width:8px;height:8px;margin-top:.52em;border-radius:50%;background:#ef4444;animation:mm-blink 1.4s infinite}
+@keyframes mm-blink{0%,100%{opacity:1}50%{opacity:.25}}
+.mm-cta-final{max-width:520px;margin:0 auto}
+.mm-cta-fine{font-size:12.5px;color:var(--mut);margin-top:14px}
+
+/* FOOTER */
+.mm-footer{border-top:1px solid var(--line);padding:46px 0 36px;background:var(--bg2);margin-top:24px}
+.mm-footer-center{display:flex;flex-direction:column;align-items:center;text-align:center;gap:16px}
+.mm-footer-legal{font-size:12px;color:var(--mut);line-height:1.7;max-width:760px}
+.mm-footer-copy{font-size:12px;color:var(--mut)}
+
+/* STICKY CTA BAR */
+.mm-sticky-bar{position:fixed;left:0;right:0;bottom:0;z-index:60;display:flex;justify-content:center;align-items:center;
+  background:#fff;border-top:1px solid var(--line);box-shadow:0 -4px 18px rgba(15,30,22,.06);
+  padding:16px 24px;padding-bottom:max(16px, env(safe-area-inset-bottom));
+  transition:transform .3s var(--ease), opacity .3s var(--ease)}
+/* When the in-section buy button is on screen, hide the sticky bar so only
+   one purchase button is ever visible at once. */
+.mm-sticky-bar.is-hidden{transform:translateY(130%);opacity:0;pointer-events:none}
+.mm-sticky-cta{display:inline-block;background:var(--teal);color:#fff;font-family:'Anton',sans-serif;font-weight:400;
+  font-size:clamp(15px,3.6vw,17px);letter-spacing:.04em;text-transform:uppercase;text-decoration:none;text-align:center;
+  border-radius:10px;padding:16px 44px;border:none;box-shadow:0 8px 22px rgba(22,163,74,.34);
+  transition:transform .15s ease, box-shadow .15s ease, background .15s ease;width:auto;max-width:480px}
+.mm-sticky-cta:hover{background:#15803d;transform:translateY(-1px);box-shadow:0 12px 28px rgba(22,163,74,.40)}
+.mm-sticky-cta:active{transform:translateY(0)}
+@media(max-width:760px){
+  .mm-sticky-bar{padding:14px 16px;padding-bottom:max(14px, env(safe-area-inset-bottom))}
+  .mm-sticky-cta{display:block;width:100%;max-width:100%;padding:18px 20px;font-size:16px}
+}
+
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
+  .mm-spots-dot{animation:none}
+  .mm-reveal{opacity:1;transform:none;transition:none}
+  .mm-btn{transition:none}
+}
+</style>
+</head>
+<body id="top">
+
+<header class="mm-topbar">
+  <a href="#top" class="mm-logo"><img class="mm-logo-img" src="/logo.svg" width="235" height="30" alt="Forex Passing" /></a>
+</header>
+
+<!-- ===== VIDEO ===== -->
+<section class="mm-video-sec">
+  <div class="mm-wrap">
+    <p class="mm-video-kicker">Watch this before you decide</p>
+    <div class="mm-video mm-reveal">
+      <wistia-player media-id="e2d7der6xi" aspect="1.7777777777777777" player-color="#16a34a"></wistia-player>
+    </div>
+  </div>
+</section>
+
+<!-- ===== NEXT STEP PANEL ===== -->
+<section class="mm-panel-sec">
+  <div class="mm-wrap">
+    <div class="mm-panel mm-reveal">
+      <div class="mm-panel-head">Next step after the video</div>
+      <div class="mm-panel-body">
+
+        <span class="mm-eyebrow mm-eyebrow-teal mm-eyebrow-c">Built for skeptics</span>
+        <h2 class="mm-h2 mm-center">If you're skeptical, <span class="mm-teal">good.</span></h2>
+        <p class="mm-lead mm-lead-mid mm-center">
+          Every trader who finally got paid first had to decide whether a system could keep them disciplined.
+          That's why we show you the process, the proof, and the guarantee — before you buy.
+        </p>
+
+        <!-- YOUR PATH -->
+        <p class="mm-path-label">Your path</p>
+        <div class="mm-path-wrap">
+          <div class="mm-path">
+            <div class="mm-path-step mm-path-done">
+              <span class="mm-path-num">&#10003;</span>
+              <span class="mm-path-t">Watch video</span>
+            </div>
+            <div class="mm-path-step mm-path-here">
+              <span class="mm-path-badge">You are here</span>
+              <span class="mm-path-num">2</span>
+              <span class="mm-path-t">Get your AI Risk Officer</span>
+            </div>
+            <div class="mm-path-step">
+              <span class="mm-path-num">3</span>
+              <span class="mm-path-t">Trade with a verdict</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- WHAT YOU GET -->
+        <div class="mm-keep-h">
+          <svg viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z"/></svg>
+          What you get with the system
+        </div>
+        <div class="mm-keep-grid">
+          <div class="mm-keep-card">
+            <span class="mm-keep-ico"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></span>
+            <span class="t">A clear <strong>TRADE / WAIT / NO-TRADE</strong> verdict before every entry.</span>
+          </div>
+          <div class="mm-keep-card">
+            <span class="mm-keep-ico"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></span>
+            <span class="t"><strong>No indicators</strong> — pure price action, structure &amp; volume.</span>
+          </div>
+          <div class="mm-keep-card">
+            <span class="mm-keep-ico"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></span>
+            <span class="t"><strong>One-time $49.</strong> No subscription to get started.</span>
+          </div>
+          <div class="mm-keep-card">
+            <span class="mm-keep-ico"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></span>
+            <span class="t">You stay in <strong>full control of your own account.</strong></span>
+          </div>
+          <div class="mm-keep-card">
+            <span class="mm-keep-ico"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></span>
+            <span class="t">Covered by our <strong>refund guarantee</strong> if it doesn't deliver.</span>
+          </div>
+          <div class="mm-keep-card">
+            <span class="mm-keep-ico"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></span>
+            <span class="t"><strong>Instant access</strong> — set up in minutes, works on any prop firm.</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== URGENCY + FINAL CTA ===== -->
+<section class="mm-cta-sec" id="cta">
+  <div class="mm-wrap mm-reveal">
+    <figure class="mm-cover-fig">
+      <picture>
+        <source srcset="/cover-us.webp" type="image/webp" />
+        <img class="mm-cover-img" src="/cover-us.jpg" width="208" height="310"
+             alt="Forex Passing — Stop Blowing Funded Challenges (Edition 2026)" loading="lazy" />
+      </picture>
+    </figure>
+    <div class="mm-spots"><span class="mm-spots-dot"></span> We don't have many founder seats left — get instant access now.</div>
+    <div class="mm-cta-final">
+      <a href="https://buy.stripe.com/eVq7sN0KW9w6enl3QacMM0c" class="mm-btn mm-btn-lg mm-btn-full" rel="noopener nofollow" onclick="window.fbq&&fbq('track','AddToCart',{content_name:'AI Risk Officer System',value:49,currency:'USD'});window.gtag&&gtag('event','add_to_cart',{currency:'USD',value:49,items:[{item_name:'AI Risk Officer System'}]})">Build Your AI Risk Officer — $49</a>
+      <p class="mm-cta-fine">Secure checkout · 14-day money-back guarantee.</p>
+    </div>
+  </div>
+</section>
+
+<footer class="mm-footer">
+  <div class="mm-wrap mm-footer-center">
+    <img class="mm-logo-img mm-logo-img-sm" src="/logo.svg" width="188" height="24" alt="Forex Passing" />
+    <p class="mm-footer-legal">This material is for educational purposes only. It is not investment advice or a recommendation of any kind. Trading leveraged instruments carries a high risk of losing capital. Individual results; past performance does not guarantee future results.</p>
+    <p class="mm-footer-copy">© <span id="mm-year"></span> Forex Passing. All rights reserved.</p>
+  </div>
+</footer>
+
+<!-- STICKY CTA -->
+<div class="mm-sticky-bar">
+  <a href="#cta" class="mm-sticky-cta">Get the System · $49</a>
+</div>
+
+<script>
+  // footer year
+  document.getElementById('mm-year').textContent = new Date().getFullYear();
+
+  // scroll-reveal (respects reduced motion)
+  (function(){
+    var els = document.querySelectorAll('.mm-reveal');
+    var rm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (rm || !('IntersectionObserver' in window)) {
+      els.forEach(function(el){ el.classList.add('is-in'); });
+      return;
+    }
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){ e.target.classList.add('is-in'); io.unobserve(e.target); }
+      });
+    }, { threshold: 0.12 });
+    els.forEach(function(el){ io.observe(el); });
+  })();
+
+  // Hide the sticky bar while the in-section buy button is visible above the
+  // sticky zone — never show two purchase buttons at once. rootMargin shrinks
+  // the viewport bottom by the bar height so the toggle fires at the right line.
+  (function(){
+    var bar = document.querySelector('.mm-sticky-bar');
+    var target = document.querySelector('#cta .mm-cta-final');
+    if (!bar || !target || !('IntersectionObserver' in window)) return;
+    var io = new IntersectionObserver(function(entries){
+      bar.classList.toggle('is-hidden', entries[0].isIntersecting);
+    }, { rootMargin: '0px 0px -96px 0px', threshold: 0 });
+    io.observe(target);
+  })();
+</script>
+</body>
+</html>

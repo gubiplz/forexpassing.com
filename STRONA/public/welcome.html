@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#ffffff" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>You're all in — Welcome · Forex Passing</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Google tag (gtag.js) — GA4 (live). Purchase fires below with the right value per plan. -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-SP9H8Q95C1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-SP9H8Q95C1', { 'anonymize_ip': true });
+  </script>
+
+  <!-- Meta Pixel Code -->
+  <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '1566242625059670');
+    fbq('track', 'PageView');
+  </script>
+  <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=1566242625059670&ev=PageView&noscript=1"
+  /></noscript>
+  <!-- End Meta Pixel Code -->
+
+  <style>
+    :root {
+      --bg: #ffffff; --bg2: #f4f7f5; --line: rgba(15, 30, 22, .10); --line-2: rgba(15, 30, 22, .16);
+      --txt: #10231a; --mut: #4a564f; --teal: #16a34a; --teal-ink: #15803d; --teal-soft: rgba(22, 163, 74, .10);
+      --amber: #b45309; --amber-soft: rgba(180, 83, 9, .12);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      background: var(--bg); color: var(--txt);
+      font: 16px/1.6 'Inter', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    body::before {
+      content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background: radial-gradient(900px 480px at 50% -12%, rgba(22, 163, 74, .12), transparent 62%);
+    }
+    main { position: relative; z-index: 1; max-width: 860px; margin: 0 auto; padding: 36px 24px 88px; }
+    a { color: inherit; text-decoration: none; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+    a:focus-visible, .btn:focus-visible, .access .go:focus-visible, .support-card:focus-visible { outline: 2px solid var(--teal-ink); outline-offset: 3px; }
+
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    .reveal { opacity: 0; animation: fadeUp 600ms ease forwards; }
+    .reveal-1 { animation-delay: 90ms; } .reveal-2 { animation-delay: 180ms; }
+    .reveal-3 { animation-delay: 300ms; } .reveal-4 { animation-delay: 420ms; }
+    @media (prefers-reduced-motion: reduce) { .reveal, .check { animation: none !important; opacity: 1; transform: none; } }
+
+    /* HERO */
+    .hero { text-align: center; padding: 26px 0 40px; display: flex; flex-direction: column; align-items: center; }
+    @keyframes pop { 0% { transform: scale(0); opacity: 0; } 60% { transform: scale(1.12); } 100% { transform: scale(1); opacity: 1; } }
+    .check {
+      width: 66px; height: 66px; border-radius: 50%; background: var(--teal);
+      display: flex; align-items: center; justify-content: center; margin-bottom: 22px;
+      box-shadow: 0 0 0 6px var(--teal-soft), 0 18px 40px -16px rgba(22, 163, 74, .5);
+      animation: pop 700ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+    .check svg { width: 32px; height: 32px; }
+    .pill {
+      padding: 6px 13px; border-radius: 999px; background: var(--teal-soft);
+      border: 1px solid rgba(22, 163, 74, .35); color: var(--teal-ink);
+      font-size: 11.5px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; margin-bottom: 20px;
+    }
+    .hero-title {
+      font: 400 clamp(30px, 5vw, 52px)/1.02 'Anton', sans-serif;
+      text-transform: uppercase; letter-spacing: .01em; margin: 0 0 16px; max-width: 16ch;
+    }
+    .hero-title .accent { color: var(--teal); }
+    p.lead { color: var(--mut); font-size: clamp(15px, 1.6vw, 17px); max-width: 54ch; margin: 0 auto; }
+    p.lead strong { color: var(--txt); font-weight: 700; }
+
+    /* PRIMARY TELEGRAM CTA */
+    .kickoff {
+      max-width: 640px; margin: 30px auto 0; background: var(--bg2);
+      border: 2px solid var(--teal); border-radius: 18px; padding: 26px;
+      box-shadow: 0 14px 40px -20px rgba(22, 163, 74, .5); text-align: center;
+    }
+    .kickoff .tag { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 999px; background: #fff; color: var(--teal-ink); font-size: 11.5px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; margin-bottom: 14px; }
+    .kickoff .tag .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--teal); }
+    .kickoff h3 { font: 800 clamp(19px, 2.4vw, 23px)/1.25 'Inter', sans-serif; margin: 0 0 8px; }
+    .kickoff p { color: var(--mut); font-size: 14.5px; line-height: 1.6; max-width: 46ch; margin: 0 auto 20px; }
+    .kickoff p strong { color: var(--txt); }
+    .kickoff .go {
+      display: inline-flex; align-items: center; gap: 10px; padding: 15px 30px; border-radius: 12px;
+      background: var(--teal-ink); color: #fff; font-weight: 800; font-size: 15.5px;
+      transition: transform 150ms ease, box-shadow 200ms ease;
+    }
+    .kickoff .go:hover { transform: translateY(-2px); box-shadow: 0 18px 36px -12px rgba(22, 163, 74, .55); }
+    .kickoff .go svg { width: 20px; height: 20px; }
+    .kickoff .handle { margin-top: 12px; font-size: 12.5px; color: var(--mut); }
+    .kickoff .handle strong { color: var(--teal-ink); font-weight: 800; }
+    .kickoff .handle a { color: var(--teal-ink); font-weight: 800; }
+
+    /* ONBOARDING FORM */
+    .kickoff .fields { display: grid; gap: 12px; text-align: left; margin: 4px 0 18px; }
+    .kickoff .field span { display: block; font-size: 12px; font-weight: 700; color: var(--txt); margin-bottom: 6px; }
+    .kickoff .field input {
+      width: 100%; padding: 13px 14px; border-radius: 10px; border: 1px solid var(--line-2);
+      background: #fff; color: var(--txt); font: 15px 'Inter', system-ui, sans-serif;
+      transition: border-color 150ms ease, box-shadow 150ms ease;
+    }
+    .kickoff .field input:focus { outline: none; border-color: var(--teal); box-shadow: 0 0 0 3px var(--teal-soft); }
+    .kickoff .field input::placeholder { color: #9aa39d; }
+    .kickoff .hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+    .kickoff button.go { border: none; cursor: pointer; width: 100%; justify-content: center; }
+    .kickoff button.go[disabled] { opacity: .7; cursor: default; transform: none; }
+    .kickoff .form-err { color: #b91c1c; font-size: 13px; margin-top: 12px; }
+    /* success state */
+    .kickoff-done .done-check {
+      width: 52px; height: 52px; border-radius: 50%; background: var(--teal);
+      display: inline-flex; align-items: center; justify-content: center; margin: 0 auto 16px;
+      box-shadow: 0 0 0 6px var(--teal-soft);
+    }
+    .kickoff-done .done-check svg { width: 26px; height: 26px; }
+
+    /* ACCESS CARD (ebook) */
+    .access {
+      max-width: 640px; margin: 18px auto 0; background: var(--bg2);
+      border: 1px solid rgba(22, 163, 74, .35); border-radius: 16px; padding: 22px;
+      display: flex; gap: 18px; align-items: center; text-align: left;
+    }
+    .access-icon {
+      width: 52px; height: 52px; border-radius: 12px; background: var(--teal-soft); color: var(--teal);
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .access-meta { flex: 1; min-width: 0; }
+    .access-meta strong { display: block; font-size: 16px; margin-bottom: 3px; }
+    .access-meta span { font-size: 13px; color: var(--mut); }
+    .access .go {
+      padding: 13px 22px; border-radius: 10px; background: var(--teal-ink); color: #fff;
+      font-weight: 800; font-size: 14px; flex-shrink: 0;
+      transition: transform 150ms ease, box-shadow 200ms ease;
+    }
+    .access .go:hover { transform: translateY(-2px); box-shadow: 0 14px 30px -10px rgba(22, 163, 74, .5); }
+    @media (max-width: 540px) { .access { flex-direction: column; align-items: flex-start; } .access .go { width: 100%; text-align: center; } }
+
+    /* SECTIONS */
+    section.block { margin-top: 60px; }
+    .eyebrow { display: block; color: var(--teal-ink); font-size: 11.5px; letter-spacing: .14em; text-transform: uppercase; font-weight: 700; margin-bottom: 12px; }
+    h2 { font: 400 clamp(24px, 3.6vw, 38px)/1.05 'Anton', sans-serif; text-transform: uppercase; letter-spacing: .01em; margin: 0 0 12px; }
+    h2 .accent { color: var(--teal); }
+    p.sub { color: var(--mut); font-size: 15.5px; max-width: 60ch; margin: 0 0 28px; }
+
+    /* TIMELINE */
+    .timeline { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    @media (max-width: 720px) { .timeline { grid-template-columns: 1fr; } }
+    .step { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 22px; transition: border-color 200ms ease, transform 200ms ease; }
+    .step:hover { border-color: var(--line-2); transform: translateY(-2px); }
+    .step-num { width: 32px; height: 32px; border-radius: 50%; background: var(--teal-soft); color: var(--teal-ink); font-weight: 800; font-size: 14px; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 14px; }
+    .step h3 { font: 700 16px/1.3 'Inter', sans-serif; margin: 0 0 6px; }
+    .step p { color: var(--mut); font-size: 13.5px; line-height: 1.55; margin: 0; }
+    .step .time { margin-top: 12px; font-size: 11px; color: var(--teal-ink); letter-spacing: .1em; text-transform: uppercase; font-weight: 700; }
+
+    /* SUPPORT */
+    .support-card { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 22px; display: flex; align-items: flex-start; gap: 14px; max-width: 520px; }
+    .support-card .icon { width: 42px; height: 42px; border-radius: 11px; background: var(--teal-soft); color: var(--teal-ink); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .support-card .info strong { display: block; font-size: 15px; margin-bottom: 3px; }
+    .support-card .info span { display: block; font-size: 13px; color: var(--mut); line-height: 1.5; }
+
+    /* FOOTER */
+    footer.f { margin-top: 76px; padding-top: 26px; border-top: 1px solid var(--line); text-align: center; color: var(--mut); font-size: 12.5px; line-height: 1.7; }
+    footer.f a { color: var(--txt); }
+    footer.f a:hover { color: var(--teal); }
+    footer.f .disclaimer { max-width: 600px; margin: 8px auto 0; }
+  </style>
+</head>
+<body>
+  <main>
+
+    <h1 class="sr-only">Payment confirmed — welcome to your 1:1</h1>
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="check" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+      </div>
+      <div class="pill reveal reveal-1">Payment confirmed</div>
+      <h2 class="hero-title reveal reveal-2">You're all in. <span class="accent">Let's get to work.</span></h2>
+      <p class="lead reveal reveal-3">
+        Your <strong id="plan-label">14-day private 1:1</strong> is live. The next 14 days are the ones that
+        change how you trade — and you're not doing them alone. <strong>Here's how we start.</strong>
+      </p>
+
+      <!-- PRIMARY: onboarding form -->
+      <form class="kickoff reveal reveal-4" id="onboard" novalidate>
+        <span class="tag"><span class="dot"></span>Step one — do this now</span>
+        <h3>Tell me where to reach you</h3>
+        <p>
+          Drop your details below and <strong>I'll message you on Telegram</strong> to open your
+          private thread — your setups, my reads, for the next 14 days.
+        </p>
+        <div class="fields">
+          <label class="field">
+            <span>Your name</span>
+            <input type="text" name="name" autocomplete="name" placeholder="James Carter" required />
+          </label>
+          <label class="field">
+            <span>Telegram username</span>
+            <input type="text" name="telegram" autocomplete="off" placeholder="@yourhandle" required />
+          </label>
+          <label class="field">
+            <span>Purchase email</span>
+            <input type="email" name="email" autocomplete="email" placeholder="you@email.com" required />
+          </label>
+        </div>
+        <!-- honeypot: hidden from humans; bots fill it and get silently dropped -->
+        <input type="text" name="company" tabindex="-1" autocomplete="off" class="hp" aria-hidden="true" />
+        <button type="submit" class="go">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.94 4.69 18.5 20.93c-.26 1.16-.95 1.45-1.93.9l-5.32-3.92-2.57 2.47c-.28.28-.52.52-1.07.52l.38-5.42L18.06 5.5c.43-.38-.09-.6-.67-.22L5.62 12.66.45 11.06c-1.12-.36-1.15-1.13.24-1.68L20.49 3.07c.94-.36 1.76.22 1.45 1.62z"/></svg>
+          <span class="lbl">Confirm my details</span>
+        </button>
+        <div class="handle">No spam — I only use this to reach you on Telegram.</div>
+        <p class="form-err" id="onboard-err" hidden></p>
+      </form>
+
+      <!-- SUCCESS state (revealed after submit) -->
+      <div class="kickoff kickoff-done" id="onboard-done" hidden>
+        <div class="done-check" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+        </div>
+        <h3>You're on the list</h3>
+        <p>
+          Got it, <strong id="done-name">friend</strong>. I'll message you on Telegram at
+          <strong id="done-tg">@yourhandle</strong> shortly to kick things off — keep an eye on the app.
+        </p>
+        <div class="handle">Tip: make sure your Telegram privacy lets new people message you, so mine gets through.</div>
+      </div>
+
+      <!-- EBOOK download -->
+      <div class="access reveal reveal-4">
+        <div class="access-icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+        </div>
+        <div class="access-meta">
+          <strong>The AI Risk Officer System</strong>
+          <span>Your ebook — full process + prompt pack · Instant download · PDF</span>
+        </div>
+        <a class="go" href="/ai-risk-officer-system-b1f7c6503b8c.pdf" download="AI-Risk-Officer-System.pdf">Download PDF</a>
+      </div>
+    </section>
+
+    <!-- WHAT HAPPENS NEXT -->
+    <section class="block reveal">
+      <span class="eyebrow">Your next 14 days</span>
+      <h2>How the 1:1 <span class="accent">actually works.</span></h2>
+      <p class="sub">No calls to schedule, no timezones, no camera. Just a direct line whenever you're unsure — for two full weeks.</p>
+
+      <div class="timeline">
+        <div class="step">
+          <div class="step-num">1</div>
+          <h3>Leave your details</h3>
+          <p>Fill in the form above — name, Telegram, email. I reach out on Telegram and we start with what you trade: pair, timeframe, prop firm.</p>
+          <div class="time">~ 30 sec</div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <h3>Send setups as they come</h3>
+          <p>Screenshot any chart you're unsure about. I read the structure and tell you if I'd take it or pass — usually within the hour.</p>
+          <div class="time">14 days</div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <h3>Trade with a calmer head</h3>
+          <p>We catch the revenge entry, the FOMO chase, the stop you want to move — before your money is on the line.</p>
+          <div class="time">every entry</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SUPPORT -->
+    <section class="block">
+      <span class="eyebrow">Anything else</span>
+      <h2>Need a hand? <span class="accent">Just email.</span></h2>
+      <p class="sub">Payment questions, the ebook, or your first setup — drop us a line and we usually reply within the hour.</p>
+
+      <a class="support-card" href="mailto:contact@forexpassing.com">
+        <div class="icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg>
+        </div>
+        <div class="info">
+          <strong>contact@forexpassing.com</strong>
+          <span>We usually reply within the hour.</span>
+        </div>
+      </a>
+    </section>
+
+    <footer class="f">
+      <p>© <span id="yr">2026</span> Forex Passing · <a href="/">Home</a></p>
+      <p class="disclaimer">
+        Educational content. Not investment advice. Trading leveraged instruments carries a high risk
+        of losing capital. Past performance does not guarantee future results.
+      </p>
+    </footer>
+
+  </main>
+
+  <script>
+    document.getElementById('yr').textContent = new Date().getFullYear();
+    // Purchase tracking — value depends on which link redirected here.
+    // Bundle (ebook + 1:1) = 346, mentoring-only = 297. Default: bundle.
+    (function() {
+      var plan = (new URLSearchParams(location.search).get('plan') || 'bundle').toLowerCase();
+      var isMentoring = plan === 'mentoring' || plan === 'mentor' || plan === '1to1';
+      var value = isMentoring ? 297 : 346;
+      var name = isMentoring ? '14-Day 1:1 Mentoring' : 'AI Risk Officer Bundle (ebook + 1:1)';
+      var labelEl = document.getElementById('plan-label');
+      if (labelEl && !isMentoring) labelEl.textContent = 'bundle + 14-day private 1:1';
+      var txid = 'mm-' + Date.now();
+      if (window.gtag) gtag('event', 'purchase', { value: value, currency: 'USD', transaction_id: txid, items: [{ item_name: name }] });
+      if (window.fbq) fbq('track', 'Purchase', { value: value, currency: 'USD', content_name: name });
+    })();
+
+    // Onboarding form — capture name + Telegram + purchase email, we reach out on Telegram.
+    (function() {
+      var form = document.getElementById('onboard');
+      if (!form) return;
+      var errEl = document.getElementById('onboard-err');
+      var doneEl = document.getElementById('onboard-done');
+      var btn = form.querySelector('button[type=submit]');
+      var lbl = btn ? btn.querySelector('.lbl') : null;
+      var plan = (new URLSearchParams(location.search).get('plan') || 'bundle').toLowerCase();
+
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (errEl) errEl.hidden = true;
+        var el = form.elements;
+        var data = {
+          name: el['name'].value.trim(),
+          telegram: el['telegram'].value.trim(),
+          email: el['email'].value.trim(),
+          company: el['company'].value,
+          plan: plan
+        };
+        if (!data.name || !data.telegram || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(data.email)) {
+          if (errEl) { errEl.textContent = 'Please add your name, Telegram handle and a valid email.'; errEl.hidden = false; }
+          return;
+        }
+        if (btn) btn.disabled = true;
+        if (lbl) lbl.textContent = 'Sending…';
+        fetch('/api/lead', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify(data)
+        }).then(function(r) { return r.ok ? r.json() : Promise.reject(); })
+          .then(function() {
+            var nameEl = document.getElementById('done-name');
+            var tgEl = document.getElementById('done-tg');
+            if (nameEl) nameEl.textContent = data.name.split(' ')[0];
+            if (tgEl) tgEl.textContent = data.telegram.charAt(0) === '@' ? data.telegram : '@' + data.telegram;
+            form.hidden = true;
+            if (doneEl) doneEl.hidden = false;
+          })
+          .catch(function() {
+            if (errEl) { errEl.textContent = 'Something went wrong — please try again, or email contact@forexpassing.com.'; errEl.hidden = false; }
+            if (btn) btn.disabled = false;
+            if (lbl) lbl.textContent = 'Confirm my details';
+          });
+      });
+    })();
+  </script>
+</body>
+</html>

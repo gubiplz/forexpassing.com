@@ -22,29 +22,30 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
-    <title>AI Risk Officer — Stop Blowing Funded Challenges | Forex Passing</title>
+    <title>Forex Passing — An educational trading company</title>
     <meta
       name="description"
-      content="An AI risk officer that checks every trade — setup, context, R:R, daily-loss buffer and tilt — before your emotions touch the mouse. Pass the challenge. Keep the payout."
+      content="Forex Passing is a trading-education company. We teach aspiring traders the strategies, discipline and mindset to approach the markets with a clear, repeatable process."
     />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://forexpassing.com/" />
 
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="en_US" />
-    <meta property="og:title" content="Stop Blowing Funded Challenges — Your AI Risk Officer" />
+    <meta property="og:site_name" content="Forex Passing" />
+    <meta property="og:title" content="Forex Passing — An educational trading company" />
     <meta
       property="og:description"
-      content="Claude × TradingView checks the trade before you click. Setup, context, risk and emotion — one verdict: Trade / Wait / No Trade."
+      content="A trading-education company teaching the strategies, discipline and mindset to approach the markets with a clear, repeatable process."
     />
     <meta property="og:url" content="https://forexpassing.com" />
-    <meta property="og:image" content="/cover.jpg" />
 
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Stop Blowing Funded Challenges — Your AI Risk Officer" />
+    <meta name="twitter:title" content="Forex Passing — An educational trading company" />
     <meta
       name="twitter:description"
-      content="Let AI check the trade before your emotions touch the mouse. The Claude × TradingView AI Risk Officer System."
+      content="Trading education done properly — strategy, discipline and process for aspiring traders."
     />
-    <meta name="twitter:image" content="/cover.jpg" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -68,21 +69,42 @@
       />
     </noscript>
 
-    <!-- Analytics stubs (replaced by edge with real gtag/fbq when classification = human) -->
+    <!-- Google tag (gtag.js) — GA4 (live) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SP9H8Q95C1"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-MM2026XXXX', { 'anonymize_ip': true });
-      !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[]}(window,document,'script','https://connect.facebook.net/en_US/fbq.stub.js');
-      fbq('init','000000000000000');
-      fbq('track','PageView');
+      gtag('config', 'G-SP9H8Q95C1', { 'anonymize_ip': true });
     </script>
+
+    <!-- Meta Pixel Code -->
+    <script>
+      !function(f,b,e,v,n,t,s)
+      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+      n.queue=[];t=b.createElement(e);t.async=!0;
+      t.src=v;s=b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t,s)}(window, document,'script',
+      'https://connect.facebook.net/en_US/fbevents.js');
+      fbq('init', '1566242625059670');
+      fbq('track', 'PageView');
+    </script>
+    <!-- End Meta Pixel Code -->
 
     <meta name="csrf" content="" />
   </head>
   <body>
+    <!-- Meta Pixel Code (noscript) -->
+    <noscript
+      ><img
+        height="1"
+        width="1"
+        style="display: none"
+        src="https://www.facebook.com/tr?id=1566242625059670&ev=PageView&noscript=1"
+    /></noscript>
+    <!-- End Meta Pixel Code (noscript) -->
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

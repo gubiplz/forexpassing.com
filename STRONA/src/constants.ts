@@ -3,8 +3,8 @@
 
 export const PRICE_LABEL = '99 zł'
 export const ORIGINAL_PRICE_LABEL = '149 zł'
-export const CHECKOUT_HREF = 'https://buy.stripe.com/dRm6oJ51caAaenl2M6cMM09'
-export const MENTORING_HREF = 'https://buy.stripe.com/4gMdRbalwbEe1Az4UecMM0a'
+export const CHECKOUT_HREF = 'https://buy.stripe.com/eVq7sN0KW9w6enl3QacMM0c'
+export const MENTORING_HREF = 'https://buy.stripe.com/4gMfZjctE23E9310DYcMM0d'
 export const BRAND = 'Forex Passing'
 export const WISTIA_ENABLED = true
 

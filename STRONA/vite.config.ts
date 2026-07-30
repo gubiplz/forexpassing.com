@@ -1,10 +1,12 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
+import { cloudflare } from "@cloudflare/vite-plugin";
+
 // Forex Passing Ebook — landing page (mockup).
 // Port dev: 3005 (3003 = charts vite, 3004 = charts server).
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), cloudflare()],
   server: {
     port: 3005,
     host: true,

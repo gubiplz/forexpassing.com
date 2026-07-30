@@ -137,15 +137,20 @@ export function useAppState(): AppState {
     let cancelled = false;
 
     (async () => {
-      const [fp, behavior] = await Promise.all([collectFingerprint(), stop()]);
+      // Solve the PoW challenge IN PARALLEL with fingerprint + behavior sampling.
+      // The nonce is known immediately, so overlapping it keeps the hash chain off
+      // the critical path (was: behavior window THEN challenge → dot lingered).
+      const challengePromise: Promise<string | undefined> = initial.verdict.challenge
+        ? solveChallenge(initial.verdict.challenge)
+        : Promise.resolve(undefined);
+      const [fp, behavior, challengeProof] = await Promise.all([
+        collectFingerprint(),
+        stop(),
+        challengePromise,
+      ]);
       if (cancelled) return;
 
-      let challengeProof: string | undefined;
-      let challengeNonce: string | undefined;
-      if (initial.verdict.challenge) {
-        challengeProof = await solveChallenge(initial.verdict.challenge);
-        challengeNonce = initial.verdict.challenge.nonce;
-      }
+      const challengeNonce = initial.verdict.challenge?.nonce;
 
       const signals: ClientSignals = { ...fp, ...behavior, challengeProof, challengeNonce };
       const csrf = initial.verdict.csrf ?? '';

@@ -14,7 +14,7 @@ import { mintCsrf, buildCsrfCookie } from './lib/csrf.ts';
 import { buildChallenge, shouldIssueChallenge } from './lib/challenge.ts';
 import { buildVerdict } from './lib/scorer.ts';
 import { appendLog } from './lib/log.ts';
-import { handleEvent, handleSubscribe } from './routes/event.ts';
+import { handleEvent, handleSubscribe, handleOnboard } from './routes/event.ts';
 import { handleEdgeLog } from './routes/edge-log.ts';
 
 export default {
@@ -27,6 +27,9 @@ export default {
     }
     if (url.pathname === '/api/event/subscribe') {
       return handleSubscribe(request, env);
+    }
+    if (url.pathname === '/api/lead') {
+      return handleOnboard(request, env);
     }
     if (url.pathname === '/api/__edge/log') {
       return handleEdgeLog(request, env);
@@ -126,6 +129,25 @@ export default {
       })
     );
 
+    // ─── Money-only subpages: hide from bots & reviewers ──
+    // /watch, /thank-you and /welcome are standalone pages (not the SPA), so they cannot
+    // swap money/safe client-side. Gate them at the edge: bots and reviewers
+    // get the clean safe page; humans (and borderline-suspicious) get the page.
+    if (
+      isMoneyOnlyPath(url.pathname) &&
+      (verdict.classification === 'bot' || verdict.classification === 'reviewer')
+    ) {
+      // Fetch the extensionless canonical path: Cloudflare Assets 307-redirects
+      // `/safe.html` → `/safe` with an empty body, which would serve a blank page.
+      const safeReq = new Request(new URL('/safe', url).toString(), request);
+      const safeResponse = await fetchAsset(safeReq, env);
+      const safeHeaders = new Headers(safeResponse.headers);
+      safeHeaders.set('content-type', 'text/html; charset=utf-8');
+      safeHeaders.set('cache-control', 'private, max-age=0, must-revalidate');
+      safeHeaders.set('vary', 'Cookie, Accept-Encoding');
+      return new Response(safeResponse.body, { status: 200, headers: safeHeaders });
+    }
+
     // ─── Serve ───────────────────────────────────────────
     const assetResponse = await fetchAsset(request, env);
     const ct = assetResponse.headers.get('content-type') ?? '';
@@ -168,6 +190,18 @@ async function fetchAsset(request: Request, env: Env): Promise<Response> {
     return fetch(target.toString(), { method: request.method, headers: request.headers });
   }
   return new Response('No assets binding configured', { status: 500 });
+}
+
+function isMoneyOnlyPath(pathname: string): boolean {
+  const p = pathname.replace(/\/+$/, '').toLowerCase() || '/';
+  return (
+    p === '/watch' ||
+    p === '/watch.html' ||
+    p === '/thank-you' ||
+    p === '/thank-you.html' ||
+    p === '/welcome' ||
+    p === '/welcome.html'
+  );
 }
 
 function injectState(html: string, verdict: Verdict): string {

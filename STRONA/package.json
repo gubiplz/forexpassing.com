@@ -6,29 +6,26 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "preview": "vite preview",
+    "preview": "npm run build && wrangler dev",
     "dev:worker": "wrangler dev --config workers/wrangler.toml --persist-to=workers/.wrangler/state",
     "deploy:worker": "npm run build && wrangler deploy --config workers/wrangler.toml",
-    "remotion:studio": "remotion studio",
-    "remotion:render": "remotion render AIRiskOfficerExplainer out/air-risk-officer.mp4"
+    "deploy": "npm run build && wrangler deploy"
   },
   "dependencies": {
-    "@remotion/cli": "4.0.484",
-    "@remotion/google-fonts": "4.0.484",
-    "@remotion/transitions": "4.0.484",
     "embla-carousel-autoplay": "^8.6.0",
     "embla-carousel-react": "^8.6.0",
     "react": "^19.2.4",
-    "react-dom": "^19.2.4",
-    "remotion": "4.0.484"
+    "react-dom": "^19.2.4"
   },
   "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.44.0",
     "@cloudflare/workers-types": "^4.20260101.0",
+    "@types/node": "^24.12.2",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.1",
     "typescript": "~6.0.2",
     "vite": "^8.0.4",
-    "wrangler": "^4.20.0"
+    "wrangler": "^4.110.0"
   }
 }

@@ -11,25 +11,40 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
-  <!-- Conversion tracking — placeholder IDs, replaced by edge at launch.
-       TODO(launch): swap GA4 (G-MM2026XXXX) + Pixel (000000000000000) for real IDs. -->
+  <!-- Google tag (gtag.js) — GA4 (live). Meta Pixel below fires Purchase too. -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-SP9H8Q95C1"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-    gtag('config', 'G-MM2026XXXX', { 'anonymize_ip': true });
-    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[]}(window,document,'script','https://connect.facebook.net/en_US/fbq.stub.js');
-    fbq('init','000000000000000');
-    fbq('track','PageView');
-    fbq('track','Purchase',{ value: 49, currency: 'USD', content_name: 'AI Risk Officer System' });
+    gtag('config', 'G-SP9H8Q95C1', { 'anonymize_ip': true });
     gtag('event','purchase',{ value: 49, currency: 'USD', transaction_id: 'mm-' + Date.now(), items: [{ item_name: 'AI Risk Officer System' }] });
   </script>
+
+  <!-- Meta Pixel Code -->
+  <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '1566242625059670');
+    fbq('track', 'PageView');
+    fbq('track', 'Purchase', { value: 49, currency: 'USD', content_name: 'AI Risk Officer System' });
+  </script>
+  <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=1566242625059670&ev=PageView&noscript=1"
+  /></noscript>
+  <!-- End Meta Pixel Code -->
 
   <style>
     :root {
       --bg: #ffffff; --bg2: #f4f7f5; --line: rgba(15, 30, 22, .10); --line-2: rgba(15, 30, 22, .16);
-      --txt: #10231a; --mut: #5b675f; --teal: #16a34a; --teal-soft: rgba(22, 163, 74, .10); --red: #ef4444;
+      --txt: #10231a; --mut: #4a564f; --teal: #16a34a; --teal-ink: #15803d; --teal-soft: rgba(22, 163, 74, .10);
+      --amber: #b45309; --amber-soft: rgba(180, 83, 9, .12); --red: #ef4444;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body {
@@ -43,6 +58,8 @@
     }
     main { position: relative; z-index: 1; max-width: 860px; margin: 0 auto; padding: 36px 24px 88px; }
     a { color: inherit; text-decoration: none; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+    a:focus-visible, .btn:focus-visible, .access .go:focus-visible, .support-card:focus-visible { outline: 2px solid var(--teal-ink); outline-offset: 3px; }
 
     @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
     .reveal { opacity: 0; animation: fadeUp 600ms ease forwards; }
@@ -51,7 +68,7 @@
     @media (prefers-reduced-motion: reduce) { .reveal, .check { animation: none !important; opacity: 1; transform: none; } }
 
     /* HERO */
-    .hero { text-align: center; padding: 26px 0 44px; display: flex; flex-direction: column; align-items: center; }
+    .hero { text-align: center; padding: 26px 0 44px; display: flex; flex-direction: column; align-items: center; scroll-margin-top: 20px; }
     @keyframes pop { 0% { transform: scale(0); opacity: 0; } 60% { transform: scale(1.12); } 100% { transform: scale(1); opacity: 1; } }
     .check {
       width: 66px; height: 66px; border-radius: 50%; background: var(--teal);
@@ -62,21 +79,22 @@
     .check svg { width: 32px; height: 32px; }
     .pill {
       padding: 6px 13px; border-radius: 999px; background: var(--teal-soft);
-      border: 1px solid rgba(22, 163, 74, .35); color: var(--teal);
-      font-size: 11px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; margin-bottom: 20px;
+      border: 1px solid rgba(22, 163, 74, .35); color: var(--teal-ink);
+      font-size: 11.5px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; margin-bottom: 20px;
     }
-    h1 {
+    .hero-title {
       font: 400 clamp(30px, 5vw, 52px)/1.02 'Anton', sans-serif;
       text-transform: uppercase; letter-spacing: .01em; margin: 0 0 16px; max-width: 16ch;
     }
-    h1 .accent { color: var(--teal); }
+    .hero-title .accent { color: var(--teal); }
     p.lead { color: var(--mut); font-size: clamp(15px, 1.6vw, 17px); max-width: 52ch; margin: 0 auto; }
     p.lead strong { color: var(--txt); font-weight: 700; }
 
     /* ACCESS CARD */
     .access {
       max-width: 640px; margin: 34px auto 0; background: var(--bg2);
-      border: 1px solid var(--line); border-radius: 16px; padding: 22px;
+      border: 1px solid rgba(22, 163, 74, .35); border-radius: 16px; padding: 22px;
+      box-shadow: 0 10px 30px -18px rgba(22, 163, 74, .4);
       display: flex; gap: 18px; align-items: center; text-align: left;
     }
     .access-icon {
@@ -87,16 +105,29 @@
     .access-meta strong { display: block; font-size: 16px; margin-bottom: 3px; }
     .access-meta span { font-size: 13px; color: var(--mut); }
     .access .go {
-      padding: 13px 22px; border-radius: 10px; background: var(--teal); color: #fff;
+      padding: 13px 22px; border-radius: 10px; background: var(--teal-ink); color: #fff;
       font-weight: 800; font-size: 14px; flex-shrink: 0;
       transition: transform 150ms ease, box-shadow 200ms ease;
     }
     .access .go:hover { transform: translateY(-2px); box-shadow: 0 14px 30px -10px rgba(22, 163, 74, .5); }
     @media (max-width: 540px) { .access { flex-direction: column; align-items: flex-start; } .access .go { width: 100%; text-align: center; } }
 
+    /* CONFIRM STRIP */
+    .confirm-strip { display: flex; align-items: center; gap: 10px 16px; flex-wrap: wrap; background: var(--bg2); border: 1px solid rgba(22, 163, 74, .28); border-radius: 12px; padding: 12px 16px; font-size: 13px; color: var(--mut); }
+    .confirm-strip .cs-badge { display: inline-flex; align-items: center; gap: 10px; flex-shrink: 0; }
+    .confirm-strip .cs-check { width: 30px; height: 30px; border-radius: 50%; background: var(--teal); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 0 0 4px var(--teal-soft); }
+    .confirm-strip .cs-check svg { width: 17px; height: 17px; }
+    .confirm-strip .cs-badge-txt { display: flex; flex-direction: column; line-height: 1.15; color: var(--teal-ink); font-weight: 800; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; }
+    .confirm-strip .cs-badge-txt small { font-size: 10.5px; font-weight: 600; letter-spacing: .02em; text-transform: none; color: var(--mut); margin-top: 3px; }
+    .confirm-strip .cs-text { flex: 1; min-width: 220px; line-height: 1.5; }
+    .confirm-strip .cs-text strong { color: var(--txt); }
+    .confirm-strip .cs-text a { color: var(--teal-ink); font-weight: 700; white-space: nowrap; }
+    .confirm-strip .cs-text a:hover { text-decoration: underline; }
+
     /* SECTIONS */
     section.block { margin-top: 64px; }
-    .eyebrow { display: block; color: var(--teal); font-size: 11.5px; letter-spacing: .18em; text-transform: uppercase; font-weight: 700; margin-bottom: 12px; }
+    main > section:first-of-type { margin-top: 30px; }
+    .eyebrow { display: block; color: var(--teal-ink); font-size: 11.5px; letter-spacing: .14em; text-transform: uppercase; font-weight: 700; margin-bottom: 12px; }
     h2 { font: 400 clamp(24px, 3.6vw, 38px)/1.05 'Anton', sans-serif; text-transform: uppercase; letter-spacing: .01em; margin: 0 0 12px; }
     h2 .accent { color: var(--teal); }
     p.sub { color: var(--mut); font-size: 15.5px; max-width: 60ch; margin: 0 0 28px; }
@@ -104,36 +135,45 @@
     /* TIMELINE */
     .timeline { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
     @media (max-width: 720px) { .timeline { grid-template-columns: 1fr; } }
-    .step { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 22px; transition: border-color 200ms ease, transform 200ms ease; }
+    .step { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 22px; transition: border-color 200ms ease, transform 200ms ease; }
     .step:hover { border-color: var(--line-2); transform: translateY(-2px); }
-    .step-num { width: 32px; height: 32px; border-radius: 50%; background: var(--teal-soft); color: var(--teal); font-weight: 800; font-size: 14px; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 14px; }
+    .step-num { width: 32px; height: 32px; border-radius: 50%; background: var(--teal-soft); color: var(--teal-ink); font-weight: 800; font-size: 14px; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 14px; }
     .step h3 { font: 700 16px/1.3 'Inter', sans-serif; margin: 0 0 6px; }
     .step p { color: var(--mut); font-size: 13.5px; line-height: 1.55; margin: 0; }
-    .step .time { margin-top: 12px; font-size: 11px; color: var(--teal); letter-spacing: .1em; text-transform: uppercase; font-weight: 700; }
+    .step .time { margin-top: 12px; font-size: 11px; color: var(--teal-ink); letter-spacing: .1em; text-transform: uppercase; font-weight: 700; }
 
     /* UPSELL */
     .upsell { position: relative; overflow: hidden; background: var(--bg2); border: 2px solid var(--teal); border-radius: 20px; padding: 32px; margin-top: 26px; }
     .upsell-inner { position: relative; z-index: 1; display: grid; grid-template-columns: 1.4fr 1fr; gap: 30px; align-items: center; }
     @media (max-width: 760px) { .upsell-inner { grid-template-columns: 1fr; gap: 22px; } }
-    .upsell-tag { display: inline-flex; align-items: center; gap: 6px; padding: 5px 11px; border-radius: 999px; background: #fff; color: var(--teal); font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 14px; }
+    .upsell-tag { display: inline-flex; align-items: center; gap: 6px; padding: 5px 11px; border-radius: 999px; background: #fff; color: var(--teal-ink); font-size: 11.5px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; margin-bottom: 14px; }
     .upsell-tag .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--teal); }
-    .upsell h3 { font: 400 clamp(22px, 3.2vw, 30px)/1.08 'Anton', sans-serif; text-transform: uppercase; letter-spacing: .01em; margin: 0 0 14px; }
+    .upsell h3 { font: 800 clamp(20px, 2.6vw, 26px)/1.2 'Inter', sans-serif; text-transform: uppercase; letter-spacing: .005em; margin: 0 0 14px; }
     .upsell .desc { color: var(--mut); font-size: 14.5px; line-height: 1.6; margin-bottom: 20px; }
     .upsell ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 9px; }
     .upsell ul li { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; line-height: 1.5; }
     .upsell ul li svg { flex-shrink: 0; margin-top: 2px; }
     .price-box { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 26px 22px; text-align: center; }
-    .price-box .label { font-size: 11px; color: var(--mut); letter-spacing: .16em; text-transform: uppercase; font-weight: 700; margin-bottom: 10px; }
+    .price-box .label { font-size: 11.5px; color: var(--mut); letter-spacing: .14em; text-transform: uppercase; font-weight: 700; margin-bottom: 10px; }
     .price-box .price { font: 400 clamp(38px, 4.4vw, 50px)/1 'Anton', sans-serif; color: var(--teal); margin-bottom: 4px; }
     .price-box .sub-price { font-size: 12px; color: var(--mut); margin-bottom: 20px; }
-    .price-box a.btn { display: block; padding: 14px 16px; border-radius: 10px; background: var(--teal); color: #fff; font-weight: 800; font-size: 14.5px; transition: transform 150ms ease, box-shadow 200ms ease; }
+    .price-box a.btn { display: block; padding: 14px 16px; border-radius: 10px; background: var(--teal-ink); color: #fff; font-weight: 800; font-size: 14.5px; transition: transform 150ms ease, box-shadow 200ms ease; }
     .price-box a.btn:hover { transform: translateY(-2px); box-shadow: 0 18px 36px -12px rgba(22, 163, 74, .55); }
-    .price-box .urgency { margin-top: 14px; font-size: 11.5px; color: var(--mut); line-height: 1.5; }
-    .price-box .urgency strong { color: var(--teal); }
+    .price-box .urgency { margin-top: 16px; display: inline-flex; align-items: center; gap: 7px; padding: 6px 13px; border-radius: 999px; background: var(--amber-soft); font-size: 11.5px; color: var(--amber); font-weight: 600; line-height: 1.4; }
+    .price-box .urgency::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--amber); flex-shrink: 0; }
+    .price-box .urgency strong { color: var(--amber); font-weight: 800; }
+    .price-box .guarantee { margin-top: 14px; font-size: 11.5px; color: var(--mut); line-height: 1.5; }
+    .price-box .guarantee strong { color: var(--teal); }
+    .upsell-proof { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 0 0 10px; }
+    @media (max-width: 620px) { .upsell-proof { grid-template-columns: 1fr; gap: 10px; } }
+    .upsell-proof-item { background: var(--teal-soft); border: 1px solid rgba(22, 163, 74, .25); border-radius: 12px; padding: 14px 16px; text-align: center; }
+    .upsell-proof-item .n { display: block; font: 400 clamp(22px, 3vw, 28px)/1 'Anton', sans-serif; color: var(--teal); margin-bottom: 6px; }
+    .upsell-proof-item .k { display: block; font-size: 12px; color: var(--mut); line-height: 1.4; }
+    .upsell-proof-fine { font-size: 11px; color: var(--mut); margin: 0 0 22px; }
 
     /* SUPPORT */
-    .support-card { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 22px; display: flex; align-items: flex-start; gap: 14px; max-width: 520px; }
-    .support-card .icon { width: 42px; height: 42px; border-radius: 11px; background: var(--teal-soft); color: var(--teal); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .support-card { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 22px; display: flex; align-items: flex-start; gap: 14px; max-width: 520px; }
+    .support-card .icon { width: 42px; height: 42px; border-radius: 11px; background: var(--teal-soft); color: var(--teal-ink); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .support-card .info strong { display: block; font-size: 15px; margin-bottom: 3px; }
     .support-card .info span { display: block; font-size: 13px; color: var(--mut); line-height: 1.5; }
 
@@ -147,30 +187,88 @@
 <body>
   <main>
 
+    <h1 class="sr-only">Payment confirmed — you're in</h1>
+
+    <!-- CONFIRM STRIP -->
+    <div class="confirm-strip reveal reveal-1">
+      <span class="cs-badge">
+        <span class="cs-check" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+        <span class="cs-badge-txt">Payment confirmed<small>$49 paid · receipt on its way</small></span>
+      </span>
+      <span class="cs-text">Your <strong>AI Risk Officer</strong> access is waiting below — <a href="#access">jump straight to it ↓</a>. First, the one upgrade only brand-new members can lock in:</span>
+    </div>
+
+    <!-- UPSELL (OTO) -->
+    <section class="block reveal reveal-2">
+      <span class="eyebrow">Available only after purchase</span>
+      <h2>Don't trade the next 14 days <span class="accent">alone.</span></h2>
+      <p class="sub">
+        The system hands you a verdict on every setup. But the hardest trade to skip is the one you
+        talk yourself into at 2am — and no prompt has ever stopped a revenge entry. For the next
+        <strong style="color:var(--txt)">14 days</strong>, I will. You screenshot the setup, I read it,
+        and you get a straight take — before your money is on the line.
+      </p>
+
+      <div class="upsell-proof">
+        <div class="upsell-proof-item"><span class="n">3×</span><span class="k">higher pass rate on the next challenge</span></div>
+        <div class="upsell-proof-item"><span class="n">$4,800</span><span class="k">average first payout after the 1:1</span></div>
+        <div class="upsell-proof-item"><span class="n">30 days</span><span class="k">to first payout — or the 1:1 is free</span></div>
+      </div>
+      <p class="upsell-proof-fine">Individual results — figures are illustrative, not a guarantee of profit.</p>
+
+      <div class="upsell">
+        <div class="upsell-inner">
+          <div>
+            <span class="upsell-tag"><span class="dot"></span>One-time — founders only</span>
+            <h3>14 days of private 1:1 — in your DMs</h3>
+            <p class="desc">
+              No calls to schedule, no timezones, no camera. You send me the chart the moment you're
+              unsure — I read the structure and tell you if I'd take it or pass. A second, calmer set
+              of eyes on every entry, for two full weeks.
+            </p>
+            <ul>
+              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16 9l-5 5-3-3"/></svg><span><strong>Priority Telegram DM, 14 days.</strong> A direct line — screenshot a setup, get my read back, usually within the hour.</span></li>
+              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16 9l-5 5-3-3"/></svg><span><strong>Every shaky entry, second-guessed with you</strong> — before you click, not after you've bled.</span></li>
+              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16 9l-5 5-3-3"/></svg><span><strong>I catch the trade the system can't stop</strong> — the 2am revenge entry, the FOMO chase, the stop you want to move.</span></li>
+              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16 9l-5 5-3-3"/></svg><span><strong>Prompts rebuilt around how YOU trade</strong> — futures, forex or crypto.</span></li>
+            </ul>
+          </div>
+
+          <div class="price-box">
+            <div class="label">Founder rate</div>
+            <div class="price">$297</div>
+            <div class="sub-price">one-time · 14 days private 1:1</div>
+            <a class="btn" href="https://buy.stripe.com/4gMfZjctE23E9310DYcMM0d" rel="nofollow noopener">Add the 1:1 →</a>
+            <div class="guarantee">If the first 3 days don't earn it back, just message me — <strong>I refund the 1:1, no argument.</strong></div>
+            <div class="urgency" aria-hidden="true">Only <strong id="places-counter">5</strong> of 7 spots left this month.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- HERO -->
-    <section class="hero">
+    <section class="hero" id="access">
       <div class="check" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
       </div>
       <div class="pill reveal reveal-1">Payment confirmed</div>
-      <h1 class="reveal reveal-2">You're in. The <span class="accent">system is yours.</span></h1>
+      <h2 class="hero-title reveal reveal-2">You're in. The <span class="accent">system is yours.</span></h2>
       <p class="lead reveal reveal-3">
-        Payment received. We just emailed your access link —
-        <strong>it should hit your inbox within 2 minutes</strong>.
-        Don't see it? Check Promotions or Spam.
+        Payment received — <strong>your copy is ready below</strong>.
+        Download it now and save it somewhere safe.
       </p>
 
       <div class="access reveal reveal-4">
         <div class="access-icon">
           <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
           </svg>
         </div>
         <div class="access-meta">
           <strong>The AI Risk Officer System</strong>
-          <span>Full process + prompt pack · Instant access · Lifetime updates</span>
+          <span>Full process + prompt pack · Instant download · PDF</span>
         </div>
-        <a class="go" href="#access-link-placeholder">Open access</a>
+        <a class="go" href="/ai-risk-officer-system-b1f7c6503b8c.pdf" download="AI-Risk-Officer-System.pdf">Download PDF</a>
       </div>
     </section>
 
@@ -202,56 +300,19 @@
       </div>
     </section>
 
-    <!-- UPSELL -->
-    <section class="block">
-      <span class="eyebrow">Available only after purchase</span>
-      <h2>Want me to <span class="accent">set it up with you?</span></h2>
-      <p class="sub">
-        Most people wire the system up solo in under 20 minutes. But if you'd rather skip the fiddling
-        and work on <strong style="color:var(--txt)">your real setups</strong> from day one, book the 14-day 1:1.
-      </p>
-
-      <div class="upsell">
-        <div class="upsell-inner">
-          <div>
-            <span class="upsell-tag"><span class="dot"></span>One-time offer</span>
-            <h3>Private 14-day setup &amp; review</h3>
-            <p class="desc">
-              Two weeks of direct access. We build your stack together, audit your setups, and tune the
-              prompts to how you actually trade. No "figure it out alone."
-            </p>
-            <ul>
-              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16 9l-5 5-3-3"/></svg><span><strong>Direct chat access, 14 days.</strong> Fast replies, real questions, real charts.</span></li>
-              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16 9l-5 5-3-3"/></svg><span><strong>Full install, done with you.</strong> Screen share if you want it.</span></li>
-              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16 9l-5 5-3-3"/></svg><span><strong>2× 45-min 1:1 sessions.</strong> Setup audit, mistake breakdown.</span></li>
-              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16 9l-5 5-3-3"/></svg><span><strong>Prompts tuned to your market</strong> — futures, forex or crypto.</span></li>
-            </ul>
-          </div>
-
-          <div class="price-box">
-            <div class="label">Founder rate</div>
-            <div class="price">$297</div>
-            <div class="sub-price">one-time · 14 days 1:1</div>
-            <a class="btn" href="https://buy.stripe.com/4gMdRbalwbEe1Az4UecMM0a" rel="nofollow noopener">Add the 1:1 →</a>
-            <div class="urgency">Only <strong id="places-counter">5</strong> of 7 spots left this month.</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
     <!-- SUPPORT -->
     <section class="block">
       <span class="eyebrow">Support</span>
       <h2>Stuck on anything? <span class="accent">Reach out.</span></h2>
-      <p class="sub">Fastest way is the channel below. We usually reply within the hour, 24h at the latest.</p>
+      <p class="sub">Drop us an email and we usually reply within the hour, 24h at the latest.</p>
 
-      <a class="support-card" href="https://t.me/forexpassing" target="_blank" rel="noopener">
+      <a class="support-card" href="mailto:contact@forexpassing.com">
         <div class="icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.94 4.69 18.5 20.93c-.26 1.16-.95 1.45-1.93.9l-5.32-3.92-2.57 2.47c-.28.28-.52.52-1.07.52l.38-5.42L18.06 5.5c.43-.38-.09-.6-.67-.22L5.62 12.66.45 11.06c-1.12-.36-1.15-1.13.24-1.68L20.49 3.07c.94-.36 1.76.22 1.45 1.62z"/></svg>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg>
         </div>
         <div class="info">
-          <strong>Telegram · @ForexPassing</strong>
-          <span>Fastest channel — or just reply to your welcome email.</span>
+          <strong>contact@forexpassing.com</strong>
+          <span>We usually reply within the hour — or just reply to your welcome email.</span>
         </div>
       </a>
     </section>

@@ -1,4 +1,6 @@
-// Behavioral fingerprint — 5s sampling window post-mount.
+// Behavioral fingerprint — short sampling window post-mount (see SAMPLE_WINDOW_MS).
+// Kept brief so the suspicious-gate skeleton resolves fast; richer signal accrues
+// on the non-blocking human-path background pass.
 // Advanced: jerk (3rd derivative), click timing variance, pointermove vs mousemove.
 
 import { honeypotTriggered } from './honeypot';
@@ -14,7 +16,7 @@ interface BehaviorSnapshot {
   tg: boolean;
 }
 
-const SAMPLE_WINDOW_MS = 1_500;
+const SAMPLE_WINDOW_MS = 900;
 
 export function startBehaviorCollector(): () => Promise<BehaviorSnapshot> {
   let mouseEntropy = 0;

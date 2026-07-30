@@ -4,6 +4,25 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>About Us — Forex Passing</title>
+
+<!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '1566242625059670');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=1566242625059670&ev=PageView&noscript=1"
+/></noscript>
+<!-- End Meta Pixel Code -->
+
 <meta
   name="description"
   content="Forex Passing provides educational mentorship for traders who want clearer structure, better market understanding, and a more disciplined learning process."
@@ -47,6 +66,8 @@ body{
 .card-p{font-size:15px;color:var(--mut);line-height:1.65}
 .card-sub{font-size:15px;color:var(--mut);margin-bottom:22px;line-height:1.55}
 .form{text-align:left;margin-top:4px}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none}
+.btn:disabled{opacity:.6;cursor:default;transform:none;box-shadow:none}
 .field{display:grid;gap:8px;margin-bottom:16px}
 .field label{font-size:14px;font-weight:600;color:var(--txt)}
 .field label span{color:#ef4444}
@@ -99,6 +120,7 @@ body{
     <p class="card-sub">Fill out the form below and one of our educators will reach out with more information.</p>
 
     <form class="form" id="mm-form">
+      <input class="hp" type="text" name="company" tabindex="-1" autocomplete="off" aria-hidden="true" />
       <div class="field">
         <label for="mm-name">Full Name <span>*</span></label>
         <input id="mm-name" class="input" type="text" name="name" autocomplete="name" required placeholder="John Doe" />
@@ -117,6 +139,7 @@ body{
         </select>
       </div>
       <button type="submit" class="btn">Request Information</button>
+      <p class="form-err" id="mm-form-err" role="alert" style="display:none;color:#c0392b;font-size:13px;text-align:center;margin-top:10px">Something went wrong — please try again.</p>
     </form>
 
     <div class="ok" id="mm-form-ok" role="status">
@@ -131,8 +154,24 @@ body{
   var f = document.getElementById('mm-form');
   if (f) f.addEventListener('submit', function (e) {
     e.preventDefault();
-    f.style.display = 'none';
-    document.getElementById('mm-form-ok').style.display = 'flex';
+    var err = document.getElementById('mm-form-err');
+    var btn = f.querySelector('button[type=submit]');
+    err.style.display = 'none';
+    btn.disabled = true;
+    btn.textContent = 'Sending…';
+    fetch('/api/event/subscribe', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(Object.fromEntries(new FormData(f))),
+    }).then(function (r) {
+      if (!r.ok) throw new Error('failed');
+      f.style.display = 'none';
+      document.getElementById('mm-form-ok').style.display = 'flex';
+    }).catch(function () {
+      err.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Request Information';
+    });
   });
 </script>
 </body>

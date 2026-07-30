@@ -92,9 +92,11 @@ export interface ClientSignals {
 export interface Env {
   USED_CLICKS: KVNamespace;
   EDGE_LOG: KVNamespace;
+  STATS?: D1Database;
   EDGE_SECRET: string;
   ASSETS?: { fetch: (req: Request) => Promise<Response> };
   ORIGIN_URL?: string;
+  LEAD_WEBHOOK?: string;
 }
 
 export interface CfProperties {

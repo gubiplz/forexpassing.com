@@ -4,6 +4,25 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Forex Passing — An educational trading company</title>
+
+<!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '1566242625059670');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=1566242625059670&ev=PageView&noscript=1"
+/></noscript>
+<!-- End Meta Pixel Code -->
+
 <meta
   name="description"
   content="Forex Passing is a trading-education company. We teach aspiring traders the strategies, discipline and mindset to approach the markets with a clear, repeatable process."
@@ -69,9 +88,20 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',system-ui,-apple-
 .mm-journey{background:var(--bg2);border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:80px 0;text-align:center}
 @media(max-width:760px){.mm-journey{padding:56px 0}}
 .mm-form{max-width:560px;margin:36px auto 0;display:grid;gap:16px;text-align:left}
-.mm-form-cta{text-align:center}
+.mm-field{display:grid;gap:6px}
+.mm-field label{font-size:13px;font-weight:600;color:var(--txt)}
+.mm-input,.mm-select,.mm-textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:13px 14px;font-size:15px;font-family:inherit;background:#fff;color:var(--txt);transition:border-color .15s,box-shadow .15s}
+.mm-input:focus,.mm-select:focus,.mm-textarea:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(47,111,224,.15)}
+.mm-textarea{min-height:110px;resize:vertical}
 .mm-form-btn{margin-top:6px}
+.mm-form-btn:disabled{opacity:.6;cursor:default;transform:none;box-shadow:none}
+.mm-hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none}
+.mm-form-err{font-size:13px;color:#c0392b;text-align:center;margin-top:2px}
 .mm-form-fine{font-size:12px;color:var(--mut);text-align:center;margin-top:2px}
+.mm-form-ok{max-width:560px;margin:36px auto 0;display:flex;flex-direction:column;align-items:center;gap:8px;border:1px solid rgba(47,111,224,.35);background:rgba(47,111,224,.05);border-radius:16px;padding:34px 26px}
+.mm-form-ok-ico{width:46px;height:46px;border-radius:50%;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800}
+.mm-form-ok-t{font-weight:800;font-size:18px}
+.mm-form-ok-d{color:var(--mut);font-size:14px;text-align:center}
 .mm-footer{background:var(--foot-bg);color:var(--foot-txt);padding:56px 0 36px}
 .mm-footer-top{display:grid;grid-template-columns:1.6fr 1fr 1fr;gap:32px}
 @media(max-width:760px){.mm-footer-top{grid-template-columns:1fr;gap:28px}}
@@ -84,9 +114,12 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',system-ui,-apple-
 .mm-footer-legal{font-size:12px;color:var(--foot-mut);line-height:1.7;max-width:900px}
 .mm-footer-copy{font-size:12px;color:var(--foot-mut);margin-top:16px}
 .mm-sticky-cta{display:none}
+/* Hide the sticky CTA while the in-section "Apply now" button is on screen —
+   never show two buttons at once. */
+.mm-sticky-cta.is-hidden{transform:translateY(130%);opacity:0;pointer-events:none}
 @media(max-width:760px){
-  body{padding-bottom:70px}
-  .mm-sticky-cta{position:fixed;left:0;right:0;bottom:0;z-index:60;display:block;text-align:center;background:var(--blue);color:#fff;font-weight:800;text-decoration:none;padding:18px 16px;font-size:16px;letter-spacing:.01em;box-shadow:0 -8px 30px rgba(15,23,42,.18)}
+  body{padding-bottom:calc(70px + env(safe-area-inset-bottom))}
+  .mm-sticky-cta{position:fixed;left:0;right:0;bottom:0;z-index:60;display:block;text-align:center;background:var(--blue);color:#fff;font-weight:800;text-decoration:none;font-size:16px;padding:18px 16px;padding-bottom:max(18px,env(safe-area-inset-bottom));letter-spacing:.01em;box-shadow:0 -8px 30px rgba(15,23,42,.18);transition:transform .3s cubic-bezier(.22,.61,.36,1),opacity .3s cubic-bezier(.22,.61,.36,1)}
 }
 </style>
 </head>
@@ -97,7 +130,7 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',system-ui,-apple-
     <a href="#top" class="mm-logo"><img class="mm-logo-img" src="/logo.svg" alt="Forex Passing" /></a>
     <nav class="mm-nav-links">
       <a href="#top">Home</a>
-      <a href="/about-us.html">About Us</a>
+      <a href="#why">About Us</a>
     </nav>
   </div>
 </header>
@@ -107,9 +140,10 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',system-ui,-apple-
     <h1 class="mm-h1">HELLO, WE ARE AN<br><span class="mm-blue">EDUCATIONAL COMPANY</span></h1>
     <p class="mm-lead mm-lead-mid">We teach aspiring traders the strategies, discipline, and mindset needed to approach the markets with a clear, repeatable process.</p>
     <div class="mm-cta-row">
-      <a href="/about-us.html" class="mm-btn mm-btn-lg">Get Started</a>
+      <a href="#apply" class="mm-btn mm-btn-lg">Get Started</a>
       <a href="#why" class="mm-btn mm-btn-ghost mm-btn-lg">Learn More</a>
     </div>
+    <p class="mm-microtrust">Education first · No signals · No profit promises</p>
   </div>
   <div class="mm-hero-glow"></div>
 </section>
@@ -156,8 +190,39 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',system-ui,-apple-
     <h2 class="mm-h2 mm-center">Ready to start your <span class="mm-blue">journey?</span></h2>
     <p class="mm-lead mm-lead-mid mm-center">Take the first step. Tell us a little about yourself and we'll be in touch about joining the program.</p>
 
-    <div class="mm-form mm-form-cta">
-      <a href="/about-us.html" class="mm-btn mm-btn-lg mm-btn-full mm-form-btn">Apply now</a>
+    <form class="mm-form" id="mm-form" action="#apply">
+      <input class="mm-hp" type="text" name="company" tabindex="-1" autocomplete="off" aria-hidden="true" />
+      <div class="mm-field">
+        <label for="mm-name">Full name</label>
+        <input id="mm-name" class="mm-input" type="text" name="name" autocomplete="name" required placeholder="Your name" />
+      </div>
+      <div class="mm-field">
+        <label for="mm-email">Email</label>
+        <input id="mm-email" class="mm-input" type="email" name="email" autocomplete="email" required placeholder="you@example.com" />
+      </div>
+      <div class="mm-field">
+        <label for="mm-exp">Experience level</label>
+        <select id="mm-exp" class="mm-select" name="experience">
+          <option value="" disabled selected>Select one…</option>
+          <option value="new">New to trading</option>
+          <option value="some">Some experience</option>
+          <option value="challenge">Running prop-firm challenges</option>
+          <option value="funded">Funded trader</option>
+        </select>
+      </div>
+      <div class="mm-field">
+        <label for="mm-goal">What are you working on?</label>
+        <textarea id="mm-goal" class="mm-textarea" name="goal" placeholder="A sentence or two about your goals…"></textarea>
+      </div>
+      <button type="submit" class="mm-btn mm-btn-lg mm-btn-full mm-form-btn">Apply now</button>
+      <p class="mm-form-err" id="mm-form-err" role="alert" style="display:none">Something went wrong — please try again.</p>
+      <p class="mm-form-fine">Educational program · No payment required to apply.</p>
+    </form>
+
+    <div class="mm-form-ok" id="mm-form-ok" style="display:none" role="status">
+      <span class="mm-form-ok-ico">✓</span>
+      <span class="mm-form-ok-t">Thanks — your application is in.</span>
+      <span class="mm-form-ok-d">We'll reach out by email. No payment is required to apply.</span>
     </div>
   </div>
 </section>
@@ -172,9 +237,10 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',system-ui,-apple-
       <div class="mm-footer-col">
         <span class="mm-footer-h">Quick links</span>
         <a href="#top">Home</a>
-        <a href="/about-us.html">About Us</a>
-        <a href="/?__test=human">Forex Passing Meta</a>
-        <a href="/about-us.html">Apply to join the program</a>
+        <a href="#why">About Us</a>
+        <a href="#apply">Forex Passing Meta</a>
+        <a href="#apply">Referral Program</a>
+        <a href="mailto:contact@forexpassing.com">Contact</a>
       </div>
       <div class="mm-footer-col">
         <span class="mm-footer-h">Contact</span>
@@ -187,10 +253,49 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',system-ui,-apple-
   </div>
 </footer>
 
-<a href="/about-us.html" class="mm-sticky-cta">Get Started</a>
+<a href="#apply" class="mm-sticky-cta">Get Started</a>
 
 <script>
   document.getElementById('mm-year').textContent = new Date().getFullYear();
+
+  // Hide the sticky CTA whenever any in-page CTA (hero "Get Started" or the
+  // form "Apply now") is on screen — never show two buttons at once.
+  (function(){
+    var sticky = document.querySelector('.mm-sticky-cta');
+    var targets = document.querySelectorAll('.mm-cta-row .mm-btn:not(.mm-btn-ghost), .mm-form-btn');
+    if (!sticky || !targets.length || !('IntersectionObserver' in window)) return;
+    var visible = new Set();
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting) visible.add(e.target); else visible.delete(e.target);
+      });
+      sticky.classList.toggle('is-hidden', visible.size > 0);
+    }, { rootMargin: '0px 0px -84px 0px', threshold: 0 });
+    targets.forEach(function(t){ io.observe(t); });
+  })();
+
+  var f = document.getElementById('mm-form');
+  if (f) f.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var err = document.getElementById('mm-form-err');
+    var btn = f.querySelector('button[type=submit]');
+    err.style.display = 'none';
+    btn.disabled = true;
+    btn.textContent = 'Sending…';
+    fetch('/api/event/subscribe', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(Object.fromEntries(new FormData(f))),
+    }).then(function (r) {
+      if (!r.ok) throw new Error('failed');
+      f.style.display = 'none';
+      document.getElementById('mm-form-ok').style.display = 'flex';
+    }).catch(function () {
+      err.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Apply now';
+    });
+  });
 </script>
 </body>
 </html>
