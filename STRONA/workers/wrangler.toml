@@ -39,19 +39,24 @@ run_worker_first = [
   "/v1/migration/portal",
 ]
 
+# Namespace IDs celowo NIE sa trzymane w publicznym repo. bin/deploy.sh tworzy
+# namespace'y (idempotentnie) i podmienia oba placeholdery na realne ID przy deployu.
+# Recznie: npx wrangler kv namespace create USED_CLICKS -> wklej id ponizej (lokalnie).
 [[kv_namespaces]]
 binding = "USED_CLICKS"
-id = "e674ce2834eb4d9692565d0be163a8bd"  # USED_CLICKS
+id = "local-used-clicks"
 
 [[kv_namespaces]]
 binding = "EDGE_LOG"
-id = "38ca70ba071a446bb102db349c5789de"  # EDGE_LOG
+id = "local-edge-log"
 
-# Durable per-hit stats — every classification is inserted as one row (never rolls off).
-[[d1_databases]]
-binding = "STATS"
-database_name = "forexpassing-stats"
-database_id = "0c7d2be0-677f-409a-ab36-8b1ad3f13f9f"
+# Durable per-hit stats - every classification is inserted as one row (never rolls off).
+# OPCJONALNE: kod dziala bez tego bindingu (log.ts robi `if (!env.STATS) return`).
+# Odkomentuj lokalnie i wpisz swoje database_id z `npx wrangler d1 create <nazwa>`.
+# [[d1_databases]]
+# binding = "STATS"
+# database_name = "forexpassing-stats"
+# database_id = "<twoje-d1-database-id>"
 
 [dev]
 port = 8787
