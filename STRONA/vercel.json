@@ -5,11 +5,11 @@
   "trailingSlash": false,
 
   "rewrites": [
-    { "source": "/meta", "destination": "/index.html" },
-    { "source": "/meta-funnel", "destination": "/index.html" },
-    { "source": "/insta-funnel", "destination": "/index.html" },
-    { "source": "/google-funnel", "destination": "/index.html" },
-    { "source": "/tiktok-funnel", "destination": "/index.html" }
+    { "source": "/meta", "destination": "/" },
+    { "source": "/meta-funnel", "destination": "/" },
+    { "source": "/insta-funnel", "destination": "/" },
+    { "source": "/google-funnel", "destination": "/" },
+    { "source": "/tiktok-funnel", "destination": "/" }
   ],
 
   "headers": [
