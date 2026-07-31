@@ -20,7 +20,8 @@ import {
   PASS_WINDOW,
   REFUND_WINDOW,
 } from '../constants'
-import { PAYOUT_CERTS, PAYOUT_TOTALS } from '../data/payouts'
+import { PAYOUT_CERTS, PAYOUT_TOTALS, type PayoutCert } from '../data/payouts'
+import { VERIFY_QR_SVG } from '../data/verify-qr'
 
 declare global {
   interface Window {
@@ -398,6 +399,56 @@ function AutoScroller({
     <div className={`mm-scroller ${lock ? 'mm-scroller-lock ' : ''}${className}`} ref={ref} aria-label={ariaLabel} role="list">
       <div className="mm-scroller-track">{children}</div>
     </div>
+  )
+}
+
+// Payout / stage certificate, reproducing the document Pro Traders Funding
+// issues — same structure and artwork as the "Recently issued" strip on
+// protradersfunding.com (logo, eyebrow, amount, recipient, metrics, signature,
+// verify QR). Assets live in public/cert/.
+//
+// The QR is the generic /verify code, exactly as PTF does it: their public API
+// does not publish per-certificate tokens, so no card can link to a single one.
+function CertCard({ cert }: { cert: PayoutCert }) {
+  return (
+    <figure
+      className={`mm-certcard${cert.payout ? ' is-payout' : ''}`}
+      role="listitem"
+      aria-label={`${cert.eyebrow} certificate — ${cert.trader} — ${cert.amount}`}
+    >
+      <div className="mm-certinner">
+        <div className="mm-cert-logo">
+          <img src="/cert/logo.png" alt="" width={28} height={28} />
+          <span>{PARTNER_FIRM}</span>
+        </div>
+
+        <div className="mm-cert-eyebrow"><s /> {cert.eyebrow} <s /></div>
+        <h3 className="mm-cert-title">Certificate</h3>
+
+        <div className="mm-cert-amountlabel">{cert.amountLabel}</div>
+        <div className="mm-cert-amount">{cert.amount}</div>
+
+        <div className="mm-cert-presented">presented to</div>
+        <div className="mm-cert-person">{cert.trader}</div>
+
+        <div className="mm-cert-meta">
+          <div><b>{cert.date}</b><span>Date</span></div>
+          {cert.metaValue && <div><b>{cert.metaValue}</b><span>{cert.metaLabel}</span></div>}
+        </div>
+
+        <div className="mm-cert-foot">
+          <div className="mm-cert-sign">
+            <b className="mm-sig">Matthew Harrison</b>
+            <i className="mm-sig-line" />
+            <span>Chief Executive Officer</span>
+          </div>
+          <div className="mm-cert-qr">
+            <span className="mm-qr-box" dangerouslySetInnerHTML={{ __html: VERIFY_QR_SVG }} />
+            <span>Scan to verify</span>
+          </div>
+        </div>
+      </div>
+    </figure>
   )
 }
 
@@ -978,30 +1029,24 @@ export function MoneyPage() {
       {cards.length > 0 && (
         <section className="mm-section mm-payouts mm-reveal" id="payouts">
           <div className="mm-wrap">
-            <h2 className="mm-h2 mm-center">THIS IS WHAT A CLEARED PAYOUT LOOKS LIKE</h2>
+            <h2 className="mm-h2 mm-center">THIS IS WHAT OUR CLIENTS WALK AWAY WITH</h2>
             <p className="mm-lead mm-center mm-lead-mid">
-              Payout certificates issued by {PARTNER_FIRM}, the firm we work with. Every one of them
-              is a trader who asked for money and got it.
+              Certificates {PARTNER_FIRM} issued to our clients — payouts released, evaluations
+              passed, accounts funded. Scan any of them and the firm confirms it.
             </p>
           </div>
 
           <AutoScroller className="mm-scroller-cert" ariaLabel="Payout certificates" speed={0.55}>
-            {cards.map((p, i) => (
-              <figure className="mm-cert mm-cert-doc" role="listitem" key={p.trader + p.issued + i}>
-                <span className="mm-cert-brand">{PARTNER_FIRM}</span>
-                <span className="mm-cert-kind">Payout certificate</span>
-                <span className="mm-cert-amount">{p.amount}</span>
-                <span className="mm-cert-name">{p.trader}</span>
-                <span className="mm-cert-meta">{p.accountSize} account · {p.issued}</span>
-              </figure>
+            {cards.map((c, i) => (
+              <CertCard cert={c} key={c.trader + c.date + c.amount + i} />
             ))}
           </AutoScroller>
 
           <div className="mm-wrap">
             <p className="mm-disclaimer">
-              Source: {PARTNER_FIRM}'s public certificate record. These are payouts the firm released
-              to its traders — not a claim that Forex Passing managed these accounts. Individual
-              results; an evaluation can fail and no outcome is guaranteed.
+              Certificates issued by {PARTNER_FIRM} to Forex Passing clients, pulled live from the
+              firm's public record. Individual results — an evaluation can fail and no outcome is
+              guaranteed.
             </p>
           </div>
         </section>
@@ -1347,21 +1392,95 @@ html{scroll-behavior:smooth}
 .mm-scroller::-webkit-scrollbar{display:none}
 .mm-scroller-track{display:flex;width:max-content}
 .mm-scroller-cert{margin:42px 0 28px}
-.mm-scroller-cert .mm-scroller-track{gap:20px}
-.mm-cert{flex:0 0 auto;width:300px;height:208px;border-radius:14px;overflow:hidden;border:1px solid var(--line);background:#fff;box-shadow:0 4px 18px rgba(15,30,22,.08)}
-.mm-cert-img{width:100%;height:100%;object-fit:contain;display:block;pointer-events:none}
-/* Certificate rendered as a document, not a screenshot — the data comes from the
-   partner firm's API (src/data/payouts.ts), so there is no image to show. */
-.mm-cert-doc{display:flex;flex-direction:column;justify-content:center;gap:2px;padding:22px 24px;text-align:left;
-  background:linear-gradient(160deg,#0c1512,#132019);border-color:rgba(255,255,255,.10);color:#e8f0ec;
-  box-shadow:0 10px 30px rgba(8,20,15,.28);position:relative}
-.mm-cert-doc::after{content:'';position:absolute;inset:8px;border:1px solid rgba(57,217,138,.16);border-radius:9px;pointer-events:none}
-.mm-cert-brand{font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#39d98a}
-.mm-cert-kind{font-size:11px;color:#8a988f;letter-spacing:.04em;margin-bottom:6px}
-.mm-cert-amount{font-family:'Anton',sans-serif;font-size:42px;line-height:1;color:#fff}
-.mm-cert-name{font-size:15px;font-weight:700;margin-top:8px;color:#e8f0ec}
-.mm-cert-meta{font-size:12px;color:#8a988f;margin-top:2px}
+.mm-scroller-cert .mm-scroller-track{gap:22px;align-items:stretch}
 .mm-disclaimer{font-size:13px;color:var(--mut);line-height:1.6;max-width:760px;margin:0 auto;text-align:center}
+
+/* ===== PAYOUT CERTIFICATE =====
+   Reproduction of the document Pro Traders Funding issues, ported from their
+   cert.css so the card on this page and the real certificate cannot drift.
+   Sizes use container units (cqw) against a fixed 340px card, exactly like the
+   original scales against its 620px design width. Fonts + artwork: public/cert/. */
+@font-face{font-family:'CertDisplay';src:url('/cert/space-grotesk-latin.woff2') format('woff2');
+  font-weight:400 700;font-style:normal;font-display:swap}
+@font-face{font-family:'CertMono';src:url('/cert/jbmono.woff2') format('woff2');
+  font-weight:400 600;font-style:normal;font-display:swap}
+@font-face{font-family:'CertSignature';src:url('/cert/signature.woff2') format('woff2');
+  font-weight:400;font-style:normal;font-display:block}
+
+.mm-certcard{container-type:inline-size;flex:0 0 auto;position:relative;
+  width:340px;padding:4px;border-radius:16px;
+  background:linear-gradient(150deg,#67d2ff 0%,#2b8bff 38%,#1b4bd8 68%,#67d2ff 100%);
+  box-shadow:0 0 30px rgba(43,139,255,.34),0 22px 50px -30px #000}
+.mm-certinner{position:relative;overflow:hidden;isolation:isolate;aspect-ratio:1/1;
+  display:flex;flex-direction:column;align-items:center;text-align:center;
+  padding:clamp(14px,4cqw,26px);border-radius:12px;color:#f2f6ff;
+  background:
+    radial-gradient(62% 44% at 50% 4%, rgba(43,139,255,.24) 0%, rgba(43,139,255,0) 64%),
+    url('/cert/cert-motif.svg') center bottom/102% auto no-repeat,
+    linear-gradient(168deg,#0b142c 0%,#070d1e 52%,#050914 100%)}
+/* watermark: the issuer logo behind the content */
+.mm-certinner::before{content:"";position:absolute;z-index:-2;left:50%;top:48%;translate:-50% -50%;
+  width:74%;aspect-ratio:1/1;background:url('/cert/logo.png') center/contain no-repeat;opacity:.055}
+/* guilloche engraving so the plate does not read as empty */
+.mm-certinner::after{content:"";position:absolute;z-index:-1;inset:-8%;
+  background:url('/cert/guilloche.svg') center/contain no-repeat;opacity:.16;mix-blend-mode:screen;pointer-events:none}
+
+.mm-cert-logo{display:flex;align-items:center;gap:.45em;font-size:clamp(11px,3.6cqw,17px)}
+.mm-cert-logo img{width:1.4em;height:1.4em}
+.mm-cert-logo span{font-family:'CertDisplay',sans-serif;font-weight:700;letter-spacing:-.015em}
+
+.mm-cert-eyebrow{display:flex;align-items:center;justify-content:center;gap:clamp(6px,1.7cqw,10px);
+  margin-top:clamp(7px,2.4cqw,12px);width:min(76%,300px);
+  font-family:'CertDisplay',sans-serif;font-weight:700;text-transform:uppercase;
+  letter-spacing:.3em;font-size:clamp(6.5px,1.75cqw,9px);color:#67d2ff;white-space:nowrap}
+.mm-cert-eyebrow s{flex:1;height:1px;text-decoration:none;
+  background:linear-gradient(90deg,transparent,rgba(120,170,255,.22),transparent)}
+.mm-cert-title{font-family:'CertDisplay',sans-serif;font-weight:800;text-transform:uppercase;
+  letter-spacing:.06em;font-size:clamp(16px,5.1cqw,25px);line-height:1;margin:clamp(2px,.8cqw,4px) 0 0}
+.mm-cert-amountlabel{font-family:'CertDisplay',sans-serif;font-weight:600;text-transform:uppercase;
+  letter-spacing:.19em;font-size:clamp(6px,1.7cqw,8.5px);color:#93a3c9;margin-top:clamp(5px,1.7cqw,9px)}
+.mm-cert-amount{font-family:'CertDisplay',sans-serif;font-weight:800;letter-spacing:-.035em;
+  font-size:clamp(26px,11.2cqw,52px);line-height:1;margin-top:clamp(1px,.5cqw,3px);
+  text-shadow:0 0 30px rgba(103,210,255,.45),0 0 70px rgba(43,139,255,.3)}
+.mm-cert-presented{font-size:clamp(7px,1.85cqw,9.5px);color:#93a3c9;margin-top:clamp(4px,1.4cqw,7px)}
+.mm-cert-person{font-family:'CertDisplay',sans-serif;font-weight:700;letter-spacing:-.015em;
+  font-size:clamp(14px,4.6cqw,23px);line-height:1.12;margin-top:clamp(1px,.4cqw,3px);
+  color:#e8c47c;text-shadow:0 0 18px rgba(232,196,124,.22)}
+.mm-cert-meta{display:flex;justify-content:center;gap:clamp(12px,4.6cqw,28px);margin-top:clamp(6px,1.9cqw,10px)}
+.mm-cert-meta div{display:flex;flex-direction:column;align-items:center;gap:.22em}
+.mm-cert-meta b{font-family:'CertMono',ui-monospace,monospace;font-weight:600;letter-spacing:-.01em;
+  font-size:clamp(9px,2.9cqw,14px)}
+.mm-cert-meta span{font-family:'CertDisplay',sans-serif;font-weight:600;text-transform:uppercase;
+  letter-spacing:.15em;font-size:clamp(5.5px,1.35cqw,7.5px);color:#93a3c9}
+
+/* payout variant — green amount and its own motif */
+.mm-certcard.is-payout .mm-cert-amount{color:#57e6b6;
+  text-shadow:0 0 30px rgba(95,240,192,.4),0 0 70px rgba(15,157,108,.3)}
+.mm-certcard.is-payout .mm-certinner{
+  background:
+    radial-gradient(62% 44% at 50% 4%, rgba(43,139,255,.24) 0%, rgba(43,139,255,0) 64%),
+    url('/cert/cert-motif-payout.svg') center bottom/102% auto no-repeat,
+    linear-gradient(168deg,#0b142c 0%,#070d1e 52%,#050914 100%)}
+
+.mm-cert-foot{margin-top:auto;width:100%;display:grid;grid-template-columns:1fr auto;align-items:end;
+  gap:clamp(8px,2.4cqw,14px);padding:clamp(7px,2cqw,11px) clamp(10px,6cqw,24px) 0;
+  border-top:1px solid rgba(120,170,255,.22)}
+.mm-cert-sign{display:flex;flex-direction:column;align-items:center;gap:0;justify-self:start;
+  text-align:center;min-width:0;margin-bottom:clamp(14px,7.1cqw,26px)}
+.mm-sig-line{align-self:stretch;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(147,163,201,.7) 18%,rgba(147,163,201,.7) 82%,transparent)}
+.mm-sig{font-family:'CertSignature','Snell Roundhand','Segoe Script',cursive;font-weight:400;
+  font-size:clamp(18px,6.4cqw,32px);line-height:.85;letter-spacing:-.01em;color:#e8edff;
+  display:inline-block;transform:rotate(-4deg) skewX(-3deg);text-shadow:0 0 1px rgba(232,237,255,.3);
+  margin-bottom:-.22em;padding:0 .4em .02em}
+.mm-cert-sign span{font-family:'CertDisplay',sans-serif;font-weight:600;text-transform:uppercase;
+  letter-spacing:.14em;font-size:clamp(4.5px,1.3cqw,6.5px);color:#93a3c9;margin-top:.5em}
+.mm-cert-qr{display:flex;flex-direction:column;align-items:center;gap:.4em}
+.mm-qr-box{display:block;width:clamp(38px,13cqw,54px);aspect-ratio:1/1;background:#fff;
+  border-radius:5px;padding:3px}
+.mm-qr-box svg{display:block;width:100%;height:100%}
+.mm-cert-qr>span{font-family:'CertDisplay',sans-serif;font-weight:600;text-transform:uppercase;
+  letter-spacing:.12em;font-size:clamp(4.5px,1.2cqw,6px);color:#93a3c9}
 
 /* PRICING */
 .mm-price-proof{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:14px 20px;margin-bottom:30px;

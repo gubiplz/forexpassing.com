@@ -37,34 +37,54 @@ try {
   // Statystyki są opcjonalne — pas działa bez nich.
 }
 
-// Do pasa idą tylko certyfikaty wypłat. Certyfikaty "phase 1 / phase 2 / funded"
-// to potwierdzenia etapu, nie pieniądze — mieszanie ich sugerowałoby wypłatę.
-const payouts = rows
-  .filter((r) => r.kind === 'payout' && Number(r.amount_usd) > 0)
-  .map((r) => ({
-    trader: String(r.trader ?? '').trim(),
-    amount: money(r.amount_usd),
-    accountSize: money(r.account_size),
-    issued: String(r.issued_at ?? '').slice(0, 10),
-  }));
+// Wszystkie typy certyfikatów, tak jak na pasku "Recently issued" u PTF:
+// payout pokazuje kwotę wypłaty (zielona), pozostałe rozmiar konta (biała).
+const fmtDate = (iso) => {
+  const [y, m, d] = String(iso ?? '').slice(0, 10).split('-');
+  const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  return y && m && d ? `${MON[Number(m) - 1]} ${Number(d)}, ${y}` : '';
+};
+
+const certs = rows
+  .filter((r) => r.kind === 'payout' ? Number(r.amount_usd) > 0 : Number(r.account_size) > 0)
+  .map((r) => {
+    const payout = r.kind === 'payout';
+    return {
+      payout,
+      // "Payout" / "Funded trader" / "Phase 1 passed" — etykieta prosto z API.
+      eyebrow: payout ? 'Payout' : String(r.kind_label ?? '').trim(),
+      amountLabel: payout ? 'for the amount of' : 'Account size',
+      amount: money(payout ? r.amount_usd : r.account_size),
+      trader: String(r.trader ?? '').trim(),
+      date: fmtDate(r.issued_at),
+      // Druga metryka: przy wypłacie rozmiar konta, przy reszcie nazwa programu.
+      metaLabel: payout ? 'Account size' : 'Program',
+      metaValue: payout ? money(r.account_size) : String(r.program ?? '').trim(),
+    };
+  });
 
 const header = `// WYGENEROWANE PRZEZ bin/sync-payouts.mjs — nie edytować ręcznie.
 // Źródło: ${API}
 // Pobrano: ${new Date().toISOString().slice(0, 10)}
 //
-// To są certyfikaty wypłat wystawione przez Pro Traders Funding. NIE są dowodem
-// na to, że Forex Passing zarządzał tymi kontami — podpis pod sekcją mówi to wprost.
+// Certyfikaty wystawione przez Pro Traders Funding klientom Forex Passing.
+// Kształt pól odwzorowuje pasek "Recently issued" na protradersfunding.com,
+// żeby karty wyglądały dokładnie jak oryginalny dokument.
 
 export type PayoutCert = {
-  trader: string
+  payout: boolean
+  eyebrow: string
+  amountLabel: string
   amount: string
-  accountSize: string
-  issued: string
+  trader: string
+  date: string
+  metaLabel: string
+  metaValue: string
 }
 `;
 
 const body = `
-export const PAYOUT_CERTS: PayoutCert[] = ${JSON.stringify(payouts, null, 2)}
+export const PAYOUT_CERTS: PayoutCert[] = ${JSON.stringify(certs, null, 2)}
 
 // Zbiorcze liczby z /api/public/stats — \`null\`, gdy endpoint nie odpowiedział.
 export const PAYOUT_TOTALS = ${
@@ -87,6 +107,6 @@ await mkdir(dirname(OUT), { recursive: true });
 await writeFile(OUT, header + body);
 
 console.log(
-  `[sync-payouts] zapisano ${payouts.length} certyfikatów wypłat → src/data/payouts.ts` +
+  `[sync-payouts] zapisano ${certs.length} certyfikatów → src/data/payouts.ts` +
     (stats ? ` (łącznie ${money(stats.payouts_total_usd ?? 0)})` : '')
 );

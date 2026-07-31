@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 900" fill="none">
+  <!-- Motyw prop-fundingowy (inspiracja niuansami FTMO): geometryczne szewrony
+       w narozach — echo pochylego logo marki — + siatka punktowa i ledwie
+       widoczny wznoszacy przebieg. Widocznosc kontrolowana TUTAJ (opacity). -->
+  <defs>
+    <pattern id="dots" width="36" height="36" patternUnits="userSpaceOnUse">
+      <circle cx="1.2" cy="1.2" r="1.2" fill="#6fa8ff" fill-opacity=".045"/>
+    </pattern>
+    <linearGradient id="chv" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#67d2ff"/>
+      <stop offset="1" stop-color="#1b4bd8"/>
+    </linearGradient>
+  </defs>
+
+  <!-- delikatny ukosny pas przez gorna czesc karty -->
+  <path d="M0 330 L900 120 L900 190 L0 400 Z" fill="#2b8bff" fill-opacity=".05"/>
+  <path d="M0 400 L900 190 L900 208 L0 418 Z" fill="#2b8bff" fill-opacity=".08"/>
+  <rect width="900" height="900" fill="url(#dots)"/>
+
+  <!-- naroze gorne-prawe: schodkowe szewrony (rownolegloboki o pochyle logo) -->
+  <g fill="url(#chv)">
+    <path d="M700 70 L790 70 L750 150 L660 150 Z" fill-opacity=".13"/>
+    <path d="M800 70 L890 70 L850 150 L760 150 Z" fill-opacity=".07"/>
+    <path d="M745 165 L835 165 L795 245 L705 245 Z" fill-opacity=".09"/>
+    <path d="M845 165 L900 165 L900 205 L825 205 Z" fill-opacity=".05"/>
+    <path d="M790 260 L880 260 L840 340 L750 340 Z" fill-opacity=".055"/>
+  </g>
+
+  <!-- naroze dolne-lewe: mniejsze lustro -->
+  <g fill="url(#chv)">
+    <path d="M60 640 L150 640 L110 720 L20 720 Z" fill-opacity=".075"/>
+    <path d="M105 735 L195 735 L155 815 L65 815 Z" fill-opacity=".05"/>
+    <path d="M20 545 L110 545 L70 625 L0 625 L0 585 Z" fill-opacity=".045"/>
+  </g>
+
+  <!-- szept wznoszacego przebiegu — funded growth, bez swiec -->
+  <path d="M0 720 C 140 700, 260 660, 400 630 S 680 540, 900 470"
+        stroke="#67d2ff" stroke-opacity=".07" stroke-width="2" stroke-linecap="round"/>
+</svg>

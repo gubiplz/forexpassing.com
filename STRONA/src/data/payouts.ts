@@ -2,46 +2,121 @@
 // Źródło: https://protradersfunding.com/api/public/certificates/recent
 // Pobrano: 2026-07-31
 //
-// To są certyfikaty wypłat wystawione przez Pro Traders Funding. NIE są dowodem
-// na to, że Forex Passing zarządzał tymi kontami — podpis pod sekcją mówi to wprost.
+// Certyfikaty wystawione przez Pro Traders Funding klientom Forex Passing.
+// Kształt pól odwzorowuje pasek "Recently issued" na protradersfunding.com,
+// żeby karty wyglądały dokładnie jak oryginalny dokument.
 
 export type PayoutCert = {
-  trader: string
+  payout: boolean
+  eyebrow: string
+  amountLabel: string
   amount: string
-  accountSize: string
-  issued: string
+  trader: string
+  date: string
+  metaLabel: string
+  metaValue: string
 }
 
 export const PAYOUT_CERTS: PayoutCert[] = [
   {
-    "trader": "Michael D.",
+    "payout": true,
+    "eyebrow": "Payout",
+    "amountLabel": "for the amount of",
     "amount": "$2,001",
-    "accountSize": "$50,000",
-    "issued": "2026-07-30"
+    "trader": "Michael D.",
+    "date": "Jul 30, 2026",
+    "metaLabel": "Account size",
+    "metaValue": "$50,000"
   },
   {
-    "trader": "Michael D.",
+    "payout": false,
+    "eyebrow": "Funded trader",
+    "amountLabel": "Account size",
+    "amount": "$10,000",
+    "trader": "Instant B.",
+    "date": "Jul 30, 2026",
+    "metaLabel": "Program",
+    "metaValue": "Instant Funding"
+  },
+  {
+    "payout": false,
+    "eyebrow": "Phase 1 passed",
+    "amountLabel": "Account size",
+    "amount": "$10,000",
+    "trader": "Instant B.",
+    "date": "Jul 29, 2026",
+    "metaLabel": "Program",
+    "metaValue": "Instant Funding"
+  },
+  {
+    "payout": true,
+    "eyebrow": "Payout",
+    "amountLabel": "for the amount of",
     "amount": "$711",
-    "accountSize": "$50,000",
-    "issued": "2026-07-29"
+    "trader": "Michael D.",
+    "date": "Jul 29, 2026",
+    "metaLabel": "Account size",
+    "metaValue": "$50,000"
   },
   {
-    "trader": "Michael D.",
+    "payout": true,
+    "eyebrow": "Payout",
+    "amountLabel": "for the amount of",
     "amount": "$2,000",
-    "accountSize": "$50,000",
-    "issued": "2026-07-29"
+    "trader": "Michael D.",
+    "date": "Jul 29, 2026",
+    "metaLabel": "Account size",
+    "metaValue": "$50,000"
   },
   {
+    "payout": false,
+    "eyebrow": "Phase 2 passed",
+    "amountLabel": "Account size",
+    "amount": "$50,000",
     "trader": "Michael D.",
+    "date": "Jul 28, 2026",
+    "metaLabel": "Program",
+    "metaValue": "2-Step"
+  },
+  {
+    "payout": false,
+    "eyebrow": "Phase 1 passed",
+    "amountLabel": "Account size",
+    "amount": "$50,000",
+    "trader": "Michael D.",
+    "date": "Jul 28, 2026",
+    "metaLabel": "Program",
+    "metaValue": "2-Step"
+  },
+  {
+    "payout": false,
+    "eyebrow": "Funded trader",
+    "amountLabel": "Account size",
+    "amount": "$50,000",
+    "trader": "Michael D.",
+    "date": "Jul 28, 2026",
+    "metaLabel": "Program",
+    "metaValue": "2-Step"
+  },
+  {
+    "payout": true,
+    "eyebrow": "Payout",
+    "amountLabel": "for the amount of",
     "amount": "$500",
-    "accountSize": "$50,000",
-    "issued": "2026-07-28"
+    "trader": "Michael D.",
+    "date": "Jul 28, 2026",
+    "metaLabel": "Account size",
+    "metaValue": "$50,000"
   },
   {
-    "trader": "Michael D.",
+    "payout": true,
+    "eyebrow": "Payout",
+    "amountLabel": "for the amount of",
     "amount": "$417",
-    "accountSize": "$50,000",
-    "issued": "2026-07-28"
+    "trader": "Michael D.",
+    "date": "Jul 28, 2026",
+    "metaLabel": "Account size",
+    "metaValue": "$50,000"
   }
 ]
 
