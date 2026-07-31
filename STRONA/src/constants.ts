@@ -20,7 +20,10 @@ export const APPLY_ENDPOINT = '/api/event/subscribe'
 // Kotwica sekcji z formularzem — używana przez wszystkie CTA.
 export const APPLY_ANCHOR = '#apply'
 
-export const TELEGRAM_HREF = 'https://t.me/forexpassing'
+// Kontakt do zespołu. Statyczne strony w public/ i szablony maili nie mogą
+// importować tego pliku, więc mają adres wpisany wprost — przy zmianie uchwytu
+// trzeba je podmienić razem z tą stałą (grep po "t.me/").
+export const TELEGRAM_HREF = 'https://t.me/forexpassingadmin'
 export const CONTACT_EMAIL = 'contact@forexpassing.com'
 
 // Prop firma, z którą pracujemy. Certyfikaty w pasie na /meta pochodzą z jej
