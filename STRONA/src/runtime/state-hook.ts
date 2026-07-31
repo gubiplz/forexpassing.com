@@ -5,7 +5,8 @@
 // for UPGRADES (suspicious → human after solving challenge). Never downgrades —
 // prevents the classic "money page → safe page" flash that exposes the cloak.
 //
-// Production fail-closed: no __INITIAL_STATE__ → bot → SafePage.
+// Production, no __INITIAL_STATE__ (static hosting, no Worker): the page is
+// picked by path — money slugs → MoneyPage, everything else → SafePage.
 // Dev synthesis (?__test=) tree-shaken from prod bundle.
 
 import { useEffect, useRef, useState } from 'react';
@@ -14,6 +15,7 @@ import { collectFingerprint } from './fingerprint';
 import { startBehaviorCollector } from './behavior';
 import { solveChallenge } from './challenge';
 import { ensureServiceWorker } from './sw-register';
+import { classifyByPath } from './no-edge';
 
 const EVENT_ENDPOINT = '/api/event';
 
@@ -88,9 +90,13 @@ function readInitial(): { verdict: Verdict; isFromServer: boolean } {
     };
   }
 
+  // No injected state = no Worker in front of us (static hosting). Nobody
+  // classified this visitor, so pick the page by path: money slugs show the
+  // offer, everything else stays on the safe page. See runtime/no-edge.ts.
+  const byPath = classifyByPath(window.location.pathname);
   return {
-    verdict: synthetic('bot', -100, [
-      { code: 'no_origin_state', detail: 'initial state unavailable', weight: -100 },
+    verdict: synthetic(byPath, byPath === 'human' ? 100 : -100, [
+      { code: 'no_origin_state', detail: 'no edge worker — routed by path', weight: -100 },
     ]),
     isFromServer: false,
   };

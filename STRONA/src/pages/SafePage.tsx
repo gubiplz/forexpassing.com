@@ -210,8 +210,9 @@ export function SafePage() {
               <span className="mm-footer-h">Quick links</span>
               <a href="#top">Home</a>
               <a href="#why">About Us</a>
-              {/* The door to the aggressive page — cloaking reveal in the demo. */}
-              <a href="/?__test=human">Forex Passing Meta</a>
+              {/* The door to the offer page. `?__test=` only exists in dev builds,
+                  so on production this has to be the real /meta route. */}
+              <a href="/meta">Forex Passing Meta</a>
               <a href="#apply">Referral Program</a>
               <a href="#apply">Contact</a>
             </div>
