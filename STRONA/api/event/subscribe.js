@@ -30,11 +30,17 @@ export default async function handler(req, res) {
     return;
   }
 
+  // Field set matches workers/routes/event.ts. The safe-page form only sends
+  // name/email/experience/goal, so the questionnaire-only fields default to ''.
   const lead = {
     ts: Date.now(),
     name: str(body.name).slice(0, 120),
     email: str(body.email).slice(0, 200),
     phone: str(body.phone).slice(0, 40),
+    country: str(body.country).slice(0, 80),
+    propFirm: str(body.propFirm).slice(0, 80),
+    accountSize: str(body.accountSize).slice(0, 40),
+    stage: str(body.stage).slice(0, 40),
     experience: str(body.experience).slice(0, 40),
     goal: str(body.goal).slice(0, 2000),
     source: str(body.source).slice(0, 40) || 'safe',

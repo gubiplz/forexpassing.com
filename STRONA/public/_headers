@@ -1,5 +1,0 @@
-# Force the ebook to download rather than open inline in the browser.
-# The HTML `download` attribute is ignored by email clients, so the reliable
-# trigger is this Content-Disposition header, applied to the cached asset.
-/ai-risk-officer-system-b1f7c6503b8c.pdf
-  Content-Disposition: attachment; filename="AI-Risk-Officer-System.pdf"

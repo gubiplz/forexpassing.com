@@ -6,19 +6,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#ffffff" />
   <meta name="robots" content="noindex,nofollow" />
-  <title>You're in — Payment confirmed · Forex Passing</title>
+  <title>Application received · Forex Passing</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
-  <!-- Google tag (gtag.js) — GA4 (live). Meta Pixel below fires Purchase too. -->
+  <!-- Google tag (gtag.js) — GA4 (live). Meta Pixel below fires the same lead event.
+       No purchase happens on this page: applying is free and our commission is only
+       charged after a real payout.
+       TODO: report the real deal value server-side once a payout is actually paid out. -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-SP9H8Q95C1"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
     gtag('config', 'G-SP9H8Q95C1', { 'anonymize_ip': true });
-    gtag('event','purchase',{ value: 49, currency: 'USD', transaction_id: 'mm-' + Date.now(), items: [{ item_name: 'AI Risk Officer System' }] });
+    gtag('event','generate_lead',{ transaction_id: 'fp-' + Date.now(), items: [{ item_name: 'Account management application' }] });
   </script>
 
   <!-- Meta Pixel Code -->
@@ -33,7 +36,7 @@
     'https://connect.facebook.net/en_US/fbevents.js');
     fbq('init', '1566242625059670');
     fbq('track', 'PageView');
-    fbq('track', 'Purchase', { value: 49, currency: 'USD', content_name: 'AI Risk Officer System' });
+    fbq('track', 'Lead', { content_name: 'Account management application' });
   </script>
   <noscript><img height="1" width="1" style="display:none"
     src="https://www.facebook.com/tr?id=1566242625059670&ev=PageView&noscript=1"
@@ -187,60 +190,62 @@
 <body>
   <main>
 
-    <h1 class="sr-only">Payment confirmed — you're in</h1>
+    <h1 class="sr-only">Application received — we reply within one business day</h1>
 
     <!-- CONFIRM STRIP -->
     <div class="confirm-strip reveal reveal-1">
       <span class="cs-badge">
         <span class="cs-check" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
-        <span class="cs-badge-txt">Payment confirmed<small>$49 paid · receipt on its way</small></span>
+        <span class="cs-badge-txt">Application received<small>Nothing charged · reply within 1 business day</small></span>
       </span>
-      <span class="cs-text">Your <strong>AI Risk Officer</strong> access is waiting below — <a href="#access">jump straight to it ↓</a>. First, the one upgrade only brand-new members can lock in:</span>
+      <span class="cs-text">Your application is with our team. Below: <strong>what to have ready for the call</strong>, and the free Telegram community — <a href="#access">open it now ↓</a>.</span>
     </div>
 
-    <!-- UPSELL (OTO) -->
+    <!-- PREPARE FOR THE CALL -->
     <section class="block reveal reveal-2">
-      <span class="eyebrow">Available only after purchase</span>
-      <h2>Don't trade the next 14 days <span class="accent">alone.</span></h2>
+      <span class="eyebrow">Before we talk</span>
+      <h2>Three things to have <span class="accent">ready.</span></h2>
       <p class="sub">
-        The system hands you a verdict on every setup. But the hardest trade to skip is the one you
-        talk yourself into at 2am — and no prompt has ever stopped a revenge entry. For the next
-        <strong style="color:var(--txt)">14 days</strong>, I will. You screenshot the setup, I read it,
-        and you get a straight take — before your money is on the line.
+        The call is short and practical. We need to know which firm we would be trading under, how big
+        the account is, and what you have done so far — that is what decides whether we can take the
+        account on at all.
       </p>
 
+      <!-- TODO: this row held performance claims. If you want proof here, replace the three
+           tiles with real, verifiable payout certificates or statements from managed accounts —
+           do not put estimated or illustrative figures back in. The tiles below only restate
+           the terms of the service. -->
       <div class="upsell-proof">
-        <div class="upsell-proof-item"><span class="n">3×</span><span class="k">higher pass rate on the next challenge</span></div>
-        <div class="upsell-proof-item"><span class="n">$4,800</span><span class="k">average first payout after the 1:1</span></div>
-        <div class="upsell-proof-item"><span class="n">30 days</span><span class="k">to first payout — or the 1:1 is free</span></div>
+        <div class="upsell-proof-item"><span class="n">1 day</span><span class="k">business day until we reply to your application</span></div>
+        <div class="upsell-proof-item"><span class="n">7–14 days</span><span class="k">typical evaluation, depending on the firm's rules</span></div>
+        <div class="upsell-proof-item"><span class="n">No fee</span><span class="k">to apply — our 30% comes only after a real payout</span></div>
       </div>
-      <p class="upsell-proof-fine">Individual results — figures are illustrative, not a guarantee of profit.</p>
+      <p class="upsell-proof-fine">Timing depends on the firm's rules and market conditions. Trading carries risk; passing an evaluation is never guaranteed.</p>
 
       <div class="upsell">
         <div class="upsell-inner">
           <div>
-            <span class="upsell-tag"><span class="dot"></span>One-time — founders only</span>
-            <h3>14 days of private 1:1 — in your DMs</h3>
+            <span class="upsell-tag"><span class="dot"></span>What we will ask you</span>
+            <h3>What to bring to the call</h3>
             <p class="desc">
-              No calls to schedule, no timezones, no camera. You send me the chart the moment you're
-              unsure — I read the structure and tell you if I'd take it or pass. A second, calmer set
-              of eyes on every entry, for two full weeks.
+              Rough answers are fine — nothing has to be decided before we speak. If you do not have an
+              account yet, say so; picking the firm is part of the call.
             </p>
             <ul>
-              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16 9l-5 5-3-3"/></svg><span><strong>Priority Telegram DM, 14 days.</strong> A direct line — screenshot a setup, get my read back, usually within the hour.</span></li>
-              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16 9l-5 5-3-3"/></svg><span><strong>Every shaky entry, second-guessed with you</strong> — before you click, not after you've bled.</span></li>
-              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16 9l-5 5-3-3"/></svg><span><strong>I catch the trade the system can't stop</strong> — the 2am revenge entry, the FOMO chase, the stop you want to move.</span></li>
-              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16 9l-5 5-3-3"/></svg><span><strong>Prompts rebuilt around how YOU trade</strong> — futures, forex or crypto.</span></li>
+              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16 9l-5 5-3-3"/></svg><span><strong>Which prop firm.</strong> The one you already trade with, or the one you are considering. We check whether its rules allow a third party to trade the account.</span></li>
+              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16 9l-5 5-3-3"/></svg><span><strong>Account size and stage.</strong> Evaluation or already funded, the account size, and the daily loss and drawdown limits that come with it.</span></li>
+              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16 9l-5 5-3-3"/></svg><span><strong>Your experience so far.</strong> How long you have traded, which challenges you have taken, and what went wrong on the ones that failed.</span></li>
+              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16 9l-5 5-3-3"/></svg><span><strong>Your timezone and Telegram handle</strong>, so we can book a slot that works and keep reporting in one place.</span></li>
             </ul>
           </div>
 
           <div class="price-box">
-            <div class="label">Founder rate</div>
-            <div class="price">$297</div>
-            <div class="sub-price">one-time · 14 days private 1:1</div>
-            <a class="btn" href="https://buy.stripe.com/4gMfZjctE23E9310DYcMM0d" rel="nofollow noopener">Add the 1:1 →</a>
-            <div class="guarantee">If the first 3 days don't earn it back, just message me — <strong>I refund the 1:1, no argument.</strong></div>
-            <div class="urgency" aria-hidden="true">Only <strong id="places-counter">5</strong> of 7 spots left this month.</div>
+            <div class="label">How we are paid</div>
+            <div class="price">70 / 30</div>
+            <div class="sub-price">you keep 70% · charged only after a real payout</div>
+            <a class="btn" href="https://t.me/forexpassing" rel="noopener">Join the Telegram community</a>
+            <div class="guarantee">If we break the firm's rules and burn the account under our management, <strong>you get back what you paid us plus a $500 credit</strong> toward the next attempt — 120-day window, terms in the agreement.</div>
+            <div class="urgency">We only work with firms whose rules allow a third party to trade the account. We confirm this for your firm before anything starts.</div>
           </div>
         </div>
       </div>
@@ -251,51 +256,51 @@
       <div class="check" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
       </div>
-      <div class="pill reveal reveal-1">Payment confirmed</div>
-      <h2 class="hero-title reveal reveal-2">You're in. The <span class="accent">system is yours.</span></h2>
+      <div class="pill reveal reveal-1">Application received</div>
+      <h2 class="hero-title reveal reveal-2">We have your <span class="accent">application.</span></h2>
       <p class="lead reveal reveal-3">
-        Payment received — <strong>your copy is ready below</strong>.
-        Download it now and save it somewhere safe.
+        A trader from our team reads it and replies <strong>within one business day</strong> — by email,
+        or on Telegram if you left a handle. <strong>Nothing is charged at this stage.</strong>
       </p>
 
       <div class="access reveal reveal-4">
         <div class="access-icon">
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M21.94 4.69 18.5 20.93c-.26 1.16-.95 1.45-1.93.9l-5.32-3.92-2.57 2.47c-.28.28-.52.52-1.07.52l.38-5.42L18.06 5.5c.43-.38-.09-.6-.67-.22L5.62 12.66.45 11.06c-1.12-.36-1.15-1.13.24-1.68L20.49 3.07c.94-.36 1.76.22 1.45 1.62z"/>
           </svg>
         </div>
         <div class="access-meta">
-          <strong>The AI Risk Officer System</strong>
-          <span>Full process + prompt pack · Instant download · PDF</span>
+          <strong>Free Telegram community</strong>
+          <span>Live sessions and market notes · Open to everyone, no fee and no application</span>
         </div>
-        <a class="go" href="/ai-risk-officer-system-b1f7c6503b8c.pdf" download="AI-Risk-Officer-System.pdf">Download PDF</a>
+        <a class="go" href="https://t.me/forexpassing" rel="noopener">Open Telegram</a>
       </div>
     </section>
 
     <!-- NEXT STEPS -->
     <section class="block reveal reveal-4">
       <span class="eyebrow">What's next</span>
-      <h2>Your first check <span class="accent">in 20 minutes.</span></h2>
-      <p class="sub">Three steps, zero guessing. Everything is spelled out inside — this is your start map.</p>
+      <h2>From here to the <span class="accent">first trade.</span></h2>
+      <p class="sub">Nothing to do right now except answer when we get in touch.</p>
 
       <div class="timeline">
         <div class="step">
           <div class="step-num">1</div>
-          <h3>Open the welcome email</h3>
-          <p>Your access link is inside. Save it. Updates land in the same inbox with every new edition.</p>
-          <div class="time">~ 1 min</div>
+          <h3>We review your application</h3>
+          <p>We check what you sent and whether the firm you have in mind allows a third party to trade the account. If it is not a fit, we tell you.</p>
+          <div class="time">1 business day</div>
         </div>
         <div class="step">
           <div class="step-num">2</div>
-          <h3>Install the Risk Officer</h3>
-          <p>Paste the setup prompt into Claude. It wires the TradingView check and the guardrails for you.</p>
-          <div class="time">~ 15 min</div>
+          <h3>The call</h3>
+          <p>Firm, account size, rules and the risk we can take under them. Short and practical — bring the three things listed above.</p>
+          <div class="time">Telegram or call</div>
         </div>
         <div class="step">
           <div class="step-num">3</div>
-          <h3>Run your first verdict</h3>
-          <p>Drop in a live setup. Get one answer back — Trade / Wait / No Trade — before your hand moves.</p>
-          <div class="time">~ 5 min</div>
+          <h3>Agreement, then we trade</h3>
+          <p>A written management agreement covers the split, the guarantee and reporting. After signing, our traders start and you get progress and payout updates.</p>
+          <div class="time">Evaluation ~ 7–14 days</div>
         </div>
       </div>
     </section>
@@ -303,8 +308,8 @@
     <!-- SUPPORT -->
     <section class="block">
       <span class="eyebrow">Support</span>
-      <h2>Stuck on anything? <span class="accent">Reach out.</span></h2>
-      <p class="sub">Drop us an email and we usually reply within the hour, 24h at the latest.</p>
+      <h2>Something to add? <span class="accent">Reach out.</span></h2>
+      <p class="sub">If you left something out of the application, or want to change the firm or account size, email us and we will add it to your file before the call.</p>
 
       <a class="support-card" href="mailto:contact@forexpassing.com">
         <div class="icon">
@@ -312,7 +317,7 @@
         </div>
         <div class="info">
           <strong>contact@forexpassing.com</strong>
-          <span>We usually reply within the hour — or just reply to your welcome email.</span>
+          <span>We reply within one business day — or answer us in the Telegram thread once we open it.</span>
         </div>
       </a>
     </section>
@@ -320,8 +325,11 @@
     <footer class="f">
       <p>© <span id="yr">2026</span> Forex Passing · <a href="/">Home</a></p>
       <p class="disclaimer">
-        Educational content. Not investment advice. Trading leveraged instruments carries a high risk
-        of losing capital. Individual results; past performance does not guarantee future results.
+        Forex Passing trades prop firm evaluation and funded accounts for clients under a written
+        management agreement, and only with firms whose rules allow a third party to trade the account.
+        Not investment advice. Trading leveraged instruments carries a high risk of losing capital.
+        Passing an evaluation and receiving a payout are never guaranteed; past performance does not
+        guarantee future results.
       </p>
     </footer>
 
@@ -329,19 +337,7 @@
 
   <script>
     document.getElementById('yr').textContent = new Date().getFullYear();
-    (function() {
-      var KEY = 'mm_places_left';
-      var el = document.getElementById('places-counter');
-      if (!el) return;
-      var current = parseInt(localStorage.getItem(KEY) || '5', 10);
-      if (isNaN(current) || current < 1 || current > 7) current = 5;
-      el.textContent = current;
-      function tick() {
-        if (current > 1) { current -= 1; localStorage.setItem(KEY, String(current)); el.textContent = current; }
-      }
-      var delay = (6 + Math.random() * 6) * 60 * 1000;
-      setTimeout(function loop() { tick(); delay = (6 + Math.random() * 6) * 60 * 1000; setTimeout(loop, delay); }, delay);
-    })();
+    // The "spots left" countdown that used to run here was a fake scarcity counter — removed.
   </script>
 </body>
 </html>

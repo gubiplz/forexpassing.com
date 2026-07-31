@@ -1,11 +1,33 @@
-// Forex Passing Ebook — stałe globalne (cena, link checkout, breakpointy).
-// Właściciel: zmień PRICE_LABEL i CHECKOUT_HREF po podpięciu Stripe/Tpay.
+// Forex Passing — stałe globalne (warunki usługi, linki, kolory).
+//
+// Model: nic nie jest sprzedawane na stronie. Jedyna konwersja to kwestionariusz
+// (#apply) — zespół odzywa się po jego przesłaniu. Żadnego Stripe ani checkoutu.
+//
+// KAŻDA liczba dotycząca warunków ma pochodzić stąd, nie z literału w JSX.
+// Zmiana splitu czy okna czasowego w jednym miejscu przechodzi na całą stronę.
 
-export const PRICE_LABEL = '99 zł'
-export const ORIGINAL_PRICE_LABEL = '149 zł'
-export const CHECKOUT_HREF = 'https://buy.stripe.com/eVq7sN0KW9w6enl3QacMM0c'
-export const MENTORING_HREF = 'https://buy.stripe.com/4gMfZjctE23E9310DYcMM0d'
 export const BRAND = 'Forex Passing'
+
+// Warunki usługi — jedno źródło prawdy.
+export const CLIENT_SPLIT = '70%'
+export const OUR_SPLIT = '30%'
+export const PASS_WINDOW = '7–14 days'
+export const GUARANTEE_CREDIT = '$500'
+export const REFUND_WINDOW = '120 days'
+
+// Kwestionariusz → worker (routes/event.ts) lub funkcja Vercela (api/event/subscribe.js).
+export const APPLY_ENDPOINT = '/api/event/subscribe'
+// Kotwica sekcji z formularzem — używana przez wszystkie CTA.
+export const APPLY_ANCHOR = '#apply'
+
+export const TELEGRAM_HREF = 'https://t.me/forexpassing'
+export const CONTACT_EMAIL = 'contact@forexpassing.com'
+
+// Prop firma, z którą pracujemy. Certyfikaty w pasie na /meta pochodzą z jej
+// publicznego API (zob. bin/sync-payouts.mjs i src/data/payouts.ts).
+export const PARTNER_FIRM = 'Pro Traders Funding'
+export const PARTNER_FIRM_HREF = 'https://protradersfunding.com'
+
 export const WISTIA_ENABLED = true
 
 export const COLORS = {
@@ -25,4 +47,3 @@ export const COLORS = {
 
 // Maksymalna szerokość kontenera (desktop)
 export const MAX_W = 1180
-

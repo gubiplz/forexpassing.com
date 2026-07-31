@@ -1,26 +1,27 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-
   "cleanUrls": true,
   "trailingSlash": false,
-
   "rewrites": [
-    { "source": "/meta", "destination": "/" },
-    { "source": "/meta-funnel", "destination": "/" },
-    { "source": "/insta-funnel", "destination": "/" },
-    { "source": "/google-funnel", "destination": "/" },
-    { "source": "/tiktok-funnel", "destination": "/" }
-  ],
-
-  "headers": [
     {
-      "source": "/ai-risk-officer-system-b1f7c6503b8c.pdf",
-      "headers": [
-        {
-          "key": "Content-Disposition",
-          "value": "attachment; filename=\"AI-Risk-Officer-System.pdf\""
-        }
-      ]
+      "source": "/meta",
+      "destination": "/"
+    },
+    {
+      "source": "/meta-funnel",
+      "destination": "/"
+    },
+    {
+      "source": "/insta-funnel",
+      "destination": "/"
+    },
+    {
+      "source": "/google-funnel",
+      "destination": "/"
+    },
+    {
+      "source": "/tiktok-funnel",
+      "destination": "/"
     }
   ]
 }

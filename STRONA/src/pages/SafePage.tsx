@@ -1,10 +1,13 @@
-// ⚠ CASE STUDY — "safe" page. Cloaking gate (App.tsx) renders this for everyone
-// who is NOT classified `human` (reviewers, bots, suspicious). Calm, education-first
-// "educational company" variant modeled on a generic trading-education site (mgmtfx).
-// No purchase / no checkout — an application form instead. The face shown to reviewers.
+// "Safe" page — rendered at "/" and for anyone the edge worker does not classify
+// as `human`. Calm, education-first "educational company" variant. No purchase and
+// no checkout — an information request form instead.
+// Keep in sync with public/safe.html, which is a static copy of this page.
 
 import { useEffect, useState, type FormEvent } from 'react'
 
+// ⚠ These four figures are not backed by anything — they were inherited from the
+// previous brand and kept by an explicit owner decision. Replace them with real,
+// verifiable numbers when there are some.
 const STATS: [string, string][] = [
   ['500+', 'Students'],
   ['95%', 'Success Rate'],
@@ -15,10 +18,10 @@ const STATS: [string, string][] = [
 type IconKey = 'chart' | 'people' | 'book' | 'target'
 
 const WHY: { icon: IconKey; t: string; d: string }[] = [
-  { icon: 'chart', t: 'Market analysis', d: 'Learn to read charts and identify high-probability setups with a repeatable framework.' },
-  { icon: 'people', t: 'Community', d: 'Join a network of like-minded traders sharing insights and progress every day.' },
-  { icon: 'book', t: 'Education', d: 'Structured courses from beginner to advanced — built around process, not hype.' },
-  { icon: 'target', t: 'Precision', d: 'Develop the discipline for consistent, accurate, rule-based trade execution.' },
+  { icon: 'chart', t: 'Market structure', d: 'How to read price, plan a trade in advance, and follow a written process instead of reacting.' },
+  { icon: 'book', t: 'Prop firm rules', d: 'What evaluations require in practice: daily loss limits, minimum trading days, payout terms and the fine print.' },
+  { icon: 'people', t: 'Direct answers', d: 'Ask a question by email and get a plain answer, including when the answer is that something will not work.' },
+  { icon: 'target', t: 'Risk first', d: 'We do not promise income, returns, or a passed evaluation. Trading carries risk and every decision stays with the trader.' },
 ]
 
 function Icon({ k }: { k: IconKey }) {
@@ -34,8 +37,8 @@ export function SafePage() {
   const [sent, setSent] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
-  // Hide the sticky CTA whenever any in-page CTA (hero "Get Started" or the
-  // form "Apply now") is on screen — never show two buttons at once.
+  // Hide the sticky CTA whenever any in-page CTA (hero or form
+  // "Request information") is on screen — never show two buttons at once.
   const [hideSticky, setHideSticky] = useState(false)
   useEffect(() => {
     const targets = document.querySelectorAll('.mm-cta-row .mm-btn:not(.mm-btn-ghost), .mm-form-btn')
@@ -97,19 +100,20 @@ export function SafePage() {
         <div className="mm-wrap">
           <h1 className="mm-h1">HELLO, WE ARE AN<br /><span className="mm-blue">EDUCATIONAL COMPANY</span></h1>
           <p className="mm-lead mm-lead-mid">
-            We teach aspiring traders the strategies, discipline, and mindset needed to
-            approach the markets with a clear, repeatable process.
+            Forex Passing works in trader education. We explain market structure, risk
+            management, and how prop firm evaluations actually work. We do not promise income
+            or results — trading involves risk, and every decision stays with the trader.
           </p>
           <div className="mm-cta-row">
-            <a href="#apply" className="mm-btn mm-btn-lg">Get Started</a>
-            <a href="#why" className="mm-btn mm-btn-ghost mm-btn-lg">Learn More</a>
+            <a href="#apply" className="mm-btn mm-btn-lg">Request information</a>
+            <a href="#why" className="mm-btn mm-btn-ghost mm-btn-lg">What we do</a>
           </div>
-          <p className="mm-microtrust">Education first · No signals · No profit promises</p>
+          <p className="mm-microtrust">Education first · No income promises · Trading involves risk</p>
         </div>
         <div className="mm-hero-glow" aria-hidden="true" />
       </section>
 
-      {/* STATS BAND */}
+      {/* STATS BAND — see the warning on STATS above. */}
       <section className="mm-stats">
         <div className="mm-wrap mm-stats-grid">
           {STATS.map(([v, k]) => (
@@ -124,7 +128,7 @@ export function SafePage() {
       {/* WHY CHOOSE */}
       <section className="mm-section mm-why" id="why">
         <div className="mm-wrap">
-          <h2 className="mm-h2 mm-center">Why choose <span className="mm-blue">Forex Passing</span></h2>
+          <h2 className="mm-h2 mm-center">What we <span className="mm-blue">focus on</span></h2>
           <div className="mm-why-grid">
             {WHY.map((c) => (
               <div className="mm-why-card" key={c.t}>
@@ -137,20 +141,20 @@ export function SafePage() {
         </div>
       </section>
 
-      {/* READY TO START — application form (no purchase) */}
+      {/* CONTACT — information request form (no purchase) */}
       <section className="mm-journey" id="apply">
         <div className="mm-wrap">
-          <h2 className="mm-h2 mm-center">Ready to start your <span className="mm-blue">journey?</span></h2>
+          <h2 className="mm-h2 mm-center">Ask us about <span className="mm-blue">our education</span></h2>
           <p className="mm-lead mm-lead-mid mm-center">
-            Take the first step. Tell us a little about yourself and we'll be in touch about
-            joining the program.
+            Leave your details and a short note. We reply by email with information about the
+            material we publish and how we work. Nothing is sold through this form.
           </p>
 
           {sent ? (
             <div className="mm-form-ok" role="status">
               <span className="mm-form-ok-ico" aria-hidden="true">✓</span>
-              <span className="mm-form-ok-t">Thanks — your application is in.</span>
-              <span className="mm-form-ok-d">We'll reach out by email. No payment is required to apply.</span>
+              <span className="mm-form-ok-t">Thanks — we have your message.</span>
+              <span className="mm-form-ok-d">We'll reply by email. No payment details are required at any point of this request.</span>
             </div>
           ) : (
             <form className="mm-form" onSubmit={onSubmit}>
@@ -181,14 +185,14 @@ export function SafePage() {
                 </select>
               </div>
               <div className="mm-field">
-                <label htmlFor="mm-goal">What are you working on?</label>
-                <textarea id="mm-goal" className="mm-textarea" name="goal" placeholder="A sentence or two about your goals…" />
+                <label htmlFor="mm-goal">What would you like to know?</label>
+                <textarea id="mm-goal" className="mm-textarea" name="goal" placeholder="A sentence or two about your question…" />
               </div>
               <button type="submit" className="mm-btn mm-btn-lg mm-btn-full mm-form-btn" disabled={submitting}>
-                {submitting ? 'Sending…' : 'Apply now'}
+                {submitting ? 'Sending…' : 'Request information'}
               </button>
               {error && <p className="mm-form-err" role="alert">{error}</p>}
-              <p className="mm-form-fine">Educational program · No payment required to apply.</p>
+              <p className="mm-form-fine">Information request only · No payment is taken through this form.</p>
             </form>
           )}
         </div>
@@ -201,8 +205,8 @@ export function SafePage() {
             <div className="mm-footer-brand">
               <img className="mm-logo-img mm-logo-img-sm" src="/logo-light.svg" alt="Forex Passing" />
               <p className="mm-footer-tagline">
-                Forex Passing — let us teach you about trading. Clear education on markets and
-                prop-firm process. Transparent, honest, no hype.
+                Forex Passing — trading education in plain language: market structure, risk
+                management, and how prop firm evaluations work. No hype and no income promises.
               </p>
             </div>
 
@@ -210,33 +214,35 @@ export function SafePage() {
               <span className="mm-footer-h">Quick links</span>
               <a href="#top">Home</a>
               <a href="#why">About Us</a>
-              {/* The door to the offer page. `?__test=` only exists in dev builds,
-                  so on production this has to be the real /meta route. */}
+              {/* The door to the aggressive page — cloaking reveal in the demo. */}
               <a href="/meta">Forex Passing Meta</a>
-              <a href="#apply">Referral Program</a>
-              <a href="#apply">Contact</a>
+              <a href="#apply">Ask a question</a>
+              <a href="mailto:contact@forexpassing.com">Contact</a>
             </div>
 
             <div className="mm-footer-col">
               <span className="mm-footer-h">Contact</span>
-              <a href="#apply">Apply to join the program</a>
-              <a href="#apply">Ask a question</a>
+              <a href="mailto:contact@forexpassing.com">contact@forexpassing.com</a>
+              <a href="#apply">Request information</a>
             </div>
           </div>
 
           <hr className="mm-footer-rule" />
 
           <p className="mm-footer-legal">
-            This material is for educational purposes only. It is not investment advice or a
-            recommendation of any kind. Trading leveraged instruments carries a high risk of
-            losing capital. Individual results; past performance does not guarantee future results.
+            This material is for educational purposes only. It is not investment advice, a
+            recommendation, or an offer of any specific outcome. Trading leveraged instruments
+            carries a high risk of losing capital. We make no promises about income, returns, or
+            passing a prop firm evaluation. Results differ between individuals and past
+            performance does not guarantee future results. Every trading decision is the
+            responsibility of the person who makes it.
           </p>
           <p className="mm-footer-copy">© {year} Forex Passing. All rights reserved.</p>
         </div>
       </footer>
 
       {/* Sticky CTA — mobile only */}
-      <a href="#apply" className={`mm-sticky-cta${hideSticky ? ' is-hidden' : ''}`}>Get Started</a>
+      <a href="#apply" className={`mm-sticky-cta${hideSticky ? ' is-hidden' : ''}`}>Request information</a>
     </div>
   )
 }

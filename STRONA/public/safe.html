@@ -25,7 +25,7 @@ src="https://www.facebook.com/tr?id=1566242625059670&ev=PageView&noscript=1"
 
 <meta
   name="description"
-  content="Forex Passing is a trading-education company. We teach aspiring traders the strategies, discipline and mindset to approach the markets with a clear, repeatable process."
+  content="Forex Passing is a trading-education company. We help traders understand market structure, risk management and how prop firm evaluations work. We do not promise income or results."
 />
 <meta name="robots" content="index, follow" />
 <link rel="canonical" href="https://forexpassing.com/" />
@@ -114,8 +114,8 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',system-ui,-apple-
 .mm-footer-legal{font-size:12px;color:var(--foot-mut);line-height:1.7;max-width:900px}
 .mm-footer-copy{font-size:12px;color:var(--foot-mut);margin-top:16px}
 .mm-sticky-cta{display:none}
-/* Hide the sticky CTA while the in-section "Apply now" button is on screen —
-   never show two buttons at once. */
+/* Hide the sticky CTA while the in-section "Request information" button is on
+   screen — never show two buttons at once. */
 .mm-sticky-cta.is-hidden{transform:translateY(130%);opacity:0;pointer-events:none}
 @media(max-width:760px){
   body{padding-bottom:calc(70px + env(safe-area-inset-bottom))}
@@ -138,16 +138,18 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',system-ui,-apple-
 <section class="mm-hero">
   <div class="mm-wrap">
     <h1 class="mm-h1">HELLO, WE ARE AN<br><span class="mm-blue">EDUCATIONAL COMPANY</span></h1>
-    <p class="mm-lead mm-lead-mid">We teach aspiring traders the strategies, discipline, and mindset needed to approach the markets with a clear, repeatable process.</p>
+    <p class="mm-lead mm-lead-mid">Forex Passing works in trader education. We explain market structure, risk management, and how prop firm evaluations actually work. We do not promise income or results — trading involves risk, and every decision stays with the trader.</p>
     <div class="mm-cta-row">
-      <a href="#apply" class="mm-btn mm-btn-lg">Get Started</a>
-      <a href="#why" class="mm-btn mm-btn-ghost mm-btn-lg">Learn More</a>
+      <a href="#apply" class="mm-btn mm-btn-lg">Request information</a>
+      <a href="#why" class="mm-btn mm-btn-ghost mm-btn-lg">What we do</a>
     </div>
-    <p class="mm-microtrust">Education first · No signals · No profit promises</p>
+    <p class="mm-microtrust">Education first · No income promises · Trading involves risk</p>
   </div>
   <div class="mm-hero-glow"></div>
 </section>
 
+<!-- ⚠ STATS BAND — te cztery liczby nie mają pokrycia; odziedziczone po poprzedniej
+     marce i zostawione świadomą decyzją właściciela. Trzymać zgodnie z src/pages/SafePage.tsx. -->
 <section class="mm-stats">
   <div class="mm-wrap mm-stats-grid">
     <div class="mm-stat"><span class="mm-stat-v">500+</span><span class="mm-stat-k">Students</span></div>
@@ -159,27 +161,27 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',system-ui,-apple-
 
 <section class="mm-section mm-why" id="why">
   <div class="mm-wrap">
-    <h2 class="mm-h2 mm-center">Why choose <span class="mm-blue">Forex Passing</span></h2>
+    <h2 class="mm-h2 mm-center">What we <span class="mm-blue">focus on</span></h2>
     <div class="mm-why-grid">
       <div class="mm-why-card">
         <span class="mm-why-ico"><svg viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 7-7"/><path d="M17 4h4v4"/></svg></span>
-        <span class="mm-why-t">Market analysis</span>
-        <span class="mm-why-d">Learn to read charts and identify high-probability setups with a repeatable framework.</span>
-      </div>
-      <div class="mm-why-card">
-        <span class="mm-why-ico"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5"/><path d="M16.5 6.5a3 3 0 0 1 0 6"/><path d="M21 20c0-2.4-1.2-4-3-4.7"/></svg></span>
-        <span class="mm-why-t">Community</span>
-        <span class="mm-why-d">Join a network of like-minded traders sharing insights and progress every day.</span>
+        <span class="mm-why-t">Market structure</span>
+        <span class="mm-why-d">How to read price, plan a trade in advance, and follow a written process instead of reacting.</span>
       </div>
       <div class="mm-why-card">
         <span class="mm-why-ico"><svg viewBox="0 0 24 24"><path d="M3 5h6a3 3 0 0 1 3 3v11a2.5 2.5 0 0 0-2.5-2H3z"/><path d="M21 5h-6a3 3 0 0 0-3 3v11a2.5 2.5 0 0 1 2.5-2H21z"/></svg></span>
-        <span class="mm-why-t">Education</span>
-        <span class="mm-why-d">Structured courses from beginner to advanced — built around process, not hype.</span>
+        <span class="mm-why-t">Prop firm rules</span>
+        <span class="mm-why-d">What evaluations require in practice: daily loss limits, minimum trading days, payout terms and the fine print.</span>
+      </div>
+      <div class="mm-why-card">
+        <span class="mm-why-ico"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5"/><path d="M16.5 6.5a3 3 0 0 1 0 6"/><path d="M21 20c0-2.4-1.2-4-3-4.7"/></svg></span>
+        <span class="mm-why-t">Direct answers</span>
+        <span class="mm-why-d">Ask a question by email and get a plain answer, including when the answer is that something will not work.</span>
       </div>
       <div class="mm-why-card">
         <span class="mm-why-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg></span>
-        <span class="mm-why-t">Precision</span>
-        <span class="mm-why-d">Develop the discipline for consistent, accurate, rule-based trade execution.</span>
+        <span class="mm-why-t">Risk first</span>
+        <span class="mm-why-d">We do not promise income, returns, or a passed evaluation. Trading carries risk and every decision stays with the trader.</span>
       </div>
     </div>
   </div>
@@ -187,8 +189,8 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',system-ui,-apple-
 
 <section class="mm-journey" id="apply">
   <div class="mm-wrap">
-    <h2 class="mm-h2 mm-center">Ready to start your <span class="mm-blue">journey?</span></h2>
-    <p class="mm-lead mm-lead-mid mm-center">Take the first step. Tell us a little about yourself and we'll be in touch about joining the program.</p>
+    <h2 class="mm-h2 mm-center">Ask us about <span class="mm-blue">our education</span></h2>
+    <p class="mm-lead mm-lead-mid mm-center">Leave your details and a short note. We reply by email with information about the material we publish and how we work. Nothing is sold through this form.</p>
 
     <form class="mm-form" id="mm-form" action="#apply">
       <input class="mm-hp" type="text" name="company" tabindex="-1" autocomplete="off" aria-hidden="true" />
@@ -211,18 +213,18 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',system-ui,-apple-
         </select>
       </div>
       <div class="mm-field">
-        <label for="mm-goal">What are you working on?</label>
-        <textarea id="mm-goal" class="mm-textarea" name="goal" placeholder="A sentence or two about your goals…"></textarea>
+        <label for="mm-goal">What would you like to know?</label>
+        <textarea id="mm-goal" class="mm-textarea" name="goal" placeholder="A sentence or two about your question…"></textarea>
       </div>
-      <button type="submit" class="mm-btn mm-btn-lg mm-btn-full mm-form-btn">Apply now</button>
+      <button type="submit" class="mm-btn mm-btn-lg mm-btn-full mm-form-btn">Request information</button>
       <p class="mm-form-err" id="mm-form-err" role="alert" style="display:none">Something went wrong — please try again.</p>
-      <p class="mm-form-fine">Educational program · No payment required to apply.</p>
+      <p class="mm-form-fine">Information request only · No payment is taken through this form.</p>
     </form>
 
     <div class="mm-form-ok" id="mm-form-ok" style="display:none" role="status">
       <span class="mm-form-ok-ico">✓</span>
-      <span class="mm-form-ok-t">Thanks — your application is in.</span>
-      <span class="mm-form-ok-d">We'll reach out by email. No payment is required to apply.</span>
+      <span class="mm-form-ok-t">Thanks — we have your message.</span>
+      <span class="mm-form-ok-d">We'll reply by email. No payment details are required at any point of this request.</span>
     </div>
   </div>
 </section>
@@ -232,34 +234,35 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',system-ui,-apple-
     <div class="mm-footer-top">
       <div class="mm-footer-brand">
         <img class="mm-logo-img mm-logo-img-sm" src="/logo-light.svg" alt="Forex Passing" />
-        <p class="mm-footer-tagline">Forex Passing — let us teach you about trading. Clear education on markets and prop-firm process. Transparent, honest, no hype.</p>
+        <p class="mm-footer-tagline">Forex Passing — trading education in plain language: market structure, risk management, and how prop firm evaluations work. No hype and no income promises.</p>
       </div>
       <div class="mm-footer-col">
         <span class="mm-footer-h">Quick links</span>
         <a href="#top">Home</a>
         <a href="#why">About Us</a>
-        <a href="#apply">Forex Passing Meta</a>
-        <a href="#apply">Referral Program</a>
+        <a href="/meta">Forex Passing Meta</a>
+        <a href="#apply">Ask a question</a>
         <a href="mailto:contact@forexpassing.com">Contact</a>
       </div>
       <div class="mm-footer-col">
         <span class="mm-footer-h">Contact</span>
         <a href="mailto:contact@forexpassing.com">contact@forexpassing.com</a>
+        <a href="#apply">Request information</a>
       </div>
     </div>
     <hr class="mm-footer-rule" />
-    <p class="mm-footer-legal">This material is for educational purposes only. It is not investment advice or a recommendation of any kind. Trading leveraged instruments carries a high risk of losing capital. Individual results; past performance does not guarantee future results.</p>
+    <p class="mm-footer-legal">This material is for educational purposes only. It is not investment advice, a recommendation, or an offer of any specific outcome. Trading leveraged instruments carries a high risk of losing capital. We make no promises about income, returns, or passing a prop firm evaluation. Results differ between individuals and past performance does not guarantee future results. Every trading decision is the responsibility of the person who makes it.</p>
     <p class="mm-footer-copy">© <span id="mm-year"></span> Forex Passing. All rights reserved.</p>
   </div>
 </footer>
 
-<a href="#apply" class="mm-sticky-cta">Get Started</a>
+<a href="#apply" class="mm-sticky-cta">Request information</a>
 
 <script>
   document.getElementById('mm-year').textContent = new Date().getFullYear();
 
-  // Hide the sticky CTA whenever any in-page CTA (hero "Get Started" or the
-  // form "Apply now") is on screen — never show two buttons at once.
+  // Hide the sticky CTA whenever any in-page CTA (hero or form
+  // "Request information") is on screen — never show two buttons at once.
   (function(){
     var sticky = document.querySelector('.mm-sticky-cta');
     var targets = document.querySelectorAll('.mm-cta-row .mm-btn:not(.mm-btn-ghost), .mm-form-btn');
@@ -293,7 +296,7 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',system-ui,-apple-
     }).catch(function () {
       err.style.display = 'block';
       btn.disabled = false;
-      btn.textContent = 'Apply now';
+      btn.textContent = 'Request information';
     });
   });
 </script>

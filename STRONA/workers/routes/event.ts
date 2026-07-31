@@ -148,13 +148,36 @@ export async function handleSubscribe(request: Request, env: Env): Promise<Respo
   const experience = str(body.experience).slice(0, 40);
   const goal = str(body.goal).slice(0, 2000);
 
+  // Application questionnaire (money page). Optional — the safe-page form only
+  // sends name/email/experience/goal, so every extra field defaults to ''.
+  const phone = str(body.phone).slice(0, 40);
+  const country = str(body.country).slice(0, 80);
+  const propFirm = str(body.propFirm).slice(0, 80);
+  const accountSize = str(body.accountSize).slice(0, 40);
+  const stage = str(body.stage).slice(0, 40);
+  const source = str(body.source).slice(0, 40);
+
   if (!name || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
     return json({ error: 'invalid' }, 400);
   }
 
   const ip = request.headers.get('cf-connecting-ip') ?? '0.0.0.0';
   const ua = (request.headers.get('user-agent') ?? '').slice(0, 200);
-  const lead = { ts: Date.now(), name, email, experience, goal, ip, ua };
+  const lead = {
+    ts: Date.now(),
+    name,
+    email,
+    phone,
+    country,
+    propFirm,
+    accountSize,
+    stage,
+    experience,
+    goal,
+    source,
+    ip,
+    ua,
+  };
 
   const key = `lead:${lead.ts}:${crypto.randomUUID().slice(0, 8)}`;
   await env.EDGE_LOG.put(key, JSON.stringify(lead));

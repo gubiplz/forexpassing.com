@@ -7,7 +7,7 @@
   <meta name="x-apple-disable-message-reformatting" />
   <meta name="color-scheme" content="light only" />
   <meta name="supported-color-schemes" content="light" />
-  <title>You're all in — your bundle is ready</title>
+  <title>Your payout cleared &mdash; here's the split</title>
   <!--[if mso]>
   <style type="text/css">
     table, td, div, p, a, h1, h2 { font-family: Arial, Helvetica, sans-serif !important; }
@@ -31,7 +31,7 @@
 
   <!-- Preheader (hidden) -->
   <div style="display:none; max-height:0; overflow:hidden; mso-hide:all; opacity:0; color:transparent; height:0; width:0;">
-    Your download is ready &mdash; and one 30-second step opens your private line to me for the next 14 days.
+    The payout from {{prop_firm}} cleared. Here is the split, the invoice, and what happens with the account next.
     &#8203;&#8203;&#8203;&#8203;&#8203;&#8203;&#8203;&#8203;&#8203;&#8203;&#8203;&#8203;&#8203;&#8203;&#8203;&#8203;
   </div>
 
@@ -49,35 +49,35 @@
             </td>
           </tr>
 
-          <!-- CONFIRM + DOWNLOAD (centered, airy) -->
+          <!-- CONFIRM + STATEMENT (centered, airy) -->
           <tr>
             <td bgcolor="#ffffff" class="px" align="center" style="background-color:#ffffff; padding:52px 56px 44px; text-align:center;">
 
               <p style="margin:0 0 18px; font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue',Helvetica,Arial,sans-serif; font-size:13px; font-weight:600; letter-spacing:0.6px; color:#15803d;">
-                &#10003;&nbsp;&nbsp;Payment confirmed
+                &#10003;&nbsp;&nbsp;Payout confirmed
               </p>
 
               <h1 class="h1" style="margin:0 0 14px; font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Helvetica Neue',Helvetica,Arial,sans-serif; font-size:40px; line-height:1.06; color:#1d1d1f; font-weight:700; letter-spacing:-0.8px;">
-                You're all in.
+                The payout<br />came through.
               </h1>
               <p style="margin:0 auto 30px; max-width:430px; font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue',Helvetica,Arial,sans-serif; font-size:17px; line-height:1.5; color:#6e6e73;">
-                The full bundle is yours &mdash; the AI Risk Officer System <span style="color:#1d1d1f;">plus 14 days with me in your DMs.</span> Two quick steps and you're set.
+                {{prop_firm}} released <span style="color:#1d1d1f;">{{payout_amount}}</span> from account {{account_id}} on {{payout_date}}. The full statement, trade by trade, is below.
               </p>
 
-              <!-- Download pill button -->
+              <!-- Statement pill button -->
               <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" class="btn">
                 <tr>
                   <td align="center" bgcolor="#15803d" style="background-color:#15803d; border-radius:980px;">
-                    <a href="https://forexpassing.com/ai-risk-officer-system-b1f7c6503b8c.pdf"
+                    <a href="{{statement_url}}"
                        style="display:inline-block; padding:15px 40px; font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue',Helvetica,Arial,sans-serif; font-size:16px; font-weight:600; color:#ffffff; border-radius:980px;">
-                      Download the PDF
+                      View the payout statement
                     </a>
                   </td>
                 </tr>
               </table>
               <p style="margin:16px 0 0; font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue',Helvetica,Arial,sans-serif; font-size:13px; line-height:1.5; color:#a1a1a6;">
                 Button not working?
-                <a href="https://forexpassing.com/ai-risk-officer-system-b1f7c6503b8c.pdf" style="color:#15803d;">Open the direct link</a>
+                <a href="{{statement_url}}" style="color:#15803d;">Open the direct link</a>
               </p>
             </td>
           </tr>
@@ -91,53 +91,75 @@
             </td>
           </tr>
 
-          <!-- ===== ONBOARDING (Step 2 — open the private line) ===== -->
+          <!-- ===== THE SPLIT ===== -->
           <tr>
             <td bgcolor="#ffffff" class="px" align="center" style="background-color:#ffffff; padding:52px 56px 8px; text-align:center;">
               <p style="margin:0 0 16px; font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue',Helvetica,Arial,sans-serif; font-size:13px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:#15803d;">
-                Your 1:1 &middot; Step two
+                The split
               </p>
               <h2 class="h2" style="margin:0 0 18px; font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Helvetica Neue',Helvetica,Arial,sans-serif; font-size:34px; line-height:1.06; color:#1d1d1f; font-weight:700; letter-spacing:-0.6px;">
-                Tell me where<br />to reach you.
+                You keep 70%.
               </h2>
               <p style="margin:0 auto 4px; max-width:450px; font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue',Helvetica,Arial,sans-serif; font-size:17px; line-height:1.55; color:#6e6e73;">
-                Give me your name, Telegram handle and the email you bought with. <span style="color:#1d1d1f;">I'll message you on Telegram</span> to open your private thread &mdash; your setups, my reads, for the next 14 days.
+                Our 30% is invoiced now, <span style="color:#1d1d1f;">after the money actually left the prop firm</span> &mdash; not before, and never for an attempt that produced nothing.
               </p>
             </td>
           </tr>
 
-          <!-- Onboarding card -->
+          <!-- Settlement card -->
           <tr>
             <td bgcolor="#ffffff" class="px" style="background-color:#ffffff; padding:28px 56px 12px;">
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f5f5f7; border-radius:22px;">
                 <tr>
                   <td style="padding:34px 34px 32px;">
 
+                    <!-- breakdown -->
                     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue',Helvetica,Arial,sans-serif; font-size:15px; line-height:1.5; color:#424245;">
-                      <tr><td valign="top" style="padding:0 12px 15px 0; color:#15803d; font-weight:bold;">&#10003;</td>
-                          <td style="padding:0 0 15px;"><span style="color:#1d1d1f; font-weight:600;">A direct line to me.</span> Screenshot any setup, get my honest read back &mdash; usually within the hour, before you risk a cent.</td></tr>
-                      <tr><td valign="top" style="padding:0 12px 15px 0; color:#15803d; font-weight:bold;">&#10003;</td>
-                          <td style="padding:0 0 15px;"><span style="color:#1d1d1f; font-weight:600;">I talk you out of the trade that blows the account</span> &mdash; the revenge entry, the FOMO chase, the stop you "just" want to move.</td></tr>
-                      <tr><td valign="top" style="padding:0 12px 0 0; color:#15803d; font-weight:bold;">&#10003;</td>
-                          <td style="padding:0;"><span style="color:#1d1d1f; font-weight:600;">No calls, no timezones, no camera</span> &mdash; just a direct thread whenever you're unsure, for two full weeks.</td></tr>
+                      <tr><td style="padding:0 0 12px;">Payout released by {{prop_firm}}</td>
+                          <td align="right" style="padding:0 0 12px; color:#1d1d1f; font-weight:600; white-space:nowrap;">{{payout_amount}}</td></tr>
+                      <tr><td style="padding:0 0 12px;">Forex Passing fee (30%)</td>
+                          <td align="right" style="padding:0 0 12px; color:#1d1d1f; font-weight:600; white-space:nowrap;">&minus; {{our_share}}</td></tr>
+                      <tr><td colspan="2" style="padding:0 0 12px;"><div style="height:1px; line-height:1px; font-size:1px; background-color:#dcdce1;">&nbsp;</div></td></tr>
+                      <tr><td style="padding:0;"><span style="color:#1d1d1f; font-weight:600;">Your share (70%)</span></td>
+                          <td align="right" style="padding:0; color:#1d1d1f; font-weight:600; white-space:nowrap;">{{your_share}}</td></tr>
                     </table>
 
-                    <!-- CTA -->
-                    <div align="center" style="text-align:center; margin-top:28px;">
+                    <div align="center" style="text-align:center; margin-top:26px;">
+                      <div style="font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Helvetica Neue',Helvetica,Arial,sans-serif; font-size:44px; line-height:1; font-weight:700; color:#1d1d1f; letter-spacing:-1px; margin:0 0 6px;">{{your_share}}</div>
+                      <div style="font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue',Helvetica,Arial,sans-serif; font-size:14px; color:#6e6e73; margin-bottom:24px;">Yours &middot; paid out by {{prop_firm}} to your own method</div>
+
                       <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" class="btn">
                         <tr>
                           <td align="center" bgcolor="#15803d" style="background-color:#15803d; border-radius:980px;">
-                            <a href="https://forexpassing.com/welcome?plan=bundle"
+                            <a href="{{invoice_url}}"
                                style="display:inline-block; padding:15px 44px; font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue',Helvetica,Arial,sans-serif; font-size:16px; font-weight:600; color:#ffffff; border-radius:980px;">
-                              Send me your details
+                              Download the invoice
                             </a>
                           </td>
                         </tr>
                       </table>
                       <div style="font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue',Helvetica,Arial,sans-serif; font-size:13px; line-height:1.5; color:#6e6e73; margin-top:16px;">
-                        Takes 30 seconds &mdash; then I take it from there.
+                        Settled per payout. <span style="color:#1d1d1f;">No monthly fee, no charge between payouts.</span>
                       </div>
                     </div>
+
+                    <!-- what happens with the account -->
+                    <div style="height:1px; line-height:1px; font-size:1px; background-color:#dcdce1; margin:28px 0 24px;">&nbsp;</div>
+
+                    <div align="center" style="text-align:center;">
+                      <div style="font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Helvetica Neue',Helvetica,Arial,sans-serif; font-size:20px; font-weight:700; color:#1d1d1f; line-height:1.25; letter-spacing:-0.3px; margin-bottom:22px;">
+                        What happens with the account
+                      </div>
+                    </div>
+
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue',Helvetica,Arial,sans-serif; font-size:15px; line-height:1.5; color:#424245;">
+                      <tr><td valign="top" style="padding:0 12px 15px 0; color:#15803d; font-weight:bold;">&#10003;</td>
+                          <td style="padding:0 0 15px;"><span style="color:#1d1d1f; font-weight:600;">Trading continues under the same agreement.</span> Same risk limits, same reporting, nothing to re-sign.</td></tr>
+                      <tr><td valign="top" style="padding:0 12px 15px 0; color:#15803d; font-weight:bold;">&#10003;</td>
+                          <td style="padding:0 0 15px;"><span style="color:#1d1d1f; font-weight:600;">The next payout window opens {{next_payout_date}}</span>, following the {{prop_firm}} payout cycle. We will request it with you, not behind your back &mdash; and only if the account is in profit. A profitable cycle is never guaranteed.</td></tr>
+                      <tr><td valign="top" style="padding:0 12px 0 0; color:#15803d; font-weight:bold;">&#10003;</td>
+                          <td style="padding:0;"><span style="color:#1d1d1f; font-weight:600;">Want to scale up, pause, or stop?</span> Tell us before the next window. We close open positions and hand the account back whenever you ask.</td></tr>
+                    </table>
 
                   </td>
                 </tr>
@@ -149,9 +171,10 @@
           <tr>
             <td bgcolor="#ffffff" class="px" align="center" style="background-color:#ffffff; padding:34px 56px 46px; text-align:center;">
               <p style="margin:0; font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue',Helvetica,Arial,sans-serif; font-size:15px; line-height:1.55; color:#6e6e73;">
-                Questions? Email us at
+                Something on the statement doesn't add up? Email
                 <a href="mailto:contact@forexpassing.com" style="color:#15803d; font-weight:600;">contact@forexpassing.com</a>
-                &mdash; we usually reply within the hour.
+                or message us on
+                <a href="https://t.me/forexpassing" style="color:#15803d; font-weight:600;">Telegram</a>.
               </p>
             </td>
           </tr>
@@ -161,10 +184,10 @@
             <td align="center" bgcolor="#0A0F0D" style="background-color:#0A0F0D; border-radius:0 0 20px 20px; padding:34px 40px 32px;">
               <img src="https://forexpassing.com/logo-email.png" width="140" height="25" alt="Forex Passing" style="display:block; width:140px; height:auto; margin:0 auto 18px;" />
               <p style="margin:0 0 14px; font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue',Helvetica,Arial,sans-serif; font-size:12px; line-height:1.6; color:#86868b; max-width:440px;">
-                Educational content. Not investment advice. Trading leveraged instruments carries a high risk of losing capital. Past performance does not guarantee future results.
+                Not investment advice. Trading leveraged instruments carries a high risk of losing capital. This payout describes one account and one period only. Past performance does not guarantee future results.
               </p>
               <p style="margin:0 0 6px; font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue',Helvetica,Arial,sans-serif; font-size:12px; line-height:1.6; color:#6e6e73;">
-                You're receiving this because you purchased from Forex Passing.
+                You're receiving this because Forex Passing manages an account for you.
               </p>
               <p style="margin:0; font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue',Helvetica,Arial,sans-serif; font-size:12px; line-height:1.6; color:#6e6e73;">
                 <a href="{{unsubscribe_url}}" style="color:#86868b; text-decoration:underline;">Unsubscribe</a>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Forex Passing — Watch the demo</title>
+<title>Forex Passing — How account management works</title>
 
 <!-- Google tag (gtag.js) — GA4 -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-SP9H8Q95C1"></script>
@@ -32,7 +32,7 @@ src="https://www.facebook.com/tr?id=1566242625059670&ev=PageView&noscript=1"
 /></noscript>
 <!-- End Meta Pixel Code -->
 
-<meta name="description" content="A short walkthrough of how the Forex Passing market-structure assistant reads price action and frames risk before an entry." />
+<meta name="description" content="A short walkthrough of how Forex Passing trades prop firm evaluations and funded accounts for clients: who places the orders, how the 70/30 split works, and when commission is charged." />
 <meta name="robots" content="noindex, nofollow" />
 <meta name="theme-color" content="#ffffff" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -48,7 +48,7 @@ src="https://www.facebook.com/tr?id=1566242625059670&ev=PageView&noscript=1"
 
 <style>
 /* ---- swatch placeholder while the Wistia web-component defines itself ---- */
-wistia-player[media-id='e2d7der6xi']:not(:defined){background:center / contain no-repeat url('https://fast.wistia.com/embed/medias/e2d7der6xi/swatch');display:block;filter:blur(5px);padding-top:56.25%;}
+wistia-player[media-id='e2d7der6xi']:not(:defined){background:center / contain no-repeat url('https://fast.wistia.com/embed/medias/e2d7der6xi/swatch');display:block;filter:blur(5px);padding-top:56.30%;}
 
 /* ===== Design tokens — ported from MoneyPage (light + teal) ===== */
 :root{
@@ -153,9 +153,17 @@ body{
 
 /* URGENCY + FINAL CTA */
 .mm-cta-sec{text-align:center;padding:44px 0 8px;scroll-margin-top:24px}
-.mm-cover-fig{display:flex;justify-content:center;margin-bottom:26px}
-.mm-cover-img{display:block;width:208px;max-width:54vw;height:auto;border-radius:12px;
-  border:1px solid var(--line);box-shadow:0 22px 54px rgba(8,20,15,.30)}
+.mm-terms-card{width:100%;max-width:380px;margin:0 auto 26px;background:#0c1512;color:#e8f0ec;
+  border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:22px;text-align:left;
+  box-shadow:0 22px 54px rgba(8,20,15,.30)}
+.mm-terms-title{display:block;font-family:'Anton',sans-serif;font-size:16px;letter-spacing:.06em;color:#fff;margin-bottom:14px}
+.mm-terms-rows{display:grid;gap:2px}
+.mm-terms-row{display:flex;align-items:baseline;justify-content:space-between;gap:14px;
+  padding:10px 0;border-bottom:1px solid rgba(255,255,255,.07)}
+.mm-terms-row:last-child{border-bottom:none}
+.mm-terms-row dt{font-size:13px;color:#9fb0a8}
+.mm-terms-row dd{font-size:14px;font-weight:700;color:#e8f0ec;text-align:right}
+.mm-terms-row dd.mm-terms-strong{font-family:'Anton',sans-serif;font-weight:400;font-size:22px;color:#39d98a}
 .mm-spots{display:inline-flex;align-items:flex-start;gap:10px;font-size:14px;font-weight:700;color:#b91c1c;
   background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:999px;padding:9px 18px;margin-bottom:24px}
 .mm-spots-dot{flex:none;width:8px;height:8px;margin-top:.52em;border-radius:50%;background:#ef4444;animation:mm-blink 1.4s infinite}
@@ -205,7 +213,9 @@ body{
 <!-- ===== VIDEO ===== -->
 <section class="mm-video-sec">
   <div class="mm-wrap">
-    <p class="mm-video-kicker">Watch this before you decide</p>
+    <!-- Current clip, kept on purpose until the management walkthrough is recorded.
+         To swap it, change the media-id here AND in the :not(:defined) rule above. -->
+    <p class="mm-video-kicker">Watch this before you apply</p>
     <div class="mm-video mm-reveal">
       <wistia-player media-id="e2d7der6xi" aspect="1.7777777777777777" player-color="#16a34a"></wistia-player>
     </div>
@@ -219,11 +229,12 @@ body{
       <div class="mm-panel-head">Next step after the video</div>
       <div class="mm-panel-body">
 
-        <span class="mm-eyebrow mm-eyebrow-teal mm-eyebrow-c">Built for skeptics</span>
-        <h2 class="mm-h2 mm-center">If you're skeptical, <span class="mm-teal">good.</span></h2>
+        <span class="mm-eyebrow mm-eyebrow-teal mm-eyebrow-c">Hands-free prop firm accounts</span>
+        <h2 class="mm-h2 mm-center">You bring the account. <span class="mm-teal">We trade it.</span></h2>
         <p class="mm-lead mm-lead-mid mm-center">
-          Every trader who finally got paid first had to decide whether a system could keep them disciplined.
-          That's why we show you the process, the proof, and the guarantee — before you buy.
+          Our traders run your evaluation and your funded account under the prop firm's own risk rules.
+          You do not place orders and you do not sit at charts. You get progress reports and payout updates.
+          Trading carries risk, so nobody can promise a pass — what we can put in writing is how we work and what we charge.
         </p>
 
         <!-- YOUR PATH -->
@@ -232,16 +243,16 @@ body{
           <div class="mm-path">
             <div class="mm-path-step mm-path-done">
               <span class="mm-path-num">&#10003;</span>
-              <span class="mm-path-t">Watch video</span>
+              <span class="mm-path-t">Watch the video</span>
             </div>
             <div class="mm-path-step mm-path-here">
               <span class="mm-path-badge">You are here</span>
               <span class="mm-path-num">2</span>
-              <span class="mm-path-t">Get your AI Risk Officer</span>
+              <span class="mm-path-t">Apply for management</span>
             </div>
             <div class="mm-path-step">
               <span class="mm-path-num">3</span>
-              <span class="mm-path-t">Trade with a verdict</span>
+              <span class="mm-path-t">Call, agreement, trading</span>
             </div>
           </div>
         </div>
@@ -249,32 +260,36 @@ body{
         <!-- WHAT YOU GET -->
         <div class="mm-keep-h">
           <svg viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z"/></svg>
-          What you get with the system
+          What managed trading means
         </div>
         <div class="mm-keep-grid">
           <div class="mm-keep-card">
             <span class="mm-keep-ico"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></span>
-            <span class="t">A clear <strong>TRADE / WAIT / NO-TRADE</strong> verdict before every entry.</span>
+            <span class="t"><strong>Our traders place every order</strong> and follow the firm's risk rules — daily loss, total drawdown, minimum trading days.</span>
           </div>
           <div class="mm-keep-card">
             <span class="mm-keep-ico"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></span>
-            <span class="t"><strong>No indicators</strong> — pure price action, structure &amp; volume.</span>
+            <span class="t"><strong>You keep 70% of the profit.</strong> Forex Passing keeps 30%.</span>
           </div>
           <div class="mm-keep-card">
             <span class="mm-keep-ico"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></span>
-            <span class="t"><strong>One-time $49.</strong> No subscription to get started.</span>
+            <span class="t">Our 30% is charged <strong>only after a real payout</strong> from the prop firm. No subscription for trying.</span>
           </div>
           <div class="mm-keep-card">
             <span class="mm-keep-ico"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></span>
-            <span class="t">You stay in <strong>full control of your own account.</strong></span>
+            <span class="t">If we break the rules and burn the account under our management, <strong>you get back what you paid us plus a $500 credit</strong> toward the next attempt — terms in the agreement, with a 120-day window.</span>
           </div>
           <div class="mm-keep-card">
             <span class="mm-keep-ico"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></span>
-            <span class="t">Covered by our <strong>refund guarantee</strong> if it doesn't deliver.</span>
+            <span class="t">A typical evaluation takes <strong>7 to 14 days</strong>, depending on the firm's rules and market conditions. It can take longer, and it can fail.</span>
           </div>
           <div class="mm-keep-card">
             <span class="mm-keep-ico"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></span>
-            <span class="t"><strong>Instant access</strong> — set up in minutes, works on any prop firm.</span>
+            <span class="t"><strong>The account stays in your name.</strong> You keep the platform login, watch every position, and the firm pays you directly.</span>
+          </div>
+          <div class="mm-keep-card">
+            <span class="mm-keep-ico"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></span>
+            <span class="t">We only work with firms whose rules <strong>allow a third party to trade the account</strong> — we confirm that for your firm before anything starts.</span>
           </div>
         </div>
 
@@ -283,20 +298,30 @@ body{
   </div>
 </section>
 
-<!-- ===== URGENCY + FINAL CTA ===== -->
+<!-- ===== RISK NOTE + FINAL CTA ===== -->
 <section class="mm-cta-sec" id="cta">
   <div class="mm-wrap mm-reveal">
-    <figure class="mm-cover-fig">
-      <picture>
-        <source srcset="/cover-us.webp" type="image/webp" />
-        <img class="mm-cover-img" src="/cover-us.jpg" width="208" height="310"
-             alt="Forex Passing — Stop Blowing Funded Challenges (Edition 2026)" loading="lazy" />
-      </picture>
-    </figure>
-    <div class="mm-spots"><span class="mm-spots-dot"></span> We don't have many founder seats left — get instant access now.</div>
+    <!-- Terms card instead of a product shot: there is no product to picture, and
+         the numbers are the thing people actually want to see before applying. -->
+    <div class="mm-terms-card">
+      <span class="mm-terms-title">TERMS AT A GLANCE</span>
+      <dl class="mm-terms-rows">
+        <div class="mm-terms-row"><dt>Your share</dt><dd class="mm-terms-strong">70%</dd></div>
+        <div class="mm-terms-row"><dt>Our share</dt><dd>30%</dd></div>
+        <div class="mm-terms-row"><dt>When we get paid</dt><dd>After a released payout</dd></div>
+        <div class="mm-terms-row"><dt>Monthly fee</dt><dd>None</dd></div>
+        <div class="mm-terms-row"><dt>Typical evaluation</dt><dd>7–14 days</dd></div>
+        <div class="mm-terms-row"><dt>Account owner</dt><dd>You</dd></div>
+      </dl>
+    </div>
+    <div class="mm-spots"><span class="mm-spots-dot"></span> Trading carries risk. No one can guarantee that an evaluation is passed or that a payout follows.</div>
     <div class="mm-cta-final">
-      <a href="https://buy.stripe.com/eVq7sN0KW9w6enl3QacMM0c" class="mm-btn mm-btn-lg mm-btn-full" rel="noopener nofollow" onclick="window.fbq&&fbq('track','AddToCart',{content_name:'AI Risk Officer System',value:49,currency:'USD'});window.gtag&&gtag('event','add_to_cart',{currency:'USD',value:49,items:[{item_name:'AI Risk Officer System'}]})">Build Your AI Risk Officer — $49</a>
-      <p class="mm-cta-fine">Secure checkout · 14-day money-back guarantee.</p>
+      <!-- The AddToCart / add_to_cart event names are kept on purpose so the running
+           Meta campaigns keep optimising against the same signal; the $49 value was
+           removed because applying costs nothing. -->
+      <a href="/meta#apply" class="mm-btn mm-btn-lg mm-btn-full" rel="noopener" onclick="window.fbq&&fbq('track','AddToCart',{content_name:'Management application'});window.gtag&&gtag('event','add_to_cart',{items:[{item_name:'Management application'}]})">Apply for management</a>
+      <p class="mm-cta-fine">Nothing to pay to apply. Our 30% is charged only after a real payout. We confirm with your prop firm that third-party management is allowed before we start.</p>
+      <p class="mm-cta-fine">Not ready to apply? <a href="https://t.me/forexpassing" rel="noopener" style="color:var(--teal);font-weight:700">Join the free Telegram community</a> — live sessions, no application needed.</p>
     </div>
   </div>
 </section>
@@ -304,14 +329,14 @@ body{
 <footer class="mm-footer">
   <div class="mm-wrap mm-footer-center">
     <img class="mm-logo-img mm-logo-img-sm" src="/logo.svg" width="188" height="24" alt="Forex Passing" />
-    <p class="mm-footer-legal">This material is for educational purposes only. It is not investment advice or a recommendation of any kind. Trading leveraged instruments carries a high risk of losing capital. Individual results; past performance does not guarantee future results.</p>
+    <p class="mm-footer-legal">Forex Passing trades prop firm evaluation and funded accounts on behalf of clients, under a written management agreement. We only work with firms whose rules allow a third party to trade the account, and we confirm this for each firm before we start. This page is not investment advice or a recommendation of any kind. Trading leveraged instruments carries a high risk of losing capital. Passing an evaluation and receiving a payout are never guaranteed; past performance does not guarantee future results.</p>
     <p class="mm-footer-copy">© <span id="mm-year"></span> Forex Passing. All rights reserved.</p>
   </div>
 </footer>
 
 <!-- STICKY CTA -->
 <div class="mm-sticky-bar">
-  <a href="#cta" class="mm-sticky-cta">Get the System · $49</a>
+  <a href="#cta" class="mm-sticky-cta">Apply for management</a>
 </div>
 
 <script>
