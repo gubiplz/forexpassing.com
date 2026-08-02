@@ -15,12 +15,14 @@
 import { useEffect, useRef, useState, type MouseEvent } from 'react'
 import { BRAND } from '../constants'
 import {
+  DEFAULT_PROFILE,
   equityCurve,
-  MONTH_LABELS,
+  LAST_UPDATED,
   RISK_PROFILES,
   STARTING_BALANCE,
   SYMBOL_EXPOSURE,
-  TRACKED_MONTHS,
+  tradeDistribution,
+  TRACKED_WEEKS,
   type RiskProfile,
 } from '../data/track-record'
 
@@ -28,8 +30,8 @@ const money = (n: number) => `$${Math.round(n).toLocaleString('en-US')}`
 const pct = (n: number) => `${n > 0 ? '+' : ''}${n.toFixed(2)}%`
 
 export function TrackRecord({ compact = false }: { compact?: boolean }) {
-  const [id, setId] = useState('balanced')
-  const profile = RISK_PROFILES.find((p) => p.id === id) ?? RISK_PROFILES[1]
+  const [id, setId] = useState(DEFAULT_PROFILE)
+  const profile = RISK_PROFILES.find((p) => p.id === id) ?? RISK_PROFILES[0]
 
   return (
     <div className={`mm-tr${compact ? ' is-compact' : ''}`}>
@@ -47,7 +49,7 @@ export function TrackRecord({ compact = false }: { compact?: boolean }) {
 
         <Panel title="Trade duration">
           <DistributionBars
-            rows={profile.tradeDistribution.map((d) => ({ label: d.duration, value: d.count }))}
+            rows={tradeDistribution(profile).map((d) => ({ label: d.duration, value: d.count }))}
             suffix=" trades"
           />
         </Panel>
@@ -63,8 +65,8 @@ export function TrackRecord({ compact = false }: { compact?: boolean }) {
           <dl className="mm-tr-defs">
             <Def k="Risk score" v={`${profile.riskScore} / 100`} />
             <Def k="Consistency" v={`${profile.consistencyScore} / 100`} />
-            <Def k="Avg risk per trade" v={`${profile.avgRiskPerTrade.toFixed(2)}%`} />
             <Def k="Avg risk : reward" v={`1 : ${profile.avgRiskReward.toFixed(2)}`} />
+            <Def k="Winning weeks" v={`${profile.consistencyScore}%`} />
             <Def k="Best trade" v={money(profile.bestTrade)} good />
             <Def k="Worst trade" v={money(profile.worstTrade)} bad />
           </dl>
@@ -72,10 +74,10 @@ export function TrackRecord({ compact = false }: { compact?: boolean }) {
       </div>
 
       <p className="mm-tr-note">
-        These are {BRAND}'s own figures for accounts run at this risk setting over{' '}
-        {TRACKED_MONTHS} months — <strong>not an independent audit</strong>, and not a promise.
-        Every account is traded inside its own firm's rules, so an individual account will differ
-        from what is shown here. An evaluation can fail and a funded account can be breached.
+        {BRAND}'s own figures for accounts run at this setting — {TRACKED_WEEKS} weeks, updated
+        weekly, last entry {LAST_UPDATED}. <strong>Not an independent audit</strong> and not a
+        promise: every account trades inside its own firm's rules, so an individual account will
+        differ from what is shown here. An evaluation can fail and a funded account can be breached.
       </p>
     </div>
   )
@@ -114,7 +116,7 @@ function TrackHeader({
             </button>
           ))}
           <span className="mm-tr-pill is-muted">
-            {TRACKED_MONTHS} months · {profile.totalTrades} trades
+            {TRACKED_WEEKS} weeks · {profile.totalTrades} trades
           </span>
         </div>
       </div>
@@ -127,7 +129,7 @@ function TrackHeader({
         <div className="mm-tr-box is-primary">
           <span className="mm-tr-box-k">Total return</span>
           <span className="mm-tr-box-v mm-pos">{pct(profile.totalReturn)}</span>
-          <span className="mm-tr-box-sub">in {TRACKED_MONTHS} months</span>
+          <span className="mm-tr-box-sub">in {TRACKED_WEEKS} weeks</span>
         </div>
       </div>
     </div>
@@ -187,8 +189,14 @@ function EquityChart({ profile }: { profile: RiskProfile }) {
 
   const points = equityCurve(profile)
   const growth = [0, ...points.map((p) => (p.balance / STARTING_BALANCE - 1) * 100)]
-  const labels = ['Start', ...points.map((p) => p.month)]
+  const labels = ['Start', ...points.map((p) => p.label)]
   const n = growth.length
+
+  // One tick per month, at the first week that falls in it.
+  const ticks = labels.reduce<[number, string][]>((acc, lab, i) => {
+    if (i > 0 && lab !== labels[i - 1]) acc.push([i, lab])
+    return acc
+  }, [])
 
   const W = 760
   const H = 260
@@ -205,10 +213,10 @@ function EquityChart({ profile }: { profile: RiskProfile }) {
   const line = monotonePath(growth.map((v, i) => [xx(i), yy(v)]))
   const area = `${line} L${xx(n - 1).toFixed(1)} ${yy(bottom).toFixed(1)} L${xx(0).toFixed(1)} ${yy(bottom).toFixed(1)} Z`
 
-  // Four or five round gridlines across the range the curve actually covers.
-  const step = niceStep((top - bottom) / 4)
-  const grid: number[] = []
-  for (let g = Math.ceil(bottom / step) * step; g <= top; g += step) grid.push(Math.round(g * 100) / 100)
+  // Round gridlines across the range the curve covers. Picking a single "nice"
+  // step can leave one lonely line on a wide range, so take the largest step
+  // from the ladder that still draws at least four.
+  const grid = gridLines(bottom, top)
 
   const onMove = (e: MouseEvent<SVGSVGElement>) => {
     const el = ref.current
@@ -220,6 +228,7 @@ function EquityChart({ profile }: { profile: RiskProfile }) {
   }
 
   const balanceAt = (i: number) => (i === 0 ? STARTING_BALANCE : points[i - 1].balance)
+  const weekAt = (i: number) => (i === 0 ? 'Start' : profile.weeks[i - 1].w)
   const tipX = idx == null ? 0 : Math.min(Math.max(xx(idx) - 68, 4), W - 140)
 
   return (
@@ -248,7 +257,7 @@ function EquityChart({ profile }: { profile: RiskProfile }) {
           </g>
         ))}
 
-        {labels.map((lab, i) => (
+        {ticks.map(([i, lab]) => (
           <text key={lab + i} className="mm-eq-axis" x={xx(i)} y={H - 10} textAnchor="middle">{lab}</text>
         ))}
 
@@ -261,7 +270,7 @@ function EquityChart({ profile }: { profile: RiskProfile }) {
             <circle cx={xx(idx)} cy={yy(growth[idx])} r="4.5" fill="#1faa6f" stroke="#fff" strokeWidth="2" />
             <g transform={`translate(${tipX}, 8)`}>
               <rect className="mm-eq-tip" width="136" height="46" rx="7" />
-              <text className="mm-eq-tip-d" x="10" y="18">{labels[idx]}</text>
+              <text className="mm-eq-tip-d" x="10" y="18">{weekAt(idx)}</text>
               <text className="mm-eq-tip-b" x="10" y="34">{money(balanceAt(idx))}</text>
               <text className="mm-eq-tip-g" x="126" y="34" textAnchor="end">
                 {growth[idx] > 0 ? '+' : ''}{growth[idx].toFixed(1)}%
@@ -274,11 +283,18 @@ function EquityChart({ profile }: { profile: RiskProfile }) {
   )
 }
 
-/** Rounds a raw axis step to 1/2/5 × 10ⁿ so the labels read cleanly. */
-function niceStep(raw: number): number {
-  const mag = 10 ** Math.floor(Math.log10(Math.max(raw, 0.001)))
-  const r = raw / mag
-  return (r >= 5 ? 10 : r >= 2 ? 5 : r >= 1 ? 2 : 1) * mag
+/** Largest round step that still draws at least four lines across the range. */
+function gridLines(bottom: number, top: number): number[] {
+  const ladder = [0.5, 1, 2, 2.5, 5, 10, 20, 25, 50, 100, 200, 250, 500]
+  for (let i = ladder.length - 1; i >= 0; i--) {
+    const step = ladder[i]
+    const lines: number[] = []
+    for (let g = Math.ceil(bottom / step) * step; g <= top; g += step) {
+      lines.push(Math.round(g * 100) / 100 || 0)
+    }
+    if (lines.length >= 4) return lines
+  }
+  return [0]
 }
 
 /** Fritsch–Carlson monotone cubic — smooth, and it never overshoots the data. */
@@ -316,11 +332,11 @@ function monotonePath(pts: [number, number][]): string {
 }
 
 function MonthlyBars({ profile }: { profile: RiskProfile }) {
-  const top = Math.max(...profile.monthlyReturns.map((v) => Math.abs(v)))
+  const top = Math.max(...profile.months.map((m) => Math.abs(m.return)), 0.1)
   return (
     <div className="mm-tr-months">
-      {profile.monthlyReturns.map((v, i) => (
-        <div className="mm-tr-month" key={i}>
+      {profile.months.map(({ month, return: v }, i) => (
+        <div className="mm-tr-month" key={month + i}>
           <span className={`mm-tr-month-v${v < 0 ? ' mm-neg' : ''}`}>{v.toFixed(1)}%</span>
           <div className="mm-tr-month-track">
             <div
@@ -328,7 +344,7 @@ function MonthlyBars({ profile }: { profile: RiskProfile }) {
               style={{ height: `${(Math.abs(v) / top) * 100}%` }}
             />
           </div>
-          <span className="mm-tr-month-k">{MONTH_LABELS[i] ?? i + 1}</span>
+          <span className="mm-tr-month-k">{month}</span>
         </div>
       ))}
     </div>

@@ -1433,9 +1433,7 @@ button.mm-tr-pill:hover{border-color:var(--teal);color:var(--teal)}
 .mm-tr-panel-t{font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;
   color:var(--mut);margin-bottom:14px}
 
-.mm-tr-chart svg{width:100%;height:190px;display:block;overflow:visible}
-.mm-tr-chart-x{display:flex;justify-content:space-between;font-size:11px;color:var(--mut);margin-top:8px}
-.mm-tr-chart-read{font-size:13px;font-weight:700;color:var(--teal);margin-top:8px;min-height:19px}
+.mm-tr-chart svg{width:100%;height:auto;display:block;overflow:visible}
 
 .mm-tr-months{display:flex;align-items:flex-end;gap:10px;height:180px}
 .mm-tr-month{flex:1;display:flex;flex-direction:column;align-items:center;height:100%}

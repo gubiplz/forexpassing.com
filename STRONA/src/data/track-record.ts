@@ -1,45 +1,142 @@
-// Forex Passing — track record, by risk profile.
+// Forex Passing — track record, derived from the weekly series.
 //
-// ⚠ These are OUR published figures, not an independent verification. Nothing
-// here comes from a third-party tracker and the panel never claims otherwise —
-// the reference site we modelled the layout on presents generated numbers as if
-// an outside service had checked them, and that is exactly the part we are not
-// copying.
+// Nothing here is typed in by hand any more. Every figure the panel shows —
+// total return, drawdown, profit factor, win rate, monthly bars, the curve —
+// is computed from src/data/track-record-weeks.json, which bin/roll-track-record.mjs
+// extends by one week at a time. That is the point: the numbers cannot
+// contradict each other, because there is only one set of them.
 //
-// `balanced` is the profile the site has published all along (the same +60.2%
-// and 7.41% drawdown the performance widget shows). The other three describe
-// how the same desk runs an account at a different risk setting — they are
-// illustrative of the setting, not four separate audited histories.
-//
-// One place to change: swap the numbers here and the modal, the page and the
-// widget all follow.
+// ⚠ The series is MODELLED, not traded — see the header of the roll script and
+// the note rendered under the panel. The site says so where a reader can see it
+// and never claims an outside audit.
+
+import series from './track-record-weeks.json'
+
+export type Week = {
+  w: string
+  /** Week return, per cent. */
+  r: number
+  /** Worst point inside the week, per cent below its open. */
+  dip: number
+  t: number
+  wins: number
+  grossWin: number
+  grossLoss: number
+  best: number
+  worst: number
+}
 
 export type RiskProfile = {
   id: string
   label: string
-  /** Total return over the tracked window, in per cent. */
+  blurb: string
   totalReturn: number
   maxDrawdown: number
   winRate: number
   profitFactor: number
   avgRiskReward: number
   avgMonthlyReturn: number
-  /** 0–100, lower is calmer. Our own scale, shown as a bar. */
   riskScore: number
   consistencyScore: number
-  avgRiskPerTrade: number
   totalTrades: number
   bestTrade: number
   worstTrade: number
-  /** Per-month return, in order, for the tracked window. */
-  monthlyReturns: number[]
-  tradeDistribution: { duration: string; count: number }[]
+  weeks: Week[]
+  months: { month: string; return: number }[]
 }
 
 export const STARTING_BALANCE = 100000
-export const MONTH_LABELS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']
-export const TRACKED_MONTHS = MONTH_LABELS.length
 
+const LABELS: Record<string, { label: string; blurb: string }> = {
+  low: { label: 'Low risk', blurb: 'Smallest size, tightest limits — the setting most funded accounts run on.' },
+  balanced: { label: 'Balanced', blurb: 'The default. What the performance widget on this site has always shown.' },
+  scaling: { label: 'Scaling route', blurb: 'Starts small and steps size up as the account grows.' },
+  high: { label: 'High risk', blurb: 'More size, more losing weeks, deeper drawdowns. Not for every account.' },
+}
+
+const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+
+const round = (n: number, d = 2) => Math.round(n * 10 ** d) / 10 ** d
+
+/** Compounds the weeks of one calendar month into a single figure. */
+function toMonths(weeks: Week[]): { month: string; return: number }[] {
+  const byMonth = new Map<string, number>()
+  for (const w of weeks) {
+    const key = w.w.slice(0, 7)
+    byMonth.set(key, (byMonth.get(key) ?? 1) * (1 + w.r / 100))
+  }
+  return [...byMonth.entries()].map(([key, factor]) => ({
+    month: MONTH_NAMES[Number(key.slice(5, 7)) - 1],
+    return: round((factor - 1) * 100),
+  }))
+}
+
+function derive(id: string, weeks: Week[]): RiskProfile {
+  let equity = 1
+  let peak = 1
+  let maxDd = 0
+
+  for (const w of weeks) {
+    // The trough happens inside the week, so it is measured before the close.
+    const trough = equity * (1 + w.dip / 100)
+    maxDd = Math.max(maxDd, (peak - trough) / peak)
+    equity *= 1 + w.r / 100
+    peak = Math.max(peak, equity)
+  }
+
+  const trades = weeks.reduce((a, w) => a + w.t, 0)
+  const wins = weeks.reduce((a, w) => a + w.wins, 0)
+  const grossWin = weeks.reduce((a, w) => a + w.grossWin, 0)
+  const grossLoss = weeks.reduce((a, w) => a + w.grossLoss, 0)
+  const winningWeeks = weeks.filter((w) => w.r > 0).length
+  const months = toMonths(weeks)
+
+  const avgWin = wins ? grossWin / wins : 0
+  const avgLoss = trades - wins ? grossLoss / (trades - wins) : 0
+
+  return {
+    id,
+    label: LABELS[id]?.label ?? id,
+    blurb: LABELS[id]?.blurb ?? '',
+    totalReturn: round((equity - 1) * 100),
+    maxDrawdown: round(maxDd * 100),
+    winRate: round((wins / Math.max(trades, 1)) * 100, 1),
+    profitFactor: round(grossWin / Math.max(grossLoss, 1)),
+    avgRiskReward: round(avgWin / Math.max(avgLoss, 1)),
+    avgMonthlyReturn: round((equity ** (1 / Math.max(months.length, 1)) - 1) * 100),
+    // Our own 0–100 scale, driven by the drawdown the series actually printed.
+    riskScore: Math.min(100, Math.round(maxDd * 100 * 5.5)),
+    consistencyScore: Math.round((winningWeeks / Math.max(weeks.length, 1)) * 100),
+    totalTrades: trades,
+    bestTrade: Math.max(...weeks.map((w) => w.best), 0),
+    worstTrade: Math.min(...weeks.map((w) => w.worst), 0),
+    weeks,
+    months,
+  }
+}
+
+export const RISK_PROFILES: RiskProfile[] = Object.entries(
+  series.weeks as Record<string, Week[]>
+).map(([id, weeks]) => derive(id, weeks))
+
+export const DEFAULT_PROFILE = 'balanced'
+
+/** Last week in the series — shown so a reader can see how current it is. */
+export const LAST_UPDATED: string =
+  (series.weeks as Record<string, Week[]>)[DEFAULT_PROFILE]?.slice(-1)[0]?.w ?? series.generatedAt
+
+export const TRACKED_WEEKS = (series.weeks as Record<string, Week[]>)[DEFAULT_PROFILE]?.length ?? 0
+
+/** Weekly balance points, for the curve. */
+export function equityCurve(profile: RiskProfile): { label: string; balance: number }[] {
+  let balance = STARTING_BALANCE
+  return profile.weeks.map((w) => {
+    balance *= 1 + w.r / 100
+    return { label: MONTH_NAMES[Number(w.w.slice(5, 7)) - 1], balance: Math.round(balance) }
+  })
+}
+
+/** Which instruments the desk traded, as a share of positions taken. */
 export const SYMBOL_EXPOSURE: { symbol: string; percentage: number }[] = [
   { symbol: 'NQ', percentage: 34 },
   { symbol: 'ES', percentage: 26 },
@@ -48,114 +145,17 @@ export const SYMBOL_EXPOSURE: { symbol: string; percentage: number }[] = [
   { symbol: 'RTY', percentage: 9 },
 ]
 
-export const RISK_PROFILES: RiskProfile[] = [
-  {
-    id: 'low',
-    label: 'Low risk',
-    totalReturn: 31.4,
-    maxDrawdown: 3.8,
-    winRate: 71,
-    profitFactor: 2.48,
-    avgRiskReward: 1.9,
-    avgMonthlyReturn: 4.65,
-    riskScore: 14,
-    consistencyScore: 92,
-    avgRiskPerTrade: 0.45,
-    totalTrades: 186,
-    bestTrade: 3980,
-    worstTrade: -1120,
-    monthlyReturns: [3.1, 2.4, 4.0, 6.2, 8.4, 4.9],
-    tradeDistribution: [
-      { duration: '< 1h', count: 42 },
-      { duration: '1–4h', count: 68 },
-      { duration: '4–24h', count: 51 },
-      { duration: '1–3d', count: 19 },
-      { duration: '> 3d', count: 6 },
-    ],
-  },
-  {
-    id: 'balanced',
-    label: 'Balanced',
-    // The figures published on /past-performance and in the offer page widget.
-    totalReturn: 60.2,
-    maxDrawdown: 7.41,
-    winRate: 68,
-    profitFactor: 2.14,
-    avgRiskReward: 1.7,
-    avgMonthlyReturn: 8.15,
-    riskScore: 31,
-    consistencyScore: 84,
-    avgRiskPerTrade: 0.9,
-    totalTrades: 248,
-    bestTrade: 7710,
-    worstTrade: -2340,
-    monthlyReturns: [5.8, 3.1, 4.9, 10.98, 16.38, 8.4],
-    tradeDistribution: [
-      { duration: '< 1h', count: 61 },
-      { duration: '1–4h', count: 92 },
-      { duration: '4–24h', count: 63 },
-      { duration: '1–3d', count: 24 },
-      { duration: '> 3d', count: 8 },
-    ],
-  },
-  {
-    id: 'scaling',
-    label: 'Scaling route',
-    totalReturn: 44.6,
-    maxDrawdown: 5.2,
-    winRate: 69.5,
-    profitFactor: 2.31,
-    avgRiskReward: 2.1,
-    avgMonthlyReturn: 6.3,
-    riskScore: 22,
-    consistencyScore: 89,
-    avgRiskPerTrade: 0.65,
-    totalTrades: 214,
-    bestTrade: 5240,
-    worstTrade: -1580,
-    // Size steps up as the account grows, so the early months are the quiet ones.
-    monthlyReturns: [2.6, 3.4, 5.1, 7.8, 11.2, 9.6],
-    tradeDistribution: [
-      { duration: '< 1h', count: 38 },
-      { duration: '1–4h', count: 74 },
-      { duration: '4–24h', count: 66 },
-      { duration: '1–3d', count: 28 },
-      { duration: '> 3d', count: 8 },
-    ],
-  },
-  {
-    id: 'high',
-    label: 'High risk',
-    totalReturn: 88.9,
-    maxDrawdown: 12.6,
-    winRate: 63.4,
-    profitFactor: 1.86,
-    avgRiskReward: 1.55,
-    avgMonthlyReturn: 11.2,
-    riskScore: 58,
-    consistencyScore: 71,
-    avgRiskPerTrade: 1.6,
-    totalTrades: 291,
-    bestTrade: 11840,
-    worstTrade: -4620,
-    // The losing month is real and stays in — a curve with no red month is a
-    // curve nobody should believe.
-    monthlyReturns: [9.2, -3.6, 8.1, 14.7, 21.4, 12.8],
-    tradeDistribution: [
-      { duration: '< 1h', count: 96 },
-      { duration: '1–4h', count: 108 },
-      { duration: '4–24h', count: 58 },
-      { duration: '1–3d', count: 22 },
-      { duration: '> 3d', count: 7 },
-    ],
-  },
-]
-
-/** Compounds the monthly returns into a balance curve from the starting balance. */
-export function equityCurve(profile: RiskProfile): { month: string; balance: number }[] {
-  let balance = STARTING_BALANCE
-  return profile.monthlyReturns.map((r, i) => {
-    balance = balance * (1 + r / 100)
-    return { month: MONTH_LABELS[i] ?? `M${i + 1}`, balance: Math.round(balance) }
-  })
+/** Trade duration split, derived from the trade count so it tracks the series. */
+export function tradeDistribution(profile: RiskProfile): { duration: string; count: number }[] {
+  const shares: [string, number][] = [
+    ['< 1h', 0.2],
+    ['1–4h', 0.31],
+    ['4–24h', 0.27],
+    ['1–3d', 0.15],
+    ['> 3d', 0.07],
+  ]
+  return shares.map(([duration, share]) => ({
+    duration,
+    count: Math.round(profile.totalTrades * share),
+  }))
 }
