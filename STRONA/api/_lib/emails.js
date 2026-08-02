@@ -170,8 +170,31 @@ export function qualifiedEmail({ name }) {
       to this message.
     </p>`;
 
+  const text = [
+    `Hey ${firstName(name)},`,
+    '',
+    'Your application has been accepted. Our desk is ready to run your prop firm',
+    'evaluation and manage the funded account on your behalf.',
+    '',
+    'WHAT HAPPENS NEXT',
+    '1. Message us on Telegram — onboarding happens there.',
+    "2. We check your firm's rules before we touch anything.",
+    '3. Agreement in writing, then we trade. You keep 70% of every payout;',
+    '   we invoice 30% only once the money has reached you.',
+    '',
+    `Open Telegram: ${TELEGRAM}`,
+    '',
+    'Someone from the team will reach out within one business day.',
+    'Nothing has been charged and nothing is owed.',
+    '',
+    `${BRAND} · https://${SITE} · ${CONTACT}`,
+    'Trading carries risk. A prop firm evaluation can fail and no outcome is',
+    'guaranteed. Nothing here is investment advice.',
+  ].join('\n');
+
   return {
     subject: `Your ${BRAND} application was accepted`,
+    text,
     html: shell({
       eyebrow: 'Application accepted',
       heading: 'You’re in.',
@@ -219,8 +242,31 @@ export function notQualifiedEmail({ name }) {
       message.
     </p>`;
 
+  const text = [
+    `Hey ${firstName(name)},`,
+    '',
+    'Thank you for taking the time to fill in the application.',
+    '',
+    'Based on your answers we are not taking this on right now. That is not a',
+    'judgement on you as a trader — it usually comes down to timing, or to the',
+    'account not being ready yet. We would rather say so than take your time.',
+    '',
+    'WHAT USUALLY CHANGES THE ANSWER',
+    '- You can fund an evaluation comfortably.',
+    '- Your prop firm permits third-party trading.',
+    '- You want to start in the next few weeks.',
+    '',
+    `If any of that changes, apply again or message us: ${TELEGRAM}`,
+    'Nothing has been charged and nothing is owed.',
+    '',
+    `${BRAND} · https://${SITE} · ${CONTACT}`,
+    'Trading carries risk. A prop firm evaluation can fail and no outcome is',
+    'guaranteed. Nothing here is investment advice.',
+  ].join('\n');
+
   return {
     subject: `About your ${BRAND} application`,
+    text,
     html: shell({
       eyebrow: 'Application reviewed',
       heading: 'Not this time.',
@@ -239,7 +285,7 @@ export function notQualifiedEmail({ name }) {
  * already been recorded by the time this runs, and a mail outage must never
  * turn a captured lead into a 500 for the person who just applied.
  */
-export async function sendEmail({ to, subject, html }) {
+export async function sendEmail({ to, subject, html, text }) {
   const key = process.env.RESEND_API_KEY;
   if (!key) {
     console.warn('[email] RESEND_API_KEY not set — skipping', subject);
@@ -258,7 +304,22 @@ export async function sendEmail({ to, subject, html }) {
         authorization: `Bearer ${key}`,
         'content-type': 'application/json',
       },
-      body: JSON.stringify({ from, to: [to], subject, html, reply_to: CONTACT }),
+      body: JSON.stringify({
+        from,
+        to: [to],
+        subject,
+        html,
+        // A plain-text part is one of the strongest deliverability signals there
+        // is: HTML-only mail scores badly with every major filter.
+        text,
+        reply_to: CONTACT,
+        headers: {
+          // Gmail and Yahoo expect these on anything they treat as bulk, and
+          // they cost nothing on transactional mail.
+          'List-Unsubscribe': `<mailto:${CONTACT}?subject=unsubscribe>`,
+          'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+        },
+      }),
     });
     if (!res.ok) {
       console.error('[email] resend rejected', res.status, (await res.text()).slice(0, 300));

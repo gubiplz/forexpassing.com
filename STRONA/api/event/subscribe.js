@@ -89,17 +89,21 @@ export default async function handler(req, res) {
     }
   }
 
-  // Into the team channel first — that is where applications are actually read.
-  const posted = await sendLeadToTelegram(lead);
-  console.log('[lead] telegram', posted ? 'posted' : 'not posted');
-
-  // Confirmation email. Best-effort by design — the application is already
-  // logged and forwarded above, so a mail failure must not fail the request for
-  // the person who just applied.
+  // Channel post and confirmation email go out together rather than one after
+  // the other: they are independent, and running them in sequence made the
+  // applicant wait for both. Both are best-effort — the lead is already logged
+  // and forwarded above, so neither may turn a captured application into a 500
+  // for the person who just filled the form in.
   const mail =
-    lead.outcome === 'qualified' ? qualifiedEmail({ name: lead.name }) : notQualifiedEmail({ name: lead.name });
-  const sent = await sendEmail({ to: lead.email, subject: mail.subject, html: mail.html });
-  console.log('[lead] email', lead.outcome, sent ? 'sent' : 'not sent');
+    lead.outcome === 'qualified'
+      ? qualifiedEmail({ name: lead.name })
+      : notQualifiedEmail({ name: lead.name });
+
+  const [posted, sent] = await Promise.all([
+    sendLeadToTelegram(lead),
+    sendEmail({ to: lead.email, subject: mail.subject, html: mail.html, text: mail.text }),
+  ]);
+  console.log('[lead]', lead.outcome, 'telegram:', posted, 'email:', sent);
 
   res.status(200).json({ ok: true });
 }
