@@ -2,6 +2,10 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "cleanUrls": true,
   "trailingSlash": false,
+  "redirects": [
+    { "source": "/regulamin", "destination": "/terms", "permanent": true },
+    { "source": "/polityka-prywatnosci", "destination": "/privacy", "permanent": true }
+  ],
   "rewrites": [
     {
       "source": "/meta",
@@ -21,6 +25,22 @@
     },
     {
       "source": "/tiktok-funnel",
+      "destination": "/"
+    },
+    {
+      "source": "/payouts",
+      "destination": "/"
+    },
+    {
+      "source": "/past-performance",
+      "destination": "/"
+    },
+    {
+      "source": "/reviews",
+      "destination": "/"
+    },
+    {
+      "source": "/contract",
       "destination": "/"
     }
   ]

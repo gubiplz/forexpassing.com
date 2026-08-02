@@ -23,6 +23,22 @@ const MONEY_PATHS = new Set([
 ]);
 
 export function classifyByPath(pathname: string): Classification {
-  const p = pathname.replace(/\/+$/, '').toLowerCase() || '/';
-  return MONEY_PATHS.has(p) ? 'human' : 'bot';
+  return MONEY_PATHS.has(normalisePath(pathname)) ? 'human' : 'bot';
+}
+
+// Footer subpages. These render their own component regardless of any verdict —
+// a visitor who opens /reviews wants the reviews page, not a classification.
+// Keep in sync with FOOTER_LINKS in ../pages/shared.tsx and ROUTES in
+// bin/emit-routes.mjs.
+export const SUB_PATHS = ['payouts', 'past-performance', 'reviews', 'contract'] as const;
+
+export type SubPageKey = (typeof SUB_PATHS)[number];
+
+export function subPageFor(pathname: string): SubPageKey | null {
+  const slug = normalisePath(pathname).slice(1);
+  return (SUB_PATHS as readonly string[]).includes(slug) ? (slug as SubPageKey) : null;
+}
+
+function normalisePath(pathname: string): string {
+  return pathname.replace(/\.html$/i, '').replace(/\/+$/, '').toLowerCase() || '/';
 }

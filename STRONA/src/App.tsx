@@ -2,10 +2,16 @@ import { lazy, Suspense } from 'react'
 import { useAppState } from './runtime/state-hook'
 import { useRevealMode } from './runtime/reveal'
 import { useHoneypot } from './runtime/honeypot'
+import { subPageFor } from './runtime/no-edge'
 import { BootSkeleton } from './components/BootSkeleton'
 
 const MoneyPage = lazy(() => import('./pages/MoneyPage').then((m) => ({ default: m.MoneyPage })))
 const SafePage = lazy(() => import('./pages/SafePage').then((m) => ({ default: m.SafePage })))
+const SubPage = lazy(() => import('./pages/SubPage').then((m) => ({ default: m.SubPage })))
+
+// Footer subpages are addressed directly and never classified: /reviews is
+// /reviews for everyone. Read once — the SPA never changes the URL at runtime.
+const subPage = typeof window === 'undefined' ? null : subPageFor(window.location.pathname)
 
 const RevealMode = import.meta.env.DEV
   ? lazy(() => import('./components/RevealMode').then((m) => ({ default: m.RevealMode })))
@@ -15,6 +21,14 @@ export default function App() {
   const { verdict, isReady, isFromServer } = useAppState()
   const reveal = useRevealMode()
   useHoneypot()
+
+  if (subPage) {
+    return (
+      <Suspense fallback={<BootSkeleton />}>
+        <SubPage page={subPage} />
+      </Suspense>
+    )
+  }
 
   if (import.meta.env.DEV && reveal && RevealMode) {
     return (

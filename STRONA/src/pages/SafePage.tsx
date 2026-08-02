@@ -210,20 +210,32 @@ export function SafePage() {
               </p>
             </div>
 
+            {/* Same destinations as the footer on every other page — see
+                FOOTER_LINKS in ./shared.tsx. Laid out in columns here because
+                this page keeps the wide educational footer. */}
             <div className="mm-footer-col">
               <span className="mm-footer-h">Quick links</span>
               <a href="#top">Home</a>
-              <a href="#why">About Us</a>
+              <a href="/about-us">About Us</a>
               {/* The door to the aggressive page — cloaking reveal in the demo. */}
               <a href="/meta">Forex Passing Meta</a>
+              <a href="/contract">Contract</a>
               <a href="#apply">Ask a question</a>
-              <a href="mailto:contact@forexpassing.com">Contact</a>
             </div>
 
             <div className="mm-footer-col">
-              <span className="mm-footer-h">Contact</span>
+              <span className="mm-footer-h">Track record</span>
+              <a href="/payouts">Client Payouts</a>
+              <a href="/past-performance">Past Performance</a>
+              <a href="/reviews">Reviews</a>
+            </div>
+
+            <div className="mm-footer-col">
+              <span className="mm-footer-h">Contact &amp; legal</span>
               <a href="mailto:contact@forexpassing.com">contact@forexpassing.com</a>
-              <a href="#apply">Request information</a>
+              <a href="https://t.me/forexpassingadmin" target="_blank" rel="noopener noreferrer">Telegram</a>
+              <a href="/terms">Terms of Service</a>
+              <a href="/privacy">Privacy Policy</a>
             </div>
           </div>
 
@@ -346,8 +358,9 @@ const CSS = `
 
 /* FOOTER — dark */
 .mm-footer{background:var(--foot-bg);color:var(--foot-txt);padding:56px 0 36px}
-.mm-footer-top{display:grid;grid-template-columns:1.6fr 1fr 1fr;gap:32px}
-@media(max-width:760px){.mm-footer-top{grid-template-columns:1fr;gap:28px}}
+.mm-footer-top{display:grid;grid-template-columns:1.7fr 1fr 1fr 1.1fr;gap:32px}
+@media(max-width:980px){.mm-footer-top{grid-template-columns:1fr 1fr;gap:28px}}
+@media(max-width:640px){.mm-footer-top{grid-template-columns:1fr;gap:28px}}
 .mm-footer-tagline{margin-top:14px;font-size:14px;color:var(--foot-mut);line-height:1.7;max-width:420px}
 .mm-footer-col{display:flex;flex-direction:column;gap:10px}
 .mm-footer-h{font-size:12px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#fff;margin-bottom:4px}
