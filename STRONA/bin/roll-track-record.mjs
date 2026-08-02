@@ -3,9 +3,16 @@
 //   node bin/roll-track-record.mjs          # append up to today
 //   node bin/roll-track-record.mjs --until 2026-09-01
 //
-// Runs weekly from .github/workflows/roll-track-record.yml and commits the
-// result, so what the site publishes is always in git rather than conjured in
-// the browser.
+// Runs as the first step of `npm run build`, so every deploy publishes the
+// series up to that day. That works precisely because the generator is
+// deterministic: a rebuild reproduces every existing week byte for byte and
+// only adds the ones that have since closed. The committed JSON is the
+// baseline; the build tops it up.
+//
+// A deploy therefore refreshes it. To keep it moving in a quiet week, trigger a
+// weekly rebuild — a Vercel Deploy Hook on a schedule, or a GitHub Action that
+// runs this script and commits (see the file this repo could not push: adding
+// .github/workflows/ needs a token with the `workflow` scope).
 //
 // ⚠ READ THIS BEFORE CHANGING ANYTHING HERE.
 // These weeks are MODELLED, not traded. The site presents them as our own

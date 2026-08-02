@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build && node bin/emit-routes.mjs",
+    "build": "node bin/roll-track-record.mjs && tsc -b && vite build && node bin/emit-routes.mjs",
     "preview": "npm run build && wrangler dev",
     "dev:worker": "wrangler dev --config workers/wrangler.toml --persist-to=workers/.wrangler/state",
     "deploy:worker": "npm run build && wrangler deploy --config workers/wrangler.toml",

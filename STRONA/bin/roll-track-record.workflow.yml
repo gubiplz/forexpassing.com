@@ -1,3 +1,13 @@
+# Weekly roll for the track record — NOT ACTIVE UNTIL YOU MOVE IT.
+#
+# Copy this file to .github/workflows/roll-track-record.yml to switch it on.
+# It could not be committed there from here: creating files under
+# .github/workflows/ needs a token with the `workflow` scope.
+#
+# Without it the series still refreshes on every deploy, because
+# `npm run build` runs bin/roll-track-record.mjs first. This workflow only
+# matters for weeks where nothing else triggers a deploy.
+
 name: Roll track record
 
 # Adds the missing weeks to the track record and commits them, so the panel on
