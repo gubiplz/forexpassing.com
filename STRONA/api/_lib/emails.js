@@ -20,6 +20,11 @@ const SITE = 'forexpassing.com';
 const TELEGRAM = 'https://t.me/forexpassingadmin';
 const CONTACT = 'contact@forexpassing.com';
 
+// Where the logo is fetched from. The custom domain does not serve yet (its
+// Vercel CNAME is behind Cloudflare's proxy), so this points at the deployment
+// URL until that is sorted; then set PUBLIC_BASE_URL to https://forexpassing.com.
+const ASSETS = process.env.PUBLIC_BASE_URL || 'https://forexpassing-com.vercel.app';
+
 // Apple's neutral ramp, with our green as the one accent.
 const PAGE = '#f5f5f7';
 const SHEET = '#ffffff';
@@ -61,9 +66,12 @@ function shell({ eyebrow, heading, intro, body }) {
       <table role="presentation" width="580" cellpadding="0" cellspacing="0"
         style="width:580px;max-width:100%;background:${SHEET};border-radius:18px;overflow:hidden;font-family:${FONT};">
 
-        <!-- wordmark -->
-        <tr><td align="center" style="padding:38px 40px 0;">
-          <div style="font-size:13px;font-weight:600;letter-spacing:.02em;color:${INK};">${BRAND}</div>
+        <!-- wordmark. The alt text is the fallback that matters: most clients
+             block remote images by default, so this has to read as the brand
+             name on its own. -->
+        <tr><td align="center" style="padding:34px 40px 0;">
+          <img src="${ASSETS}/logo-email.png" width="128" height="85" alt="${BRAND}"
+            style="display:block;margin:0 auto;width:128px;height:auto;border:0;outline:none;text-decoration:none;font-size:13px;font-weight:600;color:${INK};" />
         </td></tr>
 
         <!-- headline -->
