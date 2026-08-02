@@ -1056,11 +1056,25 @@ html{scroll-behavior:smooth}
 .mm-rev-verified{display:inline-flex;align-items:center;gap:5px;color:var(--teal);font-weight:600}
 
 /* LETTER / CLOSER */
+/* LETTER — long-form. Narrow measure, generous gaps, and the rhythm carried by
+   line breaks inside paragraphs rather than by prose. */
 .mm-letter{background:var(--bg);border-top:1px solid var(--line)}
-.mm-letter-body{max-width:680px;margin:0 auto;font-size:clamp(16px,2vw,18px);line-height:1.75;color:var(--txt)}
-.mm-letter-body p{margin-bottom:1.1em}
-.mm-letter-body p.mm-letter-lead{font-size:clamp(20px,2.6vw,26px);font-weight:800;color:var(--txt)}
-.mm-letter-body p.mm-letter-punch{font-weight:800;font-size:clamp(17px,2.2vw,20px);color:var(--txt)}
+.mm-letter-body{max-width:600px;margin:0 auto;font-size:16px;line-height:1.62;color:var(--txt);text-align:left}
+.mm-letter-body p{margin:0 0 1.35em}
+.mm-letter-lead{font-family:'Anton',sans-serif;font-weight:400;font-size:clamp(30px,4.4vw,42px);
+  line-height:1.05;text-transform:none;letter-spacing:-.01em;text-align:center;margin:0 0 2em}
+.mm-letter-punch{font-weight:800;font-size:17.5px;line-height:1.5}
+.mm-letter-aside{font-style:italic;color:var(--mut)}
+.mm-letter-big{font-weight:800;font-size:clamp(20px,2.6vw,24px);line-height:1.3}
+.mm-letter-num{font-weight:800;font-size:1.22em}
+.mm-letter-list{list-style:none;margin:0 0 1.35em;padding:0;display:flex;flex-direction:column;gap:.5em}
+.mm-letter-list li{position:relative;padding-left:20px}
+.mm-letter-list li::before{content:"•";position:absolute;left:4px;color:var(--mut)}
+.mm-letter-rule{border:0;width:44px;height:1px;background:var(--line);margin:2.4em auto}
+.mm-letter-box{border:1px solid rgba(22,163,74,.32);background:rgba(22,163,74,.05);border-radius:14px;
+  padding:20px 22px;margin:0 0 1.35em}
+.mm-letter-box p:last-child{margin-bottom:0}
+.mm-letter-sign{color:var(--mut);font-size:15px;margin-top:2.2em}
 .mm-letter-cta-wrap{text-align:center;margin-top:2.2em}
 
 /* STICKY CTA */

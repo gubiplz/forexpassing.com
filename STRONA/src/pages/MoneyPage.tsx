@@ -631,17 +631,183 @@ export function MoneyPage() {
         </div>
       </section>
 
-      {/* CLOSER LETTER */}
+      {/* CLOSER LETTER — long-form, in the rhythm of a letter rather than an
+          essay: short stacked lines, asides in italics, the punch lines given
+          their own breathing room. */}
       <section className="mm-section mm-letter mm-reveal" id="letter">
         <div className="mm-wrap">
           <div className="mm-letter-body">
-            <p className="mm-letter-lead">Dear trader,</p>
-            <p>You buy the evaluation, you start clean — then one loss hits and your hand is already back on the mouse. Bigger size. Random stop. Daily limit gone. Buy another one. You've seen this movie, and you know how it ends, because you've paid for the ending several times.</p>
-            <p className="mm-letter-punch">Another course won't fix that. Another Discord call won't either.</p>
-            <p>Or maybe it isn't that at all. Maybe you can trade perfectly well — you just can't be at the screen at 9:30 because you have a job, a family, a life. Either way the account sits there needing someone to run it properly, and that someone keeps not being available.</p>
-            <p className="mm-letter-punch">So we do it instead.</p>
-            <p>You buy the evaluation and it stays in your name. Our desk trades it inside the firm's rules. The firm pays you, you keep <strong>{CLIENT_SPLIT}</strong>, and we invoice <strong>{OUR_SPLIT}</strong> out of money already sitting in your account. If no payout ever lands, we never earn a cent — which is the only incentive structure worth signing.</p>
-            <p>We can't promise you'll pass. Anyone who does is lying to you: evaluations fail, markets do what they want, and rules get breached. What we can put in writing is what happens when it goes wrong — and we do, before you commit.</p>
+            <h2 className="mm-letter-lead">Dear trader,</h2>
+
+            <p>We get it.</p>
+
+            <p>
+              Passing a prop firm evaluation is hard.<br />
+              Really hard.
+            </p>
+
+            <p>
+              You're probably staring at a chart right now wondering whether this trade is the one
+              that finally blows the account… or saves it.
+            </p>
+
+            <p>
+              Sleeping badly.<br />
+              Heart going during the London open.<br />
+              Second-guessing every entry, every stop, every exit.
+            </p>
+
+            <p>And on top of all that…</p>
+
+            <p className="mm-letter-punch">You're being pulled in fifteen directions at once.</p>
+
+            <p className="mm-letter-aside">"Right. Okay. Think."</p>
+
+            <p>
+              Should I revenge trade it back?<br />
+              Switch strategy?<br />
+              Buy another course?<br />
+              Join another Discord?<br />
+              Trade the news? Avoid the news?<br />
+              Size up? Size down?
+            </p>
+
+            <p>And the firms themselves?</p>
+
+            <p className="mm-letter-aside">Everyone has an opinion about prop firms.</p>
+
+            <p>New rules. New drawdown maths. New ways to fail.</p>
+
+            <p>
+              Pay another fee?<br />
+              Reset the account?<br />
+              Start over… again?
+            </p>
+
+            <p className="mm-letter-aside">somebody please take the mouse away from me</p>
+
+            <p>Look — most traders aren't bad traders.</p>
+
+            <p className="mm-letter-punch">They're overloaded.</p>
+
+            <p>
+              A bit of overtrading,<br />
+              mixed with decisions made at the worst possible moment,<br />
+              and a sprinkle of "this one <em>has</em> to work."
+            </p>
+
+            <p>
+              So they do a little of this…<br />
+              a little of that…
+            </p>
+
+            <p>
+              Until they're staring at the screen wondering how a green day turned red in ten
+              minutes.
+            </p>
+
+            <p>
+              We call that cycle <span className="mm-teal">the loop</span>.
+            </p>
+
+            <p className="mm-letter-aside">You've met it. Probably paid for it more than once.</p>
+
+            <p>
+              It's stressful.<br />
+              It's exhausting.<br />
+              And it is exactly how prop firms make their money.
+            </p>
+
+            <p>We'd rather trade with discipline and a written process than keep feeding that.</p>
+
+            <hr className="mm-letter-rule" />
+
+            <p>But this isn't about us… it's about <strong>you</strong>.</p>
+
+            <p>You're reading this because, in some shape or form:</p>
+
+            <ul className="mm-letter-list">
+              <li>You're tired of failing evaluations</li>
+              <li>Or tired of holding a funded account together under pressure</li>
+              <li>Or tired of doing everything right… and still not getting paid</li>
+            </ul>
+
+            <p>
+              Or maybe you can trade perfectly well —<br />
+              you just can't be at the screen at half past two because you have a job, a family,
+              a life.
+            </p>
+
+            <p className="mm-letter-punch">What you actually want:</p>
+
+            <p>
+              More payouts.<br />
+              More consistency.<br />
+              More peace of mind.
+            </p>
+
+            <p className="mm-letter-big">
+              <span className="mm-teal">More time back.</span>
+            </p>
+
+            <p>Away from the charts.</p>
+
+            <p>Money landing in your account without babysitting a position all day.</p>
+
+            <hr className="mm-letter-rule" />
+
+            <p className="mm-letter-punch">That's where we come in.</p>
+
+            <p>
+              We pass and manage prop firm accounts for you —{' '}
+              <span className="mm-teal">completely hands-off</span>.
+            </p>
+
+            <p>
+              You keep <span className="mm-letter-num mm-teal">{CLIENT_SPLIT}</span> of the profit.<br />
+              We take <strong>{OUR_SPLIT}</strong>, and only once you've been paid.
+            </p>
+
+            <p className="mm-letter-punch">And here's the part nobody else puts in writing:</p>
+
+            <div className="mm-letter-box">
+              <p>
+                If we lose the account on our own rule breach →{' '}
+                <span className="mm-teal">
+                  you get back every fee you paid us, plus {GUARANTEE_CREDIT} on top.
+                </span>
+              </p>
+              <p>
+                Plus a guarantee that runs <span className="mm-teal">{REFUND_WINDOW}</span>, written
+                into the agreement before you sign it.
+              </p>
+            </div>
+
+            <p>
+              No monthly fee.<br />
+              No fee for trying.<br />
+              No fee at all until a payout has actually landed with you.
+            </p>
+
+            <p>You bring the account.</p>
+
+            <p className="mm-letter-punch">We bring the discipline, the execution and the boring consistency.</p>
+
+            <p>
+              And no — we can't promise you'll pass. Anyone promising that is lying to you:
+              evaluations fail, markets do what they want, rules get breached. What we can promise
+              is that what happens then is written down <em>before</em> you commit, not explained
+              afterwards.
+            </p>
+
+            <p>
+              Whatever your goal is, it starts the same way: by letting someone else trade the
+              account, so you can finally{' '}
+              <span className="mm-teal">enjoy the payout</span> instead of chasing it.
+            </p>
+
+            <p className="mm-letter-sign">— The Forex Passing desk</p>
+
             <CtaRow onOpen={openApply} source="letter" />
           </div>
         </div>
