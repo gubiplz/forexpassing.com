@@ -9,6 +9,10 @@
   ],
   "rewrites": [
     {
+      "source": "/r/:slug",
+      "destination": "/api/r/:slug"
+    },
+    {
       "source": "/meta",
       "destination": "/"
     },
