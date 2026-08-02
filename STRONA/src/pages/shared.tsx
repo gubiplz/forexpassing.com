@@ -413,6 +413,15 @@ export function AutoScroller({
       startX = e.clientX
       startAcc = acc
       el.setPointerCapture(e.pointerId)
+      // Dragging a marquee must not paint a text selection across the cards.
+      // preventDefault stops one from starting; the collapse clears a selection
+      // the reader already had, which would otherwise stay highlighted and
+      // extend as the pointer moves.
+      if (e.pointerType === 'mouse') {
+        e.preventDefault()
+        const sel = window.getSelection()
+        if (sel && !sel.isCollapsed) sel.removeAllRanges()
+      }
     }
     const onMove = (e: PointerEvent) => {
       if (!down) return
@@ -434,7 +443,7 @@ export function AutoScroller({
 
     // lock = auto-scroll only, no manual drag/swipe.
     if (!lock) {
-      el.addEventListener('pointerdown', onDown)
+      el.addEventListener('pointerdown', onDown, { passive: false })
       el.addEventListener('pointermove', onMove)
       window.addEventListener('pointerup', onUp)
       el.addEventListener('wheel', bump, { passive: true })
@@ -779,12 +788,14 @@ html{scroll-behavior:smooth}
 /* PAYOUTS / REVIEWS SCROLLER (drag + auto-advance) */
 .mm-payouts{overflow:hidden}
 .mm-scroller{overflow:hidden;touch-action:pan-y;cursor:grab;
+  user-select:none;-webkit-user-select:none;
   -webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);
   mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
 .mm-scroller:active{cursor:grabbing}
 .mm-scroller-lock{cursor:default}
 .mm-scroller::-webkit-scrollbar{display:none}
 .mm-scroller-track{display:flex;width:max-content}
+.mm-scroller img{-webkit-user-drag:none;user-select:none;pointer-events:none}
 .mm-scroller-cert{margin:42px 0 28px}
 .mm-scroller-cert .mm-scroller-track{gap:22px;align-items:stretch}
 .mm-disclaimer{font-size:13px;color:var(--mut);line-height:1.6;max-width:760px;margin:0 auto;text-align:center}
@@ -1148,9 +1159,19 @@ html{scroll-behavior:smooth}
 .mm-sticky-bar .mm-btn{display:block;max-width:420px;margin:0 auto;text-align:center;width:100%}
 
 /* Questionnaire modal */
-.mm-modal{position:fixed;inset:0;z-index:90;display:flex;align-items:center;justify-content:center;
+/* The dialog is portalled onto <body>, i.e. outside .mm-root — so it has to
+   carry the palette itself, or every var(--txt)/var(--mut) inside it resolves
+   to nothing and the panel renders as pale ghost text. */
+.mm-modal{--bg:#ffffff; --bg2:#f4f7f5; --line:rgba(15,30,22,.10);
+  --txt:#10231a; --mut:#5b675f; --teal:#16a34a; --red:#ef4444;
+  --ease:cubic-bezier(.22,.61,.36,1);
+  color:var(--txt);
+  font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  line-height:1.6;-webkit-font-smoothing:antialiased;
+  position:fixed;inset:0;z-index:90;display:flex;align-items:center;justify-content:center;
   padding:16px;background:rgba(6,16,11,.62);backdrop-filter:blur(4px)}
 .mm-modal-card{position:relative;width:100%;max-width:520px;max-height:min(92dvh,92vh);overflow-y:auto;
+  border:1px solid rgba(15,30,22,.12);
   background:#fff;border-radius:18px;box-shadow:0 40px 90px -30px rgba(0,0,0,.6)}
 .mm-modal-close{position:absolute;top:12px;right:12px;z-index:2;width:34px;height:34px;border:0;border-radius:9px;
   background:transparent;color:var(--mut);font-size:20px;line-height:1;cursor:pointer}

@@ -13,6 +13,7 @@
 // /past-performance.
 
 import { useEffect, useRef, useState, type MouseEvent } from 'react'
+import { createPortal } from 'react-dom'
 import { BRAND } from '../constants'
 import {
   DEFAULT_PROFILE,
@@ -397,7 +398,10 @@ export function TrackRecordModal({ onClose }: { onClose: () => void }) {
     }
   }, [onClose])
 
-  return (
+  // Rendered on <body>: a transformed ancestor (any .mm-reveal section) would
+  // otherwise become the containing block for position:fixed and the window
+  // would open wherever that section happens to sit on the page.
+  return createPortal(
     <div
       className="mm-modal"
       role="dialog"
@@ -416,6 +420,7 @@ export function TrackRecordModal({ onClose }: { onClose: () => void }) {
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }

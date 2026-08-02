@@ -9,6 +9,7 @@
 // but still submits everybody is just a longer form.
 
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react'
+import { createPortal } from 'react-dom'
 import { APPLY_ENDPOINT, CONTACT_EMAIL, TELEGRAM_HREF } from '../constants'
 import {
   INCOME_QUESTION,
@@ -402,7 +403,10 @@ export function ApplyModal({
     }
   }, [onClose])
 
-  return (
+  // Rendered on <body>: a transformed ancestor (any .mm-reveal section) would
+  // otherwise become the containing block for position:fixed and the window
+  // would open wherever that section happens to sit on the page.
+  return createPortal(
     <div
       className="mm-modal"
       role="dialog"
@@ -418,6 +422,7 @@ export function ApplyModal({
           <ApplyFlow initialName={initialName} source={source} />
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }
