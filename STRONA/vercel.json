@@ -4,7 +4,8 @@
   "trailingSlash": false,
   "redirects": [
     { "source": "/regulamin", "destination": "/terms", "permanent": true },
-    { "source": "/polityka-prywatnosci", "destination": "/privacy", "permanent": true }
+    { "source": "/polityka-prywatnosci", "destination": "/privacy", "permanent": true },
+    { "source": "/affiliate", "destination": "/partner-portal", "permanent": false }
   ],
   "rewrites": [
     {
@@ -41,6 +42,14 @@
     },
     {
       "source": "/contract",
+      "destination": "/"
+    },
+    {
+      "source": "/referral-program",
+      "destination": "/"
+    },
+    {
+      "source": "/partner-portal",
       "destination": "/"
     }
   ]

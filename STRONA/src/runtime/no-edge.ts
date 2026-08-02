@@ -36,6 +36,7 @@ export const SUB_PATHS = [
   'reviews',
   'contract',
   'referral-program',
+  'partner-portal',
 ] as const;
 
 export type SubPageKey = (typeof SUB_PATHS)[number];

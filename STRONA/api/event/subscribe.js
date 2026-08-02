@@ -41,6 +41,8 @@ export default async function handler(req, res) {
     propFirm: str(body.propFirm).slice(0, 80),
     accountSize: str(body.accountSize).slice(0, 40),
     stage: str(body.stage).slice(0, 40),
+    // Partner slug parked by /r/<slug>. Empty for direct traffic.
+    ref: str(body.ref).slice(0, 40),
     experience: str(body.experience).slice(0, 40),
     goal: str(body.goal).slice(0, 2000),
     source: str(body.source).slice(0, 40) || 'safe',

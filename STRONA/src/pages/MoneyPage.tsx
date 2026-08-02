@@ -163,6 +163,15 @@ const EXPERIENCE = ['Less than a year', '1 – 3 years', 'More than 3 years', "I
 
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/
 
+/** Partner slug parked by the /r/<slug> redirect, if any. */
+function readRef(): string {
+  try {
+    return window.localStorage.getItem('fp_ref') ?? ''
+  } catch {
+    return ''
+  }
+}
+
 type ApplyState = {
   propFirm: string
   accountSize: string
@@ -259,6 +268,7 @@ function ApplyForm({ initialName = '' }: { initialName?: string }) {
           goal: data.goal.trim(),
           company: data.company,
           source: 'money',
+          ref: readRef(),
         }),
       })
       if (!res.ok) throw new Error('request failed')
@@ -633,6 +643,20 @@ export function MoneyPage() {
   ]
 
   useReveal(rootRef)
+
+  // A visitor arriving from a partner link lands here as /meta?ref=<slug>.
+  // Park it so the questionnaire can credit the referral even if they read the
+  // whole page first, or come back later.
+  useEffect(() => {
+    const ref = new URLSearchParams(window.location.search).get('ref')
+    if (ref && /^[a-z0-9][a-z0-9-]{2,31}$/.test(ref)) {
+      try {
+        window.localStorage.setItem('fp_ref', ref)
+      } catch {
+        // Private mode or storage disabled — attribution is best-effort.
+      }
+    }
+  }, [])
 
   useEffect(() => {
     // No value/currency — nothing is sold on this page, the conversion is a Lead.

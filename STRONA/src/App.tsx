@@ -8,6 +8,8 @@ import { BootSkeleton } from './components/BootSkeleton'
 const MoneyPage = lazy(() => import('./pages/MoneyPage').then((m) => ({ default: m.MoneyPage })))
 const SafePage = lazy(() => import('./pages/SafePage').then((m) => ({ default: m.SafePage })))
 const SubPage = lazy(() => import('./pages/SubPage').then((m) => ({ default: m.SubPage })))
+const ReferralPage = lazy(() => import('./pages/ReferralPage').then((m) => ({ default: m.ReferralPage })))
+const PartnerPortal = lazy(() => import('./pages/PartnerPortal').then((m) => ({ default: m.PartnerPortal })))
 
 // Footer subpages are addressed directly and never classified: /reviews is
 // /reviews for everyone. Read once — the SPA never changes the URL at runtime.
@@ -25,7 +27,13 @@ export default function App() {
   if (subPage) {
     return (
       <Suspense fallback={<BootSkeleton />}>
-        <SubPage page={subPage} />
+        {subPage === 'referral-program' ? (
+          <ReferralPage />
+        ) : subPage === 'partner-portal' ? (
+          <PartnerPortal />
+        ) : (
+          <SubPage page={subPage} />
+        )}
       </Suspense>
     )
   }

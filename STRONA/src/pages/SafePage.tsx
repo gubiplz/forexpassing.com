@@ -152,39 +152,20 @@ export function SafePage() {
               <span className="mm-footer-h">Quick links</span>
               <a href="#top">Home</a>
               <a href="/about-us">About Us</a>
-              {/* The door to the aggressive page — cloaking reveal in the demo. */}
               <a href="/meta">Forex Passing Meta</a>
               <a href="/referral-program">Referral Program</a>
-              <a href="/payouts">Client Payouts</a>
-              <a href="/past-performance">Past Performance</a>
-              <a href="/reviews">Reviews</a>
               <a href="/contract">Contract</a>
             </div>
 
             <div className="mm-footer-col">
               <span className="mm-footer-h">Contact</span>
               <a href="mailto:contact@forexpassing.com">contact@forexpassing.com</a>
-              <a href="https://t.me/forexpassingadmin" target="_blank" rel="noopener noreferrer">Telegram</a>
             </div>
           </div>
 
           <hr className="mm-footer-rule" />
 
-          <p className="mm-footer-legal">
-            This material is for educational purposes only. It is not investment advice, a
-            recommendation, or an offer of any specific outcome. Trading leveraged instruments
-            carries a high risk of losing capital. We make no promises about income, returns, or
-            passing a prop firm evaluation. Results differ between individuals and past
-            performance does not guarantee future results. Every trading decision is the
-            responsibility of the person who makes it.
-          </p>
-          <div className="mm-footer-bottom">
-            <span className="mm-footer-copy">© {year} Forex Passing. All rights reserved.</span>
-            <span className="mm-footer-bottom-links">
-              <a href="/terms">Terms of Service</a>
-              <a href="/privacy">Privacy Policy</a>
-            </span>
-          </div>
+          <p className="mm-footer-copy">© {year} Forex Passing. All rights reserved.</p>
         </div>
       </footer>
 
@@ -309,7 +290,7 @@ const CSS = `
 .mm-footer-bottom-links a{color:var(--foot-mut);text-decoration:none;font-size:12px;transition:color .15s}
 .mm-footer-bottom-links a:hover{color:var(--blue-soft)}
 .mm-cta-center-row{justify-content:center}
-.mm-footer-copy{font-size:12px;color:var(--foot-mut);margin-top:16px}
+.mm-footer-copy{font-size:12px;color:var(--foot-mut);text-align:center;margin:0}
 
 /* STICKY CTA — mobile only */
 .mm-sticky-cta{display:none}

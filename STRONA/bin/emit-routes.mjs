@@ -46,6 +46,10 @@ const SUB_ROUTES = {
     description:
       'Send someone in, earn on every payout they receive. Three tiers, no earnings cap, tier status is permanent.',
   },
+  'partner-portal': {
+    title: 'Partner portal — Forex Passing',
+    description: 'Your tracked referral link, your referrals and your tier progress in one place.',
+  },
 };
 
 const shell = await readFile(join(DIST, 'index.html'), 'utf8');

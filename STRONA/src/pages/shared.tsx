@@ -12,7 +12,6 @@ import {
   OUR_SPLIT,
   PARTNER_FIRM,
   PASS_WINDOW,
-  TELEGRAM_HREF,
 } from '../constants'
 import { type PayoutCert } from '../data/payouts'
 import { VERIFY_QR_SVG } from '../data/verify-qr'
@@ -133,14 +132,13 @@ export function TermsCard() {
  * ROUTES array in bin/emit-routes.mjs, or a link here will 404.
  * ------------------------------------------------------------------------- */
 
+// Wide-footer quick links — exactly the five the reference site lists, nothing
+// more. Keep in sync with bin/footer.html, SafePage.tsx and public/safe.html.
 export const FOOTER_LINKS: [string, string][] = [
   ['Home', '/'],
   ['About Us', '/about-us'],
   ['Forex Passing Meta', '/meta'],
   ['Referral Program', '/referral-program'],
-  ['Client Payouts', '/payouts'],
-  ['Past Performance', '/past-performance'],
-  ['Reviews', '/reviews'],
   ['Contract', '/contract'],
 ]
 
@@ -152,36 +150,39 @@ const META_LINKS: [string, string][] = [
   ['Contract', '/contract'],
 ]
 
-const FOOTER_LEGAL: [string, string][] = [
-  ['Terms of Service', '/terms'],
-  ['Privacy Policy', '/privacy'],
+const REFERRAL_LINKS: [string, string][] = [
+  ['Referral Program', '/referral-program'],
+  ['Partner Portal', '/partner-portal'],
+  ['Contract', '/contract'],
+  ['Forex Passing Meta', '/meta'],
+  ['Reviews', '/reviews'],
 ]
 
 /**
- * `wide` (default) — three columns: brand, quick links, contact. Used on every
- * page except the offer.
+ * Three variants, one per page family — the reference site does the same.
  *
- * `meta` — logo, one row of proof links, copyright. Deliberately carries no
- * risk paragraphs: on the offer page the risk wording lives in the body (the
- * terms card in the hero, the disclaimers under the certificates and under the
- * performance widget). Every other page keeps the full disclaimers below.
+ * `wide` (default) — three columns then a rule and the copyright. Nothing else:
+ *   no risk paragraphs and no legal links, by explicit owner decision. /terms
+ *   and /privacy stay reachable by URL but are not linked from anywhere.
+ * `meta` — logo and the four proof links. No copyright line.
+ * `referral` — logo and the partner-programme links.
  */
-export function SiteFooter({ variant = 'wide' }: { variant?: 'wide' | 'meta' }) {
+export function SiteFooter({ variant = 'wide' }: { variant?: 'wide' | 'meta' | 'referral' }) {
   const year = new Date().getFullYear()
 
-  if (variant === 'meta') {
+  if (variant === 'meta' || variant === 'referral') {
+    const links = variant === 'meta' ? META_LINKS : REFERRAL_LINKS
     return (
-      <footer className="mm-footer mm-footer-meta">
+      <footer className={`mm-footer mm-footer-${variant}`}>
         <div className="mm-wrap mm-footer-center">
-          <a href="/meta" className="mm-footer-logo" aria-label="Forex Passing — home">
+          <a href={variant === 'meta' ? '/meta' : '/referral-program'} className="mm-footer-logo" aria-label="Forex Passing — home">
             <img className="mm-logo-img mm-logo-img-sm" src="/logo-light.svg" alt="Forex Passing" />
           </a>
           <nav className="mm-footer-nav" aria-label="Footer">
-            {META_LINKS.map(([label, href]) => (
+            {links.map(([label, href]) => (
               <a href={href} key={href}>{label}</a>
             ))}
           </nav>
-          <span className="mm-footer-copy">© {year} Forex Passing. All rights reserved.</span>
         </div>
       </footer>
     )
@@ -212,32 +213,14 @@ export function SiteFooter({ variant = 'wide' }: { variant?: 'wide' | 'meta' }) 
           <div className="mm-footer-col">
             <span className="mm-footer-h">Contact</span>
             <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
-            <a href={TELEGRAM_HREF} target="_blank" rel="noopener noreferrer">Telegram</a>
           </div>
         </div>
 
         <hr className="mm-footer-rule" />
 
-        <p className="mm-footer-risk">
-          Trading disclaimer: prop firm evaluations, foreign exchange and CFDs carry a substantial
-          risk of loss and are not suitable for everyone. An evaluation can fail, an account can be
-          breached, and no result is guaranteed. Past performance does not indicate future results.
-          Nothing on this site is financial, investment or trading advice.
+        <p className="mm-footer-copy mm-footer-copy-center">
+          © {year} Forex Passing. All rights reserved.
         </p>
-        <p className="mm-footer-risk">
-          Forex Passing is an independent account management service. It is not affiliated with,
-          endorsed by or sponsored by Meta Platforms, Inc. or Google LLC. Prop firm names and marks
-          belong to their respective owners.
-        </p>
-
-        <div className="mm-footer-bottom">
-          <span className="mm-footer-copy">© {year} Forex Passing. All rights reserved.</span>
-          <span className="mm-footer-bottom-links">
-            {FOOTER_LEGAL.map(([label, href]) => (
-              <a href={href} key={href}>{label}</a>
-            ))}
-          </span>
-        </div>
       </div>
     </footer>
   )
@@ -934,15 +917,12 @@ html{scroll-behavior:smooth}
 .mm-footer-col a{color:rgba(230,239,234,.6);text-decoration:none;font-size:14px;transition:color .15s}
 .mm-footer-col a:hover{color:#4ade80}
 .mm-footer-rule{border:0;border-top:1px solid rgba(230,239,234,.1);margin:44px 0 26px}
-.mm-footer-risk{font-size:11.5px;color:rgba(230,239,234,.4);line-height:1.7;max-width:900px;margin:0 auto 10px;text-align:center}
-.mm-footer-bottom{display:flex;align-items:center;justify-content:center;gap:20px;flex-wrap:wrap;margin-top:18px}
-.mm-footer-bottom-links{display:flex;gap:18px;flex-wrap:wrap}
-.mm-footer-bottom-links a{color:rgba(230,239,234,.4);text-decoration:none;font-size:12px;transition:color .15s}
-.mm-footer-bottom-links a:hover{color:#4ade80}
 .mm-footer-copy{font-size:12px;color:rgba(230,239,234,.34)}
+.mm-footer-copy-center{text-align:center;margin:0}
 
-/* meta */
-.mm-footer-meta{padding:52px 0 44px}
+/* meta + referral */
+.mm-footer-meta,
+.mm-footer-referral{padding:52px 0 48px}
 .mm-footer-center{display:flex;flex-direction:column;align-items:center;text-align:center;gap:22px}
 .mm-footer-nav{display:flex;gap:26px;flex-wrap:wrap;justify-content:center}
 .mm-footer-nav a{color:rgba(230,239,234,.6);text-decoration:none;font-size:14px;transition:color .15s}
@@ -957,7 +937,6 @@ html{scroll-behavior:smooth}
 }
 .mm-logo-sm{font-size:16px}
 .mm-footer-copy{font-size:12px;color:var(--mut)}
-.mm-footer-risk{font-size:12px;color:var(--mut);line-height:1.6;max-width:720px}
 .mm-footer-center{display:flex;flex-direction:column;align-items:center;text-align:center;gap:16px}
 .mm-footer-nav{display:flex;gap:22px;flex-wrap:wrap;justify-content:center}
 .mm-footer-nav a{color:var(--mut);text-decoration:none;font-size:14px;transition:color .15s}
@@ -1148,13 +1127,167 @@ html{scroll-behavior:smooth}
   .mm-modal-card{max-width:none;border-radius:18px 18px 0 0;max-height:94dvh}
 }
 
-/* /referral-program */
-.mm-refstats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;max-width:820px;margin:0 auto}
-.mm-refstat{background:#fff;border:1px solid var(--line);border-radius:12px;padding:20px 14px;text-align:center}
-.mm-refstat-v{display:block;font-family:'Anton',sans-serif;font-weight:400;font-size:30px;line-height:1;color:var(--teal)}
-.mm-refstat-k{display:block;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--mut);margin-top:8px}
-.mm-tiers{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;margin-top:38px;align-items:start}
-.mm-tier{position:relative;background:#fff;border:1px solid var(--line);border-radius:16px;padding:28px 24px;text-align:left;
+/* ---------------------------------------------------------------------------
+ * /referral-program and /partner-portal
+ * ------------------------------------------------------------------------- */
+
+.mm-topbar-split{display:flex;align-items:center;justify-content:space-between;text-align:left}
+.mm-topbar-login{white-space:nowrap}
+
+.mm-refticker{background:var(--teal);color:#fff;overflow:hidden;padding:11px 0}
+.mm-refticker-track{display:flex;align-items:center;gap:44px;width:max-content;animation:mm-ticker 34s linear infinite}
+.mm-refticker-item{display:inline-flex;align-items:center;gap:9px;font-size:14px;font-weight:700;white-space:nowrap}
+.mm-refticker-item::before{content:"";flex:0 0 6px;width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.75)}
+
+.mm-refhero{padding:64px 0 68px;text-align:center}
+.mm-refhero-eyebrow{display:block;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--mut);margin-bottom:16px}
+.mm-refhero-h1{font-family:'Anton',sans-serif;font-weight:400;font-size:clamp(34px,6.4vw,72px);line-height:.94;
+  text-transform:uppercase;letter-spacing:-.005em;margin-bottom:20px}
+.mm-refhero-h1 span{display:block}
+.mm-refhero-cta{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin:30px 0 44px}
+
+.mm-refstats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;max-width:880px;margin:0 auto}
+.mm-refstat{background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px 14px;text-align:center}
+.mm-refstat-k{display:block;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--mut)}
+.mm-refstat-v{display:block;font-family:'Anton',sans-serif;font-weight:400;font-size:26px;line-height:1;color:var(--teal);margin-top:8px}
+
+/* Tier cards */
+.mm-tiers{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:22px;margin-top:40px;align-items:start}
+.mm-tier{position:relative;background:#fff;border:1px solid var(--line);border-radius:18px;padding:28px 24px;text-align:left;
+  box-shadow:0 18px 46px -34px rgba(0,0,0,.5)}
+.mm-tier.is-featured{border-color:rgba(22,163,74,.5);box-shadow:0 24px 58px -28px rgba(22,163,74,.42)}
+.mm-tier-flag{position:absolute;top:-13px;left:50%;transform:translateX(-50%);white-space:nowrap;
+  background:var(--teal);color:#fff;font-size:10.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;
+  border-radius:99px;padding:6px 14px}
+.mm-tier-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.mm-tier-ico{width:42px;height:42px;border-radius:12px;background:rgba(22,163,74,.1);display:inline-flex;
+  align-items:center;justify-content:center}
+.mm-tier-ico svg{width:20px;height:20px;fill:var(--teal)}
+.mm-tier-code{font-size:11px;letter-spacing:.2em;color:var(--mut)}
+.mm-tier-name{font-family:'Anton',sans-serif;font-weight:400;font-size:30px;line-height:1;text-transform:uppercase}
+.mm-tier-range{display:block;font-size:14px;font-weight:600;color:var(--teal);margin-top:7px}
+.mm-tier-box{background:var(--bg2);border-radius:12px;padding:16px 18px;margin:18px 0 16px}
+.mm-tier-box-k{display:block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--mut)}
+.mm-tier-box-v{display:block;font-size:34px;font-weight:800;line-height:1.1;margin-top:4px}
+.mm-tier-box-d{display:block;font-size:13px;color:var(--mut);margin-top:2px}
+.mm-tier-blurb{font-size:14px;color:var(--mut);line-height:1.65}
+.mm-tier-h{display:block;font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--mut);margin:20px 0 10px}
+.mm-tier-perks{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px}
+.mm-tier-perks li{position:relative;padding-left:26px;font-size:14px;line-height:1.55}
+.mm-tier-perks li::before{content:"";position:absolute;left:0;top:4px;width:14px;height:8px;
+  border-left:2px solid var(--teal);border-bottom:2px solid var(--teal);transform:rotate(-45deg)}
+.mm-tier-example{margin-top:4px;background:var(--bg2);border-radius:12px;padding:16px 18px}
+.mm-tier-example .mm-tier-h{margin-top:0}
+.mm-tier-example ol{margin:0;padding-left:20px}
+.mm-tier-example li{font-size:13.5px;color:var(--mut);line-height:1.6;margin-bottom:6px}
+
+/* Dark portal section */
+.mm-portal{background:linear-gradient(150deg,#0a1a16 0%,#0d2521 55%,#09140f 100%);color:#e6efea;padding:88px 0}
+.mm-portal-grid{display:grid;grid-template-columns:1fr 1fr;gap:52px;align-items:center}
+.mm-portal-eyebrow{display:block;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:#4ade80;margin-bottom:14px}
+.mm-portal-h2{font-family:'Anton',sans-serif;font-weight:400;font-size:clamp(30px,4.6vw,52px);line-height:1;
+  text-transform:uppercase;margin-bottom:18px}
+.mm-portal-lead{font-size:15.5px;line-height:1.7;color:rgba(230,239,234,.66);max-width:520px}
+.mm-portal-points{list-style:none;margin:24px 0 30px;padding:0;display:flex;flex-direction:column;gap:12px}
+.mm-portal-points li{position:relative;padding-left:28px;font-size:14.5px;color:rgba(230,239,234,.86)}
+.mm-portal-points li::before{content:"";position:absolute;left:0;top:5px;width:14px;height:8px;
+  border-left:2px solid #4ade80;border-bottom:2px solid #4ade80;transform:rotate(-45deg)}
+.mm-portal-cta{display:flex;gap:12px;flex-wrap:wrap}
+.mm-btn-dark{background:transparent;color:#e6efea;border:1px solid rgba(230,239,234,.3);box-shadow:none}
+.mm-btn-dark:hover{border-color:#4ade80;color:#4ade80;box-shadow:none}
+
+/* Portal preview / dashboard card */
+.mm-pcard{background:rgba(9,20,16,.72);border:1px solid rgba(230,239,234,.12);border-radius:18px;padding:22px;
+  color:#e6efea;box-shadow:0 30px 70px -40px #000}
+.mm-pcard-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.mm-pcard-title{font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#4ade80}
+.mm-pcard-badge{font-size:11px;font-weight:700;color:#4ade80;background:rgba(74,222,128,.12);border-radius:99px;padding:5px 11px}
+.mm-pcard-badge.is-demo{color:rgba(230,239,234,.6);background:rgba(230,239,234,.08)}
+.mm-pcard-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+.mm-pcard-stats > div{background:rgba(230,239,234,.05);border:1px solid rgba(230,239,234,.08);border-radius:12px;
+  padding:16px 10px;text-align:center}
+.mm-pcard-v{display:block;font-size:26px;font-weight:800;line-height:1}
+.mm-pcard-k{display:block;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:rgba(230,239,234,.5);margin-top:6px}
+.mm-pcard-link{display:flex;align-items:center;justify-content:space-between;gap:12px;background:rgba(230,239,234,.05);
+  border:1px solid rgba(230,239,234,.08);border-radius:12px;padding:13px 16px;margin-bottom:14px}
+.mm-pcard-link span{font-size:13.5px;color:rgba(230,239,234,.8);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mm-pcard-link button{background:none;border:0;color:#4ade80;font:inherit;font-size:11px;font-weight:800;
+  letter-spacing:.14em;text-transform:uppercase;cursor:pointer}
+.mm-pcard-link button:disabled{color:rgba(230,239,234,.3);cursor:default}
+.mm-pcard-progress{background:rgba(230,239,234,.05);border:1px solid rgba(230,239,234,.08);border-radius:12px;padding:16px}
+.mm-pcard-progress-head{display:flex;justify-content:space-between;font-size:11px;letter-spacing:.14em;
+  text-transform:uppercase;color:rgba(230,239,234,.55);margin-bottom:10px}
+.mm-pcard-track{height:7px;border-radius:99px;background:rgba(230,239,234,.12);overflow:hidden}
+.mm-pcard-fill{height:100%;border-radius:99px;background:#4ade80;transition:width .5s var(--ease)}
+.mm-pcard-note{display:block;font-size:12px;color:rgba(230,239,234,.5);margin-top:10px}
+
+/* Two-column numbered steps */
+.mm-steps-2{grid-template-columns:1fr 1fr}
+.mm-step-left{text-align:left}
+.mm-step-row{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.mm-step-row .mm-step-n{margin-bottom:0}
+
+/* Recurring commission band */
+.mm-recurring{background:#fff1f1;padding:76px 0;text-align:center}
+.mm-recurring-eyebrow{display:inline-block;font-size:12px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;
+  color:#c81e1e;margin-bottom:14px}
+.mm-recurring-h{font-family:'Anton',sans-serif;font-weight:400;font-size:clamp(26px,4.4vw,50px);line-height:1.04;
+  text-transform:uppercase;margin-bottom:14px}
+.mm-recurring-sub{font-size:17px;font-weight:700;max-width:640px;margin:0 auto 12px}
+.mm-recurring-note{font-size:14.5px;color:var(--mut);line-height:1.7;max-width:640px;margin:0 auto}
+
+/* Forward band */
+.mm-forward{background:var(--teal);color:#fff;padding:80px 0;text-align:center}
+.mm-forward .mm-h2{color:#fff}
+.mm-forward-sub{font-size:15.5px;line-height:1.7;color:rgba(255,255,255,.86);max-width:620px;margin:0 auto 28px}
+.mm-forward-sub a{color:#fff}
+.mm-forward-cta{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.mm-btn-white{background:#fff;color:var(--teal);border-color:#fff}
+.mm-btn-white:hover{box-shadow:0 14px 40px rgba(0,0,0,.22)}
+.mm-btn-outline-white{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.7);box-shadow:none}
+.mm-btn-outline-white:hover{background:rgba(255,255,255,.12);box-shadow:none}
+
+/* Accordion numbering */
+.mm-acc-n{display:inline-block;min-width:26px;font-size:12px;font-weight:800;color:var(--teal);letter-spacing:.1em}
+
+/* Sticky bar with two buttons */
+.mm-sticky-bar-2{display:flex;gap:10px;justify-content:center}
+.mm-sticky-bar-2 .mm-btn{flex:1 1 0;max-width:240px;text-align:center}
+
+/* Portal auth + dashboard */
+.mm-authcard{max-width:460px;margin:0 auto;background:#fff;border:1px solid var(--line);border-radius:18px;padding:26px 24px;
+  box-shadow:0 20px 54px -34px rgba(0,0,0,.45)}
+.mm-authtabs{display:flex;gap:6px;background:var(--bg2);border-radius:12px;padding:5px;margin-bottom:20px}
+.mm-authtabs button{flex:1;border:0;background:none;font:inherit;font-size:14px;font-weight:700;color:var(--mut);
+  padding:10px;border-radius:9px;cursor:pointer;transition:background .15s,color .15s}
+.mm-authtabs button.is-on{background:#fff;color:var(--txt);box-shadow:0 2px 8px rgba(0,0,0,.07)}
+.mm-form-note{font-size:13px;color:var(--teal);text-align:center;margin-top:4px}
+
+.mm-dash{max-width:820px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+.mm-dash-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.mm-dash-hello{display:block;font-size:13px;color:var(--mut)}
+.mm-dash-tier{font-family:'Anton',sans-serif;font-weight:400;font-size:32px;line-height:1;text-transform:uppercase;margin-top:6px}
+.mm-dash-block{background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px 24px}
+.mm-dash-h3{font-size:17px;font-weight:800;margin-bottom:14px}
+.mm-dash-row{display:grid;grid-template-columns:1.4fr 1fr auto;gap:10px}
+.mm-dash-table{width:100%;border-collapse:collapse;font-size:14px}
+.mm-dash-table th{text-align:left;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--mut);
+  padding:0 10px 10px 0;border-bottom:1px solid var(--line)}
+.mm-dash-table td{padding:12px 10px 12px 0;border-bottom:1px solid var(--line)}
+.mm-pill{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+  border-radius:99px;padding:4px 10px}
+.mm-pill-pending{background:rgba(234,179,8,.14);color:#a16207}
+.mm-pill-confirmed{background:rgba(22,163,74,.12);color:var(--teal)}
+.mm-pill-rejected{background:rgba(239,68,68,.12);color:#b91c1c}
+
+@media (max-width:900px){
+  .mm-portal-grid{grid-template-columns:1fr;gap:36px}
+  .mm-steps-2{grid-template-columns:1fr}
+}
+@media (max-width:560px){
+  .mm-dash-row{grid-template-columns:1fr}
+  .mm-refhero{padding:44px 0 50px}
+}
   box-shadow:0 16px 44px -32px rgba(0,0,0,.5)}
 .mm-tier.is-featured{border-color:rgba(22,163,74,.5);box-shadow:0 22px 56px -28px rgba(22,163,74,.45)}
 .mm-tier-badge{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;
@@ -1183,6 +1316,8 @@ html{scroll-behavior:smooth}
  * top/bottom padding those reserve has to come back off.
  * ------------------------------------------------------------------------- */
 .mm-root-sub{padding-top:0;padding-bottom:0}
+/* Pages that keep a sticky bar have to reserve room, or it sits on the footer. */
+.mm-root-sticky{padding-bottom:calc(78px + env(safe-area-inset-bottom))}
 .mm-sub-hero{background:var(--bg2);border-bottom:1px solid var(--line);padding:72px 0 60px;text-align:center}
 .mm-sub-hero .mm-lead{margin:0 auto}
 .mm-sub-back{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:600;color:var(--mut);
