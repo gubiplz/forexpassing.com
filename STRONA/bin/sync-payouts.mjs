@@ -110,3 +110,15 @@ console.log(
   `[sync-payouts] zapisano ${certs.length} certyfikatów → src/data/payouts.ts` +
     (stats ? ` (łącznie ${money(stats.payouts_total_usd ?? 0)})` : '')
 );
+
+// The endpoint is called "recent" — if it ever starts trimming the list we want
+// to know, rather than quietly publishing a slice of the record.
+if (stats?.payouts_count != null) {
+  const fetched = certs.filter((c) => c.payout).length;
+  if (fetched < stats.payouts_count) {
+    console.warn(
+      `[sync-payouts] UWAGA: API oddało ${fetched} wypłat, a /stats mówi o ${stats.payouts_count}. ` +
+        'Endpoint obcina listę — trzeba go stronicować, inaczej publikujemy wycinek.'
+    );
+  }
+}

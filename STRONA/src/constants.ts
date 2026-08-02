@@ -24,6 +24,8 @@ export const APPLY_ANCHOR = '#apply'
 // sekcją i w pasku na dole — czytelnik ma widzieć zawsze ten sam krok, nie trzy
 // różne nazwy tej samej rzeczy.
 export const CTA_LABEL = "LET'S START NOW"
+// The Google Ads lander asks rather than shouts — same flow behind the button.
+export const GOOGLE_CTA_LABEL = 'CHECK IF YOU QUALIFY'
 export const FORM_PREVIEW_LABEL = 'Start your application'
 export const FORM_PREVIEW_PLACEHOLDER = 'Enter your full name...'
 

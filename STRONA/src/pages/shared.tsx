@@ -150,6 +150,14 @@ const META_LINKS: [string, string][] = [
   ['Contract', '/contract'],
 ]
 
+// The three proof pages link only to each other — Contract is deliberately not
+// in this set, matching the reference site.
+const PROOF_LINKS: [string, string][] = [
+  ['Client Payouts', '/payouts'],
+  ['Past Performance', '/past-performance'],
+  ['Reviews', '/reviews'],
+]
+
 const REFERRAL_LINKS: [string, string][] = [
   ['Referral Program', '/referral-program'],
   ['Partner Portal', '/partner-portal'],
@@ -166,16 +174,48 @@ const REFERRAL_LINKS: [string, string][] = [
  *   and /privacy stay reachable by URL but are not linked from anywhere.
  * `meta` — logo and the four proof links. No copyright line.
  * `referral` — logo and the partner-programme links.
+ * `proof` — logo and the three proof pages, no Contract.
+ * `blank` — logo and the disclaimers only, no links at all. The Google Ads
+ *   lander runs on this one: nothing to click but the offer itself.
  */
-export function SiteFooter({ variant = 'wide' }: { variant?: 'wide' | 'meta' | 'referral' }) {
+export function SiteFooter({
+  variant = 'wide',
+}: {
+  variant?: 'wide' | 'meta' | 'referral' | 'proof' | 'blank'
+}) {
   const year = new Date().getFullYear()
 
-  if (variant === 'meta' || variant === 'referral') {
-    const links = variant === 'meta' ? META_LINKS : REFERRAL_LINKS
+  if (variant === 'blank') {
+    return (
+      <footer className="mm-footer mm-footer-blank">
+        <div className="mm-wrap mm-footer-center">
+          <a href="/google-funnel" className="mm-footer-logo" aria-label="Forex Passing">
+            <img className="mm-logo-img mm-logo-img-sm" src="/logo-light.svg" alt="Forex Passing" />
+          </a>
+          <p className="mm-footer-fine">
+            Trading disclaimer: foreign exchange, CFD and proprietary trading firm evaluations
+            involve substantial risk of loss and are not suitable for every investor. Past
+            performance is not indicative of future results. You may lose some or all of your
+            invested capital. Nothing on this page constitutes financial, investment or trading
+            advice.
+          </p>
+          <p className="mm-footer-fine">
+            This website is operated by Forex Passing. It is not affiliated with, endorsed by or
+            sponsored by Google LLC. Google and the Google logo are trademarks of Google LLC.
+          </p>
+        </div>
+      </footer>
+    )
+  }
+
+  if (variant === 'meta' || variant === 'referral' || variant === 'proof') {
+    const links =
+      variant === 'meta' ? META_LINKS : variant === 'referral' ? REFERRAL_LINKS : PROOF_LINKS
+    const home = variant === 'referral' ? '/referral-program' : '/meta'
     return (
       <footer className={`mm-footer mm-footer-${variant}`}>
         <div className="mm-wrap mm-footer-center">
-          <a href={variant === 'meta' ? '/meta' : '/referral-program'} className="mm-footer-logo" aria-label="Forex Passing — home">
+          <a href={home} className="mm-footer-logo" aria-label="Forex Passing — home">
             <img className="mm-logo-img mm-logo-img-sm" src="/logo-light.svg" alt="Forex Passing" />
           </a>
           <nav className="mm-footer-nav" aria-label="Footer">
@@ -674,6 +714,18 @@ html{scroll-behavior:smooth}
 .mm-section{padding:84px 0}
 @media(max-width:760px){.mm-section{padding:56px 0}}
 .mm-pain{background:var(--bg2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.mm-pain-steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px;
+  max-width:860px;margin:34px auto 0}
+.mm-pain-step{display:flex;align-items:center;gap:14px;background:#fff;border:1px solid var(--line);
+  border-radius:12px;padding:15px 18px}
+.mm-pain-n{flex:0 0 auto;font-family:'Anton',sans-serif;font-weight:400;font-size:20px;line-height:1;
+  color:var(--teal);letter-spacing:.02em}
+.mm-pain-t{font-size:15px;font-weight:600;line-height:1.4}
+.mm-pain-step-last{border-color:rgba(239,68,68,.4);background:rgba(239,68,68,.05)}
+.mm-pain-step-last .mm-pain-n{color:var(--red)}
+.mm-pain-step-last .mm-pain-t{color:var(--red)}
+.mm-pain-note{font-size:clamp(16px,2.2vw,20px);font-weight:700;line-height:1.5;max-width:700px;
+  margin:32px auto 0;text-align:center}
 
 /* PAIN SPIRAL */
 .mm-spiral{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:34px 0 26px}
@@ -686,12 +738,6 @@ html{scroll-behavior:smooth}
 .mm-pain-out{font-size:clamp(18px,2.6vw,24px);font-weight:700;max-width:760px;line-height:1.4}
 
 /* MECHANISM */
-.mm-flow{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:30px 0 22px}
-@media(max-width:760px){.mm-flow{grid-template-columns:1fr 1fr}}
-.mm-flow-step{border:1px solid var(--line);border-radius:12px;padding:16px 14px;background:rgba(0,0,0,.02)}
-.mm-flow-n{font-family:'Anton',sans-serif;font-size:18px;color:var(--teal)}
-.mm-flow-t{display:block;font-weight:700;font-size:14px;margin-top:4px}
-.mm-flow-d{display:block;font-size:12px;color:var(--mut);margin-top:3px}
 .mm-states{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:0 0 24px}
 @media(max-width:760px){.mm-states{grid-template-columns:1fr}}
 .mm-state{border-radius:14px;padding:26px 22px;border:1px solid var(--line);background:rgba(0,0,0,.02)}
@@ -856,21 +902,6 @@ html{scroll-behavior:smooth}
 
 /* APPLICATION QUESTIONNAIRE */
 .mm-form{display:grid;gap:18px;text-align:left}
-.mm-progress{display:grid;gap:8px}
-.mm-progress-bar{height:6px;border-radius:999px;background:rgba(15,30,22,.08);overflow:hidden}
-.mm-progress-fill{height:100%;border-radius:999px;background:var(--teal);transition:width .3s var(--ease)}
-.mm-progress-label{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--mut)}
-.mm-qstep{display:grid;gap:14px}
-.mm-q{font-family:'Anton',sans-serif;font-weight:400;font-size:clamp(21px,3.4vw,27px);line-height:1.15;
-  text-transform:uppercase;letter-spacing:.01em}
-.mm-q-help{font-size:14px;color:var(--mut);margin-top:-8px}
-.mm-choices{display:grid;gap:10px}
-.mm-choice{display:block;width:100%;text-align:left;font-family:inherit;font-size:15px;font-weight:600;color:var(--txt);
-  background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px 16px;cursor:pointer;
-  transition:border-color .15s,background .15s,transform .15s var(--ease)}
-.mm-choice:hover{border-color:var(--teal);background:rgba(22,163,74,.05);transform:translateY(-1px)}
-.mm-choice.is-on{border-color:var(--teal);background:rgba(22,163,74,.08)}
-.mm-choice-wide{text-align:center}
 .mm-field{display:grid;gap:6px}
 .mm-field label{font-size:13px;font-weight:600;color:var(--txt)}
 .mm-field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
@@ -920,9 +951,12 @@ html{scroll-behavior:smooth}
 .mm-footer-copy{font-size:12px;color:rgba(230,239,234,.34)}
 .mm-footer-copy-center{text-align:center;margin:0}
 
-/* meta + referral */
+/* meta + referral + proof + blank */
 .mm-footer-meta,
-.mm-footer-referral{padding:52px 0 48px}
+.mm-footer-referral,
+.mm-footer-proof{padding:52px 0 48px}
+.mm-footer-blank{padding:44px 0 40px}
+.mm-footer-fine{font-size:11.5px;color:rgba(230,239,234,.42);line-height:1.7;max-width:820px;margin:0;text-align:center}
 .mm-footer-center{display:flex;flex-direction:column;align-items:center;text-align:center;gap:22px}
 .mm-footer-nav{display:flex;gap:26px;flex-wrap:wrap;justify-content:center}
 .mm-footer-nav a{color:rgba(230,239,234,.6);text-decoration:none;font-size:14px;transition:color .15s}
@@ -1309,6 +1343,56 @@ html{scroll-behavior:smooth}
   color:var(--mut);margin-bottom:10px}
 .mm-tier-example ol{margin:0;padding-left:18px}
 .mm-tier-example li{font-size:13.5px;color:var(--mut);line-height:1.6;margin-bottom:5px}
+
+/* ---------------------------------------------------------------------------
+ * QUESTIONNAIRE FLOW (components/ApplyFlow.tsx) and /google-funnel
+ * ------------------------------------------------------------------------- */
+
+.mm-qflow{display:block}
+.mm-qflow-head{display:flex;justify-content:space-between;font-size:11px;font-weight:700;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--mut);margin-bottom:8px}
+.mm-qflow-track{height:6px;border-radius:99px;background:rgba(15,30,22,.08);overflow:hidden;margin-bottom:22px}
+.mm-qflow-fill{height:100%;border-radius:99px;background:var(--teal);transition:width .35s var(--ease)}
+.mm-qflow-body{display:flex;flex-direction:column;text-align:left}
+.mm-qflow-kicker{font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--teal);margin-bottom:8px}
+.mm-qflow-question{font-size:19px;font-weight:800;line-height:1.35;margin-bottom:8px}
+.mm-qflow-desc{font-size:14px;color:var(--mut);line-height:1.65;margin-bottom:16px}
+.mm-qflow-opts{display:flex;flex-direction:column;gap:10px}
+.mm-choice{width:100%;text-align:left;border:1px solid var(--line);border-radius:12px;background:#fff;
+  padding:15px 16px;font:inherit;font-size:14.5px;font-weight:600;color:var(--txt);cursor:pointer;
+  transition:border-color .15s,background .15s,transform .1s}
+.mm-choice:hover{border-color:var(--teal);background:rgba(22,163,74,.04)}
+.mm-choice:active{transform:scale(.995)}
+.mm-qflow-rows{display:flex;flex-direction:column;gap:1px;background:var(--line);border:1px solid var(--line);
+  border-radius:12px;overflow:hidden;margin-bottom:16px}
+.mm-qflow-row{display:flex;justify-content:space-between;gap:14px;background:#fff;padding:12px 15px}
+.mm-qflow-row dt{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut)}
+.mm-qflow-row dd{font-size:13.5px;font-weight:700;text-align:right;word-break:break-word}
+.mm-qflow-bullets{list-style:none;margin:0 0 16px;padding:0;display:flex;flex-direction:column;gap:10px}
+.mm-qflow-bullets li{position:relative;padding-left:26px;font-size:14.5px;line-height:1.55}
+.mm-qflow-bullets li::before{content:"";position:absolute;left:0;top:5px;width:13px;height:7px;
+  border-left:2px solid var(--teal);border-bottom:2px solid var(--teal);transform:rotate(-45deg)}
+.mm-qflow-bullets.is-contract li{background:var(--bg2);border-radius:10px;padding:12px 14px 12px 34px}
+.mm-qflow-bullets.is-contract li::before{left:14px;top:17px}
+.mm-qflow-note{font-size:12.5px;color:var(--mut);line-height:1.6;margin-bottom:16px}
+.mm-qflow-back{align-self:flex-start;margin-top:14px;background:none;border:0;padding:0;font:inherit;
+  font-size:13px;color:var(--mut);cursor:pointer}
+.mm-qflow-back:hover{color:var(--teal)}
+.mm-opt-label{font-weight:400;color:var(--mut)}
+.mm-form-no-ico{background:var(--mut)}
+.mm-form-no{border-color:var(--line)}
+
+/* Google Ads lander — as plain as it looks on purpose. */
+.mm-gf{background:#fff;min-height:100vh;display:flex;flex-direction:column}
+.mm-gf-risk{background:var(--bg2);border-bottom:1px solid var(--line);margin:0;padding:12px 24px;
+  font-size:11.5px;line-height:1.6;color:var(--mut);text-align:center}
+.mm-gf-main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:96px 24px 110px}
+.mm-gf-h1{font-family:'Inter',system-ui,sans-serif;font-weight:800;font-size:clamp(30px,5vw,52px);
+  line-height:1.12;letter-spacing:-.02em;max-width:760px;margin-bottom:14px}
+.mm-gf-sub{font-size:16px;color:var(--mut);margin-bottom:34px}
+.mm-gf-cta{min-width:min(420px,90vw);letter-spacing:.06em}
 
 /* ---------------------------------------------------------------------------
  * SUBPAGES — /payouts, /past-performance, /reviews, /contract

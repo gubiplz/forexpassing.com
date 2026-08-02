@@ -43,6 +43,18 @@ export default async function handler(req, res) {
     stage: str(body.stage).slice(0, 40),
     // Partner slug parked by /r/<slug>. Empty for direct traffic.
     ref: str(body.ref).slice(0, 40),
+    telegram: str(body.telegram).slice(0, 60),
+    // Income bracket from the qualification questions — see public/privacy.html.
+    income: str(body.income).slice(0, 40),
+    // Every question/answer pair, so the team reads the whole picture.
+    answers:
+      body.answers && typeof body.answers === 'object'
+        ? Object.fromEntries(
+            Object.entries(body.answers)
+              .slice(0, 30)
+              .map(([q, a]) => [String(q).slice(0, 160), str(a).slice(0, 120)])
+          )
+        : {},
     experience: str(body.experience).slice(0, 40),
     goal: str(body.goal).slice(0, 2000),
     source: str(body.source).slice(0, 40) || 'safe',

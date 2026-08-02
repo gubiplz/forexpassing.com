@@ -10,6 +10,7 @@ const SafePage = lazy(() => import('./pages/SafePage').then((m) => ({ default: m
 const SubPage = lazy(() => import('./pages/SubPage').then((m) => ({ default: m.SubPage })))
 const ReferralPage = lazy(() => import('./pages/ReferralPage').then((m) => ({ default: m.ReferralPage })))
 const PartnerPortal = lazy(() => import('./pages/PartnerPortal').then((m) => ({ default: m.PartnerPortal })))
+const GoogleFunnel = lazy(() => import('./pages/GoogleFunnel').then((m) => ({ default: m.GoogleFunnel })))
 
 // Footer subpages are addressed directly and never classified: /reviews is
 // /reviews for everyone. Read once — the SPA never changes the URL at runtime.
@@ -31,6 +32,8 @@ export default function App() {
           <ReferralPage />
         ) : subPage === 'partner-portal' ? (
           <PartnerPortal />
+        ) : subPage === 'google-funnel' ? (
+          <GoogleFunnel />
         ) : (
           <SubPage page={subPage} />
         )}

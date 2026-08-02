@@ -18,7 +18,6 @@ const MONEY_PATHS = new Set([
   '/meta',
   '/meta-funnel',
   '/insta-funnel',
-  '/google-funnel',
   '/tiktok-funnel',
 ]);
 
@@ -37,6 +36,7 @@ export const SUB_PATHS = [
   'contract',
   'referral-program',
   'partner-portal',
+  'google-funnel',
 ] as const;
 
 export type SubPageKey = (typeof SUB_PATHS)[number];

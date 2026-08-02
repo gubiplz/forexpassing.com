@@ -17,7 +17,7 @@ const DIST = join(dirname(fileURLToPath(import.meta.url)), '..', 'dist');
 
 // Ad slugs — all render the money page. Keep in sync with MONEY_PATHS in
 // src/runtime/no-edge.ts.
-const MONEY_ROUTES = ['meta', 'meta-funnel', 'insta-funnel', 'google-funnel', 'tiktok-funnel'];
+const MONEY_ROUTES = ['meta', 'meta-funnel', 'insta-funnel', 'tiktok-funnel'];
 
 // Footer subpages. Keep in sync with SUB_PATHS in src/runtime/no-edge.ts and
 // FOOTER_LINKS in src/pages/shared.tsx.
@@ -49,6 +49,11 @@ const SUB_ROUTES = {
   'partner-portal': {
     title: 'Partner portal — Forex Passing',
     description: 'Your tracked referral link, your referrals and your tier progress in one place.',
+  },
+  'google-funnel': {
+    title: 'Forex Passing — prop firm account management',
+    description:
+      'We run your prop firm evaluation and manage the funded account under the firm rules. Apply to see whether you qualify.',
   },
 };
 

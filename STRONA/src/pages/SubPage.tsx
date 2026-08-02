@@ -26,7 +26,7 @@ import type { SubPageKey } from '../runtime/no-edge'
 
 // The proof pages this component covers. /referral-program and /partner-portal
 // each have their own file — see App.tsx.
-type ProofPageKey = Exclude<SubPageKey, 'referral-program' | 'partner-portal'>
+type ProofPageKey = Exclude<SubPageKey, 'referral-program' | 'partner-portal' | 'google-funnel'>
 import {
   CertCard,
   CSS,
@@ -116,7 +116,7 @@ export function SubPage({ page }: { page: ProofPageKey }) {
         </div>
       </section>
 
-      <SiteFooter />
+      <SiteFooter variant="proof" />
     </div>
   )
 }

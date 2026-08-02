@@ -22,10 +22,10 @@ const PUBLIC = join(ROOT, 'public');
 const START = '<!-- FOOTER:START -->';
 const END = '<!-- FOOTER:END -->';
 
-// Pages that carry the centred footer. safe.html is deliberately absent: it
-// mirrors SafePage, which uses the three-column variant instead.
+// Pages that carry the wide footer. Two are deliberately absent: safe.html
+// mirrors SafePage and keeps its own copy, and about-us.html has no footer at
+// all by owner decision.
 const PAGES = [
-  'about-us.html',
   'watch.html',
   'thank-you.html',
   'welcome.html',
