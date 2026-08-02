@@ -10,6 +10,7 @@
 // applications will be visible in Vercel's runtime logs and nowhere else.
 
 import { notQualifiedEmail, qualifiedEmail, sendEmail } from '../_lib/emails.js';
+import { sendLeadToTelegram } from '../_lib/telegram.js';
 
 const str = (v) => (typeof v === 'string' ? v.trim() : '');
 
@@ -87,6 +88,10 @@ export default async function handler(req, res) {
       console.error('[lead] webhook failed', err);
     }
   }
+
+  // Into the team channel first — that is where applications are actually read.
+  const posted = await sendLeadToTelegram(lead);
+  console.log('[lead] telegram', posted ? 'posted' : 'not posted');
 
   // Confirmation email. Best-effort by design — the application is already
   // logged and forwarded above, so a mail failure must not fail the request for

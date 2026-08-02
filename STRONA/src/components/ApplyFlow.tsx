@@ -34,6 +34,9 @@ function track(fbEvent: string, gaEvent: string, params?: Record<string, unknown
 }
 
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/
+// Telegram allows 5–32 chars: letters, digits and underscores. A leading @ is
+// optional because people type it both ways.
+const TELEGRAM_RE = /^@?[A-Za-z][A-Za-z0-9_]{4,31}$/
 
 /** Partner slug parked by the /r/<slug> redirect, if any. */
 function readRef(): string {
@@ -194,7 +197,6 @@ export function ApplyFlow({ initialName = '', source }: { initialName?: string; 
             advance()
           }}
           onBack={index > 0 ? back : undefined}
-          error={error}
           setError={setError}
         />
       ) : step.kind === 'question' ? (
@@ -323,14 +325,12 @@ function ContactStep({
   onChange,
   onNext,
   onBack,
-  error,
   setError,
 }: {
   value: Contact
   onChange: (c: Contact) => void
   onNext: () => void
   onBack?: () => void
-  error: string
   setError: (s: string) => void
 }) {
   const set = <K extends keyof Contact>(k: K, v: Contact[K]) => onChange({ ...value, [k]: v })
@@ -339,6 +339,11 @@ function ContactStep({
     e.preventDefault()
     if (!value.name.trim()) return setError('Please add your name.')
     if (!EMAIL_RE.test(value.email.trim())) return setError('Please add a valid email address.')
+    // Onboarding runs on Telegram, so the handle is not optional — asking for it
+    // here beats chasing it after someone has already been accepted.
+    if (!TELEGRAM_RE.test(value.telegram.trim())) {
+      return setError('Please add your Telegram handle — that is where we reply.')
+    }
     onNext()
   }
 
@@ -378,14 +383,14 @@ function ContactStep({
           value={value.phone} onChange={(e) => set('phone', e.target.value)} />
       </div>
       <div className="mm-field">
-        <label htmlFor="af-tg">Telegram <span className="mm-opt-label">(optional)</span></label>
-        <input id="af-tg" className="mm-input" type="text" placeholder="@yourhandle"
+        <label htmlFor="af-tg">Telegram</label>
+        <input id="af-tg" className="mm-input" type="text" placeholder="@yourhandle" required
           value={value.telegram} onChange={(e) => set('telegram', e.target.value)} />
+        <span className="mm-field-hint">Onboarding and support run on Telegram — this is where we reply.</span>
       </div>
 
       <button type="submit" className="mm-btn mm-btn-lg mm-btn-full">Continue</button>
       {onBack && <button type="button" className="mm-qflow-back" onClick={onBack}>← Back</button>}
-      {error && <p className="mm-form-err" role="alert">{error}</p>}
     </form>
   )
 }

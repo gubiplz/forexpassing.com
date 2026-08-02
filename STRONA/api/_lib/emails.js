@@ -7,20 +7,30 @@
 //   qualified     — we are taking it on; here is what happens next
 //   notQualified  — we are not, and here is what would change that
 //
-// Written as inline-styled tables because that is the only layout email clients
-// agree on: no flexbox, no grid, no external stylesheet. Dark background with a
-// coloured header band, which is what the reference funnel sends.
+// Styled the way Apple writes transactional mail: a white sheet on light grey,
+// one large quiet headline, generous space, hairline rules instead of boxes,
+// a single pill button, and legal text small and grey at the bottom. Colour is
+// used once — on the button — rather than as a banner.
+//
+// Inline-styled tables throughout, because that is the only layout email
+// clients agree on: no flexbox, no grid, no external stylesheet.
 
 const BRAND = 'Forex Passing';
 const SITE = 'forexpassing.com';
 const TELEGRAM = 'https://t.me/forexpassingadmin';
 const CONTACT = 'contact@forexpassing.com';
 
-const GREEN = '#16a34a';
-const INK = '#0b0f0d';
-const PANEL = '#121815';
-const TEXT = '#e6efea';
-const MUTED = '#8fa098';
+// Apple's neutral ramp, with our green as the one accent.
+const PAGE = '#f5f5f7';
+const SHEET = '#ffffff';
+const INK = '#1d1d1f';
+const SUBTLE = '#6e6e73';
+const FAINT = '#86868b';
+const HAIRLINE = '#d2d2d7';
+const ACCENT = '#16a34a';
+
+const FONT =
+  "-apple-system,BlinkMacSystemFont,'SF Pro Text','SF Pro Display','Helvetica Neue',Helvetica,Arial,sans-serif";
 
 const esc = (s) =>
   String(s ?? '')
@@ -35,141 +45,188 @@ function firstName(name) {
   return first ? esc(first) : 'there';
 }
 
-function shell({ headerColor, emoji, heading, body }) {
+function shell({ eyebrow, heading, intro, body }) {
   return `<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="color-scheme" content="light" />
 <title>${esc(heading)}</title>
 </head>
-<body style="margin:0;padding:0;background:#f2f4f3;">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f2f4f3;padding:28px 12px;">
+<body style="margin:0;padding:0;background:${PAGE};">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${PAGE};padding:40px 16px;">
     <tr><td align="center">
-      <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:600px;max-width:100%;border-radius:14px;overflow:hidden;background:${INK};font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
 
-        <tr><td align="center" style="background:${headerColor};padding:38px 28px 34px;">
-          <div style="font-size:38px;line-height:1;margin-bottom:14px;">${emoji}</div>
-          <h1 style="margin:0;color:#ffffff;font-size:25px;line-height:1.25;font-weight:800;letter-spacing:.01em;text-transform:uppercase;">
-            ${esc(heading)}
-          </h1>
+      <table role="presentation" width="580" cellpadding="0" cellspacing="0"
+        style="width:580px;max-width:100%;background:${SHEET};border-radius:18px;overflow:hidden;font-family:${FONT};">
+
+        <!-- wordmark -->
+        <tr><td align="center" style="padding:38px 40px 0;">
+          <div style="font-size:13px;font-weight:600;letter-spacing:.02em;color:${INK};">${BRAND}</div>
         </td></tr>
 
-        <tr><td style="padding:32px 32px 28px;color:${TEXT};font-size:15px;line-height:1.65;">
+        <!-- headline -->
+        <tr><td align="center" style="padding:34px 40px 0;">
+          ${
+            eyebrow
+              ? `<div style="font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:${ACCENT};margin-bottom:12px;">${esc(eyebrow)}</div>`
+              : ''
+          }
+          <h1 style="margin:0;color:${INK};font-size:34px;line-height:1.12;font-weight:600;letter-spacing:-.021em;">
+            ${esc(heading)}
+          </h1>
+          ${
+            intro
+              ? `<p style="margin:16px 0 0;color:${SUBTLE};font-size:17px;line-height:1.5;">${intro}</p>`
+              : ''
+          }
+        </td></tr>
+
+        <!-- body -->
+        <tr><td style="padding:32px 40px 40px;color:${INK};font-size:17px;line-height:1.55;">
           ${body}
         </td></tr>
 
-        <tr><td align="center" style="background:#080b0a;padding:18px 24px;color:${MUTED};font-size:12px;">
-          ${BRAND} — <a href="https://${SITE}" style="color:${MUTED};text-decoration:none;">${SITE}</a>
-        </td></tr>
-
       </table>
+
+      <!-- footer, outside the sheet, the way Apple sets it -->
+      <table role="presentation" width="580" cellpadding="0" cellspacing="0" style="width:580px;max-width:100%;font-family:${FONT};">
+        <tr><td align="center" style="padding:22px 24px 8px;color:${FAINT};font-size:12px;line-height:1.6;">
+          ${BRAND} &nbsp;·&nbsp; <a href="https://${SITE}" style="color:${FAINT};text-decoration:none;">${SITE}</a>
+          &nbsp;·&nbsp; <a href="mailto:${CONTACT}" style="color:${FAINT};text-decoration:none;">${CONTACT}</a>
+        </td></tr>
+        <tr><td align="center" style="padding:0 24px 12px;color:${FAINT};font-size:11px;line-height:1.6;">
+          Trading carries risk. A prop firm evaluation can fail and no outcome is guaranteed.
+          Nothing here is investment advice.
+        </td></tr>
+      </table>
+
     </td></tr>
   </table>
 </body>
 </html>`;
 }
 
-function button(label, href, color = GREEN) {
-  return `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:26px auto 8px;">
-    <tr><td align="center" style="background:${color};border-radius:10px;">
-      <a href="${href}" style="display:inline-block;padding:15px 30px;color:#ffffff;font-size:15px;font-weight:800;text-decoration:none;letter-spacing:.02em;">
+/** Apple's pill button: solid accent, generous padding, no border. */
+function button(label, href, color = ACCENT) {
+  return `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:6px auto 0;">
+    <tr><td align="center" style="background:${color};border-radius:980px;">
+      <a href="${href}" style="display:inline-block;padding:13px 30px;color:#ffffff;font-size:16px;font-weight:600;letter-spacing:-.01em;text-decoration:none;">
         ${label}
       </a>
     </td></tr>
   </table>`;
 }
 
-function step(n, title, desc) {
-  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:16px;">
+function hairline(space = 28) {
+  return `<div style="height:1px;line-height:1px;font-size:0;background:${HAIRLINE};margin:${space}px 0;">&nbsp;</div>`;
+}
+
+/** A step: number in grey, title, one line of detail. Separated by hairlines. */
+function step(n, title, desc, last = false) {
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0">
     <tr>
-      <td width="34" valign="top" style="padding-right:12px;">
-        <table role="presentation" cellpadding="0" cellspacing="0"><tr>
-          <td align="center" width="28" height="28" style="background:${GREEN};border-radius:14px;color:#ffffff;font-size:13px;font-weight:800;">${n}</td>
-        </tr></table>
-      </td>
+      <td width="30" valign="top" style="padding-right:14px;color:${FAINT};font-size:15px;font-weight:600;padding-top:2px;">${n}</td>
       <td valign="top">
-        <div style="color:${TEXT};font-size:15px;font-weight:700;">${title}</div>
-        <div style="color:${MUTED};font-size:13.5px;line-height:1.55;margin-top:2px;">${desc}</div>
+        <div style="color:${INK};font-size:17px;font-weight:600;letter-spacing:-.01em;">${title}</div>
+        <div style="color:${SUBTLE};font-size:15px;line-height:1.5;margin-top:4px;">${desc}</div>
       </td>
     </tr>
-  </table>`;
+  </table>${last ? '' : hairline(20)}`;
 }
 
 /* -------------------------------------------------------------------------- */
 
 export function qualifiedEmail({ name }) {
   const body = `
-    <p style="margin:0 0 16px;">Hey <strong style="color:#ffffff;">${firstName(name)}</strong>,</p>
+    <p style="margin:0 0 26px;">Hey ${firstName(name)},</p>
 
-    <p style="margin:0 0 16px;">
-      Good news — your application has been <strong style="color:${GREEN};">accepted</strong>.
-      Our desk is ready to run your prop firm evaluation and manage the funded account on your behalf.
+    <p style="margin:0 0 30px;color:${SUBTLE};font-size:17px;line-height:1.55;">
+      Your application has been accepted. Our desk is ready to run your prop firm evaluation and
+      manage the funded account on your behalf.
     </p>
 
-    <p style="margin:0 0 18px;">Here's what happens next:</p>
+    ${hairline(0)}
 
-    ${step(1, 'Message us on Telegram', 'That is where onboarding happens. Bring any questions — we answer them before anything is signed.')}
+    <div style="margin:28px 0 22px;font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:${FAINT};">
+      What happens next
+    </div>
+
+    ${step(1, 'Message us on Telegram', 'Onboarding happens there. Bring any questions — we answer them before anything is signed.')}
     ${step(2, 'We check your firm&rsquo;s rules', 'Before we touch anything we confirm the firm allows a third party to trade the account. If it does not, we say so.')}
-    ${step(3, 'Agreement, then we trade', 'Risk limits and the split go in writing first. You keep 70% of every payout and we invoice 30% only after the money has reached you.')}
+    ${step(3, 'Agreement, then we trade', 'Risk limits and the split go in writing first. You keep 70% of every payout; we invoice 30% only once the money has reached you.', true)}
 
-    ${button('JOIN TELEGRAM NOW &rarr;', TELEGRAM)}
+    ${hairline(30)}
 
-    <p style="margin:20px 0 0;color:${MUTED};font-size:13px;text-align:center;">
+    ${button('Open Telegram', TELEGRAM)}
+
+    <p style="margin:18px 0 0;color:${FAINT};font-size:14px;line-height:1.5;text-align:center;">
       Someone from the team will reach out within one business day.
     </p>
 
-    <p style="margin:20px 0 0;color:${MUTED};font-size:12.5px;line-height:1.6;">
-      Nothing has been charged and nothing is owed. Trading carries risk: an evaluation can fail and
-      no outcome is guaranteed. Questions? Just reply, or write to
-      <a href="mailto:${CONTACT}" style="color:${MUTED};">${CONTACT}</a>.
+    <p style="margin:26px 0 0;color:${FAINT};font-size:13px;line-height:1.6;">
+      Nothing has been charged and nothing is owed. If you would rather talk over email, just reply
+      to this message.
     </p>`;
 
   return {
-    subject: `You're through — next steps for your ${BRAND} application`,
-    html: shell({ headerColor: GREEN, emoji: '🎉', heading: 'You are qualified for our service!', body }),
+    subject: `Your ${BRAND} application was accepted`,
+    html: shell({
+      eyebrow: 'Application accepted',
+      heading: 'You’re in.',
+      intro: 'Here is what happens from here.',
+      body,
+    }),
   };
 }
 
 export function notQualifiedEmail({ name }) {
   const body = `
-    <p style="margin:0 0 16px;">Hey <strong style="color:#ffffff;">${firstName(name)}</strong>,</p>
+    <p style="margin:0 0 26px;">Hey ${firstName(name)},</p>
 
-    <p style="margin:0 0 16px;">
-      Thanks for taking the time to fill in the application — genuinely.
+    <p style="margin:0 0 22px;color:${SUBTLE};font-size:17px;line-height:1.55;">
+      Thank you for taking the time to fill in the application.
     </p>
 
-    <p style="margin:0 0 16px;">
-      Based on your answers we are <strong style="color:#ffffff;">not taking this on right now</strong>.
-      That is not a judgement on you as a trader; it usually comes down to timing, or to the account
-      not being ready yet. We would rather say so than take your time and your money.
+    <p style="margin:0 0 30px;color:${SUBTLE};font-size:17px;line-height:1.55;">
+      Based on your answers we are not taking this on right now. That is not a judgement on you as a
+      trader — it usually comes down to timing, or to the account not being ready yet. We would
+      rather say so than take your time.
     </p>
 
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 18px;">
-      <tr><td style="background:${PANEL};border-left:3px solid ${GREEN};border-radius:8px;padding:16px 18px;color:${MUTED};font-size:14px;line-height:1.7;">
-        Things that usually change the answer:<br />
-        &bull; You are ready to fund an evaluation without stretching yourself<br />
-        &bull; Your prop firm allows a third party to trade the account<br />
-        &bull; You want to start within the next few weeks, not "sometime"
-      </td></tr>
-    </table>
+    ${hairline(0)}
 
-    <p style="margin:0 0 16px;">
-      If any of that shifts, come back and apply again — or just message us and we will look at it
-      with you. No hard feelings and no queue to rejoin.
+    <div style="margin:28px 0 22px;font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:${FAINT};">
+      What usually changes the answer
+    </div>
+
+    ${step('—', 'You can fund an evaluation comfortably', 'Without stretching yourself or using money you need elsewhere.')}
+    ${step('—', 'Your prop firm permits third-party trading', 'Some allow it under a written arrangement; others void results outright.')}
+    ${step('—', 'You want to start in the next few weeks', 'Rather than at some undecided point later on.', true)}
+
+    ${hairline(30)}
+
+    <p style="margin:0 0 24px;color:${SUBTLE};font-size:17px;line-height:1.55;">
+      If any of that changes, apply again or just message us — we will look at it with you. No hard
+      feelings and no queue to rejoin.
     </p>
 
-    ${button('MESSAGE US ON TELEGRAM &rarr;', TELEGRAM, '#1f2a25')}
+    ${button('Message us', TELEGRAM, '#1d1d1f')}
 
-    <p style="margin:20px 0 0;color:${MUTED};font-size:12.5px;line-height:1.6;">
-      Nothing has been charged and nothing is owed. Trading carries risk: an evaluation can fail and
-      no outcome is guaranteed. You can reach us any time at
-      <a href="mailto:${CONTACT}" style="color:${MUTED};">${CONTACT}</a>.
+    <p style="margin:26px 0 0;color:${FAINT};font-size:13px;line-height:1.6;">
+      Nothing has been charged and nothing is owed. You can reach us any time by replying to this
+      message.
     </p>`;
 
   return {
     subject: `About your ${BRAND} application`,
-    html: shell({ headerColor: '#1f2a25', emoji: '📩', heading: 'Thanks for applying', body }),
+    html: shell({
+      eyebrow: 'Application reviewed',
+      heading: 'Not this time.',
+      intro: 'A straight answer, and what would change it.',
+      body,
+    }),
   };
 }
 

@@ -1415,6 +1415,7 @@ html{scroll-behavior:smooth}
   font-size:13px;color:var(--mut);cursor:pointer}
 .mm-qflow-back:hover{color:var(--teal)}
 .mm-opt-label{font-weight:400;color:var(--mut)}
+.mm-field-hint{font-size:12.5px;color:var(--mut);line-height:1.5}
 .mm-form-no-ico{background:var(--mut)}
 .mm-form-no{border-color:var(--line)}
 
