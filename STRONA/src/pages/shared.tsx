@@ -1395,6 +1395,79 @@ html{scroll-behavior:smooth}
 .mm-gf-cta{min-width:min(420px,90vw);letter-spacing:.06em}
 
 /* ---------------------------------------------------------------------------
+ * TRACK RECORD panel (components/TrackRecord.tsx)
+ * ------------------------------------------------------------------------- */
+
+.mm-tr{text-align:left}
+.mm-tr-head{display:grid;grid-template-columns:1.2fr .8fr;gap:26px;align-items:center;
+  background:linear-gradient(160deg,#f4f8f5 0%,#eef4f0 100%);border:1px solid var(--line);
+  border-radius:18px;padding:24px}
+.mm-tr-ident{display:flex;flex-direction:column;gap:16px}
+.mm-tr-logo{display:inline-flex;align-items:center;justify-content:center;width:88px;height:74px;
+  background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 8px 22px -16px rgba(0,0,0,.4)}
+.mm-tr-logo img{max-width:64px;max-height:52px}
+.mm-tr-pills{display:flex;flex-wrap:wrap;gap:8px}
+.mm-tr-pill{border:1px solid var(--line);border-radius:99px;background:#fff;color:var(--mut);
+  font:inherit;font-size:13px;font-weight:600;padding:8px 15px;cursor:pointer;
+  transition:border-color .15s,color .15s,background .15s}
+button.mm-tr-pill:hover{border-color:var(--teal);color:var(--teal)}
+.mm-tr-pill.is-on{border-color:var(--teal);color:var(--teal);background:rgba(22,163,74,.09);font-weight:700}
+.mm-tr-pill.is-tag{background:#6d43c9;border-color:#6d43c9;color:#fff;cursor:default}
+.mm-tr-pill.is-muted{background:rgba(15,30,22,.05);border-color:transparent;cursor:default}
+.mm-tr-headline{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.mm-tr-box{background:rgba(255,255,255,.7);border:1px solid var(--line);border-radius:14px;
+  padding:18px 16px;text-align:center}
+.mm-tr-box.is-primary{background:#fff;box-shadow:0 14px 34px -24px rgba(0,0,0,.45)}
+.mm-tr-box-k{display:block;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--mut)}
+.mm-tr-box-v{display:block;font-size:clamp(22px,3vw,30px);font-weight:800;line-height:1.1;margin-top:6px}
+.mm-tr-box-sub{display:block;font-size:12px;color:var(--mut);margin-top:3px}
+
+.mm-tr-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:14px}
+.mm-tr-stat{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px}
+.mm-tr-stat-k{display:block;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--mut)}
+.mm-tr-stat-v{display:block;font-size:26px;font-weight:800;line-height:1.1;margin-top:7px}
+
+.mm-tr-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.mm-tr-panel{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 20px}
+.mm-tr-panel.is-wide{grid-column:1 / -1}
+.mm-tr-panel-t{font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--mut);margin-bottom:14px}
+
+.mm-tr-chart svg{width:100%;height:190px;display:block;overflow:visible}
+.mm-tr-chart-x{display:flex;justify-content:space-between;font-size:11px;color:var(--mut);margin-top:8px}
+.mm-tr-chart-read{font-size:13px;font-weight:700;color:var(--teal);margin-top:8px;min-height:19px}
+
+.mm-tr-months{display:flex;align-items:flex-end;gap:10px;height:180px}
+.mm-tr-month{flex:1;display:flex;flex-direction:column;align-items:center;height:100%}
+.mm-tr-month-v{font-size:11px;font-weight:700;margin-bottom:6px}
+.mm-tr-month-track{flex:1;width:100%;display:flex;align-items:flex-end}
+.mm-tr-month-fill{width:100%;border-radius:6px 6px 0 0;background:var(--teal);min-height:3px}
+.mm-tr-month-fill.is-neg{background:var(--red)}
+.mm-tr-month-k{font-size:11px;color:var(--mut);margin-top:7px}
+
+.mm-tr-dist{display:flex;flex-direction:column;gap:11px}
+.mm-tr-dist-row{display:grid;grid-template-columns:74px 1fr auto;gap:12px;align-items:center}
+.mm-tr-dist-k{font-size:12.5px;font-weight:600}
+.mm-tr-dist-track{height:9px;border-radius:99px;background:rgba(15,30,22,.07);overflow:hidden}
+.mm-tr-dist-fill{display:block;height:100%;border-radius:99px;background:var(--teal)}
+.mm-tr-dist-v{font-size:12px;color:var(--mut);white-space:nowrap}
+
+.mm-tr-defs{display:flex;flex-direction:column;gap:1px;background:var(--line);border-radius:10px;overflow:hidden}
+.mm-tr-def{display:flex;justify-content:space-between;gap:12px;background:#fff;padding:11px 13px}
+.mm-tr-def dt{font-size:12.5px;color:var(--mut)}
+.mm-tr-def dd{font-size:13px;font-weight:700}
+
+.mm-tr-note{font-size:12px;color:var(--mut);line-height:1.7;margin-top:18px}
+
+@media (max-width:820px){
+  .mm-tr-head{grid-template-columns:1fr}
+  .mm-tr-grid{grid-template-columns:1fr}
+}
+
+/* The window is wider than the questionnaire's. */
+.mm-modal-wide{max-width:940px}
+
+/* ---------------------------------------------------------------------------
  * SUBPAGES — /payouts, /past-performance, /reviews, /contract
  * Same shell as the money page minus the ticker and the sticky CTA, so the
  * top/bottom padding those reserve has to come back off.

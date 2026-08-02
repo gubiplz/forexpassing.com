@@ -10,6 +10,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { ApplyModal } from '../components/ApplyFlow'
+import { TrackRecordModal } from '../components/TrackRecord'
 import {
   CTA_LABEL,
   CLIENT_SPLIT,
@@ -336,6 +337,7 @@ export function MoneyPage() {
   // The questionnaire lives in a modal so every button on the page opens the
   // same thing, wherever the reader happens to be. The preview card passes the
   // name it collected; every other entry point opens it empty.
+  const [trackOpen, setTrackOpen] = useState(false)
   const [applyOpen, setApplyOpen] = useState(false)
   const [applyName, setApplyName] = useState('')
   const openApply = (name = '') => {
@@ -549,7 +551,16 @@ export function MoneyPage() {
           <PerformanceWidget />
 
           <div className="mm-cta-center">
-            <a href="/past-performance" className="mm-btn mm-btn-ghost mm-btn-lg">See the full track record</a>
+            <button
+              type="button"
+              className="mm-btn mm-btn-ghost mm-btn-lg"
+              onClick={() => {
+                track('CTAClick', 'cta_click', { source: 'track_record' }, true)
+                setTrackOpen(true)
+              }}
+            >
+              See the full track record
+            </button>
           </div>
           <CtaRow onOpen={openApply} source="performance" tight />
         </div>
@@ -642,6 +653,8 @@ export function MoneyPage() {
       <div className="mm-sticky-bar">
         <Cta onOpen={openApply} source="sticky" />
       </div>
+
+      {trackOpen && <TrackRecordModal onClose={() => setTrackOpen(false)} />}
 
       {applyOpen && (
         <ApplyModal initialName={applyName} source="money" onClose={() => setApplyOpen(false)} />

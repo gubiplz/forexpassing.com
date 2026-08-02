@@ -21,6 +21,7 @@ import {
   PASS_WINDOW,
   REFUND_WINDOW,
 } from '../constants'
+import { TrackRecord } from '../components/TrackRecord'
 import { PAYOUT_CERTS, PAYOUT_TOTALS } from '../data/payouts'
 import type { SubPageKey } from '../runtime/no-edge'
 
@@ -179,7 +180,11 @@ function PastPerformance() {
   return (
     <section className="mm-section mm-perf mm-reveal">
       <div className="mm-wrap">
+        <TrackRecord />
+
+        <h2 className="mm-h2 mm-center" style={{ marginTop: 72 }}>THE DESK, MONTH BY MONTH</h2>
         <PerformanceWidget />
+
         <p className="mm-disclaimer" style={{ marginTop: 40 }}>
           Past performance does not predict future results. Every account is traded inside its own
           firm's risk rules, so the numbers on any individual account will differ from what is shown
