@@ -59,6 +59,22 @@ function compilePatterns() {
 }
 compilePatterns();
 
+// A real Safari UA is "Mozilla/5.0 (<Apple device>) AppleWebKit/605.x (KHTML,
+// like Gecko) Version/<n> ... Safari/<n>". Chromium and every UA-spoofing library
+// that borrows the Safari string drops the Version/ token, so requiring the whole
+// shape keeps this from becoming a free +20 for anyone who claims to be Safari.
+export function isCoherentSafari(ua: string): boolean {
+  if (/Chrome\/|Chromium\/|Edg\/|OPR\/|Android/i.test(ua)) return false;
+  if (!/\(([^)]*\b(iPhone|iPad|iPod|Macintosh)\b[^)]*)\)/.test(ua)) return false;
+  return /AppleWebKit\/605\./.test(ua) && /Version\/\d+/.test(ua) && /Safari\/\d+/.test(ua);
+}
+
+// iOS ships one engine: every browser there, Brave and Chrome included, is WebKit
+// wearing a different badge. So Chromium-only expectations must not apply.
+export function isAppleWebKitPlatform(ua: string): boolean {
+  return /\b(iPhone|iPad|iPod)\b/.test(ua) || isCoherentSafari(ua);
+}
+
 export function analyzeUserAgent(headers: Headers): ReasonEntry[] {
   const ua = headers.get('user-agent') ?? '';
   const reasons: ReasonEntry[] = [];
@@ -125,6 +141,16 @@ export function analyzeUserAgent(headers: Headers): ReasonEntry[] {
       detail: `Sec-Ch-Ua=${headers.get('sec-ch-ua')?.slice(0, 50)}`,
       weight: 20,
     });
+  } else if (isCoherentSafari(ua)) {
+    // Safari never sends client hints — that is WebKit, not a tell. Without an
+    // equivalent credit every iPhone scored 20 below an identical Chrome user,
+    // and Meta traffic is mostly iPhones, so the gate was rejecting its own
+    // audience. The UA still has to be internally consistent to earn it.
+    reasons.push({
+      code: 'ua_safari_coherent',
+      detail: ua.slice(0, 60),
+      weight: 20,
+    });
   }
 
   // 5. Accept-Language obecność — prawdziwa przeglądarka zawsze wysyła.
@@ -156,7 +182,11 @@ export function analyzeUserAgent(headers: Headers): ReasonEntry[] {
   }
 
   // Jeśli nic złego nie znaleźliśmy i UA wygląda normalnie → mały plus
-  if (reasons.length === 0 || (reasons.length === 1 && reasons[0].code === 'client_hints_ok')) {
+  if (
+    reasons.length === 0 ||
+    (reasons.length === 1 &&
+      (reasons[0].code === 'client_hints_ok' || reasons[0].code === 'ua_safari_coherent'))
+  ) {
     if (ua.length > 60 && ua.startsWith('Mozilla/')) {
       reasons.push({ code: 'ua_ok', detail: ua.slice(0, 60), weight: 10 });
     }

@@ -1,10 +1,19 @@
 #!/usr/bin/env bash
-# Production deploy script for forexpassing-edge Worker.
-# Run from apps/ebook/ root. Requires: wrangler logged in + .dev.vars present.
+# Production deploy script for the forexpassing-edge Worker.
+# Run from anywhere. Requires: wrangler logged in + workers/.dev.vars present.
 
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
+
+# The tracked wrangler.toml carries KV placeholders on purpose (public repo). Real
+# IDs are patched in for the upload and restored afterwards, on success or failure.
+restore_placeholders() {
+  if [ -f workers/wrangler.toml.deploy-bak ]; then
+    mv workers/wrangler.toml.deploy-bak workers/wrangler.toml
+  fi
+}
+trap restore_placeholders EXIT
 
 echo "==> 1. Production build"
 npm run build
@@ -14,40 +23,61 @@ echo "==> 2. Verify wrangler login"
 npx wrangler whoami
 
 echo ""
-echo "==> 3. Create KV namespaces (idempotent — skips if already exist)"
-KV_USED_CLICKS_OUT=$(npx wrangler kv namespace create USED_CLICKS 2>&1 || true)
-echo "$KV_USED_CLICKS_OUT"
-KV_USED_CLICKS_ID=$(echo "$KV_USED_CLICKS_OUT" | grep -oE 'id = "[a-f0-9]+"' | head -1 | cut -d'"' -f2 || echo "")
+echo "==> 3. Resolve KV namespaces (reuse existing, create if missing)"
+# `kv namespace create` errors out when the namespace is already there and prints
+# no id, so resolve from the list first — that is what makes re-runs work.
+kv_id() {
+  local title="$1" id
+  id=$(npx wrangler kv namespace list 2>/dev/null |
+    python3 -c "import json,sys;print(next((n['id'] for n in json.load(sys.stdin) if n['title']=='$title'),''))")
+  if [ -z "$id" ]; then
+    id=$(npx wrangler kv namespace create "$title" 2>&1 |
+      grep -oE '"id": *"[a-f0-9]+"' | head -1 | cut -d'"' -f4)
+  fi
+  printf '%s' "$id"
+}
 
-KV_EDGE_LOG_OUT=$(npx wrangler kv namespace create EDGE_LOG 2>&1 || true)
-echo "$KV_EDGE_LOG_OUT"
-KV_EDGE_LOG_ID=$(echo "$KV_EDGE_LOG_OUT" | grep -oE 'id = "[a-f0-9]+"' | head -1 | cut -d'"' -f2 || echo "")
+KV_USED_CLICKS_ID=$(kv_id USED_CLICKS)
+KV_EDGE_LOG_ID=$(kv_id EDGE_LOG)
 
-if [ -n "$KV_USED_CLICKS_ID" ] && [ -n "$KV_EDGE_LOG_ID" ]; then
-  echo ""
-  echo "  USED_CLICKS id: $KV_USED_CLICKS_ID"
-  echo "  EDGE_LOG    id: $KV_EDGE_LOG_ID"
-  echo ""
-  echo "==> 4. Patching workers/wrangler.toml with real IDs"
-  sed -i.bak \
-    -e "s|id = \"local-used-clicks\"|id = \"$KV_USED_CLICKS_ID\"|" \
-    -e "s|id = \"local-edge-log\"|id = \"$KV_EDGE_LOG_ID\"|" \
-    workers/wrangler.toml
-  rm workers/wrangler.toml.bak
-  echo "  wrangler.toml updated"
-else
-  echo "  KV IDs already configured in wrangler.toml (skipping patch)"
+if [ -z "$KV_USED_CLICKS_ID" ] || [ -z "$KV_EDGE_LOG_ID" ]; then
+  echo "  ERROR: could not resolve KV namespace IDs" >&2
+  exit 1
 fi
 
+echo "  USED_CLICKS id: $KV_USED_CLICKS_ID"
+echo "  EDGE_LOG    id: $KV_EDGE_LOG_ID"
 echo ""
-echo "==> 5. Set EDGE_SECRET as Worker secret"
-if [ -f workers/.dev.vars ]; then
-  SECRET=$(grep '^EDGE_SECRET=' workers/.dev.vars | cut -d'=' -f2-)
-  echo "$SECRET" | npx wrangler secret put EDGE_SECRET --config workers/wrangler.toml
-else
+echo "==> 4. Patching workers/wrangler.toml with real IDs"
+cp workers/wrangler.toml workers/wrangler.toml.deploy-bak
+sed -i.bak \
+  -e "s|id = \"local-used-clicks\"|id = \"$KV_USED_CLICKS_ID\"|" \
+  -e "s|id = \"local-edge-log\"|id = \"$KV_EDGE_LOG_ID\"|" \
+  workers/wrangler.toml
+rm -f workers/wrangler.toml.bak
+echo "  wrangler.toml updated (placeholders restored on exit)"
+
+echo ""
+echo "==> 5. Upload Worker secrets from workers/.dev.vars"
+if [ ! -f workers/.dev.vars ]; then
   echo "  ERROR: workers/.dev.vars not found. Run: cp workers/.dev.vars.example workers/.dev.vars"
   exit 1
 fi
+
+put_secret() {
+  local name="$1" value
+  value=$(grep "^$name=" workers/.dev.vars | cut -d'=' -f2-)
+  if [ -z "$value" ]; then
+    echo "  $name absent from .dev.vars — skipped"
+    return
+  fi
+  printf '%s' "$value" | npx wrangler secret put "$name" --config workers/wrangler.toml
+}
+
+put_secret EDGE_SECRET
+# Shared with the Vercel env var of the same name. Optional: while the origin has
+# no ORIGIN_KEY set, its middleware stays a no-op and this changes nothing.
+put_secret ORIGIN_KEY
 
 echo ""
 echo "==> 6. Deploy Worker"
@@ -56,10 +86,9 @@ npx wrangler deploy --config workers/wrangler.toml
 echo ""
 echo "==> 7. Done."
 echo ""
-echo "Next steps (manual, in CF dashboard):"
-echo "  1. Workers & Pages → forexpassing-edge → Settings → Triggers"
-echo "  2. 'Add Custom Domain' → forexpassing.com"
-echo "  3. CF auto-creates the DNS record for the domain"
+echo "Routes come from wrangler.toml — nothing to click in the dashboard. Do NOT"
+echo "add a Custom Domain: it rewrites the zone's DNS records, and those have to"
+echo "keep pointing at the Vercel origin for the Worker to have anything to proxy."
 echo ""
 echo "Then test."
 echo ""

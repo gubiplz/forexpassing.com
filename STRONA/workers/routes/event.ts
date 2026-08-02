@@ -37,7 +37,13 @@ export async function handleEvent(request: Request, env: Env): Promise<Response>
 
   let signals: ClientSignals;
   try {
-    signals = (await request.json()) as ClientSignals;
+    const parsed = await request.json();
+    // Valid JSON is not enough — `null`, a bare string or an array all parse fine
+    // and would then throw on the first field read further down.
+    if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
+      return json({ error: 'invalid payload' }, 400);
+    }
+    signals = parsed as ClientSignals;
   } catch {
     return json({ error: 'invalid JSON' }, 400);
   }
@@ -56,7 +62,7 @@ export async function handleEvent(request: Request, env: Env): Promise<Response>
   const clickResult = await trackClicks(url, request.headers, env, env.EDGE_SECRET);
   reasons.push(...clickResult.reasons);
 
-  reasons.push(...scoreClientSignals(signals));
+  reasons.push(...scoreClientSignals(signals, request.headers.get('user-agent') ?? ''));
 
   // Service Worker presence — persistent verification from prior visit
   if (request.headers.get('x-sw-verified') === '1') {

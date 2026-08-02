@@ -1,6 +1,7 @@
 // Score aggregation + classification.
 
 import type { Verdict, ReasonEntry, Classification, ClientSignals } from './types.ts';
+import { isAppleWebKitPlatform } from './ua-analyzer.ts';
 
 export function buildVerdict(
   reasons: ReasonEntry[],
@@ -56,8 +57,14 @@ function classify(score: number, reasons: ReasonEntry[]): Classification {
   return 'bot';
 }
 
-export function scoreClientSignals(s: ClientSignals): ReasonEntry[] {
+export function scoreClientSignals(s: ClientSignals, ua = ''): ReasonEntry[] {
   const reasons: ReasonEntry[] = [];
+
+  // The payload is attacker-controlled: every field is optional in practice, and a
+  // throw here would 500 the whole classification instead of scoring the omission.
+  const detectedFonts = s.detectedFonts ?? [];
+  const rtcLocalIps = s.rtcLocalIps ?? [];
+  const appleWebKit = isAppleWebKitPlatform(ua);
 
   if (s.webdriver === true) {
     reasons.push({ code: 'webdriver_true', detail: 'navigator.webdriver === true', weight: -100 });
@@ -92,7 +99,9 @@ export function scoreClientSignals(s: ClientSignals): ReasonEntry[] {
     });
   }
 
-  if (!s.hasChrome) {
+  // window.chrome is Chromium-only. Every Safari and every iOS browser lacks it,
+  // so an unconditional check charged -50 for the crime of being an iPhone.
+  if (!s.hasChrome && !appleWebKit) {
     reasons.push({
       code: 'missing_chrome_obj',
       detail: 'window.chrome undefined despite Chrome UA',
@@ -121,34 +130,34 @@ export function scoreClientSignals(s: ClientSignals): ReasonEntry[] {
   }
 
   // Fonts — headless has deterministic short list
-  if (s.detectedFonts.length === 0) {
+  if (detectedFonts.length === 0) {
     reasons.push({
       code: 'fonts_headless_pattern',
       detail: 'zero fonts detected (text-measure failed)',
       weight: -40,
     });
-  } else if (s.detectedFonts.length < 5) {
+  } else if (detectedFonts.length < 5) {
     reasons.push({
       code: 'fonts_headless_pattern',
-      detail: `only ${s.detectedFonts.length} fonts (headless typical: DejaVu/Liberation)`,
+      detail: `only ${detectedFonts.length} fonts (headless typical: DejaVu/Liberation)`,
       weight: -25,
     });
-  } else if (s.detectedFonts.length >= 15) {
+  } else if (detectedFonts.length >= 15) {
     reasons.push({
       code: 'fonts_headless_pattern',
-      detail: `${s.detectedFonts.length} fonts (real OS)`,
+      detail: `${detectedFonts.length} fonts (real OS)`,
       weight: 15,
     });
   }
 
   // WebRTC IP leak — real browser leaks local IP. Bot in datacenter often gets none.
-  if (s.rtcLocalIps.length === 0) {
+  if (rtcLocalIps.length === 0) {
     reasons.push({
       code: 'rtc_no_local_ip',
       detail: 'no RTC ICE candidates (firewall/headless)',
       weight: -25,
     });
-  } else if (s.rtcLocalIps.every((ip) => ip.startsWith('127.') || ip === '::1')) {
+  } else if (rtcLocalIps.every((ip) => ip.startsWith('127.') || ip === '::1')) {
     reasons.push({
       code: 'rtc_localhost_only',
       detail: 'only loopback IPs (proxy/VM tell)',
@@ -156,7 +165,9 @@ export function scoreClientSignals(s: ClientSignals): ReasonEntry[] {
     });
   }
 
-  if (s.speechVoicesCount === 0) {
+  // iOS populates getVoices() lazily — it is empty until speech is first used,
+  // so on a phone this fires for attentive humans as often as for headless.
+  if (s.speechVoicesCount === 0 && !appleWebKit) {
     reasons.push({
       code: 'speech_voices_empty',
       detail: 'speechSynthesis.getVoices() empty (headless)',
@@ -166,10 +177,13 @@ export function scoreClientSignals(s: ClientSignals): ReasonEntry[] {
 
   // Behavioral
   if (s.mouseEntropy === 0 && s.scrollCount === 0) {
+    // A desktop user brushes the mouse without meaning to; a phone user reading
+    // the first screen touches nothing. Same silence, very different evidence.
+    const touch = (s.maxTouchPoints ?? 0) > 0;
     reasons.push({
       code: 'no_mouse_movement',
-      detail: 'no mouse/scroll in 5s',
-      weight: -50,
+      detail: touch ? 'no touch/scroll in 5s (touch device)' : 'no mouse/scroll in 5s',
+      weight: touch ? -20 : -50,
     });
   } else if (s.mouseEntropy > 0 && s.mouseEntropy < 50) {
     reasons.push({

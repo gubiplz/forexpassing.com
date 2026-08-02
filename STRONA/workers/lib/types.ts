@@ -9,7 +9,7 @@ export type ReasonCode =
   | 'ua_meta_bot' | 'ua_google_bot' | 'ua_security_scanner' | 'ua_seo_scraper'
   | 'ua_headless' | 'ua_http_library' | 'ua_generic_bot'
   | 'ua_empty' | 'ua_too_short' | 'ua_no_mozilla' | 'ua_ok'
-  | 'missing_client_hints' | 'client_hints_ok'
+  | 'missing_client_hints' | 'client_hints_ok' | 'ua_safari_coherent'
   | 'tls_automation_tool' | 'tls_browser_match' | 'tls_unknown' | 'http_protocol_old'
   | 'fbclid_first_use' | 'fbclid_already_used' | 'gclid_first_use' | 'gclid_already_used'
   | 'ttclid_first_use' | 'ttclid_already_used'
@@ -96,6 +96,11 @@ export interface Env {
   EDGE_SECRET: string;
   ASSETS?: { fetch: (req: Request) => Promise<Response> };
   ORIGIN_URL?: string;
+  // Shared with the origin (Vercel env var of the same name). Proves a request
+  // arrived through this Worker; without it the origin serves only the safe page,
+  // which is what stops anyone who finds the origin hostname from walking past
+  // the gate. Separate from EDGE_SECRET so the origin never holds a signing key.
+  ORIGIN_KEY?: string;
   LEAD_WEBHOOK?: string;
 }
 

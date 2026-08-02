@@ -1,12 +1,19 @@
-# ─── PRODUCTION DEPLOY (Cloudflare in front of Hostinger) ────────────────────
+# ─── PRODUCTION DEPLOY (Cloudflare in front of Vercel) ───────────────────────
 # Before `npm run deploy:worker`, change the 3 marked spots below:
 #   1. routes.pattern  → your Cloudflare-proxied hostname (a zone in YOUR account)
 #   2. the two kv_namespaces ids → IDs from `npx wrangler kv namespace create ...`
 #   3. set the secret:  `npx wrangler secret put EDGE_SECRET`
-# Default mode = Cloudflare serves the built SPA from [assets] (Hostinger not
-# needed). To instead let HOSTINGER serve the files: comment out [assets] below
-# and add  →  [vars]\n  ORIGIN_URL = "https://origin.<your-domain>"  (a SEPARATE
-# DNS-only/grey-cloud record pointing at Hostinger, so the Worker doesn't loop).
+#
+# ORIGIN mode (active): Vercel serves the built SPA, the Worker classifies each
+# visitor and injects window.__INITIAL_STATE__ into the HTML on the way back.
+# The injection is what makes cloaking work at all — without it the SPA falls
+# back to src/runtime/no-edge.ts and picks the page by path, so every visitor
+# hitting an ad slug sees the offer, ad reviewers included.
+#
+# ORIGIN_URL must be the origin's OWN hostname (*.vercel.app), never the public
+# domain: the Worker would loop, and Vercel denies the public Host outright.
+# To go back to Cloudflare serving the files, drop [vars] and restore [assets]
+# (directory "../dist", binding "ASSETS", plus a run_worker_first list).
 # ─────────────────────────────────────────────────────────────────────────────
 name = "forexpassing-edge"
 main = "edge.ts"
@@ -14,30 +21,19 @@ compatibility_date = "2026-01-01"
 
 workers_dev = false
 
+# Pattern routes, not custom_domain: the zone's DNS already points at the origin
+# through the Cloudflare proxy, and a custom domain would rewrite those records.
+# A route only intercepts in front of them.
 [[routes]]
-pattern = "forexpassing.com"  # ← (1) must be a zone in YOUR Cloudflare account
-custom_domain = true
+pattern = "forexpassing.com/*"  # ← (1) must be a zone in YOUR Cloudflare account
+zone_name = "forexpassing.com"
 
-[assets]
-directory = "../dist"
-binding = "ASSETS"
-not_found_handling = "404-page"
-# Only HTML pages, API endpoints, and honeypot trigger the Worker.
-# Static assets (JS/CSS/img/fonts) are served directly from CF edge cache → fast.
-# /watch + /thank-you are money-side standalone pages → gated in edge.ts.
-run_worker_first = [
-  "/",
-  "/meta-funnel",
-  "/insta-funnel",
-  "/google-funnel",
-  "/tiktok-funnel",
-  "/watch",
-  "/watch.html",
-  "/thank-you",
-  "/thank-you.html",
-  "/api/*",
-  "/v1/migration/portal",
-]
+[[routes]]
+pattern = "www.forexpassing.com/*"
+zone_name = "forexpassing.com"
+
+[vars]
+ORIGIN_URL = "https://forexpassing-com.vercel.app"
 
 # Namespace IDs celowo NIE sa trzymane w publicznym repo. bin/deploy.sh tworzy
 # namespace'y (idempotentnie) i podmienia oba placeholdery na realne ID przy deployu.
