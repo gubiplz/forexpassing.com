@@ -10,15 +10,18 @@
 
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import {
-  APPLY_ANCHOR,
   APPLY_ENDPOINT,
+  CTA_LABEL,
   CLIENT_SPLIT,
   CONTACT_EMAIL,
   GUARANTEE_CREDIT,
   OUR_SPLIT,
   PARTNER_FIRM,
+  FORM_PREVIEW_LABEL,
+  FORM_PREVIEW_PLACEHOLDER,
   PASS_WINDOW,
   REFUND_WINDOW,
+  WISTIA_META_ID,
 } from '../constants'
 import { PAYOUT_CERTS, PAYOUT_TOTALS } from '../data/payouts'
 import {
@@ -192,9 +195,11 @@ const LAST_STEP = STEP_LABELS.length - 1
 // Multi-step questionnaire — one question per screen, progress bar, honeypot.
 // Questions come before contact details on purpose: answering three of them is
 // easier than handing over an email, and the answers are what the call needs.
-function ApplyForm() {
+function ApplyForm({ initialName = '' }: { initialName?: string }) {
   const [step, setStep] = useState(0)
-  const [data, setData] = useState<ApplyState>(EMPTY_APPLY)
+  // The preview card asks for a name before opening the modal — carry it in so
+  // the visitor never types it twice.
+  const [data, setData] = useState<ApplyState>({ ...EMPTY_APPLY, name: initialName })
   const [sent, setSent] = useState(false)
   const [sending, setSending] = useState(false)
   const [error, setError] = useState('')
@@ -442,6 +447,182 @@ function ApplyForm() {
   )
 }
 
+/* ---------------------------------------------------------------------------
+ * OFFER PAGE CHROME — modelled on the reference funnel: one repeated CTA, a
+ * questionnaire that opens in a modal from anywhere, and a bar that stays on
+ * screen the whole way down.
+ * ------------------------------------------------------------------------- */
+
+function CheckIcon() {
+  return (
+    <span className="mm-check-ico" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" /></svg>
+    </span>
+  )
+}
+
+function CheckRow({ title, detail }: { title: string; detail?: string }) {
+  return (
+    <div className="mm-check">
+      <CheckIcon />
+      <span className="mm-check-t">
+        {title}
+        {detail && <span className="mm-check-d">{detail}</span>}
+      </span>
+    </div>
+  )
+}
+
+// Hero video. Renders only once WISTIA_META_ID is set in constants.ts — we would
+// rather show no video than the old clip, which advertises a retired $49 product
+// on screen. The progress bar reflects real playback time reported by the
+// player, never a padded number.
+function HeroVsl() {
+  const [pct, setPct] = useState(0)
+  useEffect(() => {
+    if (!WISTIA_META_ID) return
+    const w = window as unknown as { _wq?: unknown[] }
+    w._wq = w._wq || []
+    w._wq.push({
+      id: WISTIA_META_ID,
+      onReady(video: { bind: (e: string, cb: () => void) => void; percentWatched: () => number }) {
+        video.bind('secondchange', () => {
+          setPct(Math.min(100, Math.round(video.percentWatched() * 100)))
+        })
+      },
+    })
+  }, [])
+
+  if (!WISTIA_META_ID) return null
+
+  return (
+    <div className="mm-vsl">
+      <div className="mm-vsl-head">
+        <span className="mm-vsl-badge">Start here</span>
+        <span className="mm-vsl-title">Watch this 90 second video</span>
+      </div>
+      <div className="mm-vsl-frame">
+        <iframe
+          src={`https://fast.wistia.net/embed/iframe/${WISTIA_META_ID}?seo=true&videoFoam=true`}
+          title="How account management works"
+          allow="autoplay; fullscreen"
+          allowFullScreen
+        />
+      </div>
+      <div className="mm-vsl-bar">
+        <span className="mm-vsl-bar-label">Complete video</span>
+        <span className="mm-vsl-bar-track">
+          <span className="mm-vsl-bar-fill" style={{ width: `${pct}%` }} />
+        </span>
+        <span className="mm-vsl-bar-pct">{pct}%</span>
+      </div>
+    </div>
+  )
+}
+
+// The one button on the page. Every instance opens the same questionnaire.
+function Cta({
+  onOpen,
+  source,
+  className = '',
+}: {
+  onOpen: () => void
+  source: string
+  className?: string
+}) {
+  return (
+    <button
+      type="button"
+      className={`mm-btn mm-btn-lg ${className}`}
+      onClick={() => {
+        track('CTAClick', 'cta_click', { source }, true)
+        onOpen()
+      }}
+    >
+      {CTA_LABEL}
+    </button>
+  )
+}
+
+function CtaRow({ onOpen, source, tight }: { onOpen: () => void; source: string; tight?: boolean }) {
+  return (
+    <div className={`mm-cta-center${tight ? ' mm-cta-center-tight' : ''}`}>
+      <Cta onOpen={onOpen} source={source} />
+    </div>
+  )
+}
+
+// Low-friction entry point: one field, then the full questionnaire opens with
+// the name already filled in.
+function FormPreview({ onOpen }: { onOpen: (name: string) => void }) {
+  const [name, setName] = useState('')
+  return (
+    <form
+      className="mm-preview"
+      onSubmit={(e) => {
+        e.preventDefault()
+        track('CTAClick', 'cta_click', { source: 'preview' }, true)
+        onOpen(name)
+      }}
+    >
+      <span className="mm-preview-label">
+        <span className="mm-preview-dot" aria-hidden="true" />
+        {FORM_PREVIEW_LABEL}
+      </span>
+      <input
+        className="mm-preview-input"
+        type="text"
+        name="name"
+        autoComplete="name"
+        placeholder={FORM_PREVIEW_PLACEHOLDER}
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        aria-label="Your full name"
+      />
+      <button type="submit" className="mm-btn mm-btn-lg mm-btn-full">{CTA_LABEL}</button>
+    </form>
+  )
+}
+
+// Modal wrapper around the questionnaire. Escape and a click on the backdrop
+// close it; focus moves in on open and the page behind stops scrolling.
+function ApplyModal({ initialName, onClose }: { initialName: string; onClose: () => void }) {
+  const cardRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose()
+    }
+    document.addEventListener('keydown', onKey)
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    cardRef.current?.querySelector<HTMLElement>('input,button,select,textarea')?.focus()
+    return () => {
+      document.removeEventListener('keydown', onKey)
+      document.body.style.overflow = prev
+    }
+  }, [onClose])
+
+  return (
+    <div
+      className="mm-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Start your application"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose()
+      }}
+    >
+      <div className="mm-modal-card" ref={cardRef}>
+        <button type="button" className="mm-modal-close" onClick={onClose} aria-label="Close">×</button>
+        <div className="mm-modal-body">
+          <ApplyForm initialName={initialName} />
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export function MoneyPage() {
   const rootRef = useRef<HTMLDivElement>(null)
   // Doubled so the marquee wraps seamlessly. Empty array = section not rendered.
@@ -472,26 +653,15 @@ export function MoneyPage() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  // Hide the sticky CTA whenever an in-page apply button is on screen — never
-  // show two competing calls to action at once.
-  const [hideSticky, setHideSticky] = useState(false)
-  useEffect(() => {
-    const targets = document.querySelectorAll('.mm-buy-cta')
-    if (!targets.length || !('IntersectionObserver' in window)) return
-    const visible = new Set<Element>()
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) visible.add(e.target)
-          else visible.delete(e.target)
-        })
-        setHideSticky(visible.size > 0)
-      },
-      { rootMargin: '0px 0px -84px 0px', threshold: 0 }
-    )
-    targets.forEach((t) => io.observe(t))
-    return () => io.disconnect()
-  }, [])
+  // The questionnaire lives in a modal so every button on the page opens the
+  // same thing, wherever the reader happens to be. The preview card passes the
+  // name it collected; every other entry point opens it empty.
+  const [applyOpen, setApplyOpen] = useState(false)
+  const [applyName, setApplyName] = useState('')
+  const openApply = (name = '') => {
+    setApplyName(name)
+    setApplyOpen(true)
+  }
 
   return (
     <div className="mm-root" ref={rootRef}>
@@ -516,7 +686,7 @@ export function MoneyPage() {
               <li>We are paid <strong>only after</strong> a payout is released — never before</li>
             </ul>
             <div className="mm-cta-row mm-cta-left">
-              <a href={APPLY_ANCHOR} className="mm-btn mm-btn-lg mm-buy-cta" onClick={() => track('CTAClick', 'cta_click', { source: 'hero' }, true)}>Apply for management</a>
+              <Cta onOpen={openApply} source="hero" />
               <a href="#fix" className="mm-btn mm-btn-ghost mm-btn-lg">See how it works</a>
             </div>
             <p className="mm-microtrust">Nothing to pay on this page · Questionnaire first · Firm rules checked before we start</p>
@@ -528,78 +698,42 @@ export function MoneyPage() {
         <div className="mm-hero-glow" aria-hidden="true" />
       </section>
 
-      {/* STAT HOOK */}
-      <section className="mm-stathook">
+      {/* HERO VIDEO — renders only once a clip is configured (constants.ts) */}
+      <section className="mm-section mm-reveal" style={{ paddingTop: 0 }}>
         <div className="mm-wrap">
-          <p className="mm-stathook-big">8</p>
-          <p className="mm-stathook-text">
-            steps. That's all it takes to blow an evaluation — and most traders run the exact same
-            eight, every time, then buy another one. Not because they can't read a chart. Because
-            sitting there alone with your own money on the line does something to your hands.
+          <p className="mm-warn">
+            You don't need trading experience, and you pay us nothing up front. You buy a prop firm
+            evaluation — we run it for you.
           </p>
+          <HeroVsl />
         </div>
       </section>
 
-      {/* PAIN */}
-      <section className="mm-section mm-pain mm-reveal" id="problem">
-        <div className="mm-wrap">
-          <h2 className="mm-h2">
-            The market doesn't have to beat you.<br />
-            <span className="mm-red">The reset loop does it first.</span>
-          </h2>
-          <div className="mm-spiral">
-            {PAIN_STEPS.map((step, i) => (
-              <div className={`mm-step ${i >= 3 ? 'mm-step-hot' : ''}`} key={step}>
-                <span className="mm-step-n">{String(i + 1).padStart(2, '0')}</span>
-                <span className="mm-step-t">{step}</span>
-              </div>
-            ))}
-          </div>
-          <p className="mm-pain-out">
-            The next evaluation won't save you if you carry the same eight steps into it — and the
-            firm makes its money on you buying the next one.
-          </p>
-        </div>
-      </section>
-
-      {/* MECHANISM */}
+      {/* HOW IT WORKS */}
       <section className="mm-section mm-mech mm-reveal" id="fix">
         <div className="mm-wrap">
-          <span className="mm-eyebrow mm-eyebrow-teal">How it works</span>
-          <h2 className="mm-h2">Four steps, <span className="mm-teal">in this order</span></h2>
-          <p className="mm-lead mm-lead-mid">
+          <span className="mm-eyebrow mm-eyebrow-teal mm-eyebrow-c">How it works</span>
+          <h2 className="mm-h2 mm-center">Four steps, <span className="mm-teal">in this order</span></h2>
+          <p className="mm-lead mm-lead-mid mm-center">
             Nothing is signed before step two, and nobody logs into anything before step three.
           </p>
 
-          <div className="mm-flow">
+          <div className="mm-steps">
             {HOW.map(([n, t, d]) => (
-              <div className="mm-flow-step" key={n}>
-                <span className="mm-flow-n">{n}</span>
-                <span className="mm-flow-t">{t}</span>
-                <span className="mm-flow-d">{d}</span>
+              <div className="mm-step" key={n}>
+                <span className="mm-step-n">{Number(n)}</span>
+                <span className="mm-step-t">{t}</span>
+                <span className="mm-step-d">{d}</span>
               </div>
             ))}
-          </div>
-
-          <div className="mm-states">
-            <div className="mm-state mm-state-go">
-              <span className="mm-state-label">YOU</span>
-              <span className="mm-state-sub">Buy the evaluation. Own the account. Collect the payouts.</span>
-            </div>
-            <div className="mm-state mm-state-wait">
-              <span className="mm-state-label">US</span>
-              <span className="mm-state-sub">Trade it inside the firm rules and report on it.</span>
-            </div>
-            <div className="mm-state mm-state-no">
-              <span className="mm-state-label">NOBODY</span>
-              <span className="mm-state-sub">Touches anything before the agreement is signed.</span>
-            </div>
           </div>
 
           <p className="mm-mech-note">
             An evaluation usually takes around <strong>{PASS_WINDOW}</strong>. It can take longer,
             and it can fail — that is what the guarantee below is for.
           </p>
+
+          <CtaRow onOpen={openApply} source="how" />
         </div>
       </section>
 
@@ -619,38 +753,10 @@ export function MoneyPage() {
           <p className="mm-lead mm-lead-mid mm-center">
             The terms are short on purpose. Read them before you apply, not after.
           </p>
-          <div className="mm-sys-grid">
-            {CONTROL.map((s) => (
-              <div className={`mm-sys-card ${s.tag ? 'mm-sys-card-core' : ''}`} key={s.t}>
-                {s.tag && <span className="mm-sys-tag">{s.tag}</span>}
-                <span className="mm-sys-t">{s.t}</span>
-                <span className="mm-sys-d">{s.d}</span>
-              </div>
-            ))}
-          </div>
-          <div className="mm-sys-total">
-            <span>If we lose the account on our own rule breach</span>
-            <span className="mm-sys-total-now">
-              You get back what you paid us, plus {GUARANTEE_CREDIT} toward the next attempt
-            </span>
-          </div>
-          <p className="mm-guarantee-fine">
-            {REFUND_WINDOW} to change your mind. A losing evaluation that stayed inside the firm's
-            rules is not a breach — markets do that, and no service can promise otherwise.
-          </p>
-        </div>
-      </section>
 
-      {/* WHO IT'S FOR */}
-      <section className="mm-section mm-whofor mm-reveal">
-        <div className="mm-wrap">
-          <h2 className="mm-h2 mm-center">IS THIS YOU?</h2>
-          <div className="mm-whofor-grid">
-            {WHOFOR.map(([t, d]) => (
-              <div className="mm-whofor-card" key={t}>
-                <span className="mm-whofor-t">{t}</span>
-                <span className="mm-whofor-d">{d}</span>
-              </div>
+          <div className="mm-checks">
+            {CONTROL.map((c) => (
+              <CheckRow title={c.t} detail={c.d} key={c.t} />
             ))}
           </div>
         </div>
@@ -672,29 +778,18 @@ export function MoneyPage() {
             )}
             <span className="mm-price-proof-item" role="listitem"><strong>{CLIENT_SPLIT}/{OUR_SPLIT}</strong> split, paid after payout</span>
           </div>
-        </div>
-        <div className="mm-wrap mm-price-wrap">
-          <div className="mm-price-card">
-            <div className="mm-price-urgency"><span className="mm-price-urgency-dot" />Today's applications close in <Countdown /></div>
-            {/* Text only — a second progress bar right above the form's own one
-                reads as part of the questionnaire and confuses the step count. */}
-            <span className="mm-price-tag">Six questions · Nothing to pay · 37 of 50 spots taken</span>
-            <ApplyForm />
-          </div>
-          <div className="mm-price-side">
-            <h3 className="mm-h3">Start with six questions.</h3>
-            <p>
-              Answer them and we come back to you. There is nothing to buy on this page — the rule
-              check comes first, then a call, then the agreement.
-            </p>
-            <ul className="mm-price-list">
-              <li>We confirm your firm allows third-party management</li>
-              <li>We agree risk limits and the split in writing</li>
-              <li>You keep the login and watch every position</li>
-              <li>Payouts land with you; our share is invoiced after</li>
-            </ul>
-            <p className="mm-price-side-strong">If we never get you a payout, we never get paid.</p>
-          </div>
+
+          {/* ⚠ Invented scarcity, kept by an explicit owner decision. */}
+          <p className="mm-warn mm-warn-mb">
+            We don't have many spots left — today's applications close in <Countdown />
+          </p>
+
+          <FormPreview onOpen={openApply} />
+
+          <p className="mm-disclaimer" style={{ marginTop: 22 }}>
+            Six questions, about two minutes. Nothing to pay — the rule check comes first, then a
+            call, then the agreement.
+          </p>
         </div>
       </section>
 
@@ -721,22 +816,10 @@ export function MoneyPage() {
               firm's public record. Individual results — an evaluation can fail and no outcome is
               guaranteed.
             </p>
+            <CtaRow onOpen={openApply} source="payouts" />
           </div>
         </section>
       )}
-
-      {/* VERIFIED PERFORMANCE — myfxbook-style interactive widget */}
-      <section className="mm-section mm-perf mm-reveal" id="performance">
-        <div className="mm-wrap">
-          <h2 className="mm-h2 mm-center">THE DESK, ON A CHART</h2>
-          <p className="mm-lead mm-center mm-lead-mid">
-            How managed accounts are run over time — equity curve, monthly returns and the trade
-            log behind them. Past performance does not predict future results.
-          </p>
-
-          <PerformanceWidget />
-        </div>
-      </section>
 
       {/* VERIFIED REVIEWS — Trustpilot-style */}
       <section className="mm-reviews mm-reveal" id="reviews">
@@ -753,15 +836,104 @@ export function MoneyPage() {
         ))}
       </section>
 
+      {/* OUR GUARANTEES */}
+      <section className="mm-guar mm-reveal" id="guarantees">
+        <div className="mm-wrap">
+          <h2 className="mm-h2 mm-center">OUR <span className="mm-teal">GUARANTEES</span></h2>
+          <p className="mm-lead mm-lead-mid mm-center">
+            Straightforward protection, so you know exactly where you stand.
+          </p>
+          <div className="mm-checks">
+            <CheckRow
+              title={`If we fail your evaluation, you get back what you paid us plus a ${GUARANTEE_CREDIT} service credit.`}
+              detail="A losing evaluation that stayed inside the firm's rules is not a breach — markets do that, and no service can promise otherwise."
+            />
+            <CheckRow
+              title={`${REFUND_WINDOW} refund guarantee — ask for the refund and you return the managed account to us.`}
+              detail="The exact wording is in the management agreement. Read it before you sign, not after."
+            />
+          </div>
+          <CtaRow onOpen={openApply} source="guarantees" />
+        </div>
+      </section>
+
+      {/* VERIFIED PERFORMANCE — myfxbook-style interactive widget */}
+      <section className="mm-section mm-perf mm-reveal" id="performance">
+        <div className="mm-wrap">
+          <h2 className="mm-h2 mm-center">VERIFIED RESULTS</h2>
+          <p className="mm-lead mm-center mm-lead-mid">
+            How managed accounts are run over time — equity curve, monthly returns and the trade
+            log behind them. Past performance does not predict future results.
+          </p>
+
+          <PerformanceWidget />
+
+          <div className="mm-cta-center">
+            <a href="/past-performance" className="mm-btn mm-btn-ghost mm-btn-lg">See the full track record</a>
+          </div>
+          <CtaRow onOpen={openApply} source="performance" tight />
+        </div>
+      </section>
+
       {/* FAQ */}
       <section className="mm-section mm-faq mm-reveal">
         <div className="mm-wrap">
-          <h2 className="mm-h2 mm-center">FAQ</h2>
-          <div className="mm-faq-grid">
+          <h2 className="mm-h2 mm-center">FREQUENTLY ASKED QUESTIONS</h2>
+          <p className="mm-lead mm-lead-mid mm-center">
+            Guarantees, fees and how we work — straight answers, including the ones that are a no.
+          </p>
+          <div className="mm-acc">
             {FAQ.map((f) => (
-              <div className="mm-faq-item" key={f.q}>
-                <span className="mm-faq-q">{f.q}</span>
-                <span className="mm-faq-a">{f.a}</span>
+              <details className="mm-acc-item" key={f.q}>
+                <summary>{f.q}</summary>
+                <p className="mm-acc-a">{f.a}</p>
+              </details>
+            ))}
+          </div>
+          <CtaRow onOpen={openApply} source="faq" />
+        </div>
+      </section>
+
+      {/* STAT HOOK */}
+      <section className="mm-stathook">
+        <div className="mm-wrap">
+          <p className="mm-stathook-big">8</p>
+          <p className="mm-stathook-text">
+            steps. That's all it takes to blow an evaluation — and most traders run the exact same
+            eight, every time, then buy another one. Not because they can't read a chart. Because
+            sitting there alone with your own money on the line does something to your hands.
+          </p>
+        </div>
+      </section>
+
+      {/* PAIN */}
+      <section className="mm-section mm-pain mm-reveal" id="problem">
+        <div className="mm-wrap">
+          <h2 className="mm-h2 mm-center">THE LOOP</h2>
+          <div className="mm-pain-steps">
+            {PAIN_STEPS.map((s, i) => (
+              <div className={`mm-pain-step${i === PAIN_STEPS.length - 1 ? ' mm-pain-step-last' : ''}`} key={s}>
+                <span className="mm-pain-n">{String(i + 1).padStart(2, '0')}</span>
+                <span className="mm-pain-t">{s}</span>
+              </div>
+            ))}
+          </div>
+          <p className="mm-pain-note">
+            It is not a knowledge problem. Nobody blows an account because they never heard of a
+            stop loss.
+          </p>
+        </div>
+      </section>
+
+      {/* WHO IT'S FOR */}
+      <section className="mm-section mm-whofor mm-reveal">
+        <div className="mm-wrap">
+          <h2 className="mm-h2 mm-center">IS THIS YOU?</h2>
+          <div className="mm-whofor-grid">
+            {WHOFOR.map(([t, d]) => (
+              <div className="mm-whofor-card" key={t}>
+                <span className="mm-whofor-t">{t}</span>
+                <span className="mm-whofor-d">{d}</span>
               </div>
             ))}
           </div>
@@ -779,16 +951,19 @@ export function MoneyPage() {
             <p className="mm-letter-punch">So we do it instead.</p>
             <p>You buy the evaluation and it stays in your name. Our desk trades it inside the firm's rules. The firm pays you, you keep <strong>{CLIENT_SPLIT}</strong>, and we invoice <strong>{OUR_SPLIT}</strong> out of money already sitting in your account. If no payout ever lands, we never earn a cent — which is the only incentive structure worth signing.</p>
             <p>We can't promise you'll pass. Anyone who does is lying to you: evaluations fail, markets do what they want, and rules get breached. What we can put in writing is what happens when it goes wrong — and we do, before you commit.</p>
-            <div className="mm-letter-cta-wrap">
-              <a href={APPLY_ANCHOR} className="mm-btn mm-btn-lg" onClick={() => track('CTAClick', 'cta_click', { source: 'letter' }, true)}>Send the questionnaire</a>
-            </div>
+            <CtaRow onOpen={openApply} source="letter" />
           </div>
         </div>
       </section>
 
-      <SiteFooter />
+      <SiteFooter variant="meta" />
 
-      <a href={APPLY_ANCHOR} className={`mm-sticky-cta${hideSticky ? ' is-hidden' : ''}`} onClick={() => track('CTAClick', 'cta_click', { source: 'sticky' }, true)}>Apply for management</a>
+      {/* Always on screen: one step, visible the whole way down the page. */}
+      <div className="mm-sticky-bar">
+        <Cta onOpen={openApply} source="sticky" />
+      </div>
+
+      {applyOpen && <ApplyModal initialName={applyName} onClose={() => setApplyOpen(false)} />}
     </div>
   )
 }

@@ -17,8 +17,20 @@ export const REFUND_WINDOW = '120 days'
 
 // Kwestionariusz → worker (routes/event.ts) lub funkcja Vercela (api/event/subscribe.js).
 export const APPLY_ENDPOINT = '/api/event/subscribe'
-// Kotwica sekcji z formularzem — używana przez wszystkie CTA.
+// Kotwica sekcji z kartą podglądu formularza — używana przez CTA spoza /meta.
 export const APPLY_ANCHOR = '#apply'
+
+// JEDNA etykieta przycisku na całej stronie ofertowej. Powtarza się pod każdą
+// sekcją i w pasku na dole — czytelnik ma widzieć zawsze ten sam krok, nie trzy
+// różne nazwy tej samej rzeczy.
+export const CTA_LABEL = "LET'S START NOW"
+export const FORM_PREVIEW_LABEL = 'Start your application'
+export const FORM_PREVIEW_PLACEHOLDER = 'Enter your full name...'
+
+// Hero-wideo na /meta. Puste = sekcja się nie renderuje; wpisz tu ID filmu
+// z Wistii, żeby ją włączyć. Celowo NIE jest to klip z /watch — tamten pokazuje
+// w kadrze ofertę poprzedniego produktu ($49).
+export const WISTIA_META_ID = ''
 
 // Kontakt do zespołu. Statyczne strony w public/ i szablony maili nie mogą
 // importować tego pliku, więc mają adres wpisany wprost — przy zmianie uchwytu
@@ -30,6 +42,15 @@ export const CONTACT_EMAIL = 'contact@forexpassing.com'
 // publicznego API (zob. bin/sync-payouts.mjs i src/data/payouts.ts).
 export const PARTNER_FIRM = 'Pro Traders Funding'
 export const PARTNER_FIRM_HREF = 'https://protradersfunding.com'
+
+// ⚠ WARUNKI PROGRAMU POLECEŃ — REALNE ZOBOWIĄZANIE FINANSOWE.
+// Odwzorowane z programu mgmtfx na wyraźne życzenie właściciela. Prowizja jest
+// liczona od NASZEGO wynagrodzenia (OUR_SPLIT), nie od całej wypłaty klienta —
+// inaczej przy dwóch poleceniach oddawalibyśmy więcej, niż zarabiamy.
+// Darmowe konta w progach 2 i 3 to koszt po naszej stronie: potwierdź, zanim
+// strona pójdzie w reklamy.
+export const REFERRAL_COMMISSION_RANGE = '10–15%'
+export const REFERRAL_TIERS = 3
 
 export const WISTIA_ENABLED = true
 

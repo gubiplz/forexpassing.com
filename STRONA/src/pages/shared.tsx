@@ -134,11 +134,22 @@ export function TermsCard() {
  * ------------------------------------------------------------------------- */
 
 export const FOOTER_LINKS: [string, string][] = [
+  ['Home', '/'],
+  ['About Us', '/about-us'],
+  ['Forex Passing Meta', '/meta'],
+  ['Referral Program', '/referral-program'],
   ['Client Payouts', '/payouts'],
   ['Past Performance', '/past-performance'],
   ['Reviews', '/reviews'],
   ['Contract', '/contract'],
-  ['About Us', '/about-us'],
+]
+
+// The four proof pages, in the order the offer page lists them.
+const META_LINKS: [string, string][] = [
+  ['Client Payouts', '/payouts'],
+  ['Past Performance', '/past-performance'],
+  ['Reviews', '/reviews'],
+  ['Contract', '/contract'],
 ]
 
 const FOOTER_LEGAL: [string, string][] = [
@@ -146,27 +157,66 @@ const FOOTER_LEGAL: [string, string][] = [
   ['Privacy Policy', '/privacy'],
 ]
 
-export function SiteFooter() {
+/**
+ * `wide` (default) — three columns: brand, quick links, contact. Used on every
+ * page except the offer.
+ *
+ * `meta` — logo, one row of proof links, copyright. Deliberately carries no
+ * risk paragraphs: on the offer page the risk wording lives in the body (the
+ * terms card in the hero, the disclaimers under the certificates and under the
+ * performance widget). Every other page keeps the full disclaimers below.
+ */
+export function SiteFooter({ variant = 'wide' }: { variant?: 'wide' | 'meta' }) {
+  const year = new Date().getFullYear()
+
+  if (variant === 'meta') {
+    return (
+      <footer className="mm-footer mm-footer-meta">
+        <div className="mm-wrap mm-footer-center">
+          <a href="/meta" className="mm-footer-logo" aria-label="Forex Passing — home">
+            <img className="mm-logo-img mm-logo-img-sm" src="/logo-light.svg" alt="Forex Passing" />
+          </a>
+          <nav className="mm-footer-nav" aria-label="Footer">
+            {META_LINKS.map(([label, href]) => (
+              <a href={href} key={href}>{label}</a>
+            ))}
+          </nav>
+          <span className="mm-footer-copy">© {year} Forex Passing. All rights reserved.</span>
+        </div>
+      </footer>
+    )
+  }
+
   return (
     <footer className="mm-footer">
-      <div className="mm-wrap mm-footer-center">
-        <a href="/meta" className="mm-footer-logo" aria-label="Forex Passing — home">
-          <img className="mm-logo-img mm-logo-img-sm" src="/logo-light.svg" alt="Forex Passing" />
-        </a>
+      <div className="mm-wrap">
+        <div className="mm-footer-top">
+          <div className="mm-footer-brand">
+            <a href="/" className="mm-footer-logo" aria-label="Forex Passing — home">
+              <img className="mm-logo-img mm-logo-img-sm" src="/logo-light.svg" alt="Forex Passing" />
+            </a>
+            <p className="mm-footer-tagline">
+              Forex Passing — we pass prop firm evaluations and manage funded accounts for our
+              clients, under a written agreement. You keep the account and {CLIENT_SPLIT} of every
+              payout.
+            </p>
+          </div>
 
-        <nav className="mm-footer-nav" aria-label="Footer">
-          {FOOTER_LINKS.map(([label, href]) => (
-            <a href={href} key={href}>{label}</a>
-          ))}
-        </nav>
+          <div className="mm-footer-col">
+            <span className="mm-footer-h">Quick links</span>
+            {FOOTER_LINKS.map(([label, href]) => (
+              <a href={href} key={href}>{label}</a>
+            ))}
+          </div>
 
-        <nav className="mm-footer-sub" aria-label="Legal and contact">
-          {FOOTER_LEGAL.map(([label, href]) => (
-            <a href={href} key={href}>{label}</a>
-          ))}
-          <a href={`mailto:${CONTACT_EMAIL}`}>Contact</a>
-          <a href={TELEGRAM_HREF} target="_blank" rel="noopener noreferrer">Telegram</a>
-        </nav>
+          <div className="mm-footer-col">
+            <span className="mm-footer-h">Contact</span>
+            <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
+            <a href={TELEGRAM_HREF} target="_blank" rel="noopener noreferrer">Telegram</a>
+          </div>
+        </div>
+
+        <hr className="mm-footer-rule" />
 
         <p className="mm-footer-risk">
           Trading disclaimer: prop firm evaluations, foreign exchange and CFDs carry a substantial
@@ -179,7 +229,15 @@ export function SiteFooter() {
           endorsed by or sponsored by Meta Platforms, Inc. or Google LLC. Prop firm names and marks
           belong to their respective owners.
         </p>
-        <span className="mm-footer-copy">© {new Date().getFullYear()} Forex Passing · forexpassing.com</span>
+
+        <div className="mm-footer-bottom">
+          <span className="mm-footer-copy">© {year} Forex Passing. All rights reserved.</span>
+          <span className="mm-footer-bottom-links">
+            {FOOTER_LEGAL.map(([label, href]) => (
+              <a href={href} key={href}>{label}</a>
+            ))}
+          </span>
+        </div>
       </div>
     </footer>
   )
@@ -861,18 +919,42 @@ html{scroll-behavior:smooth}
 .mm-faq-q{display:block;font-weight:700;font-size:16px;margin-bottom:8px}
 .mm-faq-a{display:block;color:var(--mut);font-size:14px;line-height:1.6}
 
-/* FOOTER — dark band: logo, one row of real subpages, then the disclaimers */
-.mm-footer{background:#0c1411;padding:56px 0 44px}
-.mm-footer-center{display:flex;flex-direction:column;align-items:center;text-align:center;gap:18px}
+/* FOOTER — dark band. Two variants: "wide" (three columns, every page) and
+   "meta" (logo + one row of proof links, offer page only). */
+.mm-footer{background:#0c1411;padding:60px 0 40px;color:#e6efea}
 .mm-footer-logo{display:inline-block}
+
+/* wide */
+.mm-footer-top{display:grid;grid-template-columns:1.7fr 1fr 1fr;gap:44px}
+.mm-footer-brand{display:flex;flex-direction:column;align-items:flex-start;gap:16px}
+.mm-footer-tagline{font-size:13.5px;line-height:1.7;color:rgba(230,239,234,.56);max-width:380px}
+.mm-footer-col{display:flex;flex-direction:column;gap:11px}
+.mm-footer-h{font-family:'Anton',sans-serif;font-weight:400;font-size:15px;letter-spacing:.06em;
+  text-transform:uppercase;color:#fff;margin-bottom:5px}
+.mm-footer-col a{color:rgba(230,239,234,.6);text-decoration:none;font-size:14px;transition:color .15s}
+.mm-footer-col a:hover{color:#4ade80}
+.mm-footer-rule{border:0;border-top:1px solid rgba(230,239,234,.1);margin:44px 0 26px}
+.mm-footer-risk{font-size:11.5px;color:rgba(230,239,234,.4);line-height:1.7;max-width:900px;margin:0 auto 10px;text-align:center}
+.mm-footer-bottom{display:flex;align-items:center;justify-content:center;gap:20px;flex-wrap:wrap;margin-top:18px}
+.mm-footer-bottom-links{display:flex;gap:18px;flex-wrap:wrap}
+.mm-footer-bottom-links a{color:rgba(230,239,234,.4);text-decoration:none;font-size:12px;transition:color .15s}
+.mm-footer-bottom-links a:hover{color:#4ade80}
+.mm-footer-copy{font-size:12px;color:rgba(230,239,234,.34)}
+
+/* meta */
+.mm-footer-meta{padding:52px 0 44px}
+.mm-footer-center{display:flex;flex-direction:column;align-items:center;text-align:center;gap:22px}
 .mm-footer-nav{display:flex;gap:26px;flex-wrap:wrap;justify-content:center}
-.mm-footer-nav a{color:rgba(230,239,234,.64);text-decoration:none;font-size:14px;transition:color .15s}
+.mm-footer-nav a{color:rgba(230,239,234,.6);text-decoration:none;font-size:14px;transition:color .15s}
 .mm-footer-nav a:hover{color:#4ade80}
-.mm-footer-sub{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;margin-top:-6px}
-.mm-footer-sub a{color:rgba(230,239,234,.42);text-decoration:none;font-size:12.5px;transition:color .15s}
-.mm-footer-sub a:hover{color:#4ade80}
-.mm-footer-risk{font-size:11.5px;color:rgba(230,239,234,.44);line-height:1.7;max-width:780px}
-.mm-footer-copy{font-size:12px;color:rgba(230,239,234,.32)}
+
+@media (max-width:860px){
+  .mm-footer-top{grid-template-columns:1fr 1fr;gap:32px}
+  .mm-footer-brand{grid-column:1 / -1}
+}
+@media (max-width:560px){
+  .mm-footer-top{grid-template-columns:1fr;gap:30px}
+}
 .mm-logo-sm{font-size:16px}
 .mm-footer-copy{font-size:12px;color:var(--mut)}
 .mm-footer-risk{font-size:12px;color:var(--mut);line-height:1.6;max-width:720px}
@@ -973,6 +1055,127 @@ html{scroll-behavior:smooth}
   .mm-reveal{opacity:1;transform:none;transition:none}
   .mm-btn{transition:none}
 }
+
+/* ---------------------------------------------------------------------------
+ * OFFER PAGE — sections modelled on the reference funnel.
+ * ------------------------------------------------------------------------- */
+
+/* Red warning line under the headline and above the form */
+.mm-warn{display:block;max-width:660px;margin:18px auto 0;font-size:14.5px;font-weight:700;
+  line-height:1.55;color:#c81e1e;text-align:center}
+.mm-warn-mb{margin-bottom:22px}
+
+/* Hero VSL card */
+.mm-vsl{max-width:760px;margin:34px auto 0;border-radius:16px;overflow:hidden;
+  box-shadow:0 26px 70px -34px rgba(0,0,0,.55);background:var(--teal)}
+.mm-vsl-head{padding:12px 18px 14px;text-align:center;color:#fff}
+.mm-vsl-badge{display:block;font-size:11px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;opacity:.85}
+.mm-vsl-title{display:block;font-size:17px;font-weight:800;margin-top:3px}
+.mm-vsl-frame{position:relative;aspect-ratio:16/9;background:#000}
+.mm-vsl-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.mm-vsl-bar{display:flex;align-items:center;gap:12px;padding:10px 16px 12px;color:#fff}
+.mm-vsl-bar-label{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;white-space:nowrap}
+.mm-vsl-bar-track{flex:1;height:6px;border-radius:99px;background:rgba(255,255,255,.3);overflow:hidden}
+.mm-vsl-bar-fill{height:100%;background:#fff;border-radius:99px;transition:width .4s linear}
+.mm-vsl-bar-pct{font-size:12px;font-weight:800;min-width:34px;text-align:right}
+
+/* Check rows — "what you keep control of", guarantees */
+.mm-checks{display:flex;flex-direction:column;gap:12px;max-width:760px;margin:32px auto 0}
+.mm-check{display:flex;align-items:flex-start;gap:14px;background:#fff;border:1px solid var(--line);
+  border-radius:12px;padding:16px 20px;text-align:left}
+.mm-check-ico{flex:0 0 24px;width:24px;height:24px;margin-top:1px;border-radius:50%;background:var(--teal);
+  display:inline-flex;align-items:center;justify-content:center}
+.mm-check-ico svg{width:13px;height:13px;stroke:#fff;fill:none;stroke-width:3;
+  stroke-linecap:round;stroke-linejoin:round}
+.mm-check-t{font-size:15.5px;font-weight:700;line-height:1.5}
+.mm-check-d{display:block;font-size:14px;font-weight:400;color:var(--mut);line-height:1.6;margin-top:3px}
+
+/* Guarantees band */
+.mm-guar{background:linear-gradient(180deg,#e8f9ee 0%,#f4fbf6 100%);padding:76px 0 80px;text-align:center}
+
+/* Numbered how-it-works cards */
+.mm-steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:18px;margin-top:34px}
+.mm-step{background:#fff;border:1px solid var(--line);border-radius:14px;padding:26px 22px;text-align:center;
+  box-shadow:0 12px 34px -26px rgba(0,0,0,.4)}
+.mm-step-n{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;
+  background:var(--teal);color:#fff;font-weight:800;font-size:15px;margin-bottom:14px}
+.mm-step-t{display:block;font-weight:800;font-size:16px;margin-bottom:7px}
+.mm-step-d{display:block;font-size:14px;color:var(--mut);line-height:1.6}
+
+/* FAQ accordion */
+.mm-acc{max-width:820px;margin:32px auto 0;display:flex;flex-direction:column;gap:10px}
+.mm-acc-item{border:1px solid var(--line);border-radius:12px;background:#fff;overflow:hidden}
+.mm-acc-item summary{list-style:none;cursor:pointer;padding:18px 22px;font-weight:700;font-size:15.5px;
+  display:flex;align-items:center;justify-content:space-between;gap:16px}
+.mm-acc-item summary::-webkit-details-marker{display:none}
+.mm-acc-item summary::after{content:"";flex:0 0 10px;width:10px;height:10px;border-right:2px solid var(--mut);
+  border-bottom:2px solid var(--mut);transform:rotate(45deg);transition:transform .2s ease;margin-top:-4px}
+.mm-acc-item[open] summary::after{transform:rotate(225deg);margin-top:2px}
+.mm-acc-item summary:hover{color:var(--teal)}
+.mm-acc-a{padding:0 22px 20px;font-size:14.5px;color:var(--mut);line-height:1.7}
+
+/* Form preview card — opens the questionnaire */
+.mm-preview{max-width:440px;margin:0 auto;background:#fff;border:1px solid var(--line);border-radius:16px;
+  padding:20px;box-shadow:0 22px 54px -32px rgba(0,0,0,.5);text-align:left;transition:border-color .15s}
+.mm-preview:hover{border-color:rgba(22,163,74,.45)}
+.mm-preview-label{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--mut);margin-bottom:12px}
+.mm-preview-dot{width:8px;height:8px;border-radius:50%;background:var(--teal)}
+.mm-preview-input{width:100%;border:1px solid var(--line);border-radius:10px;padding:13px 14px;font-size:15px;
+  font-family:inherit;color:var(--txt);background:#fff;margin-bottom:12px}
+.mm-preview-input:focus{outline:none;border-color:var(--teal)}
+
+/* Repeated CTA under each section */
+.mm-cta-center{display:flex;justify-content:center;margin:36px 0 0}
+.mm-cta-center-tight{margin-top:22px}
+
+/* Sticky bar — always visible, mirrors the reference funnel */
+.mm-sticky-bar{position:fixed;left:0;right:0;bottom:0;z-index:60;background:rgba(255,255,255,.96);
+  backdrop-filter:blur(6px);border-top:1px solid var(--line);
+  padding:12px 16px;padding-bottom:max(12px,env(safe-area-inset-bottom))}
+.mm-sticky-bar .mm-btn{display:block;max-width:420px;margin:0 auto;text-align:center;width:100%}
+
+/* Questionnaire modal */
+.mm-modal{position:fixed;inset:0;z-index:90;display:flex;align-items:center;justify-content:center;
+  padding:16px;background:rgba(6,16,11,.62);backdrop-filter:blur(4px)}
+.mm-modal-card{position:relative;width:100%;max-width:520px;max-height:min(92dvh,92vh);overflow-y:auto;
+  background:#fff;border-radius:18px;box-shadow:0 40px 90px -30px rgba(0,0,0,.6)}
+.mm-modal-close{position:absolute;top:12px;right:12px;z-index:2;width:34px;height:34px;border:0;border-radius:9px;
+  background:transparent;color:var(--mut);font-size:20px;line-height:1;cursor:pointer}
+.mm-modal-close:hover{background:rgba(0,0,0,.05);color:var(--txt)}
+.mm-modal-body{padding:26px 24px 24px}
+@media (max-width:560px){
+  .mm-modal{padding:0;align-items:flex-end}
+  .mm-modal-card{max-width:none;border-radius:18px 18px 0 0;max-height:94dvh}
+}
+
+/* /referral-program */
+.mm-refstats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;max-width:820px;margin:0 auto}
+.mm-refstat{background:#fff;border:1px solid var(--line);border-radius:12px;padding:20px 14px;text-align:center}
+.mm-refstat-v{display:block;font-family:'Anton',sans-serif;font-weight:400;font-size:30px;line-height:1;color:var(--teal)}
+.mm-refstat-k{display:block;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--mut);margin-top:8px}
+.mm-tiers{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;margin-top:38px;align-items:start}
+.mm-tier{position:relative;background:#fff;border:1px solid var(--line);border-radius:16px;padding:28px 24px;text-align:left;
+  box-shadow:0 16px 44px -32px rgba(0,0,0,.5)}
+.mm-tier.is-featured{border-color:rgba(22,163,74,.5);box-shadow:0 22px 56px -28px rgba(22,163,74,.45)}
+.mm-tier-badge{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--teal);background:rgba(22,163,74,.1);border-radius:99px;padding:5px 11px;margin-bottom:16px}
+.mm-tier-code{display:block;font-size:11px;letter-spacing:.18em;color:var(--mut);margin-bottom:4px}
+.mm-tier-name{font-family:'Anton',sans-serif;font-weight:400;font-size:30px;line-height:1;text-transform:uppercase}
+.mm-tier-range{display:block;font-size:13px;color:var(--mut);margin-top:6px}
+.mm-tier-commission{display:block;font-family:'Anton',sans-serif;font-weight:400;font-size:42px;line-height:1;
+  color:var(--teal);margin:16px 0 4px}
+.mm-tier-commission small{display:block;font-family:inherit;font-size:12px;font-weight:600;color:var(--mut);
+  letter-spacing:.06em;text-transform:uppercase;margin-top:5px}
+.mm-tier-blurb{font-size:14px;color:var(--mut);line-height:1.65;margin-top:14px}
+.mm-tier-perks{list-style:none;margin:18px 0 0;padding:0;display:flex;flex-direction:column;gap:9px}
+.mm-tier-perks li{position:relative;padding-left:24px;font-size:14px;line-height:1.55}
+.mm-tier-perks li::before{content:"";position:absolute;left:0;top:5px;width:14px;height:8px;
+  border-left:2px solid var(--teal);border-bottom:2px solid var(--teal);transform:rotate(-45deg)}
+.mm-tier-example{margin-top:20px;border-top:1px solid var(--line);padding-top:16px}
+.mm-tier-example-h{display:block;font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--mut);margin-bottom:10px}
+.mm-tier-example ol{margin:0;padding-left:18px}
+.mm-tier-example li{font-size:13.5px;color:var(--mut);line-height:1.6;margin-bottom:5px}
 
 /* ---------------------------------------------------------------------------
  * SUBPAGES — /payouts, /past-performance, /reviews, /contract

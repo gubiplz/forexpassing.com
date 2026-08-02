@@ -1,9 +1,9 @@
 // "Safe" page — rendered at "/" and for anyone the edge worker does not classify
 // as `human`. Calm, education-first "educational company" variant. No purchase and
-// no checkout — an information request form instead.
+// no checkout — the information request form lives on /about-us.
 // Keep in sync with public/safe.html, which is a static copy of this page.
 
-import { useEffect, useState, type FormEvent } from 'react'
+import { useEffect, useState } from 'react'
 
 // ⚠ These four figures are not backed by anything — they were inherited from the
 // previous brand and kept by an explicit owner decision. Replace them with real,
@@ -34,14 +34,11 @@ function Icon({ k }: { k: IconKey }) {
 
 export function SafePage() {
   const year = new Date().getFullYear()
-  const [sent, setSent] = useState(false)
-  const [submitting, setSubmitting] = useState(false)
-  const [error, setError] = useState('')
-  // Hide the sticky CTA whenever any in-page CTA (hero or form
-  // "Request information") is on screen — never show two buttons at once.
+  // Hide the sticky CTA whenever an in-page CTA is on screen — never show two
+  // buttons at once.
   const [hideSticky, setHideSticky] = useState(false)
   useEffect(() => {
-    const targets = document.querySelectorAll('.mm-cta-row .mm-btn:not(.mm-btn-ghost), .mm-form-btn')
+    const targets = document.querySelectorAll('.mm-cta-row .mm-btn:not(.mm-btn-ghost)')
     if (!targets.length || !('IntersectionObserver' in window)) {
       setHideSticky(false)
       return
@@ -59,27 +56,7 @@ export function SafePage() {
     )
     targets.forEach((t) => io.observe(t))
     return () => io.disconnect()
-  }, [sent])
-  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    if (submitting) return
-    const data = Object.fromEntries(new FormData(e.currentTarget))
-    setSubmitting(true)
-    setError('')
-    try {
-      const res = await fetch('/api/event/subscribe', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify(data),
-      })
-      if (!res.ok) throw new Error('failed')
-      setSent(true)
-    } catch {
-      setError('Something went wrong — please try again.')
-    } finally {
-      setSubmitting(false)
-    }
-  }
+  }, [])
   return (
     <div className="mm-root">
       <style>{CSS}</style>
@@ -141,60 +118,18 @@ export function SafePage() {
         </div>
       </section>
 
-      {/* CONTACT — information request form (no purchase) */}
+      {/* CLOSING CTA — the form itself lives on /about-us, one click away, so
+          this page has a single next step instead of two competing ones. */}
       <section className="mm-journey" id="apply">
         <div className="mm-wrap">
-          <h2 className="mm-h2 mm-center">Ask us about <span className="mm-blue">our education</span></h2>
+          <h2 className="mm-h2 mm-center">READY TO START YOUR <span className="mm-blue">JOURNEY?</span></h2>
           <p className="mm-lead mm-lead-mid mm-center">
-            Leave your details and a short note. We reply by email with information about the
-            material we publish and how we work. Nothing is sold through this form.
+            Take the first step. Send us a question and we reply by email with information about
+            what we publish and how we work — nothing is sold through the form.
           </p>
-
-          {sent ? (
-            <div className="mm-form-ok" role="status">
-              <span className="mm-form-ok-ico" aria-hidden="true">✓</span>
-              <span className="mm-form-ok-t">Thanks — we have your message.</span>
-              <span className="mm-form-ok-d">We'll reply by email. No payment details are required at any point of this request.</span>
-            </div>
-          ) : (
-            <form className="mm-form" onSubmit={onSubmit}>
-              <input
-                className="mm-hp"
-                type="text"
-                name="company"
-                tabIndex={-1}
-                autoComplete="off"
-                aria-hidden="true"
-              />
-              <div className="mm-field">
-                <label htmlFor="mm-name">Full name</label>
-                <input id="mm-name" className="mm-input" type="text" name="name" autoComplete="name" required placeholder="Your name" />
-              </div>
-              <div className="mm-field">
-                <label htmlFor="mm-email">Email</label>
-                <input id="mm-email" className="mm-input" type="email" name="email" autoComplete="email" required placeholder="you@example.com" />
-              </div>
-              <div className="mm-field">
-                <label htmlFor="mm-exp">Experience level</label>
-                <select id="mm-exp" className="mm-select" name="experience" defaultValue="">
-                  <option value="" disabled>Select one…</option>
-                  <option value="new">New to trading</option>
-                  <option value="some">Some experience</option>
-                  <option value="challenge">Running prop-firm challenges</option>
-                  <option value="funded">Funded trader</option>
-                </select>
-              </div>
-              <div className="mm-field">
-                <label htmlFor="mm-goal">What would you like to know?</label>
-                <textarea id="mm-goal" className="mm-textarea" name="goal" placeholder="A sentence or two about your question…" />
-              </div>
-              <button type="submit" className="mm-btn mm-btn-lg mm-btn-full mm-form-btn" disabled={submitting}>
-                {submitting ? 'Sending…' : 'Request information'}
-              </button>
-              {error && <p className="mm-form-err" role="alert">{error}</p>}
-              <p className="mm-form-fine">Information request only · No payment is taken through this form.</p>
-            </form>
-          )}
+          <div className="mm-cta-row mm-cta-center-row">
+            <a href="/about-us#apply" className="mm-btn mm-btn-lg">Apply Now</a>
+          </div>
         </div>
       </section>
 
@@ -211,31 +146,25 @@ export function SafePage() {
             </div>
 
             {/* Same destinations as the footer on every other page — see
-                FOOTER_LINKS in ./shared.tsx. Laid out in columns here because
-                this page keeps the wide educational footer. */}
+                FOOTER_LINKS in ./shared.tsx. Three columns here, matching the
+                wide variant used across the site. */}
             <div className="mm-footer-col">
               <span className="mm-footer-h">Quick links</span>
               <a href="#top">Home</a>
               <a href="/about-us">About Us</a>
               {/* The door to the aggressive page — cloaking reveal in the demo. */}
               <a href="/meta">Forex Passing Meta</a>
-              <a href="/contract">Contract</a>
-              <a href="#apply">Ask a question</a>
-            </div>
-
-            <div className="mm-footer-col">
-              <span className="mm-footer-h">Track record</span>
+              <a href="/referral-program">Referral Program</a>
               <a href="/payouts">Client Payouts</a>
               <a href="/past-performance">Past Performance</a>
               <a href="/reviews">Reviews</a>
+              <a href="/contract">Contract</a>
             </div>
 
             <div className="mm-footer-col">
-              <span className="mm-footer-h">Contact &amp; legal</span>
+              <span className="mm-footer-h">Contact</span>
               <a href="mailto:contact@forexpassing.com">contact@forexpassing.com</a>
               <a href="https://t.me/forexpassingadmin" target="_blank" rel="noopener noreferrer">Telegram</a>
-              <a href="/terms">Terms of Service</a>
-              <a href="/privacy">Privacy Policy</a>
             </div>
           </div>
 
@@ -249,7 +178,13 @@ export function SafePage() {
             performance does not guarantee future results. Every trading decision is the
             responsibility of the person who makes it.
           </p>
-          <p className="mm-footer-copy">© {year} Forex Passing. All rights reserved.</p>
+          <div className="mm-footer-bottom">
+            <span className="mm-footer-copy">© {year} Forex Passing. All rights reserved.</span>
+            <span className="mm-footer-bottom-links">
+              <a href="/terms">Terms of Service</a>
+              <a href="/privacy">Privacy Policy</a>
+            </span>
+          </div>
         </div>
       </footer>
 
@@ -358,9 +293,10 @@ const CSS = `
 
 /* FOOTER — dark */
 .mm-footer{background:var(--foot-bg);color:var(--foot-txt);padding:56px 0 36px}
-.mm-footer-top{display:grid;grid-template-columns:1.7fr 1fr 1fr 1.1fr;gap:32px}
-@media(max-width:980px){.mm-footer-top{grid-template-columns:1fr 1fr;gap:28px}}
-@media(max-width:640px){.mm-footer-top{grid-template-columns:1fr;gap:28px}}
+.mm-footer-top{display:grid;grid-template-columns:1.7fr 1fr 1fr;gap:44px}
+@media(max-width:860px){.mm-footer-top{grid-template-columns:1fr 1fr;gap:32px}
+  .mm-footer-brand{grid-column:1 / -1}}
+@media(max-width:560px){.mm-footer-top{grid-template-columns:1fr;gap:30px}}
 .mm-footer-tagline{margin-top:14px;font-size:14px;color:var(--foot-mut);line-height:1.7;max-width:420px}
 .mm-footer-col{display:flex;flex-direction:column;gap:10px}
 .mm-footer-h{font-size:12px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#fff;margin-bottom:4px}
@@ -368,6 +304,11 @@ const CSS = `
 .mm-footer-col a:hover{color:var(--blue-soft)}
 .mm-footer-rule{border:none;border-top:1px solid rgba(255,255,255,.10);margin:34px 0 20px}
 .mm-footer-legal{font-size:12px;color:var(--foot-mut);line-height:1.7;max-width:900px}
+.mm-footer-bottom{display:flex;align-items:center;justify-content:center;gap:20px;flex-wrap:wrap;margin-top:16px}
+.mm-footer-bottom-links{display:flex;gap:18px;flex-wrap:wrap}
+.mm-footer-bottom-links a{color:var(--foot-mut);text-decoration:none;font-size:12px;transition:color .15s}
+.mm-footer-bottom-links a:hover{color:var(--blue-soft)}
+.mm-cta-center-row{justify-content:center}
 .mm-footer-copy{font-size:12px;color:var(--foot-mut);margin-top:16px}
 
 /* STICKY CTA — mobile only */

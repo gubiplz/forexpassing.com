@@ -103,9 +103,10 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',system-ui,-apple-
 .mm-form-ok-t{font-weight:800;font-size:18px}
 .mm-form-ok-d{color:var(--mut);font-size:14px;text-align:center}
 .mm-footer{background:var(--foot-bg);color:var(--foot-txt);padding:56px 0 36px}
-.mm-footer-top{display:grid;grid-template-columns:1.7fr 1fr 1fr 1.1fr;gap:32px}
-@media(max-width:980px){.mm-footer-top{grid-template-columns:1fr 1fr;gap:28px}}
-@media(max-width:640px){.mm-footer-top{grid-template-columns:1fr;gap:28px}}
+.mm-footer-top{display:grid;grid-template-columns:1.7fr 1fr 1fr;gap:44px}
+@media(max-width:860px){.mm-footer-top{grid-template-columns:1fr 1fr;gap:32px}
+  .mm-footer-brand{grid-column:1 / -1}}
+@media(max-width:560px){.mm-footer-top{grid-template-columns:1fr;gap:30px}}
 .mm-footer-tagline{margin-top:14px;font-size:14px;color:var(--foot-mut);line-height:1.7;max-width:420px}
 .mm-footer-col{display:flex;flex-direction:column;gap:10px}
 .mm-footer-h{font-size:12px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#fff;margin-bottom:4px}
@@ -113,6 +114,11 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',system-ui,-apple-
 .mm-footer-col a:hover{color:var(--blue-soft)}
 .mm-footer-rule{border:none;border-top:1px solid rgba(255,255,255,.10);margin:34px 0 20px}
 .mm-footer-legal{font-size:12px;color:var(--foot-mut);line-height:1.7;max-width:900px}
+.mm-footer-bottom{display:flex;align-items:center;justify-content:center;gap:20px;flex-wrap:wrap;margin-top:16px}
+.mm-footer-bottom-links{display:flex;gap:18px;flex-wrap:wrap}
+.mm-footer-bottom-links a{color:var(--foot-mut);text-decoration:none;font-size:12px;transition:color .15s}
+.mm-footer-bottom-links a:hover{color:var(--blue-soft)}
+.mm-cta-center-row{justify-content:center}
 .mm-footer-copy{font-size:12px;color:var(--foot-mut);margin-top:16px}
 .mm-sticky-cta{display:none}
 /* Hide the sticky CTA while the in-section "Request information" button is on
@@ -190,42 +196,10 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',system-ui,-apple-
 
 <section class="mm-journey" id="apply">
   <div class="mm-wrap">
-    <h2 class="mm-h2 mm-center">Ask us about <span class="mm-blue">our education</span></h2>
-    <p class="mm-lead mm-lead-mid mm-center">Leave your details and a short note. We reply by email with information about the material we publish and how we work. Nothing is sold through this form.</p>
-
-    <form class="mm-form" id="mm-form" action="#apply">
-      <input class="mm-hp" type="text" name="company" tabindex="-1" autocomplete="off" aria-hidden="true" />
-      <div class="mm-field">
-        <label for="mm-name">Full name</label>
-        <input id="mm-name" class="mm-input" type="text" name="name" autocomplete="name" required placeholder="Your name" />
-      </div>
-      <div class="mm-field">
-        <label for="mm-email">Email</label>
-        <input id="mm-email" class="mm-input" type="email" name="email" autocomplete="email" required placeholder="you@example.com" />
-      </div>
-      <div class="mm-field">
-        <label for="mm-exp">Experience level</label>
-        <select id="mm-exp" class="mm-select" name="experience">
-          <option value="" disabled selected>Select one…</option>
-          <option value="new">New to trading</option>
-          <option value="some">Some experience</option>
-          <option value="challenge">Running prop-firm challenges</option>
-          <option value="funded">Funded trader</option>
-        </select>
-      </div>
-      <div class="mm-field">
-        <label for="mm-goal">What would you like to know?</label>
-        <textarea id="mm-goal" class="mm-textarea" name="goal" placeholder="A sentence or two about your question…"></textarea>
-      </div>
-      <button type="submit" class="mm-btn mm-btn-lg mm-btn-full mm-form-btn">Request information</button>
-      <p class="mm-form-err" id="mm-form-err" role="alert" style="display:none">Something went wrong — please try again.</p>
-      <p class="mm-form-fine">Information request only · No payment is taken through this form.</p>
-    </form>
-
-    <div class="mm-form-ok" id="mm-form-ok" style="display:none" role="status">
-      <span class="mm-form-ok-ico">✓</span>
-      <span class="mm-form-ok-t">Thanks — we have your message.</span>
-      <span class="mm-form-ok-d">We'll reply by email. No payment details are required at any point of this request.</span>
+    <h2 class="mm-h2 mm-center">READY TO START YOUR <span class="mm-blue">JOURNEY?</span></h2>
+    <p class="mm-lead mm-lead-mid mm-center">Take the first step. Send us a question and we reply by email with information about what we publish and how we work — nothing is sold through the form.</p>
+    <div class="mm-cta-row mm-cta-center-row">
+      <a href="/about-us#apply" class="mm-btn mm-btn-lg">Apply Now</a>
     </div>
   </div>
 </section>
@@ -242,26 +216,28 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',system-ui,-apple-
         <a href="#top">Home</a>
         <a href="/about-us">About Us</a>
         <a href="/meta">Forex Passing Meta</a>
-        <a href="/contract">Contract</a>
-        <a href="#apply">Ask a question</a>
-      </div>
-      <div class="mm-footer-col">
-        <span class="mm-footer-h">Track record</span>
+        <a href="/referral-program">Referral Program</a>
         <a href="/payouts">Client Payouts</a>
         <a href="/past-performance">Past Performance</a>
         <a href="/reviews">Reviews</a>
+        <a href="/contract">Contract</a>
       </div>
       <div class="mm-footer-col">
-        <span class="mm-footer-h">Contact &amp; legal</span>
+        <span class="mm-footer-h">Contact</span>
         <a href="mailto:contact@forexpassing.com">contact@forexpassing.com</a>
         <a href="https://t.me/forexpassingadmin" target="_blank" rel="noopener noreferrer">Telegram</a>
-        <a href="/terms">Terms of Service</a>
-        <a href="/privacy">Privacy Policy</a>
       </div>
     </div>
+
     <hr class="mm-footer-rule" />
     <p class="mm-footer-legal">This material is for educational purposes only. It is not investment advice, a recommendation, or an offer of any specific outcome. Trading leveraged instruments carries a high risk of losing capital. We make no promises about income, returns, or passing a prop firm evaluation. Results differ between individuals and past performance does not guarantee future results. Every trading decision is the responsibility of the person who makes it.</p>
-    <p class="mm-footer-copy">© <span id="mm-year"></span> Forex Passing. All rights reserved.</p>
+    <div class="mm-footer-bottom">
+      <span class="mm-footer-copy">© <span id="mm-year"></span> Forex Passing. All rights reserved.</span>
+      <span class="mm-footer-bottom-links">
+        <a href="/terms">Terms of Service</a>
+        <a href="/privacy">Privacy Policy</a>
+      </span>
+    </div>
   </div>
 </footer>
 
@@ -274,7 +250,7 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',system-ui,-apple-
   // "Request information") is on screen — never show two buttons at once.
   (function(){
     var sticky = document.querySelector('.mm-sticky-cta');
-    var targets = document.querySelectorAll('.mm-cta-row .mm-btn:not(.mm-btn-ghost), .mm-form-btn');
+    var targets = document.querySelectorAll('.mm-cta-row .mm-btn:not(.mm-btn-ghost)');
     if (!sticky || !targets.length || !('IntersectionObserver' in window)) return;
     var visible = new Set();
     var io = new IntersectionObserver(function(entries){
@@ -286,28 +262,6 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',system-ui,-apple-
     targets.forEach(function(t){ io.observe(t); });
   })();
 
-  var f = document.getElementById('mm-form');
-  if (f) f.addEventListener('submit', function (e) {
-    e.preventDefault();
-    var err = document.getElementById('mm-form-err');
-    var btn = f.querySelector('button[type=submit]');
-    err.style.display = 'none';
-    btn.disabled = true;
-    btn.textContent = 'Sending…';
-    fetch('/api/event/subscribe', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify(Object.fromEntries(new FormData(f))),
-    }).then(function (r) {
-      if (!r.ok) throw new Error('failed');
-      f.style.display = 'none';
-      document.getElementById('mm-form-ok').style.display = 'flex';
-    }).catch(function () {
-      err.style.display = 'block';
-      btn.disabled = false;
-      btn.textContent = 'Request information';
-    });
-  });
 </script>
 </body>
 </html>

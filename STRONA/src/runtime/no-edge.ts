@@ -30,7 +30,13 @@ export function classifyByPath(pathname: string): Classification {
 // a visitor who opens /reviews wants the reviews page, not a classification.
 // Keep in sync with FOOTER_LINKS in ../pages/shared.tsx and ROUTES in
 // bin/emit-routes.mjs.
-export const SUB_PATHS = ['payouts', 'past-performance', 'reviews', 'contract'] as const;
+export const SUB_PATHS = [
+  'payouts',
+  'past-performance',
+  'reviews',
+  'contract',
+  'referral-program',
+] as const;
 
 export type SubPageKey = (typeof SUB_PATHS)[number];
 

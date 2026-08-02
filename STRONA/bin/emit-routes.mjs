@@ -41,6 +41,11 @@ const SUB_ROUTES = {
     description:
       'What the management agreement covers before you apply: who trades, the split, the guarantee, and how you end it.',
   },
+  'referral-program': {
+    title: 'Referral program — Forex Passing',
+    description:
+      'Send someone in, earn on every payout they receive. Three tiers, no earnings cap, tier status is permanent.',
+  },
 };
 
 const shell = await readFile(join(DIST, 'index.html'), 'utf8');
