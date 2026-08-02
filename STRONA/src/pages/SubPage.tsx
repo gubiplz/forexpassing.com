@@ -10,7 +10,7 @@
 // the stylesheet come from ./shared, so nothing here can drift away from what
 // the money page shows.
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   APPLY_ANCHOR,
   CLIENT_SPLIT,
@@ -21,7 +21,7 @@ import {
   PASS_WINDOW,
   REFUND_WINDOW,
 } from '../constants'
-import { TrackRecord } from '../components/TrackRecord'
+import { TrackRecordModal } from '../components/TrackRecord'
 import { PAYOUT_CERTS, PAYOUT_TOTALS } from '../data/payouts'
 import type { SubPageKey } from '../runtime/no-edge'
 
@@ -177,13 +177,29 @@ function Payouts() {
  * ------------------------------------------------------------------------ */
 
 function PastPerformance() {
+  // The widget is the page; the full record — risk profiles, trade split, risk
+  // detail — opens in the same window the offer page uses.
+  const [open, setOpen] = useState(false)
+
   return (
     <section className="mm-section mm-perf mm-reveal">
       <div className="mm-wrap">
-        <TrackRecord />
-
-        <h2 className="mm-h2 mm-center" style={{ marginTop: 72 }}>THE DESK, MONTH BY MONTH</h2>
         <PerformanceWidget />
+
+        <div className="mm-cta-center">
+          <button
+            type="button"
+            className="mm-btn mm-btn-lg"
+            onClick={() => {
+              track('CTAClick', 'cta_click', { source: 'past_performance' }, true)
+              setOpen(true)
+            }}
+          >
+            View full track record
+          </button>
+        </div>
+
+        {open && <TrackRecordModal onClose={() => setOpen(false)} />}
 
         <p className="mm-disclaimer" style={{ marginTop: 40 }}>
           Past performance does not predict future results. Every account is traded inside its own
