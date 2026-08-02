@@ -83,6 +83,14 @@ export function ApplyFlow({ initialName = '', source }: { initialName?: string; 
     setAnswers((a) => ({ ...a, [question]: option.label }))
     if (!option.qualified) {
       track('ApplyDisqualified', 'form_disqualified', { source, question }, true)
+      // Recorded and emailed, but only once we actually have an address: the
+      // first question is asked before the contact step, so someone who fails
+      // it is anonymous and there is nobody to write to. No `Lead` event
+      // either — a rejection is not a conversion and must not train the ad
+      // platform.
+      if (EMAIL_RE.test(contact.email.trim())) {
+        void submit({ ...answers, [question]: option.label }, 'not_qualified')
+      }
       setOutcome('rejected')
       return
     }
@@ -90,7 +98,10 @@ export function ApplyFlow({ initialName = '', source }: { initialName?: string; 
     else advance()
   }
 
-  const submit = async (finalAnswers: Record<string, string>) => {
+  const submit = async (
+    finalAnswers: Record<string, string>,
+    result: 'qualified' | 'not_qualified' = 'qualified'
+  ) => {
     if (sending) return
     setSending(true)
     setError('')
@@ -106,15 +117,19 @@ export function ApplyFlow({ initialName = '', source }: { initialName?: string; 
           company: contact.company,
           answers: finalAnswers,
           income: finalAnswers[INCOME_QUESTION] ?? '',
+          outcome: result,
           source,
           ref: readRef(),
         }),
       })
       if (!res.ok) throw new Error('request failed')
+      if (result === 'not_qualified') return
       setOutcome('sent')
       track('Lead', 'generate_lead', { source })
     } catch {
-      setError('We could not send that. Check your connection and try again.')
+      // A failed send on the rejection path is silent: that person is already
+      // looking at the "not a fit" screen and has nothing to retry.
+      if (result === 'qualified') setError('We could not send that. Check your connection and try again.')
     } finally {
       setSending(false)
     }

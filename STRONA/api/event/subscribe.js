@@ -9,6 +9,8 @@
 // Set LEAD_WEBHOOK in the Vercel project (e.g. a Make.com / Zapier hook) or
 // applications will be visible in Vercel's runtime logs and nowhere else.
 
+import { notQualifiedEmail, qualifiedEmail, sendEmail } from '../_lib/emails.js';
+
 const str = (v) => (typeof v === 'string' ? v.trim() : '');
 
 export default async function handler(req, res) {
@@ -58,6 +60,9 @@ export default async function handler(req, res) {
     experience: str(body.experience).slice(0, 40),
     goal: str(body.goal).slice(0, 2000),
     source: str(body.source).slice(0, 40) || 'safe',
+    // 'qualified' | 'not_qualified'. The questionnaire sends both; the safe-page
+    // form has no qualification step, so it defaults to qualified.
+    outcome: body.outcome === 'not_qualified' ? 'not_qualified' : 'qualified',
     ip: req.headers['x-forwarded-for'] || '',
     ua: (req.headers['user-agent'] || '').slice(0, 200),
   };
@@ -82,6 +87,14 @@ export default async function handler(req, res) {
       console.error('[lead] webhook failed', err);
     }
   }
+
+  // Confirmation email. Best-effort by design — the application is already
+  // logged and forwarded above, so a mail failure must not fail the request for
+  // the person who just applied.
+  const mail =
+    lead.outcome === 'qualified' ? qualifiedEmail({ name: lead.name }) : notQualifiedEmail({ name: lead.name });
+  const sent = await sendEmail({ to: lead.email, subject: mail.subject, html: mail.html });
+  console.log('[lead] email', lead.outcome, sent ? 'sent' : 'not sent');
 
   res.status(200).json({ ok: true });
 }
