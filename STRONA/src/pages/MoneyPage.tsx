@@ -22,8 +22,11 @@ import {
   PASS_WINDOW,
   REFUND_WINDOW,
   WISTIA_META_ID,
+  BRAND_GREEN,
+  APPLY_ANCHOR,
 } from '../constants'
 import { PAYOUT_CERTS, PAYOUT_TOTALS } from '../data/payouts'
+import { TESTIMONIALS, type Testimonial } from '../data/testimonials'
 import {
   AutoScroller,
   CertCard,
@@ -51,15 +54,15 @@ const PAIN_STEPS = [
 
 // How the service runs, in order. Step 02 is the one nobody else puts in writing.
 const HOW: [string, string, string][] = [
-  ['01', 'You send the questionnaire', 'Six questions about your firm, account size and where you are right now. Two minutes, costs nothing.'],
+  ['01', 'You send the questionnaire', 'A short questionnaire about your firm, account size and where you are right now. Three minutes, costs nothing.'],
   ['02', 'We check the firm rules', 'Before anything starts we confirm the firm allows a third party to trade the account. If it does not, we say so.'],
-  ['03', 'Written management agreement', 'Risk limits, the split and how you exit — on paper. Nobody touches an account until it is signed.'],
+  ['03', 'Written management agreement', 'Risk limits, the split and how you exit, all on paper. Nobody touches an account until it is signed.'],
   ['04', 'We trade, you collect', 'Our desk runs the account inside the firm rules. Payouts are requested by you and land in your account.'],
 ]
 
 // What the client keeps — replaces the old value stack. Deliberately no prices.
 const CONTROL: { tag?: string; t: string; d: string }[] = [
-  { tag: 'CORE', t: 'The account stays yours', d: `It is registered in your name, at your firm. We get trading access under the agreement — not ownership.` },
+  { tag: 'CORE', t: 'The account stays yours', d: `It is registered in your name, at your firm. We get trading access under the agreement, not ownership.` },
   { t: 'Payouts go straight to you', d: 'The firm pays you directly. Our share is invoiced afterwards, out of money already in your hands.' },
   { t: `You keep ${CLIENT_SPLIT}`, d: `Our share is ${OUR_SPLIT} of a released payout. That is the entire commercial relationship.` },
   { t: 'No subscription', d: 'Nothing monthly, nothing upfront to us. If nothing is paid out, there is nothing to split.' },
@@ -74,16 +77,16 @@ const WHOFOR: [string, string][] = [
 ]
 
 const FAQ = [
-  { q: 'Who actually trades the account?', a: 'Our trading desk. You give us platform access under a written agreement and we execute inside your firm’s risk rules — daily loss, max drawdown, minimum days, all of it.' },
+  { q: 'Who actually trades the account?', a: 'Our trading desk. You give us platform access under a written agreement and we execute inside your firm’s risk rules: daily loss, max drawdown, minimum days, all of it.' },
   { q: 'Do I have to trade at all?', a: 'No. That is the whole point. You are not expected to watch charts or place orders. If you want to keep trading your own separate accounts, that is your call.' },
-  { q: `How does the ${CLIENT_SPLIT}/${OUR_SPLIT} split work?`, a: `You keep ${CLIENT_SPLIT} of every payout, we take ${OUR_SPLIT}. The firm pays you first — our share is invoiced after the money has actually landed with you.` },
+  { q: `How does the ${CLIENT_SPLIT}/${OUR_SPLIT} split work?`, a: `You keep ${CLIENT_SPLIT} of every payout, we take ${OUR_SPLIT}. The firm pays you first. Our share is invoiced after the money has actually landed with you.` },
   { q: 'When exactly do you get paid?', a: 'Only after a payout is released by the prop firm. There is no fee for trying, no monthly charge, and nothing to pay while an evaluation is running.' },
-  { q: 'What if you fail the challenge?', a: `If the account is lost while we are managing it, you get back what you paid us plus a ${GUARANTEE_CREDIT} credit toward the next attempt. The exact wording is in the agreement — read it before you sign, not after.` },
+  { q: 'What if you fail the challenge?', a: `If the account is lost while we are managing it, you get back what you paid us plus a ${GUARANTEE_CREDIT} credit toward the next attempt. The exact wording is in the agreement. Read it before you sign, not after.` },
   { q: 'How long is the guarantee?', a: `${REFUND_WINDOW}. Inside that window you can ask for the refund without an interrogation; you return the managed account to us and we settle up.` },
-  { q: 'How long does it take to pass?', a: `Usually ${PASS_WINDOW}, depending on the firm’s rules — minimum trading days and daily drawdown mostly — and on the market. It can take longer. It can also fail; nobody can promise otherwise.` },
+  { q: 'How long does it take to pass?', a: `Usually ${PASS_WINDOW}, depending on the firm’s rules (minimum trading days and daily drawdown mostly) and on the market. It can take longer. It can also fail; nobody can promise otherwise.` },
   { q: 'Which prop firms do you work with?', a: `Only firms whose terms permit a third party to trade the account. We work with ${PARTNER_FIRM} and check the current rules for whichever firm you bring before anything starts.` },
   { q: 'Is this even allowed?', a: 'It depends entirely on the firm. Some permit managed accounts under an agreement, others ban it outright and will void results. We check yours first and tell you straight if the answer is no.' },
-  { q: 'Do I have to buy the evaluation myself?', a: 'Yes. You buy the evaluation and it stays in your name — that is what keeps the account, and the payouts, yours.' },
+  { q: 'Do I have to buy the evaluation myself?', a: 'Yes. You buy the evaluation and it stays in your name. That is what keeps the account, and the payouts, yours.' },
   { q: 'What happens to my data?', a: 'The questionnaire goes to our team and nowhere else. We use it to prepare the call and the agreement. We do not sell it and we do not pass it on.' },
   { q: 'Why you and not one of the other management services?', a: 'Because everything above is written down before you commit: who trades, what happens when it fails, when we get paid, and how you walk away. Ask any of the others for that in writing.' },
 ]
@@ -185,8 +188,26 @@ function CheckRow({ title, detail }: { title: string; detail?: string }) {
 // player, never a padded number.
 function HeroVsl() {
   const [pct, setPct] = useState(0)
+
   useEffect(() => {
     if (!WISTIA_META_ID) return
+
+    // The player runtime plus the one-file module for this specific media. Both
+    // are needed before <wistia-player> upgrades from an inert custom element,
+    // and neither was ever loaded here — which is why the progress bar below
+    // could never have moved.
+    for (const [src, module] of [
+      ['https://fast.wistia.com/player.js', false],
+      [`https://fast.wistia.com/embed/${WISTIA_META_ID}.js`, true],
+    ] as const) {
+      if (document.querySelector(`script[src="${src}"]`)) continue
+      const s = document.createElement('script')
+      s.src = src
+      s.async = true
+      if (module) s.type = 'module'
+      document.head.appendChild(s)
+    }
+
     const w = window as unknown as { _wq?: unknown[] }
     w._wq = w._wq || []
     w._wq.push({
@@ -207,12 +228,25 @@ function HeroVsl() {
         <span className="mm-vsl-badge">Start here</span>
         <span className="mm-vsl-title">Watch this 90 second video</span>
       </div>
-      <div className="mm-vsl-frame">
-        <iframe
-          src={`https://fast.wistia.net/embed/iframe/${WISTIA_META_ID}?seo=true&videoFoam=true`}
-          title="How account management works"
-          allow="autoplay; fullscreen"
-          allowFullScreen
+      {/* The blurred still stands in until the element upgrades, so the slot is
+          never a black rectangle. */}
+      <div
+        className="mm-vsl-frame"
+        style={{
+          backgroundImage: `url(https://fast.wistia.com/embed/medias/${WISTIA_META_ID}/swatch)`,
+        }}
+      >
+        {/* Controls locked down the same way the reference funnel locks theirs:
+            no scrub bar, so the video cannot be skipped to the end. */}
+        <wistia-player
+          media-id={WISTIA_META_ID}
+          aspect="1.7777777777777777"
+          player-color={BRAND_GREEN}
+          playbar="false"
+          playback-rate-control="false"
+          settings-control="false"
+          resumable="false"
+          controls-visible-on-load="true"
         />
       </div>
       <div className="mm-vsl-bar">
@@ -223,6 +257,60 @@ function HeroVsl() {
         <span className="mm-vsl-bar-pct">{pct}%</span>
       </div>
     </div>
+  )
+}
+
+// One client story: the clip on top, the context underneath.
+//
+// The player is not embedded until the reader presses play. A row of four
+// autoloading YouTube iframes is a third-party script and a few hundred KB each,
+// paid for by everyone who scrolls past.
+function TestimonialCard({ testimonial: t }: { testimonial: Testimonial }) {
+  const [playing, setPlaying] = useState(false)
+  const poster = t.videoId
+    ? `https://i.ytimg.com/vi/${t.videoId}/hqdefault.jpg`
+    : undefined
+
+  return (
+    <figure className="mm-testi-card">
+      <div className="mm-testi-video" style={poster ? { backgroundImage: `url(${poster})` } : undefined}>
+        {playing && t.videoId ? (
+          <iframe
+            src={`https://www.youtube.com/embed/${t.videoId}?autoplay=1&rel=0`}
+            title={`${t.name}, client testimonial`}
+            allow="autoplay; encrypted-media; fullscreen"
+            allowFullScreen
+          />
+        ) : (
+          <button
+            type="button"
+            className="mm-testi-play"
+            disabled={!t.videoId}
+            aria-label={t.videoId ? `Play ${t.name}'s testimonial` : 'Recording not published yet'}
+            onClick={() => {
+              track('TestimonialPlay', 'testimonial_play', { name: t.name }, true)
+              setPlaying(true)
+            }}
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor" /></svg>
+          </button>
+        )}
+      </div>
+
+      <figcaption className="mm-testi-body">
+        <span className="mm-testi-name">{t.name}</span>
+        <span className="mm-testi-stars" aria-label="Rated 5 out of 5">
+          {[0, 1, 2, 3, 4].map((i) => (
+            <svg key={i} viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 6.91-1.01L12 2z" />
+            </svg>
+          ))}
+        </span>
+        <span className="mm-testi-paid">${t.payoutUsd.toLocaleString('en-US')} PAID</span>
+        <span className="mm-testi-tags">{t.tags.join(' · ')}</span>
+        <p className="mm-testi-story">{t.story}</p>
+      </figcaption>
+    </figure>
   )
 }
 
@@ -293,7 +381,7 @@ function FormPreview({ onOpen }: { onOpen: (name: string) => void }) {
         value=""
         readOnly
         aria-haspopup="dialog"
-        aria-label="Your full name — opens the application"
+        aria-label="Your full name, opens the application"
         onFocus={(e) => {
           e.currentTarget.blur()
           open('preview_field')
@@ -359,6 +447,23 @@ export function MoneyPage() {
     setApplyOpen(true)
   }
 
+  // Every CTA elsewhere on the site points here at /meta#apply. On its own that
+  // only scrolled the reader to a card they then had to tap, which is a step
+  // nobody asked for: they already pressed a button that said "apply". So the
+  // link opens the questionnaire on arrival. ?apply=1 does the same, because ad
+  // networks and link shorteners drop the fragment often enough to matter.
+  useEffect(() => {
+    const wanted =
+      window.location.hash === APPLY_ANCHOR ||
+      new URLSearchParams(window.location.search).get('apply') === '1'
+    if (!wanted) return
+    openApply()
+    // Leave the address without the trigger, so a reload or a back-and-forward
+    // does not spring the panel open again.
+    window.history.replaceState(null, '', window.location.pathname + window.location.search.replace(/([?&])apply=1&?/, '$1').replace(/[?&]$/, ''))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   // The sticky bar steps aside while the application section is on screen.
   // Otherwise it sits on top of the very card it is pointing at: on a phone it
   // covers the note under the form, on a 844px-tall screen it clips the card's
@@ -395,9 +500,9 @@ export function MoneyPage() {
               risk rules. <strong>You don't sit at the charts.</strong>
             </p>
             <ul className="mm-hero-points">
-              <li>You buy the evaluation — it stays <strong>in your name</strong></li>
+              <li>You buy the evaluation and it stays <strong>in your name</strong></li>
               <li>We trade it. You keep <strong>{CLIENT_SPLIT}</strong> of every payout</li>
-              <li>We are paid <strong>only after</strong> a payout is released — never before</li>
+              <li>We are paid <strong>only after</strong> a payout is released, never before</li>
             </ul>
             <div className="mm-cta-row mm-cta-left">
               <Cta onOpen={openApply} source="hero" />
@@ -417,7 +522,7 @@ export function MoneyPage() {
         <div className="mm-wrap">
           <p className="mm-warn">
             You don't need trading experience, and you pay us nothing up front. You buy a prop firm
-            evaluation — we run it for you.
+            evaluation. We run it for you.
           </p>
           <HeroVsl />
         </div>
@@ -444,7 +549,7 @@ export function MoneyPage() {
 
           <p className="mm-mech-note">
             An evaluation usually takes around <strong>{PASS_WINDOW}</strong>. It can take longer,
-            and it can fail — that is what the guarantee below is for.
+            and it can fail. That is what the guarantee below is for.
           </p>
 
           <CtaRow onOpen={openApply} source="how" />
@@ -455,7 +560,7 @@ export function MoneyPage() {
       <section className="mm-band mm-reveal">
         <div className="mm-wrap">
           <p className="mm-band-text">NO PAYOUT. NO FEE.</p>
-          <p className="mm-band-sub">We are paid out of released payouts — not out of your intention to try.</p>
+          <p className="mm-band-sub">We are paid out of released payouts, not out of your intention to try.</p>
         </div>
       </section>
 
@@ -495,13 +600,13 @@ export function MoneyPage() {
 
           {/* ⚠ Invented scarcity, kept by an explicit owner decision. */}
           <p className="mm-warn mm-warn-mb">
-            We don't have many spots left — today's applications close in <Countdown />
+            We don't have many spots left. Today's applications close in <Countdown />
           </p>
 
           <FormPreview onOpen={openApply} />
 
           <p className="mm-disclaimer" style={{ marginTop: 22 }}>
-            Six questions, about two minutes. Nothing to pay — the rule check comes first, then a
+            A short questionnaire, about three minutes. Nothing to pay. The rule check comes first, then a
             call, then the agreement.
           </p>
         </div>
@@ -513,7 +618,7 @@ export function MoneyPage() {
           <div className="mm-wrap">
             <h2 className="mm-h2 mm-center">THIS IS WHAT OUR CLIENTS WALK AWAY WITH</h2>
             <p className="mm-lead mm-center mm-lead-mid">
-              Certificates {PARTNER_FIRM} issued to our clients — payouts released, evaluations
+              Certificates {PARTNER_FIRM} issued to our clients: payouts released, evaluations
               passed, accounts funded. Scan any of them and the firm confirms it.
             </p>
           </div>
@@ -527,10 +632,33 @@ export function MoneyPage() {
           <div className="mm-wrap">
             <p className="mm-disclaimer">
               Certificates issued by {PARTNER_FIRM} to Forex Passing clients, pulled live from the
-              firm's public record. Individual results — an evaluation can fail and no outcome is
+              firm's public record. Individual results. An evaluation can fail and no outcome is
               guaranteed.
             </p>
             <CtaRow onOpen={openApply} source="payouts" />
+          </div>
+        </section>
+      )}
+
+      {/* CLIENT TESTIMONIALS — see the warning at the top of data/testimonials.ts */}
+      {TESTIMONIALS.length > 0 && (
+        <section className="mm-section mm-testi mm-reveal" id="testimonials">
+          <div className="mm-wrap">
+            <h2 className="mm-h2 mm-center">CLIENT TESTIMONIALS</h2>
+            <p className="mm-lead mm-center mm-lead-mid">
+              Real people, with the short version written under each video.
+            </p>
+
+            <div className="mm-testi-grid">
+              {TESTIMONIALS.map((t) => (
+                <TestimonialCard testimonial={t} key={t.name} />
+              ))}
+            </div>
+
+            <p className="mm-disclaimer" style={{ marginTop: 26 }}>
+              Individual results. Past performance is not indicative of future results, an
+              evaluation can fail, and no outcome is guaranteed.
+            </p>
           </div>
         </section>
       )}
@@ -560,10 +688,10 @@ export function MoneyPage() {
           <div className="mm-checks">
             <CheckRow
               title={`If we fail your evaluation, you get back what you paid us plus a ${GUARANTEE_CREDIT} service credit.`}
-              detail="A losing evaluation that stayed inside the firm's rules is not a breach — markets do that, and no service can promise otherwise."
+              detail="A losing evaluation that stayed inside the firm's rules is not a breach. Markets do that, and no service can promise otherwise."
             />
             <CheckRow
-              title={`${REFUND_WINDOW} refund guarantee — ask for the refund and you return the managed account to us.`}
+              title={`${REFUND_WINDOW} refund guarantee. Ask for the refund and you return the managed account to us.`}
               detail="The exact wording is in the management agreement. Read it before you sign, not after."
             />
           </div>
@@ -576,7 +704,7 @@ export function MoneyPage() {
         <div className="mm-wrap">
           <h2 className="mm-h2 mm-center">VERIFIED RESULTS</h2>
           <p className="mm-lead mm-center mm-lead-mid">
-            How managed accounts are run over time — equity curve, monthly returns and the trade
+            How managed accounts are run over time: equity curve, monthly returns and the trade
             log behind them. Past performance does not predict future results.
           </p>
 
@@ -603,7 +731,7 @@ export function MoneyPage() {
         <div className="mm-wrap">
           <h2 className="mm-h2 mm-center">FREQUENTLY ASKED QUESTIONS</h2>
           <p className="mm-lead mm-lead-mid mm-center">
-            Guarantees, fees and how we work — straight answers, including the ones that are a no.
+            Guarantees, fees and how we work. Straight answers, including the ones that are a no.
           </p>
           <div className="mm-acc">
             {FAQ.map((f) => (
@@ -622,7 +750,7 @@ export function MoneyPage() {
         <div className="mm-wrap">
           <p className="mm-stathook-big">8</p>
           <p className="mm-stathook-text">
-            steps. That's all it takes to blow an evaluation — and most traders run the exact same
+            steps. That's all it takes to blow an evaluation, and most traders run the exact same
             eight, every time, then buy another one. Not because they can't read a chart. Because
             sitting there alone with your own money on the line does something to your hands.
           </p>
@@ -718,7 +846,7 @@ export function MoneyPage() {
 
             <p className="mm-letter-aside">somebody please take the mouse away from me</p>
 
-            <p>Look — most traders aren't bad traders.</p>
+            <p>Look, most traders aren't bad traders.</p>
 
             <p className="mm-letter-punch">They're overloaded.</p>
 
@@ -765,7 +893,7 @@ export function MoneyPage() {
             </ul>
 
             <p>
-              Or maybe you can trade perfectly well —<br />
+              Or maybe you can trade perfectly well,<br />
               you just can't be at the screen at half past two because you have a job, a family,
               a life.
             </p>
@@ -791,7 +919,7 @@ export function MoneyPage() {
             <p className="mm-letter-punch">That's where we come in.</p>
 
             <p>
-              We pass and manage prop firm accounts for you —{' '}
+              We pass and manage prop firm accounts for you,{' '}
               <span className="mm-teal">completely hands-off</span>.
             </p>
 
@@ -826,7 +954,7 @@ export function MoneyPage() {
             <p className="mm-letter-punch">We bring the discipline, the execution and the boring consistency.</p>
 
             <p>
-              And no — we can't promise you'll pass. Anyone promising that is lying to you:
+              And no, we can't promise you'll pass. Anyone promising that is lying to you:
               evaluations fail, markets do what they want, rules get breached. What we can promise
               is that what happens then is written down <em>before</em> you commit, not explained
               afterwards.
@@ -838,7 +966,7 @@ export function MoneyPage() {
               <span className="mm-teal">enjoy the payout</span> instead of chasing it.
             </p>
 
-            <p className="mm-letter-sign">— The Forex Passing desk</p>
+            <p className="mm-letter-sign">The Forex Passing desk</p>
 
             <CtaRow onOpen={openApply} source="letter" />
           </div>

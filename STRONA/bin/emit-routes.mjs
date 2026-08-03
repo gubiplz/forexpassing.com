@@ -23,35 +23,35 @@ const MONEY_ROUTES = ['meta', 'meta-funnel', 'insta-funnel', 'tiktok-funnel'];
 // FOOTER_LINKS in src/pages/shared.tsx.
 const SUB_ROUTES = {
   payouts: {
-    title: 'Client payouts — Forex Passing',
+    title: 'Client payouts · Forex Passing',
     description:
       'Certificates our partner prop firm issued to Forex Passing clients: payouts released, evaluations passed, accounts funded.',
   },
   'past-performance': {
-    title: 'Past performance — Forex Passing',
+    title: 'Past performance · Forex Passing',
     description:
       'Equity curve, monthly returns and the trade log behind the accounts we manage. Past performance does not predict future results.',
   },
   reviews: {
-    title: 'Reviews — Forex Passing',
+    title: 'Reviews · Forex Passing',
     description: 'What clients say after we have run an evaluation or a funded account for them.',
   },
   contract: {
-    title: 'The contract — Forex Passing',
+    title: 'The contract · Forex Passing',
     description:
       'What the management agreement covers before you apply: who trades, the split, the guarantee, and how you end it.',
   },
   'referral-program': {
-    title: 'Referral program — Forex Passing',
+    title: 'Referral program · Forex Passing',
     description:
       'Send someone in, earn on every payout they receive. Three tiers, no earnings cap, tier status is permanent.',
   },
   'partner-portal': {
-    title: 'Partner portal — Forex Passing',
+    title: 'Partner portal · Forex Passing',
     description: 'Your tracked referral link, your referrals and your tier progress in one place.',
   },
   'google-funnel': {
-    title: 'Forex Passing — prop firm account management',
+    title: 'Forex Passing · prop firm account management',
     description:
       'We run your prop firm evaluation and manage the funded account under the firm rules. Apply to see whether you qualify.',
   },

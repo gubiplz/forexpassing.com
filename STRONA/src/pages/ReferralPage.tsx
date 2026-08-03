@@ -9,6 +9,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import {
+  APPLY_ANCHOR,
   CLIENT_SPLIT,
   CONTACT_EMAIL,
   GUARANTEE_CREDIT,
@@ -48,7 +49,7 @@ const STATS: [string, string][] = [
 const NOT_SCARED: [string, string][] = [
   [
     'Written management agreement.',
-    'The same contract every client signs — they can read it before committing, not after.',
+    'The same contract every client signs, so they can read it before committing, not after.',
   ],
   [
     'Same failure protections.',
@@ -62,22 +63,22 @@ const NOT_SCARED: [string, string][] = [
 
 const SAME_GUARANTEES: string[] = [
   `Challenge failure or a breach caused by us → remedies in writing, including refunded fees plus a ${GUARANTEE_CREDIT} credit.`,
-  `${REFUND_WINDOW} refund guarantee — the same window and the same wording as the published offer.`,
-  `Profit-share clarity: ${CLIENT_SPLIT} client / ${OUR_SPLIT} Forex Passing on payouts — the same structure they see at onboarding.`,
+  `${REFUND_WINDOW} refund guarantee, the same window and the same wording as the published offer.`,
+  `Profit-share clarity: ${CLIENT_SPLIT} client / ${OUR_SPLIT} Forex Passing on payouts, the same structure they see at onboarding.`,
 ]
 
 const PORTAL_POINTS = [
-  'Your unique referral link — clicks tracked automatically',
+  'Your unique referral link, with clicks tracked automatically',
   'Live confirmed vs. pending referral ledger',
   'Real-time tier progress toward Premium & Platinum',
   'Editable profile, testimonial & funded progress link',
 ]
 
 const HOW_IT_WORKS: [string, string, string][] = [
-  ['1', 'You refer a friend', 'Send them this page. They see the real contract, the guarantees and the terms — nothing hidden.'],
+  ['1', 'You refer a friend', 'Send them this page. They see the real contract, the guarantees and the terms. Nothing hidden.'],
   ['2', 'Your friend applies', 'They send the questionnaire and get onboarded like any other Forex Passing client.'],
-  ['3', 'We buy you the same size account — free', 'Once they are funded, we fund you a matching challenge account at the same size.'],
-  ['4', 'You earn commission on every payout', `We manage both accounts hands-off, and you keep ${REFERRAL_COMMISSION_RANGE} of every payout your referral receives — for as long as they trade with us.`],
+  ['3', 'We buy you the same size account, free', 'Once they are funded, we fund you a matching challenge account at the same size.'],
+  ['4', 'You earn commission on every payout', `We manage both accounts hands-off, and you keep ${REFERRAL_COMMISSION_RANGE} of every payout your referral receives, for as long as they trade with us.`],
 ]
 
 const FAQ: [string, string][] = [
@@ -87,7 +88,7 @@ const FAQ: [string, string][] = [
   ],
   [
     'When do I get paid?',
-    'Your commission is released once your referral has actually received a payout from their funded account. There is no waiting period beyond that — you earn when they earn.',
+    'Your commission is released once your referral has actually received a payout from their funded account. There is no waiting period beyond that. You earn when they earn.',
   ],
   [
     'Is there a cap on earnings?',
@@ -95,7 +96,7 @@ const FAQ: [string, string][] = [
   ],
   [
     'Can I lose my tier?',
-    'No. Tiers are based on cumulative confirmed referrals — once you reach one it is permanent, and every tier keeps the rewards of the ones below it.',
+    'No. Tiers are based on cumulative confirmed referrals. Once you reach one it is permanent, and every tier keeps the rewards of the ones below it.',
   ],
 ]
 
@@ -145,7 +146,7 @@ export function ReferralPage() {
           <p className="mm-warn">
             This page is built so you can forward it as it is: matching funded accounts, recurring
             commission, the full management agreement one tap away, and the same protections every
-            Forex Passing client gets — so nobody has to just trust the hype.
+            Forex Passing client gets, so nobody has to just trust the hype.
           </p>
           <div className="mm-refhero-cta">
             <a
@@ -174,7 +175,7 @@ export function ReferralPage() {
         <div className="mm-wrap">
           <h2 className="mm-h2 mm-center">WHY YOUR FRIEND DOESN'T HAVE TO BE SCARED</h2>
           <p className="mm-lead mm-lead-mid mm-center">
-            Most hesitation isn't about the opportunity — it's about unknown risk. We take the
+            Most hesitation isn't about the opportunity. It's about unknown risk. We take the
             guesswork out.
           </p>
           <div className="mm-checks">
@@ -198,7 +199,7 @@ export function ReferralPage() {
         <div className="mm-wrap">
           <h2 className="mm-h2 mm-center mm-reviews-h">REAL TRADERS. REAL RESULTS.</h2>
           <p className="mm-reviews-sub">
-            Rated <strong>4.9</strong> out of 5 based on <strong>500+</strong> reviews — proof you
+            Rated <strong>4.9</strong> out of 5 based on <strong>500+</strong> reviews. Proof you
             can point your friend to.
           </p>
         </div>
@@ -216,7 +217,7 @@ export function ReferralPage() {
         <div className="mm-wrap">
           <h2 className="mm-h2 mm-center">SAME <span className="mm-teal">GUARANTEES</span> FOR YOUR FRIEND</h2>
           <p className="mm-lead mm-lead-mid mm-center">
-            Referral pricing doesn't mean referral-tier protection. They get the full promise set —
+            Referral pricing doesn't mean referral-tier protection. They get the full promise set,
             mirrored in the contract.
           </p>
           <div className="mm-checks">
@@ -238,7 +239,7 @@ export function ReferralPage() {
           <span className="mm-eyebrow mm-eyebrow-teal mm-eyebrow-c">For the person who referred</span>
           <h2 className="mm-h2 mm-center">EVERY TIER IS <span className="mm-teal">PERMANENT</span></h2>
           <p className="mm-lead mm-lead-mid mm-center">
-            Reach a tier once and it stays with you. Rewards compound — Premium and Platinum
+            Reach a tier once and it stays with you. Rewards compound: Premium and Platinum
             partners keep everything from the tiers below.
           </p>
 
@@ -292,7 +293,7 @@ export function ReferralPage() {
             <h2 className="mm-portal-h2">TRACK EVERYTHING FROM ONE PORTAL.</h2>
             <p className="mm-portal-lead">
               Create a partner account in seconds, get your own tracked link, and watch clicks,
-              referrals and tier progress update live. No spreadsheets, no chasing — just your
+              referrals and tier progress update live. No spreadsheets, no chasing. Just your
               numbers.
             </p>
             <ul className="mm-portal-points">
@@ -342,7 +343,7 @@ export function ReferralPage() {
             $10K FRIEND PAYOUT → YOU KEEP <span className="mm-teal">{REFERRAL_PAYOUT_RANGE}</span>
           </h2>
           <p className="mm-recurring-sub">
-            Paid the moment they get paid — <strong>no cap</strong>, no expiry, on every single
+            Paid the moment they get paid, with <strong>no cap</strong>, no expiry, on every single
             payout.
           </p>
           <p className="mm-recurring-note">
@@ -381,7 +382,16 @@ export function ReferralPage() {
             <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
           </p>
           <div className="mm-forward-cta">
-            <a href="/contract" className="mm-btn mm-btn-white mm-btn-lg">See contract</a>
+            {/* The one way off this page into the service itself. Everything else
+                here signs a partner up, which is a different job. */}
+            <a
+              href={`/meta${APPLY_ANCHOR}`}
+              className="mm-btn mm-btn-white mm-btn-lg"
+              onClick={() => track('CTAClick', 'cta_click', { source: 'referral_apply' }, true)}
+            >
+              Apply for management
+            </a>
+            <a href="/contract" className="mm-btn mm-btn-outline-white mm-btn-lg">See contract</a>
             <a
               href={TELEGRAM_HREF}
               target="_blank"
@@ -461,7 +471,7 @@ function PortalPreview({ stats }: { stats: PartnerStats | null }) {
           {stats?.next_tier
             ? `${toNext} more confirmed referral${toNext === 1 ? '' : 's'} to unlock ${stats.next_tier}.`
             : live
-              ? 'Top tier reached — everything below stays yours.'
+              ? 'Top tier reached. Everything below stays yours.'
               : 'Example view. Open a partner account to see your own numbers.'}
         </span>
       </div>

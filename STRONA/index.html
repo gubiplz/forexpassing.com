@@ -12,7 +12,7 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
-    <title>Forex Passing — An educational trading company</title>
+    <title>Forex Passing · An educational trading company</title>
     <meta
       name="description"
       content="Forex Passing is a trading-education company. We teach aspiring traders the strategies, discipline and mindset to approach the markets with a clear, repeatable process."
@@ -23,7 +23,7 @@
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="en_US" />
     <meta property="og:site_name" content="Forex Passing" />
-    <meta property="og:title" content="Forex Passing — An educational trading company" />
+    <meta property="og:title" content="Forex Passing · An educational trading company" />
     <meta
       property="og:description"
       content="A trading-education company teaching the strategies, discipline and mindset to approach the markets with a clear, repeatable process."
@@ -31,33 +31,25 @@
     <meta property="og:url" content="https://forexpassing.com" />
 
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Forex Passing — An educational trading company" />
+    <meta name="twitter:title" content="Forex Passing · An educational trading company" />
     <meta
       name="twitter:description"
-      content="Trading education done properly — strategy, discipline and process for aspiring traders."
+      content="Trading education done properly: strategy, discipline and process for aspiring traders."
     />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preconnect" href="https://fast.wistia.com" crossorigin />
     <link rel="dns-prefetch" href="https://fast.wistia.com" />
     <link rel="preconnect" href="https://www.googletagmanager.com" />
     <link rel="preconnect" href="https://www.google-analytics.com" />
     <link rel="dns-prefetch" href="https://connect.facebook.net" />
 
-    <!-- Landing display type — Anton headings + Inter body (single request) -->
-    <link
-      rel="preload"
-      as="style"
-      href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&display=swap"
-      onload="this.onload=null;this.rel='stylesheet'"
-    />
-    <noscript>
-      <link
-        href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&display=swap"
-        rel="stylesheet"
-      />
-    </noscript>
+    <!-- Landing display type. Served from our own origin: the headline is set at
+         80px, and going out to Google costs a round trip for the stylesheet and
+         another for the font file before the real face is even discovered. The
+         @font-face rules live in src/index.css; these two preloads start the
+         download in parallel with the bundle instead of after it. -->
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/anton-latin.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/inter-latin.woff2" crossorigin />
 
     <!-- Google tag (gtag.js) — GA4 (live) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-SP9H8Q95C1"></script>

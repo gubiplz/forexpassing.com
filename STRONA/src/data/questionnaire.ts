@@ -24,7 +24,7 @@ export type Step =
     }
   | {
       kind: 'info'
-      template?: 'plain' | 'official' | 'team' | 'social' | 'contract'
+      template?: 'official' | 'team' | 'social' | 'contract'
       title?: string
       body?: string
       bullets?: string[]
@@ -98,7 +98,7 @@ export const QUALIFICATION: Step[] = [
     bullets: [
       'You purchase the prop firm evaluation',
       "We manage the account under that firm's rules",
-      'Fees and terms are explained before you commit — results vary and are not guaranteed',
+      'Fees and terms are explained before you commit. Results vary and are not guaranteed',
     ],
   },
   {
@@ -135,7 +135,7 @@ export const QUALIFICATION: Step[] = [
     kind: 'question',
     question: 'Is there anything that would stop you from applying right now?',
     options: [
-      { label: "Nothing — I'm ready to apply", qualified: true },
+      { label: "Nothing, I'm ready to apply", qualified: true },
       { label: 'I need more time to decide', qualified: false },
       { label: 'Timing is not right', qualified: false },
     ],
@@ -167,8 +167,13 @@ export const QUALIFICATION: Step[] = [
   {
     kind: 'info',
     template: 'team',
-    title: 'Meet some of the team',
+    title: 'Who you will be dealing with',
     body: 'Our desk provides support and account-management services. Experience and availability vary.',
+    bullets: [
+      'Account management, which places and manages the trades inside the firm rules',
+      'Risk, which watches daily loss and drawdown limits on every account we run',
+      'Client support, which answers questions before and after an account is funded',
+    ],
     note: 'The team can answer questions about the process and the next steps.',
     continueLabel: 'Continue',
   },

@@ -7,6 +7,32 @@
   <meta name="theme-color" content="#0A0F0D" />
   <title>Privacy Policy · Forex Passing</title>
   <meta name="description" content="What Forex Passing collects through the application questionnaire, why, who it goes to, how long it is kept, and the rights you have over it." />
+  <!-- Type served from our own origin. Metric-matched stand-ins keep the first
+       paint the same size as the real face, so the swap does not move the page. -->
+  <link rel="preload" as="font" type="font/woff2" href="/fonts/anton-latin.woff2" crossorigin />
+  <link rel="preload" as="font" type="font/woff2" href="/fonts/inter-latin.woff2" crossorigin />
+  <style>
+    @font-face{font-family:'Anton';font-style:normal;font-weight:400;font-display:swap;
+      src:url('/fonts/anton-latin.woff2') format('woff2')}
+    @font-face{font-family:'Anton';font-style:normal;font-weight:400;font-display:swap;
+      src:url('/fonts/anton-latin-ext.woff2') format('woff2');
+      unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,
+        U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,
+        U+2C60-2C7F,U+A720-A7FF}
+    @font-face{font-family:'Inter';font-style:normal;font-weight:400 800;font-display:swap;
+      src:url('/fonts/inter-latin.woff2') format('woff2')}
+    @font-face{font-family:'Inter';font-style:normal;font-weight:400 800;font-display:swap;
+      src:url('/fonts/inter-latin-ext.woff2') format('woff2');
+      unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,
+        U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,
+        U+2C60-2C7F,U+A720-A7FF}
+    @font-face{font-family:'Anton Fallback';src:local('Impact'),local('Haettenschweiler'),
+      local('Arial Narrow Bold');size-adjust:95.15%;ascent-override:124.01%;
+      descent-override:34.68%;line-gap-override:0%}
+    @font-face{font-family:'Inter Fallback';src:local('Arial'),local('Helvetica Neue'),
+      local('Roboto');size-adjust:106.9%;ascent-override:90.74%;descent-override:22.45%;
+      line-gap-override:0%}
+  </style>
   <style>
     :root {
       --bg: #0A0F0D; --bg-elev: #0F1613; --bg-card: #121A16;
@@ -17,7 +43,7 @@
     body {
       margin: 0; padding: 0;
       background: var(--bg); color: var(--text);
-      font: 16px/1.65 'Inter', system-ui, sans-serif;
+      font: 16px/1.65 'Inter','Inter Fallback',system-ui, sans-serif;
       -webkit-font-smoothing: antialiased;
     }
     main { max-width: 760px; margin: 0 auto; padding: 64px 24px 88px; }
@@ -53,13 +79,13 @@
     <h2>3. What we collect</h2>
     <p>The information you type into the application questionnaire, plus basic technical details of the visit:</p>
     <ul>
-      <li>from the questionnaire: your name, email address and — optionally — phone number and country;</li>
-      <li>from the questionnaire: your answers to the qualification questions — your experience with prop firm evaluations, when you would want to start, whether you are able to fund an evaluation, and how you prefer to be contacted;</li>
+      <li>from the questionnaire: your name, email address and, optionally, phone number and country;</li>
+      <li>from the questionnaire: your answers to the qualification questions: your experience with prop firm evaluations, when you would want to start, whether you are able to fund an evaluation, and how you prefer to be contacted;</li>
       <li>from the questionnaire: the <strong>bracket</strong> your monthly income falls into. We ask for a range, never an exact figure, and only to judge whether the service makes sense for you;</li>
       <li>your IP address and browser User-Agent string, stored alongside the submission;</li>
       <li>analytics collected by Google Analytics and the Meta Pixel, under those providers' own terms.</li>
     </ul>
-    <p>We do not collect anything from social media accounts and we never ask for card details — no payment is taken through this site.</p>
+    <p>We do not collect anything from social media accounts and we never ask for card details. No payment is taken through this site.</p>
 
     <h2>4. Why we use it</h2>
     <p>Questionnaire data is used to contact you about your enquiry, to check the rules of the prop firm you named, and to prepare a management agreement. Analytics data is used to measure how our advertising performs.</p>
@@ -75,7 +101,7 @@
     <p>Enquiry data is kept for 24 months after the last contact. If an agreement is signed, data is kept for its duration plus the period required by tax law.</p>
 
     <h2>8. Your rights</h2>
-    <p>You have the right to access your data, correct it, delete it, restrict or object to its processing, and receive a copy in a portable format. Email the address published on this site — we answer within 30 days.</p>
+    <p>You have the right to access your data, correct it, delete it, restrict or object to its processing, and receive a copy in a portable format. Email the address published on this site and we answer within 30 days.</p>
     <p>You can lodge a complaint with a supervisory authority at any time, in Poland the President of the Personal Data Protection Office (UODO). You do not have to complain to us first, though it is usually faster.</p>
 
     <h2>9. Cookies</h2>
@@ -90,7 +116,7 @@
 <!-- generated by bin/inject-footer.mjs from bin/footer.html — edit that file, not this -->
 <style>
   .fp-f{background:#0c1411;color:#e6efea;padding:60px 24px 40px;
-    font:14px/1.6 'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    font:14px/1.6 'Inter','Inter Fallback',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
     -webkit-font-smoothing:antialiased}
   .fp-f *{box-sizing:border-box}
   .fp-f-in{max-width:1080px;margin:0 auto}
@@ -114,11 +140,11 @@
   <div class="fp-f-in">
     <div class="fp-f-top">
       <div class="fp-f-brand">
-        <a href="/" class="fp-f-logo" aria-label="Forex Passing — home">
+        <a href="/" class="fp-f-logo" aria-label="Forex Passing, home">
           <img src="/logo-light.svg" alt="Forex Passing" />
         </a>
         <p class="fp-f-tagline">
-          Forex Passing — we pass prop firm evaluations and manage funded accounts for our clients,
+          Forex Passing. We pass prop firm evaluations and manage funded accounts for our clients,
           under a written agreement. You keep the account and 70% of every payout.
         </p>
       </div>

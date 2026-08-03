@@ -79,7 +79,7 @@ export function SafePage() {
           <p className="mm-lead mm-lead-mid">
             Forex Passing works in trader education. We explain market structure, risk
             management, and how prop firm evaluations actually work. We do not promise income
-            or results — trading involves risk, and every decision stays with the trader.
+            or results. Trading involves risk, and every decision stays with the trader.
           </p>
           <div className="mm-cta-row">
             <a href="#apply" className="mm-btn mm-btn-lg">Request information</a>
@@ -125,7 +125,7 @@ export function SafePage() {
           <h2 className="mm-h2 mm-center">READY TO START YOUR <span className="mm-blue">JOURNEY?</span></h2>
           <p className="mm-lead mm-lead-mid mm-center">
             Take the first step. Send us a question and we reply by email with information about
-            what we publish and how we work — nothing is sold through the form.
+            what we publish and how we work. Nothing is sold through the form.
           </p>
           <div className="mm-cta-row mm-cta-center-row">
             <a href="/about-us#apply" className="mm-btn mm-btn-lg">Apply Now</a>
@@ -140,7 +140,7 @@ export function SafePage() {
             <div className="mm-footer-brand">
               <img className="mm-logo-img mm-logo-img-sm" src="/logo-light.svg" alt="Forex Passing" />
               <p className="mm-footer-tagline">
-                Forex Passing — trading education in plain language: market structure, risk
+                Forex Passing. Trading education in plain language: market structure, risk
                 management, and how prop firm evaluations work. No hype and no income promises.
               </p>
             </div>
@@ -181,7 +181,7 @@ const CSS = `
   --txt:#0f172a; --mut:#5b6675; --blue:#2f6fe0; --blue-soft:#5ba4d9;
   --foot-bg:#0f1722; --foot-txt:#d7dee8; --foot-mut:#8893a3;
   background:var(--bg); color:var(--txt);
-  font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  font-family:'Inter','Inter Fallback',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
   line-height:1.6; -webkit-font-smoothing:antialiased; overflow-x:hidden;
 }
 .mm-root *{box-sizing:border-box;margin:0;padding:0}
@@ -208,9 +208,9 @@ const CSS = `
 .mm-btn-ghost:hover{border-color:var(--blue);color:var(--blue);box-shadow:none}
 
 /* HEADINGS */
-.mm-h1{font-family:'Anton',sans-serif;font-weight:400;font-size:clamp(40px,8.2vw,84px);
+.mm-h1{font-family:'Anton','Anton Fallback',sans-serif;font-weight:400;font-size:clamp(40px,8.2vw,84px);
   line-height:1;letter-spacing:.01em;text-transform:uppercase;margin:0 0 22px}
-.mm-h2{font-family:'Anton',sans-serif;font-weight:400;font-size:clamp(28px,4.6vw,46px);
+.mm-h2{font-family:'Anton','Anton Fallback',sans-serif;font-weight:400;font-size:clamp(28px,4.6vw,46px);
   line-height:1.04;text-transform:uppercase;letter-spacing:.01em;margin-bottom:18px}
 .mm-center{text-align:center;margin-left:auto;margin-right:auto}
 .mm-blue{color:var(--blue)}
@@ -231,7 +231,7 @@ const CSS = `
 .mm-stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:42px 24px}
 @media(max-width:680px){.mm-stats-grid{grid-template-columns:repeat(2,1fr);gap:28px 8px}}
 .mm-stat{text-align:center}
-.mm-stat-v{display:block;font-family:'Anton',sans-serif;font-size:clamp(34px,6vw,50px);line-height:1}
+.mm-stat-v{display:block;font-family:'Anton','Anton Fallback',sans-serif;font-size:clamp(34px,6vw,50px);line-height:1}
 .mm-stat-k{display:block;font-size:13px;font-weight:600;letter-spacing:.04em;margin-top:6px;opacity:.92}
 
 /* SECTIONS */
@@ -248,7 +248,7 @@ const CSS = `
 .mm-why-ico{display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:11px;
   background:rgba(47,111,224,.10);color:var(--blue);margin-bottom:18px}
 .mm-why-ico svg{width:21px;height:21px}
-.mm-why-t{display:block;font-family:'Anton',sans-serif;font-weight:400;font-size:19px;text-transform:uppercase;letter-spacing:.02em;margin-bottom:8px}
+.mm-why-t{display:block;font-family:'Anton','Anton Fallback',sans-serif;font-weight:400;font-size:19px;text-transform:uppercase;letter-spacing:.02em;margin-bottom:8px}
 .mm-why-d{display:block;color:var(--mut);font-size:14px;line-height:1.6}
 
 /* JOURNEY / APPLY */

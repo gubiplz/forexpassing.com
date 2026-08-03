@@ -251,7 +251,7 @@ export const AGREEMENT: Agreement = {
       blocks: [
         {
           type: 'paragraph',
-          text: 'By signing below, both parties acknowledge that they have read this Agreement, understood it, and agreed to be bound by every term of it — including Section 9, which states plainly that no result is promised.',
+          text: 'By signing below, both parties acknowledge that they have read this Agreement, understood it, and agreed to be bound by every term of it, including Section 9, which states plainly that no result is promised.',
         },
       ],
     },

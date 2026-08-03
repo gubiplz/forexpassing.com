@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Forex Passing — How account management works</title>
+<title>Forex Passing · How account management works</title>
 
 <!-- Google tag (gtag.js) — GA4 -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-SP9H8Q95C1"></script>
@@ -36,19 +36,42 @@ src="https://www.facebook.com/tr?id=1566242625059670&ev=PageView&noscript=1"
 <meta name="robots" content="noindex, nofollow" />
 <meta name="theme-color" content="#ffffff" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet" />
 <link rel="preconnect" href="https://fast.wistia.com" crossorigin />
 <link rel="dns-prefetch" href="https://fast.wistia.com" />
 
 <!-- Wistia player runtime + clip module (provided embed) -->
 <script src="https://fast.wistia.com/player.js" async></script>
-<script src="https://fast.wistia.com/embed/e2d7der6xi.js" async type="module"></script>
+<script src="https://fast.wistia.com/embed/jiy7nxpusf.js" async type="module"></script>
 
+  <!-- Type served from our own origin. Metric-matched stand-ins keep the first
+       paint the same size as the real face, so the swap does not move the page. -->
+  <link rel="preload" as="font" type="font/woff2" href="/fonts/anton-latin.woff2" crossorigin />
+  <link rel="preload" as="font" type="font/woff2" href="/fonts/inter-latin.woff2" crossorigin />
+  <style>
+    @font-face{font-family:'Anton';font-style:normal;font-weight:400;font-display:swap;
+      src:url('/fonts/anton-latin.woff2') format('woff2')}
+    @font-face{font-family:'Anton';font-style:normal;font-weight:400;font-display:swap;
+      src:url('/fonts/anton-latin-ext.woff2') format('woff2');
+      unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,
+        U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,
+        U+2C60-2C7F,U+A720-A7FF}
+    @font-face{font-family:'Inter';font-style:normal;font-weight:400 800;font-display:swap;
+      src:url('/fonts/inter-latin.woff2') format('woff2')}
+    @font-face{font-family:'Inter';font-style:normal;font-weight:400 800;font-display:swap;
+      src:url('/fonts/inter-latin-ext.woff2') format('woff2');
+      unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,
+        U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,
+        U+2C60-2C7F,U+A720-A7FF}
+    @font-face{font-family:'Anton Fallback';src:local('Impact'),local('Haettenschweiler'),
+      local('Arial Narrow Bold');size-adjust:95.15%;ascent-override:124.01%;
+      descent-override:34.68%;line-gap-override:0%}
+    @font-face{font-family:'Inter Fallback';src:local('Arial'),local('Helvetica Neue'),
+      local('Roboto');size-adjust:106.9%;ascent-override:90.74%;descent-override:22.45%;
+      line-gap-override:0%}
+  </style>
 <style>
 /* ---- swatch placeholder while the Wistia web-component defines itself ---- */
-wistia-player[media-id='e2d7der6xi']:not(:defined){background:center / contain no-repeat url('https://fast.wistia.com/embed/medias/e2d7der6xi/swatch');display:block;filter:blur(5px);padding-top:56.30%;}
+wistia-player[media-id='jiy7nxpusf']:not(:defined){background:center / contain no-repeat url('https://fast.wistia.com/embed/medias/jiy7nxpusf/swatch');display:block;filter:blur(5px);padding-top:56.30%;}
 
 /* ===== Design tokens — ported from MoneyPage (light + teal) ===== */
 :root{
@@ -60,7 +83,7 @@ wistia-player[media-id='e2d7der6xi']:not(:defined){background:center / contain n
 html{scroll-behavior:smooth}
 body{
   background:var(--bg); color:var(--txt);
-  font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  font-family:'Inter','Inter Fallback',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
   line-height:1.6; -webkit-font-smoothing:antialiased; overflow-x:hidden;
   padding-bottom:calc(88px + env(safe-area-inset-bottom));
 }
@@ -87,9 +110,9 @@ body{
 .mm-btn-full{display:block;text-align:center;width:100%}
 
 /* HEADINGS / TEXT */
-.mm-h2{font-family:'Anton',sans-serif;font-weight:400;font-size:clamp(30px,5vw,52px);
+.mm-h2{font-family:'Anton','Anton Fallback',sans-serif;font-weight:400;font-size:clamp(30px,5vw,52px);
   line-height:1.02;text-transform:uppercase;letter-spacing:.01em;margin-bottom:16px}
-.mm-h3{font-family:'Anton',sans-serif;font-weight:400;font-size:22px;text-transform:uppercase;letter-spacing:.02em;margin-bottom:12px}
+.mm-h3{font-family:'Anton','Anton Fallback',sans-serif;font-weight:400;font-size:22px;text-transform:uppercase;letter-spacing:.02em;margin-bottom:12px}
 .mm-center{text-align:center;margin-left:auto;margin-right:auto}
 .mm-teal{color:var(--teal)}
 .mm-red{color:var(--red)}
@@ -138,7 +161,7 @@ body{
   border-radius:999px;padding:4px 12px;box-shadow:0 6px 16px rgba(22,163,74,.30)}
 
 /* WHAT YOU GET — check cards */
-.mm-keep-h{display:flex;align-items:center;gap:10px;font-family:'Anton',sans-serif;font-weight:400;
+.mm-keep-h{display:flex;align-items:center;gap:10px;font-family:'Anton','Anton Fallback',sans-serif;font-weight:400;
   font-size:18px;text-transform:uppercase;letter-spacing:.04em;margin-bottom:18px;color:var(--txt)}
 .mm-keep-h svg{width:22px;height:22px;fill:none;stroke:var(--teal);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .mm-keep-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
@@ -156,14 +179,14 @@ body{
 .mm-terms-card{width:100%;max-width:380px;margin:0 auto 26px;background:#0c1512;color:#e8f0ec;
   border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:22px;text-align:left;
   box-shadow:0 22px 54px rgba(8,20,15,.30)}
-.mm-terms-title{display:block;font-family:'Anton',sans-serif;font-size:16px;letter-spacing:.06em;color:#fff;margin-bottom:14px}
+.mm-terms-title{display:block;font-family:'Anton','Anton Fallback',sans-serif;font-size:16px;letter-spacing:.06em;color:#fff;margin-bottom:14px}
 .mm-terms-rows{display:grid;gap:2px}
 .mm-terms-row{display:flex;align-items:baseline;justify-content:space-between;gap:14px;
   padding:10px 0;border-bottom:1px solid rgba(255,255,255,.07)}
 .mm-terms-row:last-child{border-bottom:none}
 .mm-terms-row dt{font-size:13px;color:#9fb0a8}
 .mm-terms-row dd{font-size:14px;font-weight:700;color:#e8f0ec;text-align:right}
-.mm-terms-row dd.mm-terms-strong{font-family:'Anton',sans-serif;font-weight:400;font-size:22px;color:#39d98a}
+.mm-terms-row dd.mm-terms-strong{font-family:'Anton','Anton Fallback',sans-serif;font-weight:400;font-size:22px;color:#39d98a}
 .mm-spots{display:inline-flex;align-items:flex-start;gap:10px;font-size:14px;font-weight:700;color:#b91c1c;
   background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:999px;padding:9px 18px;margin-bottom:24px}
 .mm-spots-dot{flex:none;width:8px;height:8px;margin-top:.52em;border-radius:50%;background:#ef4444;animation:mm-blink 1.4s infinite}
@@ -185,7 +208,7 @@ body{
 /* When the in-section buy button is on screen, hide the sticky bar so only
    one purchase button is ever visible at once. */
 .mm-sticky-bar.is-hidden{transform:translateY(130%);opacity:0;pointer-events:none}
-.mm-sticky-cta{display:inline-block;background:var(--teal);color:#fff;font-family:'Anton',sans-serif;font-weight:400;
+.mm-sticky-cta{display:inline-block;background:var(--teal);color:#fff;font-family:'Anton','Anton Fallback',sans-serif;font-weight:400;
   font-size:clamp(15px,3.6vw,17px);letter-spacing:.04em;text-transform:uppercase;text-decoration:none;text-align:center;
   border-radius:10px;padding:16px 44px;border:none;box-shadow:0 8px 22px rgba(22,163,74,.34);
   transition:transform .15s ease, box-shadow .15s ease, background .15s ease;width:auto;max-width:480px}
@@ -217,7 +240,7 @@ body{
          To swap it, change the media-id here AND in the :not(:defined) rule above. -->
     <p class="mm-video-kicker">Watch this before you apply</p>
     <div class="mm-video mm-reveal">
-      <wistia-player media-id="e2d7der6xi" aspect="1.7777777777777777" player-color="#16a34a"></wistia-player>
+      <wistia-player media-id="jiy7nxpusf" aspect="1.7777777777777777" player-color="#16a34a"></wistia-player>
     </div>
   </div>
 </section>
@@ -234,7 +257,7 @@ body{
         <p class="mm-lead mm-lead-mid mm-center">
           Our traders run your evaluation and your funded account under the prop firm's own risk rules.
           You do not place orders and you do not sit at charts. You get progress reports and payout updates.
-          Trading carries risk, so nobody can promise a pass — what we can put in writing is how we work and what we charge.
+          Trading carries risk, so nobody can promise a pass. What we can put in writing is how we work and what we charge.
         </p>
 
         <!-- YOUR PATH -->
@@ -265,7 +288,7 @@ body{
         <div class="mm-keep-grid">
           <div class="mm-keep-card">
             <span class="mm-keep-ico"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></span>
-            <span class="t"><strong>Our traders place every order</strong> and follow the firm's risk rules — daily loss, total drawdown, minimum trading days.</span>
+            <span class="t"><strong>Our traders place every order</strong> and follow the firm's risk rules: daily loss, total drawdown, minimum trading days.</span>
           </div>
           <div class="mm-keep-card">
             <span class="mm-keep-ico"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></span>
@@ -277,7 +300,7 @@ body{
           </div>
           <div class="mm-keep-card">
             <span class="mm-keep-ico"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></span>
-            <span class="t">If we break the rules and burn the account under our management, <strong>you get back what you paid us plus a $500 credit</strong> toward the next attempt — terms in the agreement, with a 120-day window.</span>
+            <span class="t">If we break the rules and burn the account under our management, <strong>you get back what you paid us plus a $500 credit</strong> toward the next attempt. The terms are in the agreement, with a 120-day window.</span>
           </div>
           <div class="mm-keep-card">
             <span class="mm-keep-ico"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></span>
@@ -289,7 +312,7 @@ body{
           </div>
           <div class="mm-keep-card">
             <span class="mm-keep-ico"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></span>
-            <span class="t">We only work with firms whose rules <strong>allow a third party to trade the account</strong> — we confirm that for your firm before anything starts.</span>
+            <span class="t">We only work with firms whose rules <strong>allow a third party to trade the account</strong>. We confirm that for your firm before anything starts.</span>
           </div>
         </div>
 
@@ -321,7 +344,7 @@ body{
            removed because applying costs nothing. -->
       <a href="/meta#apply" class="mm-btn mm-btn-lg mm-btn-full" rel="noopener" onclick="window.fbq&&fbq('track','AddToCart',{content_name:'Management application'});window.gtag&&gtag('event','add_to_cart',{items:[{item_name:'Management application'}]})">Apply for management</a>
       <p class="mm-cta-fine">Nothing to pay to apply. Our 30% is charged only after a real payout. We confirm with your prop firm that third-party management is allowed before we start.</p>
-      <p class="mm-cta-fine">Not ready to apply? <a href="https://t.me/forexpassingadmin" rel="noopener" style="color:var(--teal);font-weight:700">Message us on Telegram</a> — ask anything, no application needed.</p>
+      <p class="mm-cta-fine">Not ready to apply? <a href="https://t.me/forexpassingadmin" rel="noopener" style="color:var(--teal);font-weight:700">Message us on Telegram</a>, ask anything, no application needed.</p>
     </div>
   </div>
 </section>
@@ -365,7 +388,7 @@ body{
 <!-- generated by bin/inject-footer.mjs from bin/footer.html — edit that file, not this -->
 <style>
   .fp-f{background:#0c1411;color:#e6efea;padding:60px 24px 40px;
-    font:14px/1.6 'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    font:14px/1.6 'Inter','Inter Fallback',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
     -webkit-font-smoothing:antialiased}
   .fp-f *{box-sizing:border-box}
   .fp-f-in{max-width:1080px;margin:0 auto}
@@ -389,11 +412,11 @@ body{
   <div class="fp-f-in">
     <div class="fp-f-top">
       <div class="fp-f-brand">
-        <a href="/" class="fp-f-logo" aria-label="Forex Passing — home">
+        <a href="/" class="fp-f-logo" aria-label="Forex Passing, home">
           <img src="/logo-light.svg" alt="Forex Passing" />
         </a>
         <p class="fp-f-tagline">
-          Forex Passing — we pass prop firm evaluations and manage funded accounts for our clients,
+          Forex Passing. We pass prop firm evaluations and manage funded accounts for our clients,
           under a written agreement. You keep the account and 70% of every payout.
         </p>
       </div>

@@ -59,7 +59,7 @@ export type RiskProfile = {
 export const STARTING_BALANCE = 100000
 
 const LABELS: Record<string, { label: string; blurb: string }> = {
-  low: { label: 'Low risk', blurb: 'Smallest size, tightest limits — the setting most funded accounts run on.' },
+  low: { label: 'Low risk', blurb: 'Smallest size, tightest limits. The setting most funded accounts run on.' },
   balanced: { label: 'Balanced', blurb: 'The default. What the performance widget on this site has always shown.' },
   scaling: { label: 'Scaling route', blurb: 'Starts small and steps size up as the account grows.' },
   high: { label: 'High risk', blurb: 'More size, more losing weeks, deeper drawdowns. Not for every account.' },

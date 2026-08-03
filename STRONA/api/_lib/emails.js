@@ -161,7 +161,7 @@ export function qualifiedEmail({ name }) {
       What happens next
     </div>
 
-    ${step(1, 'Message us on Telegram', 'Onboarding happens there. Bring any questions — we answer them before anything is signed.')}
+    ${step(1, 'Message us on Telegram', 'Onboarding happens there. Bring any questions and we answer them before anything is signed.')}
     ${step(2, 'We check your firm&rsquo;s rules', 'Before we touch anything we confirm the firm allows a third party to trade the account. If it does not, we say so.')}
     ${step(3, 'Agreement, then we trade', 'Risk limits and the split go in writing first. You keep 70% of every payout; we invoice 30% only once the money has reached you.', true)}
 
@@ -185,7 +185,7 @@ export function qualifiedEmail({ name }) {
     'evaluation and manage the funded account on your behalf.',
     '',
     'WHAT HAPPENS NEXT',
-    '1. Message us on Telegram — onboarding happens there.',
+    '1. Message us on Telegram. Onboarding happens there.',
     "2. We check your firm's rules before we touch anything.",
     '3. Agreement in writing, then we trade. You keep 70% of every payout;',
     '   we invoice 30% only once the money has reached you.',
@@ -222,7 +222,7 @@ export function notQualifiedEmail({ name }) {
 
     <p style="margin:0 0 30px;color:${SUBTLE};font-size:17px;line-height:1.55;">
       Based on your answers we are not taking this on right now. That is not a judgement on you as a
-      trader — it usually comes down to timing, or to the account not being ready yet. We would
+      trader. It usually comes down to timing, or to the account not being ready yet. We would
       rather say so than take your time.
     </p>
 
@@ -232,14 +232,14 @@ export function notQualifiedEmail({ name }) {
       What usually changes the answer
     </div>
 
-    ${step('—', 'You can fund an evaluation comfortably', 'Without stretching yourself or using money you need elsewhere.')}
-    ${step('—', 'Your prop firm permits third-party trading', 'Some allow it under a written arrangement; others void results outright.')}
-    ${step('—', 'You want to start in the next few weeks', 'Rather than at some undecided point later on.', true)}
+    ${step('•', 'You can fund an evaluation comfortably', 'Without stretching yourself or using money you need elsewhere.')}
+    ${step('•', 'Your prop firm permits third-party trading', 'Some allow it under a written arrangement; others void results outright.')}
+    ${step('•', 'You want to start in the next few weeks', 'Rather than at some undecided point later on.', true)}
 
     ${hairline(30)}
 
     <p style="margin:0 0 24px;color:${SUBTLE};font-size:17px;line-height:1.55;">
-      If any of that changes, apply again or just message us — we will look at it with you. No hard
+      If any of that changes, apply again or just message us and we will look at it with you. No hard
       feelings and no queue to rejoin.
     </p>
 
@@ -256,7 +256,7 @@ export function notQualifiedEmail({ name }) {
     'Thank you for taking the time to fill in the application.',
     '',
     'Based on your answers we are not taking this on right now. That is not a',
-    'judgement on you as a trader — it usually comes down to timing, or to the',
+    'judgement on you as a trader. It usually comes down to timing, or to the',
     'account not being ready yet. We would rather say so than take your time.',
     '',
     'WHAT USUALLY CHANGES THE ANSWER',
@@ -296,7 +296,7 @@ export function notQualifiedEmail({ name }) {
 export async function sendEmail({ to, subject, html, text }) {
   const key = process.env.RESEND_API_KEY;
   if (!key) {
-    console.warn('[email] RESEND_API_KEY not set — skipping', subject);
+    console.warn('[email] RESEND_API_KEY not set, skipping', subject);
     return false;
   }
 

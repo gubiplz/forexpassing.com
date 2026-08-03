@@ -6,11 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#ffffff" />
   <meta name="robots" content="noindex,nofollow" />
-  <title>Application received — what happens next · Forex Passing</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-
+  <title>Application received · What happens next · Forex Passing</title>
   <!-- Google tag (gtag.js) — GA4 (live). A lead event fires below; no purchase happens here. -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-SP9H8Q95C1"></script>
   <script>
@@ -38,6 +34,32 @@
   /></noscript>
   <!-- End Meta Pixel Code -->
 
+  <!-- Type served from our own origin. Metric-matched stand-ins keep the first
+       paint the same size as the real face, so the swap does not move the page. -->
+  <link rel="preload" as="font" type="font/woff2" href="/fonts/anton-latin.woff2" crossorigin />
+  <link rel="preload" as="font" type="font/woff2" href="/fonts/inter-latin.woff2" crossorigin />
+  <style>
+    @font-face{font-family:'Anton';font-style:normal;font-weight:400;font-display:swap;
+      src:url('/fonts/anton-latin.woff2') format('woff2')}
+    @font-face{font-family:'Anton';font-style:normal;font-weight:400;font-display:swap;
+      src:url('/fonts/anton-latin-ext.woff2') format('woff2');
+      unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,
+        U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,
+        U+2C60-2C7F,U+A720-A7FF}
+    @font-face{font-family:'Inter';font-style:normal;font-weight:400 800;font-display:swap;
+      src:url('/fonts/inter-latin.woff2') format('woff2')}
+    @font-face{font-family:'Inter';font-style:normal;font-weight:400 800;font-display:swap;
+      src:url('/fonts/inter-latin-ext.woff2') format('woff2');
+      unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,
+        U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,
+        U+2C60-2C7F,U+A720-A7FF}
+    @font-face{font-family:'Anton Fallback';src:local('Impact'),local('Haettenschweiler'),
+      local('Arial Narrow Bold');size-adjust:95.15%;ascent-override:124.01%;
+      descent-override:34.68%;line-gap-override:0%}
+    @font-face{font-family:'Inter Fallback';src:local('Arial'),local('Helvetica Neue'),
+      local('Roboto');size-adjust:106.9%;ascent-override:90.74%;descent-override:22.45%;
+      line-gap-override:0%}
+  </style>
   <style>
     :root {
       --bg: #ffffff; --bg2: #f4f7f5; --line: rgba(15, 30, 22, .10); --line-2: rgba(15, 30, 22, .16);
@@ -47,7 +69,7 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body {
       background: var(--bg); color: var(--txt);
-      font: 16px/1.6 'Inter', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      font: 16px/1.6 'Inter','Inter Fallback',system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
       -webkit-font-smoothing: antialiased;
     }
     body::before {
@@ -81,7 +103,7 @@
       font-size: 11.5px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; margin-bottom: 20px;
     }
     .hero-title {
-      font: 400 clamp(30px, 5vw, 52px)/1.02 'Anton', sans-serif;
+      font: 400 clamp(30px, 5vw, 52px)/1.02 'Anton','Anton Fallback',sans-serif;
       text-transform: uppercase; letter-spacing: .01em; margin: 0 0 16px; max-width: 16ch;
     }
     .hero-title .accent { color: var(--teal); }
@@ -115,7 +137,7 @@
     .kickoff .field span { display: block; font-size: 12px; font-weight: 700; color: var(--txt); margin-bottom: 6px; }
     .kickoff .field input {
       width: 100%; padding: 13px 14px; border-radius: 10px; border: 1px solid var(--line-2);
-      background: #fff; color: var(--txt); font: 15px 'Inter', system-ui, sans-serif;
+      background: #fff; color: var(--txt); font: 15px 'Inter','Inter Fallback',system-ui, sans-serif;
       transition: border-color 150ms ease, box-shadow 150ms ease;
     }
     .kickoff .field input:focus { outline: none; border-color: var(--teal); box-shadow: 0 0 0 3px var(--teal-soft); }
@@ -156,7 +178,7 @@
     /* SECTIONS */
     section.block { margin-top: 60px; }
     .eyebrow { display: block; color: var(--teal-ink); font-size: 11.5px; letter-spacing: .14em; text-transform: uppercase; font-weight: 700; margin-bottom: 12px; }
-    h2 { font: 400 clamp(24px, 3.6vw, 38px)/1.05 'Anton', sans-serif; text-transform: uppercase; letter-spacing: .01em; margin: 0 0 12px; }
+    h2 { font: 400 clamp(24px, 3.6vw, 38px)/1.05 'Anton','Anton Fallback',sans-serif; text-transform: uppercase; letter-spacing: .01em; margin: 0 0 12px; }
     h2 .accent { color: var(--teal); }
     p.sub { color: var(--mut); font-size: 15.5px; max-width: 60ch; margin: 0 0 28px; }
 
@@ -186,7 +208,7 @@
 <body>
   <main>
 
-    <h1 class="sr-only">Application received — what happens next</h1>
+    <h1 class="sr-only">Application received, what happens next</h1>
 
     <!-- HERO -->
     <section class="hero">
@@ -203,7 +225,7 @@
 
       <!-- PRIMARY: onboarding form -->
       <form class="kickoff reveal reveal-4" id="onboard" novalidate>
-        <span class="tag"><span class="dot"></span>Step one — do this now</span>
+        <span class="tag"><span class="dot"></span>Step one, do this now</span>
         <h3>Tell us where to reach you</h3>
         <p>
           Leave your details and <strong>we will message you on Telegram</strong> to book the call:
@@ -229,7 +251,7 @@
           <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.94 4.69 18.5 20.93c-.26 1.16-.95 1.45-1.93.9l-5.32-3.92-2.57 2.47c-.28.28-.52.52-1.07.52l.38-5.42L18.06 5.5c.43-.38-.09-.6-.67-.22L5.62 12.66.45 11.06c-1.12-.36-1.15-1.13.24-1.68L20.49 3.07c.94-.36 1.76.22 1.45 1.62z"/></svg>
           <span class="lbl">Confirm my details</span>
         </button>
-        <div class="handle">No spam — we only use this to reach you about your application.</div>
+        <div class="handle">No spam. We only use this to reach you about your application.</div>
         <p class="form-err" id="onboard-err" hidden></p>
       </form>
 
@@ -315,7 +337,7 @@
     <section class="block">
       <span class="eyebrow">Anything else</span>
       <h2>Questions? <span class="accent">Just email.</span></h2>
-      <p class="sub">Your application, the agreement, the split, or which firms we can work with — write to us, or reply in the Telegram thread once we open it.</p>
+      <p class="sub">Your application, the agreement, the split, or which firms we can work with. Write to us, or reply in the Telegram thread once we open it.</p>
 
       <a class="support-card" href="mailto:contact@forexpassing.com">
         <div class="icon">
@@ -382,7 +404,7 @@
             if (doneEl) doneEl.hidden = false;
           })
           .catch(function() {
-            if (errEl) { errEl.textContent = 'Something went wrong — please try again, or email contact@forexpassing.com.'; errEl.hidden = false; }
+            if (errEl) { errEl.textContent = 'Something went wrong. Please try again, or email contact@forexpassing.com.'; errEl.hidden = false; }
             if (btn) btn.disabled = false;
             if (lbl) lbl.textContent = 'Confirm my details';
           });
@@ -393,7 +415,7 @@
 <!-- generated by bin/inject-footer.mjs from bin/footer.html — edit that file, not this -->
 <style>
   .fp-f{background:#0c1411;color:#e6efea;padding:60px 24px 40px;
-    font:14px/1.6 'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    font:14px/1.6 'Inter','Inter Fallback',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
     -webkit-font-smoothing:antialiased}
   .fp-f *{box-sizing:border-box}
   .fp-f-in{max-width:1080px;margin:0 auto}
@@ -417,11 +439,11 @@
   <div class="fp-f-in">
     <div class="fp-f-top">
       <div class="fp-f-brand">
-        <a href="/" class="fp-f-logo" aria-label="Forex Passing — home">
+        <a href="/" class="fp-f-logo" aria-label="Forex Passing, home">
           <img src="/logo-light.svg" alt="Forex Passing" />
         </a>
         <p class="fp-f-tagline">
-          Forex Passing — we pass prop firm evaluations and manage funded accounts for our clients,
+          Forex Passing. We pass prop firm evaluations and manage funded accounts for our clients,
           under a written agreement. You keep the account and 70% of every payout.
         </p>
       </div>

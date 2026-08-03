@@ -65,7 +65,7 @@ export function PartnerPortal() {
           <span className="mm-eyebrow mm-eyebrow-teal mm-eyebrow-c">Partner programme · Open</span>
           <h1 className="mm-sub-h1">Partner portal</h1>
           <p className="mm-lead mm-center">
-            Your tracked link, your referrals and your tier progress — in one place.
+            Your tracked link, your referrals and your tier progress, all in one place.
           </p>
         </div>
       </header>
@@ -145,7 +145,7 @@ function AuthCard() {
       if (created) track('PartnerSignup', 'sign_up', { method: 'password' }, true)
       else setError('Account created, but the partner profile could not be saved. Try reloading.')
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Something went wrong — try again.')
+      setError(err instanceof Error ? err.message : 'Something went wrong. Try again.')
     } finally {
       setBusy(false)
     }
@@ -227,7 +227,7 @@ function AuthCard() {
         {error && <p className="mm-form-err" role="alert">{error}</p>}
         {notice && <p className="mm-form-note" role="status">{notice}</p>}
         <p className="mm-form-fine">
-          Nothing is charged. A partner account only tracks referrals — it is not a trading account.
+          Nothing is charged. A partner account only tracks referrals. It is not a trading account.
         </p>
       </form>
     </div>
@@ -334,7 +334,7 @@ function Dashboard() {
           <span className="mm-pcard-note">
             {stats.next_tier
               ? `${stats.to_next_tier} more confirmed referral${stats.to_next_tier === 1 ? '' : 's'} to unlock ${stats.next_tier}.`
-              : 'Top tier reached — everything below stays yours.'}
+              : 'Top tier reached. Everything below stays yours.'}
           </span>
         </div>
       </div>
@@ -356,7 +356,7 @@ function Dashboard() {
               {referrals.map((r) => (
                 <tr key={r.id}>
                   <td>{r.email}</td>
-                  <td>{r.account_size || '—'}</td>
+                  <td>{r.account_size || '–'}</td>
                   <td><span className={`mm-pill mm-pill-${r.status}`}>{r.status}</span></td>
                   <td>{r.created_at.slice(0, 10)}</td>
                 </tr>
@@ -366,7 +366,7 @@ function Dashboard() {
         )}
         <p className="mm-form-fine" style={{ textAlign: 'left' }}>
           A referral turns <strong>confirmed</strong> once the prop firm has actually released a
-          payout to them — we set that by hand, so the number always matches money that moved.
+          payout to them. We set that by hand, so the number always matches money that moved.
         </p>
       </div>
     </div>
@@ -456,7 +456,7 @@ function AddReferral({ onAdded }: { onAdded: () => Promise<void> }) {
         <input
           className="mm-input"
           type="text"
-          placeholder="Account size — e.g. $50K"
+          placeholder="Account size, e.g. $50K"
           value={size}
           onChange={(e) => setSize(e.target.value)}
           aria-label="Account size"

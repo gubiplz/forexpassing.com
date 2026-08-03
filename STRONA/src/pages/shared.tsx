@@ -35,7 +35,7 @@ export const REVIEWS = [
   { name: 'Mike R.', text: 'Three failed evaluations before this. They passed the fourth one in nine days while I was at work. Weird feeling, but the payout was real.', ago: '4 days ago' },
   { name: 'Sarah L.', text: 'What sold me was the rule check. They told me my first firm banned managed accounts and refused to touch it. Nobody else said that.', ago: '1 week ago' },
   { name: 'Carlos D.', text: 'I kept the login the whole time, so I watched every position. No mystery, no “trust us”. Split hit my account two days after the payout.', ago: '1 week ago' },
-  { name: 'Dave K.', text: 'First payout cleared last month. I would have blown that account myself by week two — I know because I did it twice already.', ago: '2 weeks ago' },
+  { name: 'Dave K.', text: 'First payout cleared last month. I would have blown that account myself by week two. I know because I did it twice already.', ago: '2 weeks ago' },
   { name: 'Priya M.', text: 'The agreement was the part I actually cared about. Risk limits and the exit written down before anyone logged in.', ago: '2 weeks ago' },
   { name: 'James T.', text: 'Was convinced this was a scam. Asked a lot of annoying questions, got straight answers, started small. Still here.', ago: '3 days ago' },
   { name: 'Elena V.', text: 'Funded account has been running two months without me touching it. That is the whole review, honestly.', ago: '5 days ago' },
@@ -94,7 +94,7 @@ export function TermsCard() {
         </div>
       </dl>
       <p className="mm-tcard-foot">
-        Trading carries risk. An evaluation can fail — no outcome is guaranteed.
+        Trading carries risk. An evaluation can fail and no outcome is guaranteed.
       </p>
     </div>
   )
@@ -192,7 +192,7 @@ export function SiteFooter({
     return (
       <footer className={`mm-footer mm-footer-${variant}`}>
         <div className="mm-wrap mm-footer-center">
-          <a href={home} className="mm-footer-logo" aria-label="Forex Passing — home">
+          <a href={home} className="mm-footer-logo" aria-label="Forex Passing, home">
             <img className="mm-logo-img mm-logo-img-sm" src="/logo-light.svg" alt="Forex Passing" />
           </a>
           <nav className="mm-footer-nav" aria-label="Footer">
@@ -210,11 +210,11 @@ export function SiteFooter({
       <div className="mm-wrap">
         <div className="mm-footer-top">
           <div className="mm-footer-brand">
-            <a href="/" className="mm-footer-logo" aria-label="Forex Passing — home">
+            <a href="/" className="mm-footer-logo" aria-label="Forex Passing, home">
               <img className="mm-logo-img mm-logo-img-sm" src="/logo-light.svg" alt="Forex Passing" />
             </a>
             <p className="mm-footer-tagline">
-              Forex Passing — we pass prop firm evaluations and manage funded accounts for our
+              Forex Passing. We pass prop firm evaluations and manage funded accounts for our
               clients, under a written agreement. You keep the account and {CLIENT_SPLIT} of every
               payout.
             </p>
@@ -484,7 +484,7 @@ export function PerformanceWidget() {
       </div>
 
       <div className="mm-fx-panel">
-        <div className="mm-fx-panel-title">Growth <span>· interactive — hover the curve</span></div>
+        <div className="mm-fx-panel-title">Growth <span>· interactive, hover the curve</span></div>
         <div className="mm-eq-wrap"><EquityCurve /></div>
       </div>
 
@@ -567,7 +567,7 @@ export function CertCard({ cert }: { cert: PayoutCert }) {
     <figure
       className={`mm-certcard${cert.payout ? ' is-payout' : ''}`}
       role="listitem"
-      aria-label={`${cert.eyebrow} certificate — ${cert.trader} — ${cert.amount}`}
+      aria-label={`${cert.eyebrow} certificate, ${cert.trader}, ${cert.amount}`}
     >
       <div className="mm-certinner">
         <div className="mm-cert-logo">
@@ -612,7 +612,7 @@ html{scroll-behavior:smooth}
   --txt:#10231a; --mut:#5b675f; --teal:#16a34a; --red:#ef4444;
   --ease:cubic-bezier(.22,.61,.36,1);
   background:var(--bg); color:var(--txt);
-  font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  font-family:'Inter','Inter Fallback',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
   line-height:1.6; -webkit-font-smoothing:antialiased; overflow-x:hidden;
   padding-top:42px; padding-bottom:calc(70px + env(safe-area-inset-bottom));
 }
@@ -642,23 +642,26 @@ html{scroll-behavior:smooth}
 .mm-logo-img-sm{height:36px}
 
 /* BUTTONS */
+/* Every :hover in this sheet is gated on a real pointer. A touch leaves the
+   hover state stuck on whatever was last tapped, which on the questionnaire
+   made the next step's first answer look already chosen. */
 .mm-btn{display:inline-block;background:var(--teal);color:#fff;font-weight:700;text-decoration:none;
   border-radius:10px;padding:14px 22px;font-size:15px;border:1px solid var(--teal);
   transition:transform .22s var(--ease), box-shadow .22s var(--ease);box-shadow:0 8px 30px rgba(22,163,74,.18)}
-.mm-btn:hover{transform:translateY(-2px);box-shadow:0 14px 40px rgba(22,163,74,.30)}
+@media (hover:hover) and (pointer:fine){.mm-btn:hover{transform:translateY(-2px);box-shadow:0 14px 40px rgba(22,163,74,.30)}}
 .mm-btn:active{transform:translateY(0)}
 .mm-btn-sm{padding:9px 16px;font-size:13px;border-radius:8px}
 .mm-btn-lg{padding:17px 28px;font-size:16px}
 .mm-btn-full{display:block;text-align:center;width:100%}
 .mm-btn-ghost{background:transparent;color:var(--txt);border:1px solid var(--line);box-shadow:none}
-.mm-btn-ghost:hover{border-color:var(--teal);color:var(--teal);box-shadow:none}
+@media (hover:hover) and (pointer:fine){.mm-btn-ghost:hover{border-color:var(--teal);color:var(--teal);box-shadow:none}}
 
 /* HEADINGS */
-.mm-h1{font-family:'Anton',sans-serif;font-weight:400;font-size:clamp(40px,6.4vw,80px);
+.mm-h1{font-family:'Anton','Anton Fallback',sans-serif;font-weight:400;font-size:clamp(40px,6.4vw,80px);
   line-height:.95;letter-spacing:.005em;text-transform:uppercase;margin:18px 0 22px}
-.mm-h2{font-family:'Anton',sans-serif;font-weight:400;font-size:clamp(30px,5vw,54px);
+.mm-h2{font-family:'Anton','Anton Fallback',sans-serif;font-weight:400;font-size:clamp(30px,5vw,54px);
   line-height:1.02;text-transform:uppercase;letter-spacing:.01em;margin-bottom:18px}
-.mm-h3{font-family:'Anton',sans-serif;font-weight:400;font-size:26px;text-transform:uppercase;margin-bottom:12px}
+.mm-h3{font-family:'Anton','Anton Fallback',sans-serif;font-weight:400;font-size:26px;text-transform:uppercase;margin-bottom:12px}
 .mm-center{text-align:center;margin-left:auto;margin-right:auto}
 .mm-teal{color:var(--teal)}
 .mm-red{color:var(--red)}
@@ -693,20 +696,20 @@ html{scroll-behavior:smooth}
 .mm-tcard{width:100%;max-width:390px;background:#0c1512;color:#e8f0ec;border:1px solid rgba(255,255,255,.08);
   border-radius:18px;padding:22px;box-shadow:0 24px 60px rgba(8,20,15,.45);text-align:left}
 .mm-tcard-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
-.mm-tcard-title{font-family:'Anton',sans-serif;font-size:16px;letter-spacing:.06em;color:#fff}
+.mm-tcard-title{font-family:'Anton','Anton Fallback',sans-serif;font-size:16px;letter-spacing:.06em;color:#fff}
 .mm-tcard-rows{display:grid;gap:2px}
 .mm-tcard-row{display:flex;align-items:baseline;justify-content:space-between;gap:14px;
   padding:10px 0;border-bottom:1px solid rgba(255,255,255,.07)}
 .mm-tcard-row:last-child{border-bottom:none}
 .mm-tcard-row dt{font-size:13px;color:#9fb0a8}
 .mm-tcard-row dd{font-size:14px;font-weight:700;color:#e8f0ec;text-align:right}
-.mm-tcard-row dd.mm-tcard-strong{font-family:'Anton',sans-serif;font-weight:400;font-size:22px;color:#39d98a}
+.mm-tcard-row dd.mm-tcard-strong{font-family:'Anton','Anton Fallback',sans-serif;font-weight:400;font-size:22px;color:#39d98a}
 .mm-tcard-foot{font-size:11px;color:#8a988f;margin-top:14px;line-height:1.5}
 @keyframes mm-pulse{0%{box-shadow:0 0 0 0 rgba(57,217,138,.55)}70%{box-shadow:0 0 0 8px rgba(57,217,138,0)}100%{box-shadow:0 0 0 0 rgba(57,217,138,0)}}
 
 /* STAT HOOK */
 .mm-stathook{background:#0c1512;color:#fff;text-align:center;padding:56px 0}
-.mm-stathook-big{font-family:'Anton',sans-serif;font-size:clamp(64px,14vw,150px);line-height:.9;color:#ff6b5d}
+.mm-stathook-big{font-family:'Anton','Anton Fallback',sans-serif;font-size:clamp(64px,14vw,150px);line-height:.9;color:#ff6b5d}
 .mm-stathook-text{font-size:clamp(16px,2.4vw,22px);font-weight:700;max-width:680px;margin:14px auto 0;color:#e8f0ec}
 
 /* SECTIONS */
@@ -717,7 +720,7 @@ html{scroll-behavior:smooth}
   max-width:860px;margin:34px auto 0}
 .mm-pain-step{display:flex;align-items:center;gap:14px;background:#fff;border:1px solid var(--line);
   border-radius:12px;padding:15px 18px}
-.mm-pain-n{flex:0 0 auto;font-family:'Anton',sans-serif;font-weight:400;font-size:20px;line-height:1;
+.mm-pain-n{flex:0 0 auto;font-family:'Anton','Anton Fallback',sans-serif;font-weight:400;font-size:20px;line-height:1;
   color:var(--teal);letter-spacing:.02em}
 .mm-pain-t{font-size:15px;font-weight:600;line-height:1.4}
 .mm-pain-step-last{border-color:rgba(239,68,68,.4);background:rgba(239,68,68,.05)}
@@ -730,7 +733,7 @@ html{scroll-behavior:smooth}
 .mm-spiral{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:34px 0 26px}
 @media(max-width:760px){.mm-spiral{grid-template-columns:repeat(2,1fr)}}
 .mm-step{border:1px solid var(--line);border-radius:12px;padding:18px 16px;background:rgba(0,0,0,.02)}
-.mm-step-n{display:block;font-family:'Anton',sans-serif;font-size:22px;color:var(--mut);opacity:.5}
+.mm-step-n{display:block;font-family:'Anton','Anton Fallback',sans-serif;font-size:22px;color:var(--mut);opacity:.5}
 .mm-step-t{display:block;font-weight:700;font-size:15px;margin-top:6px}
 .mm-step-hot{border-color:rgba(255,90,77,.35);background:rgba(255,90,77,.06)}
 .mm-step-hot .mm-step-t{color:var(--red)}
@@ -740,7 +743,7 @@ html{scroll-behavior:smooth}
 .mm-states{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:0 0 24px}
 @media(max-width:760px){.mm-states{grid-template-columns:1fr}}
 .mm-state{border-radius:14px;padding:26px 22px;border:1px solid var(--line);background:rgba(0,0,0,.02)}
-.mm-state-label{font-family:'Anton',sans-serif;font-size:30px;letter-spacing:.02em}
+.mm-state-label{font-family:'Anton','Anton Fallback',sans-serif;font-size:30px;letter-spacing:.02em}
 .mm-state-sub{display:block;color:var(--mut);font-size:14px;margin-top:8px}
 .mm-state-go{border-color:rgba(22,163,74,.4)}
 .mm-state-go .mm-state-label{color:var(--teal)}
@@ -752,7 +755,7 @@ html{scroll-behavior:smooth}
 
 /* BAND */
 .mm-band{background:var(--teal);color:#fff;text-align:center;padding:54px 0}
-.mm-band-text{font-family:'Anton',sans-serif;font-size:clamp(34px,6vw,66px);text-transform:uppercase;letter-spacing:.01em;line-height:1}
+.mm-band-text{font-family:'Anton','Anton Fallback',sans-serif;font-size:clamp(34px,6vw,66px);text-transform:uppercase;letter-spacing:.01em;line-height:1}
 .mm-band-sub{font-weight:700;font-size:clamp(15px,2vw,18px);margin-top:12px;opacity:.85}
 
 /* SYSTEM / VALUE STACK */
@@ -764,7 +767,7 @@ html{scroll-behavior:smooth}
 .mm-sys-t{display:block;font-weight:800;font-size:17px;margin-bottom:6px}
 .mm-sys-d{display:block;color:var(--mut);font-size:14px;line-height:1.55}
 .mm-sys-total{display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;border:1px dashed rgba(22,163,74,.4);border-radius:14px;padding:18px 24px;font-weight:700;text-align:center}
-.mm-sys-total-now{font-family:'Anton',sans-serif;font-size:20px;color:var(--teal);line-height:1.3}
+.mm-sys-total-now{font-family:'Anton','Anton Fallback',sans-serif;font-size:20px;color:var(--teal);line-height:1.3}
 .mm-guarantee-fine{font-size:13px;color:var(--mut);line-height:1.6;max-width:720px;margin:14px auto 0;text-align:center}
 
 /* WHO IT'S FOR */
@@ -772,12 +775,12 @@ html{scroll-behavior:smooth}
 .mm-whofor-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:30px}
 @media(max-width:760px){.mm-whofor-grid{grid-template-columns:1fr}}
 .mm-whofor-card{border:1px solid var(--line);border-radius:14px;padding:24px;background:#fff}
-.mm-whofor-t{display:block;font-family:'Anton',sans-serif;font-size:20px;text-transform:uppercase;margin-bottom:8px}
+.mm-whofor-t{display:block;font-family:'Anton','Anton Fallback',sans-serif;font-size:20px;text-transform:uppercase;margin-bottom:8px}
 .mm-whofor-d{display:block;color:var(--mut);font-size:14px;line-height:1.6}
 
 /* PAYOUTS / REVIEWS SCROLLER (drag + auto-advance) */
 .mm-payouts{overflow:hidden}
-.mm-scroller{overflow:hidden;touch-action:pan-y;cursor:grab;
+.mm-scroller{overflow:hidden;overscroll-behavior-x:contain;touch-action:pan-y;cursor:grab;
   user-select:none;-webkit-user-select:none;
   -webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);
   mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
@@ -907,6 +910,8 @@ html{scroll-behavior:smooth}
 .mm-field label{font-size:13px;font-weight:600;color:var(--txt)}
 .mm-field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 @media(max-width:520px){.mm-field-row{grid-template-columns:1fr}}
+/* 16px on touch is not a style choice: below it, iOS Safari zooms the page
+   on focus and the whole layout becomes pannable sideways. */
 .mm-input,.mm-textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:13px 14px;
   font-size:15px;font-family:inherit;background:#fff;color:var(--txt);transition:border-color .15s,box-shadow .15s}
 .mm-input:focus,.mm-textarea:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(22,163,74,.15)}
@@ -916,14 +921,14 @@ html{scroll-behavior:smooth}
 .mm-form-btn:disabled{opacity:.6;cursor:default;transform:none;box-shadow:none}
 .mm-link-btn{background:none;border:none;font-family:inherit;font-size:14px;font-weight:600;color:var(--mut);
   cursor:pointer;padding:6px 2px;text-decoration:underline;text-underline-offset:3px}
-.mm-link-btn:hover{color:var(--teal)}
+@media (hover:hover) and (pointer:fine){.mm-link-btn:hover{color:var(--teal)}}
 .mm-hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none}
 .mm-form-err{font-size:13px;color:#c0392b;margin-top:2px}
 .mm-form-fine{font-size:12px;color:var(--mut);margin-top:2px;line-height:1.5}
 .mm-form-ok{display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;
   border:1px solid rgba(22,163,74,.35);background:rgba(22,163,74,.05);border-radius:16px;padding:32px 24px}
 .mm-form-ok-ico{width:46px;height:46px;border-radius:50%;background:var(--teal);color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800}
-.mm-form-ok-t{font-family:'Anton',sans-serif;font-size:22px;text-transform:uppercase;letter-spacing:.02em}
+.mm-form-ok-t{font-family:'Anton','Anton Fallback',sans-serif;font-size:22px;text-transform:uppercase;letter-spacing:.02em}
 .mm-form-ok-d{color:var(--mut);font-size:14px;line-height:1.6;max-width:420px}
 .mm-form-ok-d a{color:var(--teal)}
 
@@ -944,10 +949,10 @@ html{scroll-behavior:smooth}
 .mm-footer-brand{display:flex;flex-direction:column;align-items:flex-start;gap:16px}
 .mm-footer-tagline{font-size:13.5px;line-height:1.7;color:rgba(230,239,234,.56);max-width:380px}
 .mm-footer-col{display:flex;flex-direction:column;gap:11px}
-.mm-footer-h{font-family:'Anton',sans-serif;font-weight:400;font-size:15px;letter-spacing:.06em;
+.mm-footer-h{font-family:'Anton','Anton Fallback',sans-serif;font-weight:400;font-size:15px;letter-spacing:.06em;
   text-transform:uppercase;color:#fff;margin-bottom:5px}
 .mm-footer-col a{color:rgba(230,239,234,.6);text-decoration:none;font-size:14px;transition:color .15s}
-.mm-footer-col a:hover{color:#4ade80}
+@media (hover:hover) and (pointer:fine){.mm-footer-col a:hover{color:#4ade80}}
 .mm-footer-rule{border:0;border-top:1px solid rgba(230,239,234,.1);margin:44px 0 26px}
 .mm-footer-copy{font-size:12px;color:rgba(230,239,234,.34)}
 .mm-footer-copy-center{text-align:center;margin:0}
@@ -961,7 +966,7 @@ html{scroll-behavior:smooth}
 .mm-footer-center{display:flex;flex-direction:column;align-items:center;text-align:center;gap:22px}
 .mm-footer-nav{display:flex;gap:26px;flex-wrap:wrap;justify-content:center}
 .mm-footer-nav a{color:rgba(230,239,234,.6);text-decoration:none;font-size:14px;transition:color .15s}
-.mm-footer-nav a:hover{color:#4ade80}
+@media (hover:hover) and (pointer:fine){.mm-footer-nav a:hover{color:#4ade80}}
 
 @media (max-width:860px){
   .mm-footer-top{grid-template-columns:1fr 1fr;gap:32px}
@@ -975,7 +980,7 @@ html{scroll-behavior:smooth}
 .mm-footer-center{display:flex;flex-direction:column;align-items:center;text-align:center;gap:16px}
 .mm-footer-nav{display:flex;gap:22px;flex-wrap:wrap;justify-content:center}
 .mm-footer-nav a{color:var(--mut);text-decoration:none;font-size:14px;transition:color .15s}
-.mm-footer-nav a:hover{color:var(--teal)}
+@media (hover:hover) and (pointer:fine){.mm-footer-nav a:hover{color:var(--teal)}}
 
 /* VERIFIED PERFORMANCE — myfxbook-style light widget */
 .mm-perf{background:var(--bg2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
@@ -1017,7 +1022,7 @@ html{scroll-behavior:smooth}
 .mm-bar-track{width:100%;max-width:46px;flex:1;display:flex;align-items:flex-end}
 .mm-bar-fill{width:100%;border-radius:5px 5px 0 0;min-height:4px;transition:height .6s ease}
 .mm-bar-m{font-size:11px;color:#8a948e;margin-top:8px}
-.mm-fx-table-wrap{overflow-x:auto}
+.mm-fx-table-wrap{overflow-x:auto;overscroll-behavior-x:contain}
 .mm-fx-table{width:100%;border-collapse:collapse;font-size:13px}
 .mm-fx-table th{text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:#9aa49e;padding:8px 10px;border-bottom:1px solid #eceeed}
 .mm-fx-table td{padding:9px 10px;border-bottom:1px solid #f4f6f5;color:#2b3a33;white-space:nowrap}
@@ -1051,7 +1056,7 @@ html{scroll-behavior:smooth}
 .mm-letter{background:var(--bg);border-top:1px solid var(--line)}
 .mm-letter-body{max-width:600px;margin:0 auto;font-size:16px;line-height:1.62;color:var(--txt);text-align:left}
 .mm-letter-body p{margin:0 0 1.35em}
-.mm-letter-lead{font-family:'Anton',sans-serif;font-weight:400;font-size:clamp(30px,4.4vw,42px);
+.mm-letter-lead{font-family:'Anton','Anton Fallback',sans-serif;font-weight:400;font-size:clamp(30px,4.4vw,42px);
   line-height:1.05;text-transform:none;letter-spacing:-.01em;text-align:center;margin:0 0 2em}
 .mm-letter-punch{font-weight:800;font-size:17.5px;line-height:1.5}
 .mm-letter-aside{font-style:italic;color:var(--mut)}
@@ -1073,7 +1078,7 @@ html{scroll-behavior:smooth}
   padding:18px 16px;padding-bottom:max(18px,env(safe-area-inset-bottom));
   letter-spacing:.01em;box-shadow:0 -8px 30px rgba(0,0,0,.45);
   transition:transform .3s cubic-bezier(.22,.61,.36,1),opacity .3s cubic-bezier(.22,.61,.36,1)}
-.mm-sticky-cta:hover{background:#15803d}
+@media (hover:hover) and (pointer:fine){.mm-sticky-cta:hover{background:#15803d}}
 .mm-sticky-cta.is-hidden{transform:translateY(130%);opacity:0;pointer-events:none}
 
 @media (prefers-reduced-motion: reduce){
@@ -1099,13 +1104,44 @@ html{scroll-behavior:smooth}
 .mm-vsl-head{padding:12px 18px 14px;text-align:center;color:#fff}
 .mm-vsl-badge{display:block;font-size:11px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;opacity:.85}
 .mm-vsl-title{display:block;font-size:17px;font-weight:800;margin-top:3px}
-.mm-vsl-frame{position:relative;aspect-ratio:16/9;background:#000}
-.mm-vsl-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+/* The blurred still is set as an inline background by the component, since the
+   media id is not known to this sheet. It shows through until the custom
+   element upgrades, so the slot is never a black hole. */
+.mm-vsl-frame{position:relative;aspect-ratio:16/9;background:#000 center/cover no-repeat}
+/* Until player.js defines the element it has no size and the swatch behind it
+   shows through; once defined it covers the frame. Same trick as /watch. */
+.mm-vsl-frame wistia-player:not(:defined){display:block;height:100%;filter:blur(5px)}
+.mm-vsl-frame iframe,.mm-vsl-frame wistia-player{position:absolute;inset:0;width:100%;height:100%;border:0}
 .mm-vsl-bar{display:flex;align-items:center;gap:12px;padding:10px 16px 12px;color:#fff}
 .mm-vsl-bar-label{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;white-space:nowrap}
 .mm-vsl-bar-track{flex:1;height:6px;border-radius:99px;background:rgba(255,255,255,.3);overflow:hidden}
 .mm-vsl-bar-fill{height:100%;background:#fff;border-radius:99px;transition:width .4s linear}
 .mm-vsl-bar-pct{font-size:12px;font-weight:800;min-width:34px;text-align:right}
+
+/* ---- client video testimonials (data/testimonials.ts) ------------------- */
+.mm-testi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:20px;margin-top:38px}
+.mm-testi-card{margin:0;display:flex;flex-direction:column;gap:14px}
+/* Portrait, because the clips are phone recordings. */
+.mm-testi-video{position:relative;aspect-ratio:9/16;border-radius:14px;overflow:hidden;
+  background:#0d1a13 center/cover no-repeat;display:flex;align-items:center;justify-content:center}
+.mm-testi-video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.mm-testi-play{width:60px;height:60px;border-radius:50%;border:0;cursor:pointer;color:#fff;
+  background:var(--teal);box-shadow:0 10px 30px rgba(0,0,0,.35);display:inline-flex;
+  align-items:center;justify-content:center;transition:transform .18s var(--ease)}
+.mm-testi-play svg{width:26px;height:26px;margin-left:3px}
+/* No clip published yet: the button stays as a marker, not an invitation. */
+.mm-testi-play:disabled{cursor:default;opacity:.55;background:rgba(255,255,255,.22)}
+.mm-testi-body{display:flex;flex-direction:column;gap:7px;background:#fff;border:1px solid var(--line);
+  border-radius:14px;padding:16px 17px;text-align:left}
+.mm-testi-name{font-weight:800;font-size:16px}
+.mm-testi-stars{display:inline-flex;gap:2px}
+.mm-testi-stars svg{width:14px;height:14px;fill:#f5a623}
+.mm-testi-paid{align-self:flex-start;font-size:12px;font-weight:800;letter-spacing:.04em;
+  color:#15803d;background:rgba(22,163,74,.12);border-radius:99px;padding:5px 11px}
+.mm-testi-tags{font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--mut);line-height:1.5}
+.mm-testi-story{font-size:13.5px;color:var(--mut);line-height:1.6}
+@media (hover:hover) and (pointer:fine){.mm-testi-play:not(:disabled):hover{transform:scale(1.08)}}
 
 /* Check rows — "what you keep control of", guarantees */
 .mm-checks{display:flex;flex-direction:column;gap:12px;max-width:760px;margin:32px auto 0}
@@ -1139,13 +1175,13 @@ html{scroll-behavior:smooth}
 .mm-acc-item summary::after{content:"";flex:0 0 10px;width:10px;height:10px;border-right:2px solid var(--mut);
   border-bottom:2px solid var(--mut);transform:rotate(45deg);transition:transform .2s ease;margin-top:-4px}
 .mm-acc-item[open] summary::after{transform:rotate(225deg);margin-top:2px}
-.mm-acc-item summary:hover{color:var(--teal)}
+@media (hover:hover) and (pointer:fine){.mm-acc-item summary:hover{color:var(--teal)}}
 .mm-acc-a{padding:0 22px 20px;font-size:14.5px;color:var(--mut);line-height:1.7}
 
 /* Form preview card — opens the questionnaire */
 .mm-preview{max-width:440px;margin:0 auto;background:#fff;border:1px solid var(--line);border-radius:16px;
   padding:20px;box-shadow:0 22px 54px -32px rgba(0,0,0,.5);text-align:left;transition:border-color .15s}
-.mm-preview:hover{border-color:rgba(22,163,74,.45)}
+@media (hover:hover) and (pointer:fine){.mm-preview:hover{border-color:rgba(22,163,74,.45)}}
 .mm-preview-label{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--mut);margin-bottom:12px}
 .mm-preview-dot{width:8px;height:8px;border-radius:50%;background:var(--teal)}
 .mm-preview-input{width:100%;border:1px solid var(--line);border-radius:10px;padding:13px 14px;font-size:15px;
@@ -1153,7 +1189,7 @@ html{scroll-behavior:smooth}
   /* It opens the questionnaire instead of taking text, so it points like a button. */
   cursor:pointer;caret-color:transparent}
 .mm-preview-input:focus{outline:none;border-color:var(--teal)}
-.mm-preview-input:hover{border-color:var(--teal)}
+@media (hover:hover) and (pointer:fine){.mm-preview-input:hover{border-color:var(--teal)}}
 
 /* Repeated CTA under each section */
 .mm-cta-center{display:flex;justify-content:center;margin:36px 0 0}
@@ -1173,14 +1209,21 @@ html{scroll-behavior:smooth}
    carry the palette itself, or every var(--txt)/var(--mut) inside it resolves
    to nothing and the panel renders as pale ghost text. */
 .mm-modal{--bg:#ffffff; --bg2:#f4f7f5; --line:rgba(15,30,22,.10);
+  /* index.css draws :focus-visible with --accent, which is the dark theme's
+     neon green. Unset here it leaks into a white panel. */
+  --accent:#16a34a;
   --txt:#10231a; --mut:#5b675f; --teal:#16a34a; --red:#ef4444;
   --ease:cubic-bezier(.22,.61,.36,1);
   color:var(--txt);
-  font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  font-family:'Inter','Inter Fallback',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
   line-height:1.6;-webkit-font-smoothing:antialiased;
   position:fixed;inset:0;z-index:90;display:flex;align-items:center;justify-content:center;
   padding:16px;background:rgba(6,16,11,.62);backdrop-filter:blur(4px)}
-.mm-modal-card{position:relative;width:100%;max-width:520px;max-height:min(92dvh,92vh);overflow-y:auto;
+/* overflow-y:auto forces overflow-x to compute to auto as well, which quietly
+   turns the card into a sideways scroller the moment anything inside is a pixel
+   too wide. On a phone that reads as "the page slides left and right". */
+.mm-modal-card{position:relative;width:100%;max-width:520px;max-height:min(92dvh,92vh);
+  overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;
   border:1px solid rgba(15,30,22,.12);
   background:#fff;border-radius:18px;box-shadow:0 40px 90px -30px rgba(0,0,0,.6)}
 /* The agreement needs a sheet, not a form column. It also brings its own
@@ -1191,11 +1234,14 @@ html{scroll-behavior:smooth}
 .mm-modal-card.is-wide .mm-agr-note{display:none}
 .mm-modal-close{position:absolute;top:12px;right:12px;z-index:2;width:34px;height:34px;border:0;border-radius:9px;
   background:transparent;color:var(--mut);font-size:20px;line-height:1;cursor:pointer}
-.mm-modal-close:hover{background:rgba(0,0,0,.05);color:var(--txt)}
+@media (hover:hover) and (pointer:fine){.mm-modal-close:hover{background:rgba(0,0,0,.05);color:var(--txt)}}
 .mm-modal-body{padding:26px 24px 24px}
 @media (max-width:560px){
   .mm-modal{padding:0;align-items:flex-end}
   .mm-modal-card{max-width:none;border-radius:18px 18px 0 0;max-height:94dvh}
+  /* 16px of side padding back to the content — it is the difference between a
+     row of the contact table fitting and the address breaking mid-word. */
+  .mm-modal-body{padding:20px 16px 20px}
 }
 
 /* ---------------------------------------------------------------------------
@@ -1212,7 +1258,7 @@ html{scroll-behavior:smooth}
 
 .mm-refhero{padding:64px 0 68px;text-align:center}
 .mm-refhero-eyebrow{display:block;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--mut);margin-bottom:16px}
-.mm-refhero-h1{font-family:'Anton',sans-serif;font-weight:400;font-size:clamp(34px,6.4vw,72px);line-height:.94;
+.mm-refhero-h1{font-family:'Anton','Anton Fallback',sans-serif;font-weight:400;font-size:clamp(34px,6.4vw,72px);line-height:.94;
   text-transform:uppercase;letter-spacing:-.005em;margin-bottom:20px}
 .mm-refhero-h1 span{display:block}
 .mm-refhero-cta{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin:30px 0 44px}
@@ -1220,7 +1266,7 @@ html{scroll-behavior:smooth}
 .mm-refstats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;max-width:880px;margin:0 auto}
 .mm-refstat{background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px 14px;text-align:center}
 .mm-refstat-k{display:block;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--mut)}
-.mm-refstat-v{display:block;font-family:'Anton',sans-serif;font-weight:400;font-size:26px;line-height:1;color:var(--teal);margin-top:8px}
+.mm-refstat-v{display:block;font-family:'Anton','Anton Fallback',sans-serif;font-weight:400;font-size:26px;line-height:1;color:var(--teal);margin-top:8px}
 
 /* Tier cards */
 .mm-tiers{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:22px;margin-top:40px;align-items:start}
@@ -1235,7 +1281,7 @@ html{scroll-behavior:smooth}
   align-items:center;justify-content:center}
 .mm-tier-ico svg{width:20px;height:20px;fill:var(--teal)}
 .mm-tier-code{font-size:11px;letter-spacing:.2em;color:var(--mut)}
-.mm-tier-name{font-family:'Anton',sans-serif;font-weight:400;font-size:30px;line-height:1;text-transform:uppercase}
+.mm-tier-name{font-family:'Anton','Anton Fallback',sans-serif;font-weight:400;font-size:30px;line-height:1;text-transform:uppercase}
 .mm-tier-range{display:block;font-size:14px;font-weight:600;color:var(--teal);margin-top:7px}
 .mm-tier-box{background:var(--bg2);border-radius:12px;padding:16px 18px;margin:18px 0 16px}
 .mm-tier-box-k{display:block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--mut)}
@@ -1256,7 +1302,7 @@ html{scroll-behavior:smooth}
 .mm-portal{background:linear-gradient(150deg,#0a1a16 0%,#0d2521 55%,#09140f 100%);color:#e6efea;padding:88px 0}
 .mm-portal-grid{display:grid;grid-template-columns:1fr 1fr;gap:52px;align-items:center}
 .mm-portal-eyebrow{display:block;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:#4ade80;margin-bottom:14px}
-.mm-portal-h2{font-family:'Anton',sans-serif;font-weight:400;font-size:clamp(30px,4.6vw,52px);line-height:1;
+.mm-portal-h2{font-family:'Anton','Anton Fallback',sans-serif;font-weight:400;font-size:clamp(30px,4.6vw,52px);line-height:1;
   text-transform:uppercase;margin-bottom:18px}
 .mm-portal-lead{font-size:15.5px;line-height:1.7;color:rgba(230,239,234,.66);max-width:520px}
 .mm-portal-points{list-style:none;margin:24px 0 30px;padding:0;display:flex;flex-direction:column;gap:12px}
@@ -1265,7 +1311,7 @@ html{scroll-behavior:smooth}
   border-left:2px solid #4ade80;border-bottom:2px solid #4ade80;transform:rotate(-45deg)}
 .mm-portal-cta{display:flex;gap:12px;flex-wrap:wrap}
 .mm-btn-dark{background:transparent;color:#e6efea;border:1px solid rgba(230,239,234,.3);box-shadow:none}
-.mm-btn-dark:hover{border-color:#4ade80;color:#4ade80;box-shadow:none}
+@media (hover:hover) and (pointer:fine){.mm-btn-dark:hover{border-color:#4ade80;color:#4ade80;box-shadow:none}}
 
 /* Portal preview / dashboard card */
 .mm-pcard{background:rgba(9,20,16,.72);border:1px solid rgba(230,239,234,.12);border-radius:18px;padding:22px;
@@ -1302,7 +1348,7 @@ html{scroll-behavior:smooth}
 .mm-recurring{background:#fff1f1;padding:76px 0;text-align:center}
 .mm-recurring-eyebrow{display:inline-block;font-size:12px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;
   color:#c81e1e;margin-bottom:14px}
-.mm-recurring-h{font-family:'Anton',sans-serif;font-weight:400;font-size:clamp(26px,4.4vw,50px);line-height:1.04;
+.mm-recurring-h{font-family:'Anton','Anton Fallback',sans-serif;font-weight:400;font-size:clamp(26px,4.4vw,50px);line-height:1.04;
   text-transform:uppercase;margin-bottom:14px}
 .mm-recurring-sub{font-size:17px;font-weight:700;max-width:640px;margin:0 auto 12px}
 .mm-recurring-note{font-size:14.5px;color:var(--mut);line-height:1.7;max-width:640px;margin:0 auto}
@@ -1314,9 +1360,9 @@ html{scroll-behavior:smooth}
 .mm-forward-sub a{color:#fff}
 .mm-forward-cta{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
 .mm-btn-white{background:#fff;color:var(--teal);border-color:#fff}
-.mm-btn-white:hover{box-shadow:0 14px 40px rgba(0,0,0,.22)}
+@media (hover:hover) and (pointer:fine){.mm-btn-white:hover{box-shadow:0 14px 40px rgba(0,0,0,.22)}}
 .mm-btn-outline-white{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.7);box-shadow:none}
-.mm-btn-outline-white:hover{background:rgba(255,255,255,.12);box-shadow:none}
+@media (hover:hover) and (pointer:fine){.mm-btn-outline-white:hover{background:rgba(255,255,255,.12);box-shadow:none}}
 
 /* Accordion numbering */
 .mm-acc-n{display:inline-block;min-width:26px;font-size:12px;font-weight:800;color:var(--teal);letter-spacing:.1em}
@@ -1326,6 +1372,12 @@ html{scroll-behavior:smooth}
 /* The one-button bar centres a single wide button; two must not fly apart. */
 .mm-sticky-bar-2 .mm-btn{width:auto;min-width:190px;max-width:260px;margin:0}
 .mm-sticky-bar-2 .mm-btn{flex:1 1 0;max-width:240px;text-align:center}
+/* Below ~420px two buttons at min-width:190px do not fit between the bar's
+   own padding, and the pair hangs off both edges. Let them shrink. */
+@media (max-width:420px){
+  .mm-sticky-bar-2{gap:8px}
+  .mm-sticky-bar-2 .mm-btn{min-width:0;padding-left:10px;padding-right:10px;font-size:15px}
+}
 
 /* Portal auth + dashboard */
 .mm-authcard{max-width:460px;margin:0 auto;background:#fff;border:1px solid var(--line);border-radius:18px;padding:26px 24px;
@@ -1339,7 +1391,7 @@ html{scroll-behavior:smooth}
 .mm-dash{max-width:820px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
 .mm-dash-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap}
 .mm-dash-hello{display:block;font-size:13px;color:var(--mut)}
-.mm-dash-tier{font-family:'Anton',sans-serif;font-weight:400;font-size:32px;line-height:1;text-transform:uppercase;margin-top:6px}
+.mm-dash-tier{font-family:'Anton','Anton Fallback',sans-serif;font-weight:400;font-size:32px;line-height:1;text-transform:uppercase;margin-top:6px}
 .mm-dash-block{background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px 24px}
 .mm-dash-h3{font-size:17px;font-weight:800;margin-bottom:14px}
 .mm-dash-row{display:grid;grid-template-columns:1.4fr 1fr auto;gap:10px}
@@ -1361,27 +1413,14 @@ html{scroll-behavior:smooth}
   .mm-dash-row{grid-template-columns:1fr}
   .mm-refhero{padding:44px 0 50px}
 }
-  box-shadow:0 16px 44px -32px rgba(0,0,0,.5)}
-.mm-tier.is-featured{border-color:rgba(22,163,74,.5);box-shadow:0 22px 56px -28px rgba(22,163,74,.45)}
+/* This used to be a stale second copy of the tier-card rules from the block
+   above, left behind by an older markup, and it opened with a declaration that
+   had lost its selector. The stray brace swallowed the rule that followed it,
+   so .mm-tier.is-featured never applied at all, and the leftovers quietly
+   overrode the live values (a grey 13px range instead of the green 14px one).
+   Only .mm-tier-badge was still doing any work; the rest is gone. */
 .mm-tier-badge{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;
   color:var(--teal);background:rgba(22,163,74,.1);border-radius:99px;padding:5px 11px;margin-bottom:16px}
-.mm-tier-code{display:block;font-size:11px;letter-spacing:.18em;color:var(--mut);margin-bottom:4px}
-.mm-tier-name{font-family:'Anton',sans-serif;font-weight:400;font-size:30px;line-height:1;text-transform:uppercase}
-.mm-tier-range{display:block;font-size:13px;color:var(--mut);margin-top:6px}
-.mm-tier-commission{display:block;font-family:'Anton',sans-serif;font-weight:400;font-size:42px;line-height:1;
-  color:var(--teal);margin:16px 0 4px}
-.mm-tier-commission small{display:block;font-family:inherit;font-size:12px;font-weight:600;color:var(--mut);
-  letter-spacing:.06em;text-transform:uppercase;margin-top:5px}
-.mm-tier-blurb{font-size:14px;color:var(--mut);line-height:1.65;margin-top:14px}
-.mm-tier-perks{list-style:none;margin:18px 0 0;padding:0;display:flex;flex-direction:column;gap:9px}
-.mm-tier-perks li{position:relative;padding-left:24px;font-size:14px;line-height:1.55}
-.mm-tier-perks li::before{content:"";position:absolute;left:0;top:5px;width:14px;height:8px;
-  border-left:2px solid var(--teal);border-bottom:2px solid var(--teal);transform:rotate(-45deg)}
-.mm-tier-example{margin-top:20px;border-top:1px solid var(--line);padding-top:16px}
-.mm-tier-example-h{display:block;font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;
-  color:var(--mut);margin-bottom:10px}
-.mm-tier-example ol{margin:0;padding-left:18px}
-.mm-tier-example li{font-size:13.5px;color:var(--mut);line-height:1.6;margin-bottom:5px}
 
 /* ---------------------------------------------------------------------------
  * QUESTIONNAIRE FLOW (components/ApplyFlow.tsx) and /google-funnel
@@ -1404,23 +1443,36 @@ html{scroll-behavior:smooth}
 .mm-choice{width:100%;text-align:left;border:1px solid var(--line);border-radius:12px;background:#fff;
   padding:15px 16px;font:inherit;font-size:14.5px;font-weight:600;color:var(--txt);cursor:pointer;
   transition:border-color .15s,background .15s,transform .1s}
-.mm-choice:hover{border-color:var(--teal);background:rgba(22,163,74,.04)}
+@media (hover:hover) and (pointer:fine){.mm-choice:hover{border-color:var(--teal);background:rgba(22,163,74,.04)}}
 .mm-choice:active{transform:scale(.995)}
 .mm-qflow-rows{display:flex;flex-direction:column;gap:1px;background:var(--line);border:1px solid var(--line);
   border-radius:12px;overflow:hidden;margin-bottom:16px}
 .mm-qflow-row{display:flex;justify-content:space-between;gap:14px;background:#fff;padding:12px 15px}
 .mm-qflow-row dt{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut)}
-.mm-qflow-row dd{font-size:13.5px;font-weight:700;text-align:right;word-break:break-word}
+/* The panel is portalled onto <body>, outside .mm-root, so the reset there
+   never reaches it and the UA's 40px indent on <dd> survives. */
+.mm-qflow-row dd{margin:0;font-size:13.5px;font-weight:700;text-align:right;overflow-wrap:anywhere}
+/* contact@forexpassing.com next to its label does not fit across a phone, and
+   side by side the address gets broken mid-word. Stack them instead. */
+@media (max-width:420px){
+  .mm-qflow-row{flex-direction:column;gap:3px;padding:11px 14px}
+  .mm-qflow-row dt{white-space:nowrap}
+  .mm-qflow-row dd{text-align:left;font-size:14px}
+}
 .mm-qflow-bullets{list-style:none;margin:0 0 16px;padding:0;display:flex;flex-direction:column;gap:10px}
 .mm-qflow-bullets li{position:relative;padding-left:26px;font-size:14.5px;line-height:1.55}
 .mm-qflow-bullets li::before{content:"";position:absolute;left:0;top:5px;width:13px;height:7px;
   border-left:2px solid var(--teal);border-bottom:2px solid var(--teal);transform:rotate(-45deg)}
 .mm-qflow-bullets.is-contract li{background:var(--bg2);border-radius:10px;padding:12px 14px 12px 34px}
 .mm-qflow-bullets.is-contract li::before{left:14px;top:17px}
+/* The team screen lists what the desk does, one card per function. */
+.mm-qflow-bullets.is-team{gap:10px}
+.mm-qflow-bullets.is-team li{background:var(--bg2);border-radius:11px;padding:13px 14px 13px 38px;font-size:14px}
+.mm-qflow-bullets.is-team li::before{left:15px;top:19px}
 .mm-qflow-note{font-size:12.5px;color:var(--mut);line-height:1.6;margin-bottom:16px}
 .mm-qflow-back{align-self:flex-start;margin-top:14px;background:none;border:0;padding:0;font:inherit;
   font-size:13px;color:var(--mut);cursor:pointer}
-.mm-qflow-back:hover{color:var(--teal)}
+@media (hover:hover) and (pointer:fine){.mm-qflow-back:hover{color:var(--teal)}}
 .mm-opt-label{font-weight:400;color:var(--mut)}
 .mm-field-hint{font-size:12.5px;color:var(--mut);line-height:1.5}
 .mm-form-no-ico{background:var(--mut)}
@@ -1432,7 +1484,7 @@ html{scroll-behavior:smooth}
   font-size:11.5px;line-height:1.6;color:var(--mut);text-align:center}
 .mm-gf-main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
   text-align:center;padding:96px 24px 110px}
-.mm-gf-h1{font-family:'Inter',system-ui,sans-serif;font-weight:800;font-size:clamp(30px,5vw,52px);
+.mm-gf-h1{font-family:'Inter','Inter Fallback',system-ui,sans-serif;font-weight:800;font-size:clamp(30px,5vw,52px);
   line-height:1.12;letter-spacing:-.02em;max-width:760px;margin-bottom:14px}
 .mm-gf-sub{font-size:16px;color:var(--mut);margin-bottom:34px}
 .mm-gf-cta{min-width:min(420px,90vw);letter-spacing:.06em}
@@ -1453,7 +1505,7 @@ html{scroll-behavior:smooth}
 .mm-tr-pill{border:1px solid var(--line);border-radius:99px;background:#fff;color:var(--mut);
   font:inherit;font-size:13px;font-weight:600;padding:8px 15px;cursor:pointer;
   transition:border-color .15s,color .15s,background .15s}
-button.mm-tr-pill:hover{border-color:var(--teal);color:var(--teal)}
+@media (hover:hover) and (pointer:fine){button.mm-tr-pill:hover{border-color:var(--teal);color:var(--teal)}}
 .mm-tr-pill.is-on{border-color:var(--teal);color:var(--teal);background:rgba(22,163,74,.09);font-weight:700}
 .mm-tr-pill.is-tag{background:#6d43c9;border-color:#6d43c9;color:#fff;cursor:default}
 .mm-tr-pill.is-muted{background:rgba(15,30,22,.05);border-color:transparent;cursor:default}
@@ -1520,11 +1572,11 @@ button.mm-tr-pill:hover{border-color:var(--teal);color:var(--teal)}
 .mm-sub-hero .mm-lead{margin:0 auto}
 .mm-sub-back{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:600;color:var(--mut);
   text-decoration:none;margin-bottom:20px;transition:color .15s}
-.mm-sub-back:hover{color:var(--teal)}
-.mm-sub-h1{font-family:'Anton',sans-serif;font-weight:400;font-size:clamp(38px,6.4vw,74px);line-height:.94;
+@media (hover:hover) and (pointer:fine){.mm-sub-back:hover{color:var(--teal)}}
+.mm-sub-h1{font-family:'Anton','Anton Fallback',sans-serif;font-weight:400;font-size:clamp(38px,6.4vw,74px);line-height:.94;
   letter-spacing:-.01em;text-transform:uppercase;margin-bottom:18px}
 .mm-sub-cta{padding:76px 0 84px;text-align:center;background:var(--bg2);border-top:1px solid var(--line)}
-.mm-sub-cta h2{font-family:'Anton',sans-serif;font-weight:400;font-size:clamp(26px,4vw,44px);
+.mm-sub-cta h2{font-family:'Anton','Anton Fallback',sans-serif;font-weight:400;font-size:clamp(26px,4vw,44px);
   line-height:1.02;text-transform:uppercase;margin-bottom:14px}
 .mm-sub-cta p{font-size:15px;color:var(--mut);max-width:520px;margin:0 auto 26px}
 .mm-cert-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:22px;margin-top:40px}
@@ -1564,10 +1616,11 @@ button.mm-tr-pill:hover{border-color:var(--teal);color:var(--teal)}
 .mm-band-mint .mm-band-h{color:#0d2b1c}
 .mm-band-mint .mm-band-h span{color:var(--teal)}
 .mm-band-mint .mm-band-sub{color:#2f6b4d}
-.mm-band-h{font-family:'Anton',sans-serif;font-weight:400;text-transform:uppercase;
+.mm-band-h{font-family:'Anton','Anton Fallback',sans-serif;font-weight:400;text-transform:uppercase;
   font-size:clamp(30px,5vw,52px);line-height:1.02;text-align:center;letter-spacing:.01em}
 .mm-band-sub{text-align:center;font-size:15px;margin-top:12px}
 .mm-band-rail{margin-top:34px}
+.mm-band-rail .mm-scroller-track{gap:22px}
 .mm-band-rail .mm-rev-card{width:320px;flex:0 0 320px}
 .mm-gcards{max-width:760px;margin:34px auto 0;display:grid;gap:14px}
 .mm-gcard{display:flex;gap:14px;align-items:flex-start;background:#fff;border-radius:14px;
@@ -1577,7 +1630,7 @@ button.mm-tr-pill:hover{border-color:var(--teal);color:var(--teal)}
 .mm-gcard p{font-size:15.5px;line-height:1.7;color:#28503c;text-align:left}
 .mm-gcard strong{color:#0d2b1c;font-weight:800}
 .mm-btn-forest{background:#0f5132;border-color:#0f5132}
-.mm-btn-forest:hover{background:#0b3f27;border-color:#0b3f27}
+@media (hover:hover) and (pointer:fine){.mm-btn-forest:hover{background:#0b3f27;border-color:#0b3f27}}
 @media (max-width:640px){
   .mm-ctr-card{padding:24px 20px}
   .mm-ctr-actions .mm-btn{min-width:0;width:100%}
@@ -1602,7 +1655,7 @@ button.mm-tr-pill:hover{border-color:var(--teal);color:var(--teal)}
 .mm-agr-print{font:inherit;font-size:12.5px;font-weight:700;color:var(--txt);cursor:pointer;
   background:#fff;border:1px solid var(--line);border-radius:8px;padding:6px 11px;
   transition:border-color .15s,background .15s}
-.mm-agr-print:hover{border-color:var(--teal);background:rgba(22,163,74,.08)}
+@media (hover:hover) and (pointer:fine){.mm-agr-print:hover{border-color:var(--teal);background:rgba(22,163,74,.08)}}
 .mm-agr-sheet{max-height:min(78vh,860px);overflow-y:auto;overscroll-behavior:contain;
   background:#fbfaf7;border:1px solid var(--line);border-radius:0 0 14px 14px;
   padding:44px 30px 40px;
@@ -1659,5 +1712,16 @@ button.mm-tr-pill:hover{border-color:var(--teal);color:var(--teal)}
 @media (max-width:640px){
   .mm-sub-hero{padding:52px 0 44px}
   .mm-cert-grid,.mm-rev-grid{grid-template-columns:1fr}
+}
+
+/* ---------------------------------------------------------------------------
+ * Last in the sheet on purpose: it has to beat every per-component font-size
+ * above it. 16px on touch is not a style choice — below it, iOS Safari zooms
+ * the page when a field takes focus, and a zoomed page pans sideways for the
+ * rest of the visit.
+ * ------------------------------------------------------------------------- */
+@media (pointer:coarse){
+  .mm-root input,.mm-root textarea,.mm-root select,
+  .mm-modal input,.mm-modal textarea,.mm-modal select{font-size:16px}
 }
 `

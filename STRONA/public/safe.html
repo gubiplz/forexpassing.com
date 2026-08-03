@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Forex Passing — An educational trading company</title>
+<title>Forex Passing · An educational trading company</title>
 
 <!-- Meta Pixel Code -->
 <script>
@@ -30,9 +30,32 @@ src="https://www.facebook.com/tr?id=1566242625059670&ev=PageView&noscript=1"
 <meta name="robots" content="index, follow" />
 <link rel="canonical" href="https://forexpassing.com/" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <!-- Type served from our own origin. Metric-matched stand-ins keep the first
+       paint the same size as the real face, so the swap does not move the page. -->
+  <link rel="preload" as="font" type="font/woff2" href="/fonts/anton-latin.woff2" crossorigin />
+  <link rel="preload" as="font" type="font/woff2" href="/fonts/inter-latin.woff2" crossorigin />
+  <style>
+    @font-face{font-family:'Anton';font-style:normal;font-weight:400;font-display:swap;
+      src:url('/fonts/anton-latin.woff2') format('woff2')}
+    @font-face{font-family:'Anton';font-style:normal;font-weight:400;font-display:swap;
+      src:url('/fonts/anton-latin-ext.woff2') format('woff2');
+      unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,
+        U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,
+        U+2C60-2C7F,U+A720-A7FF}
+    @font-face{font-family:'Inter';font-style:normal;font-weight:400 800;font-display:swap;
+      src:url('/fonts/inter-latin.woff2') format('woff2')}
+    @font-face{font-family:'Inter';font-style:normal;font-weight:400 800;font-display:swap;
+      src:url('/fonts/inter-latin-ext.woff2') format('woff2');
+      unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,
+        U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,
+        U+2C60-2C7F,U+A720-A7FF}
+    @font-face{font-family:'Anton Fallback';src:local('Impact'),local('Haettenschweiler'),
+      local('Arial Narrow Bold');size-adjust:95.15%;ascent-override:124.01%;
+      descent-override:34.68%;line-gap-override:0%}
+    @font-face{font-family:'Inter Fallback';src:local('Arial'),local('Helvetica Neue'),
+      local('Roboto');size-adjust:106.9%;ascent-override:90.74%;descent-override:22.45%;
+      line-gap-override:0%}
+  </style>
 <style>
 :root{
   --bg:#ffffff; --bg2:#f3f6fb; --line:rgba(15,23,42,.10);
@@ -40,7 +63,7 @@ src="https://www.facebook.com/tr?id=1566242625059670&ev=PageView&noscript=1"
   --foot-bg:#0f1722; --foot-txt:#d7dee8; --foot-mut:#8893a3;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--txt);font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body{background:var(--bg);color:var(--txt);font-family:'Inter','Inter Fallback',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 .mm-wrap{max-width:1080px;margin:0 auto;padding:0 24px}
 .mm-nav{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.88);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
 .mm-nav-inner{display:flex;align-items:center;justify-content:space-between;height:64px}
@@ -56,8 +79,8 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',system-ui,-apple-
 .mm-btn-full{display:block;text-align:center;width:100%}
 .mm-btn-ghost{background:#fff;color:var(--txt);border:1px solid rgba(15,23,42,.22);box-shadow:none}
 .mm-btn-ghost:hover{border-color:var(--blue);color:var(--blue);box-shadow:none}
-.mm-h1{font-family:'Anton',sans-serif;font-weight:400;font-size:clamp(40px,8.2vw,84px);line-height:1;letter-spacing:.01em;text-transform:uppercase;margin:0 0 22px}
-.mm-h2{font-family:'Anton',sans-serif;font-weight:400;font-size:clamp(28px,4.6vw,46px);line-height:1.04;text-transform:uppercase;letter-spacing:.01em;margin-bottom:18px}
+.mm-h1{font-family:'Anton','Anton Fallback',sans-serif;font-weight:400;font-size:clamp(40px,8.2vw,84px);line-height:1;letter-spacing:.01em;text-transform:uppercase;margin:0 0 22px}
+.mm-h2{font-family:'Anton','Anton Fallback',sans-serif;font-weight:400;font-size:clamp(28px,4.6vw,46px);line-height:1.04;text-transform:uppercase;letter-spacing:.01em;margin-bottom:18px}
 .mm-center{text-align:center;margin-left:auto;margin-right:auto}
 .mm-blue{color:var(--blue)}
 .mm-lead{font-size:clamp(16px,2vw,18px);color:var(--mut);max-width:600px;line-height:1.6}
@@ -72,7 +95,7 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',system-ui,-apple-
 .mm-stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:42px 24px}
 @media(max-width:680px){.mm-stats-grid{grid-template-columns:repeat(2,1fr);gap:28px 8px}}
 .mm-stat{text-align:center}
-.mm-stat-v{display:block;font-family:'Anton',sans-serif;font-size:clamp(34px,6vw,50px);line-height:1}
+.mm-stat-v{display:block;font-family:'Anton','Anton Fallback',sans-serif;font-size:clamp(34px,6vw,50px);line-height:1}
 .mm-stat-k{display:block;font-size:13px;font-weight:600;letter-spacing:.04em;margin-top:6px;opacity:.92}
 .mm-section{padding:80px 0}
 @media(max-width:760px){.mm-section{padding:56px 0}}
@@ -83,7 +106,7 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',system-ui,-apple-
 .mm-why-card:hover{border-color:rgba(47,111,224,.4);box-shadow:0 12px 30px rgba(15,23,42,.07);transform:translateY(-2px)}
 .mm-why-ico{display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:11px;background:rgba(47,111,224,.10);color:var(--blue);margin-bottom:18px}
 .mm-why-ico svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.mm-why-t{display:block;font-family:'Anton',sans-serif;font-weight:400;font-size:19px;text-transform:uppercase;letter-spacing:.02em;margin-bottom:8px}
+.mm-why-t{display:block;font-family:'Anton','Anton Fallback',sans-serif;font-weight:400;font-size:19px;text-transform:uppercase;letter-spacing:.02em;margin-bottom:8px}
 .mm-why-d{display:block;color:var(--mut);font-size:14px;line-height:1.6}
 .mm-journey{background:var(--bg2);border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:80px 0;text-align:center}
 @media(max-width:760px){.mm-journey{padding:56px 0}}
@@ -145,7 +168,7 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',system-ui,-apple-
 <section class="mm-hero">
   <div class="mm-wrap">
     <h1 class="mm-h1">HELLO, WE ARE AN<br><span class="mm-blue">EDUCATIONAL COMPANY</span></h1>
-    <p class="mm-lead mm-lead-mid">Forex Passing works in trader education. We explain market structure, risk management, and how prop firm evaluations actually work. We do not promise income or results — trading involves risk, and every decision stays with the trader.</p>
+    <p class="mm-lead mm-lead-mid">Forex Passing works in trader education. We explain market structure, risk management, and how prop firm evaluations actually work. We do not promise income or results. Trading involves risk, and every decision stays with the trader.</p>
     <div class="mm-cta-row">
       <a href="#apply" class="mm-btn mm-btn-lg">Request information</a>
       <a href="#why" class="mm-btn mm-btn-ghost mm-btn-lg">What we do</a>
@@ -197,7 +220,7 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',system-ui,-apple-
 <section class="mm-journey" id="apply">
   <div class="mm-wrap">
     <h2 class="mm-h2 mm-center">READY TO START YOUR <span class="mm-blue">JOURNEY?</span></h2>
-    <p class="mm-lead mm-lead-mid mm-center">Take the first step. Send us a question and we reply by email with information about what we publish and how we work — nothing is sold through the form.</p>
+    <p class="mm-lead mm-lead-mid mm-center">Take the first step. Send us a question and we reply by email with information about what we publish and how we work. Nothing is sold through the form.</p>
     <div class="mm-cta-row mm-cta-center-row">
       <a href="/about-us#apply" class="mm-btn mm-btn-lg">Apply Now</a>
     </div>
@@ -209,7 +232,7 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',system-ui,-apple-
     <div class="mm-footer-top">
       <div class="mm-footer-brand">
         <img class="mm-logo-img mm-logo-img-sm" src="/logo-light.svg" alt="Forex Passing" />
-        <p class="mm-footer-tagline">Forex Passing — trading education in plain language: market structure, risk management, and how prop firm evaluations work. No hype and no income promises.</p>
+        <p class="mm-footer-tagline">Forex Passing. Trading education in plain language: market structure, risk management, and how prop firm evaluations work. No hype and no income promises.</p>
       </div>
       <div class="mm-footer-col">
         <span class="mm-footer-h">Quick links</span>

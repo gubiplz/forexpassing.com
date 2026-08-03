@@ -76,7 +76,7 @@ export function TrackRecord({ compact = false }: { compact?: boolean }) {
       </div>
 
       <p className="mm-tr-note">
-        {BRAND}'s own figures for accounts run at this setting — {TRACKED_SESSIONS} trading sessions
+        {BRAND}'s own figures for accounts run at this setting: {TRACKED_SESSIONS} trading sessions
         across {TRACKED_WEEKS} weeks, last entry {LAST_UPDATED}. Sessions are added as they close,
         so gaps are days the desk did not trade: outside crypto, nothing is dated to a weekend.{' '}
         <strong>Not an independent audit</strong> and not a promise: every account trades inside its

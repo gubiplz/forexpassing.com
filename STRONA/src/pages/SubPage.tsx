@@ -57,12 +57,12 @@ const META: Record<ProofPageKey, Meta> = {
   payouts: {
     eyebrow: 'Verified records',
     title: 'Client payouts',
-    lead: `Certificates ${PARTNER_FIRM} issued to Forex Passing clients — payouts released, evaluations passed, accounts funded. Pulled from the firm's public record, not typed up by us.`,
+    lead: `Certificates ${PARTNER_FIRM} issued to Forex Passing clients: payouts released, evaluations passed, accounts funded. Pulled from the firm's public record, not typed up by us.`,
   },
   'past-performance': {
     eyebrow: 'Track record',
     title: 'Past performance',
-    lead: 'How managed accounts have been run over time — equity curve, monthly returns and the trades behind them. The bad months are in there too.',
+    lead: 'How managed accounts have been run over time: equity curve, monthly returns and the trades behind them. The bad months are in there too.',
   },
   reviews: {
     eyebrow: 'What clients say',
@@ -73,7 +73,7 @@ const META: Record<ProofPageKey, Meta> = {
     eyebrow: 'Transparency · Protection · Real traders',
     title: 'We put everything',
     accent: 'in writing',
-    lead: `You shouldn't have to guess what happens if something goes wrong. Read the agreement, see how traders rate us, and know exactly how our guarantee works — including the refund guarantee that runs for ${REFUND_WINDOW} if we don't pass or you want out.`,
+    lead: `You shouldn't have to guess what happens if something goes wrong. Read the agreement, see how traders rate us, and know exactly how our guarantee works, including the refund guarantee that runs for ${REFUND_WINDOW} if we don't pass or you want out.`,
     leadTone: 'alert' as const,
   },
 }
@@ -123,7 +123,7 @@ export function SubPage({ page }: { page: ProofPageKey }) {
         <div className="mm-wrap">
           <h2>Want us to run yours?</h2>
           <p>
-            Six questions, about two minutes. No payment, no card — we read it, check your firm's
+            A short questionnaire, about three minutes. No payment, no card. We read it, check your firm's
             rules and come back to you.
           </p>
           <a
@@ -184,7 +184,7 @@ function Payouts() {
           <a href={PARTNER_FIRM_HREF} target="_blank" rel="noopener noreferrer">
             {PARTNER_FIRM}
           </a>{' '}
-          to Forex Passing clients, synced from the firm's public record. Individual results — an
+          to Forex Passing clients, synced from the firm's public record. Individual results. An
           evaluation can fail and no outcome is guaranteed.
         </p>
       </div>
@@ -273,7 +273,7 @@ function Reviews() {
 const PROMISES: [string, string][] = [
   [
     'Almost no downside on your side.',
-    'If we lose the account, you are covered by what the agreement says — not by a vague promise made on a landing page.',
+    'If we lose the account, you are covered by what the agreement says, not by a vague promise made on a landing page.',
   ],
   [
     `A window of ${REFUND_WINDOW}.`,
@@ -281,7 +281,7 @@ const PROMISES: [string, string][] = [
   ],
   [
     'Nothing starts before the rule check.',
-    'We confirm in writing whether your firm allows a third party to trade the account. If it does not, we do not take it — and you are told, not billed.',
+    'We confirm in writing whether your firm allows a third party to trade the account. If it does not, we do not take it, and you are told, not billed.',
   ],
 ]
 
@@ -290,7 +290,7 @@ const GUARANTEES: [string, React.ReactNode][] = [
     'If we lose your challenge',
     <>
       you get back what you paid us <strong>plus a {GUARANTEE_CREDIT} credit</strong> toward the
-      next attempt — spelled out in clause 5 of the agreement.
+      next attempt, spelled out in clause 5 of the agreement.
     </>,
   ],
   [
@@ -361,7 +361,7 @@ function Contract() {
             Our <span>guarantee</span>
           </h2>
           <p className="mm-band-sub">
-            No motivational fluff — just what we stand behind, and where to find it in writing.
+            No motivational fluff. Just what we stand behind, and where to find it in writing.
           </p>
 
           <div className="mm-gcards">
@@ -369,7 +369,7 @@ function Contract() {
               <div className="mm-gcard" key={head}>
                 <span className="mm-gcard-tick" aria-hidden="true">✓</span>
                 <p>
-                  <strong>{head}</strong> — {body}
+                  <strong>{head}</strong>, {body}
                 </p>
               </div>
             ))}
@@ -387,7 +387,7 @@ function Contract() {
         <div className="mm-wrap">
           <h2 className="mm-h2">Ready when you are</h2>
           <p className="mm-lead mm-center" style={{ maxWidth: 560, margin: '0 auto 26px' }}>
-            Questions belong in the application — it walks you through the whole thing, and nothing
+            Questions belong in the application. It walks you through the whole thing, and nothing
             is charged for asking.
           </p>
           <a

@@ -29,10 +29,13 @@ export const GOOGLE_CTA_LABEL = 'CHECK IF YOU QUALIFY'
 export const FORM_PREVIEW_LABEL = 'Start your application'
 export const FORM_PREVIEW_PLACEHOLDER = 'Enter your full name...'
 
-// Hero-wideo na /meta. Puste = sekcja się nie renderuje; wpisz tu ID filmu
-// z Wistii, żeby ją włączyć. Celowo NIE jest to klip z /watch — tamten pokazuje
-// w kadrze ofertę poprzedniego produktu ($49).
-export const WISTIA_META_ID = ''
+// Hero-wideo na /meta. Puste = sekcja się nie renderuje. Ten sam klip stoi teraz
+// na /watch: zastąpił nagranie, które pokazywało w kadrze ofertę poprzedniego
+// produktu ($49). Podmiana ID tutaj NIE zmienia /watch — tamta strona jest
+// statyczna i trzyma je u siebie (grep po media-id).
+export const WISTIA_META_ID = 'jiy7nxpusf'
+/** The CTA green. The Wistia player is told to paint its controls to match. */
+export const BRAND_GREEN = '#16a34a'
 
 // Kontakt do zespołu. Statyczne strony w public/ i szablony maili nie mogą
 // importować tego pliku, więc mają adres wpisany wprost — przy zmianie uchwytu
@@ -77,7 +80,7 @@ export const REFERRAL_TIERS_DATA: ReferralTier[] = [
     per10k: '$900',
     commission: '10% commission rate',
     blurb:
-      'Earn from your very first referral. When someone you send in funds a challenge, we buy you a matching account at the same size — free. On top of that you keep 10% of every payout they receive.',
+      'Earn from your very first referral. When someone you send in funds a challenge, we buy you a matching account at the same size, free of charge. On top of that you keep 10% of every payout they receive.',
     perks: [
       'Matching funded account at zero cost',
       '10% commission on all referral payouts',

@@ -61,6 +61,13 @@ export function ApplyFlow({ initialName = '', source }: { initialName?: string; 
   const [sending, setSending] = useState(false)
   const [error, setError] = useState('')
   const started = useRef(false)
+  const rootRef = useRef<HTMLDivElement>(null)
+
+  // The panel is what scrolls, not the page. Leaving its scrollTop alone means
+  // a step reached from a long one opens halfway down its own question.
+  useEffect(() => {
+    rootRef.current?.closest('.mm-modal-card')?.scrollTo({ top: 0 })
+  }, [index, outcome])
 
   const markStarted = () => {
     if (started.current) return
@@ -144,7 +151,7 @@ export function ApplyFlow({ initialName = '', source }: { initialName?: string; 
         <span className="mm-form-ok-ico" aria-hidden="true">✓</span>
         <span className="mm-form-ok-t">Application received</span>
         <span className="mm-form-ok-d">
-          We usually reply within one business day. Nothing has been charged — we check your firm's
+          We usually reply within one business day. Nothing has been charged. We check your firm's
           rules first, then talk, then put the agreement in writing.
         </span>
         <span className="mm-form-ok-d">
@@ -157,10 +164,10 @@ export function ApplyFlow({ initialName = '', source }: { initialName?: string; 
   if (outcome === 'rejected') {
     return (
       <div className="mm-form-ok mm-form-no" role="status">
-        <span className="mm-form-ok-ico mm-form-no-ico" aria-hidden="true">—</span>
+        <span className="mm-form-ok-ico mm-form-no-ico" aria-hidden="true">✕</span>
         <span className="mm-form-ok-t">This doesn't look like a fit right now</span>
         <span className="mm-form-ok-d">
-          Based on your answers we would not take this on today — better to say so than to take your
+          Based on your answers we would not take this on today. Better to say so than to take your
           time. Nothing has been submitted.
         </span>
         <span className="mm-form-ok-d">
@@ -181,7 +188,7 @@ export function ApplyFlow({ initialName = '', source }: { initialName?: string; 
   }
 
   return (
-    <div className="mm-qflow">
+    <div className="mm-qflow" ref={rootRef}>
       <div className="mm-qflow-head">
         <span>Step {index + 1} of {TOTAL_STEPS}</span>
         <span>{pct}%</span>
@@ -200,9 +207,10 @@ export function ApplyFlow({ initialName = '', source }: { initialName?: string; 
           setError={setError}
         />
       ) : step.kind === 'question' ? (
-        <QuestionStep step={step} onAnswer={answer} onBack={index > 0 ? back : undefined} />
+        <QuestionStep key={index} step={step} onAnswer={answer} onBack={index > 0 ? back : undefined} />
       ) : (
         <InfoStep
+          key={index}
           step={step}
           onContinue={() => {
             markStarted()
@@ -301,12 +309,13 @@ function InfoStep({
       )}
 
       {step.bullets && (
-        <ul className={`mm-qflow-bullets${step.template === 'contract' ? ' is-contract' : ''}`}>
-          {step.bullets.map((b, i) => (
-            <li key={b}>
-              {step.template === 'contract' || step.template === 'social' ? '' : `${i + 1}. `}
-              {b}
-            </li>
+        <ul
+          className={`mm-qflow-bullets${step.template === 'contract' ? ' is-contract' : ''}${
+            step.template === 'team' ? ' is-team' : ''
+          }`}
+        >
+          {step.bullets.map((b) => (
+            <li key={b}>{b}</li>
           ))}
         </ul>
       )}
@@ -342,7 +351,7 @@ function ContactStep({
     // Onboarding runs on Telegram, so the handle is not optional — asking for it
     // here beats chasing it after someone has already been accepted.
     if (!TELEGRAM_RE.test(value.telegram.trim())) {
-      return setError('Please add your Telegram handle — that is where we reply.')
+      return setError('Please add your Telegram handle. That is where we reply.')
     }
     onNext()
   }
@@ -386,7 +395,7 @@ function ContactStep({
         <label htmlFor="af-tg">Telegram</label>
         <input id="af-tg" className="mm-input" type="text" placeholder="@yourhandle" required
           value={value.telegram} onChange={(e) => set('telegram', e.target.value)} />
-        <span className="mm-field-hint">Onboarding and support run on Telegram — this is where we reply.</span>
+        <span className="mm-field-hint">Onboarding and support run on Telegram. This is where we reply.</span>
       </div>
 
       <button type="submit" className="mm-btn mm-btn-lg mm-btn-full">Continue</button>

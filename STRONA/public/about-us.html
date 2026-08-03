@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>About Us — Forex Passing</title>
+<title>About Us · Forex Passing</title>
 
 <!-- Meta Pixel Code -->
 <script>
@@ -30,9 +30,32 @@ src="https://www.facebook.com/tr?id=1566242625059670&ev=PageView&noscript=1"
 <meta name="robots" content="index, follow" />
 <link rel="canonical" href="https://forexpassing.com/about-us.html" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Type served from our own origin. Metric-matched stand-ins keep the first
+       paint the same size as the real face, so the swap does not move the page. -->
+  <link rel="preload" as="font" type="font/woff2" href="/fonts/anton-latin.woff2" crossorigin />
+  <link rel="preload" as="font" type="font/woff2" href="/fonts/inter-latin.woff2" crossorigin />
+  <style>
+    @font-face{font-family:'Anton';font-style:normal;font-weight:400;font-display:swap;
+      src:url('/fonts/anton-latin.woff2') format('woff2')}
+    @font-face{font-family:'Anton';font-style:normal;font-weight:400;font-display:swap;
+      src:url('/fonts/anton-latin-ext.woff2') format('woff2');
+      unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,
+        U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,
+        U+2C60-2C7F,U+A720-A7FF}
+    @font-face{font-family:'Inter';font-style:normal;font-weight:400 800;font-display:swap;
+      src:url('/fonts/inter-latin.woff2') format('woff2')}
+    @font-face{font-family:'Inter';font-style:normal;font-weight:400 800;font-display:swap;
+      src:url('/fonts/inter-latin-ext.woff2') format('woff2');
+      unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,
+        U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,
+        U+2C60-2C7F,U+A720-A7FF}
+    @font-face{font-family:'Anton Fallback';src:local('Impact'),local('Haettenschweiler'),
+      local('Arial Narrow Bold');size-adjust:95.15%;ascent-override:124.01%;
+      descent-override:34.68%;line-gap-override:0%}
+    @font-face{font-family:'Inter Fallback';src:local('Arial'),local('Helvetica Neue'),
+      local('Roboto');size-adjust:106.9%;ascent-override:90.74%;descent-override:22.45%;
+      line-gap-override:0%}
+  </style>
 <style>
 :root{
   --bg:#fff; --txt:#0f172a; --mut:#64748b; --line:#e2e8f0;
@@ -41,14 +64,14 @@ src="https://www.facebook.com/tr?id=1566242625059670&ev=PageView&noscript=1"
 *{box-sizing:border-box;margin:0;padding:0}
 body{
   background:var(--bg);color:var(--txt);
-  font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  font-family:'Inter','Inter Fallback',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
   line-height:1.6;-webkit-font-smoothing:antialiased;
 }
 .page{max-width:640px;margin:0 auto;padding:48px 24px 64px;text-align:center}
 .logo{display:inline-flex;margin-bottom:40px;text-decoration:none}
 .logo img{height:48px;width:auto}
 .h1{
-  font-family:'Anton',sans-serif;font-weight:400;
+  font-family:'Anton','Anton Fallback',sans-serif;font-weight:400;
   font-size:clamp(42px,10vw,56px);line-height:1;
   letter-spacing:.02em;text-transform:uppercase;margin-bottom:24px;
 }
@@ -59,7 +82,7 @@ body{
   background:#fff;padding:32px 28px;margin-bottom:20px;text-align:center;
 }
 .card-h{
-  font-family:'Anton',sans-serif;font-weight:400;
+  font-family:'Anton','Anton Fallback',sans-serif;font-weight:400;
   font-size:clamp(22px,5vw,28px);text-transform:uppercase;
   letter-spacing:.02em;margin-bottom:16px;
 }
@@ -103,7 +126,7 @@ body{
   <h1 class="h1">ABOUT <span class="h1-us">US</span></h1>
   <p class="lead">
     Forex Passing works in trader education. We explain market structure, risk management,
-    and how prop firm evaluations actually work — the rules, the limits, and the fine print
+    and how prop firm evaluations actually work: the rules, the limits, and the fine print
     people usually read too late.
   </p>
 
@@ -144,12 +167,12 @@ body{
         </select>
       </div>
       <button type="submit" class="btn">Request Information</button>
-      <p class="form-err" id="mm-form-err" role="alert" style="display:none;color:#c0392b;font-size:13px;text-align:center;margin-top:10px">Something went wrong — please try again.</p>
+      <p class="form-err" id="mm-form-err" role="alert" style="display:none;color:#c0392b;font-size:13px;text-align:center;margin-top:10px">Something went wrong. Please try again.</p>
     </form>
 
     <div class="ok" id="mm-form-ok" role="status">
       <span class="ok-ico">✓</span>
-      <span class="ok-t">Thanks — we have your message.</span>
+      <span class="ok-t">Thanks, we have your message.</span>
       <span class="ok-d">We will reply by email. No payment details are required.</span>
     </div>
   </section>
