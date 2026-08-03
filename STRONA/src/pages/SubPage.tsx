@@ -21,6 +21,7 @@ import {
   PASS_WINDOW,
   REFUND_WINDOW,
 } from '../constants'
+import { AgreementDocument } from '../components/AgreementDocument'
 import { TrackRecordModal } from '../components/TrackRecord'
 import { PAYOUT_CERTS, PAYOUT_TOTALS } from '../data/payouts'
 import type { SubPageKey } from '../runtime/no-edge'
@@ -294,8 +295,20 @@ const CLAUSES: [string, string[]][] = [
 function Contract() {
   return (
     <>
-      <section className="mm-section mm-reveal">
+      {/* The document first — the reason someone opens this page is to read the
+          thing itself, not a description of it. The plain-language summary
+          follows for anyone who wants the short version. */}
+      <section className="mm-section">
         <div className="mm-wrap">
+          <AgreementDocument />
+        </div>
+      </section>
+
+      <section className="mm-section mm-reveal" style={{ background: 'var(--bg2)' }}>
+        <div className="mm-wrap">
+          <h2 className="mm-h2 mm-center" style={{ marginBottom: 34 }}>
+            The same thing in plain language
+          </h2>
           <div className="mm-doc">
             {CLAUSES.map(([h, paras]) => (
               <div key={h}>

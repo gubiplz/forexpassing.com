@@ -21,8 +21,9 @@ import {
   LAST_UPDATED,
   RISK_PROFILES,
   STARTING_BALANCE,
-  SYMBOL_EXPOSURE,
+  symbolExposure,
   tradeDistribution,
+  TRACKED_SESSIONS,
   TRACKED_WEEKS,
   type RiskProfile,
 } from '../data/track-record'
@@ -57,7 +58,7 @@ export function TrackRecord({ compact = false }: { compact?: boolean }) {
 
         <Panel title="Symbol exposure">
           <DistributionBars
-            rows={SYMBOL_EXPOSURE.map((s) => ({ label: s.symbol, value: s.percentage }))}
+            rows={symbolExposure(profile).map((s) => ({ label: s.symbol, value: s.percentage }))}
             suffix="%"
           />
         </Panel>
@@ -75,10 +76,12 @@ export function TrackRecord({ compact = false }: { compact?: boolean }) {
       </div>
 
       <p className="mm-tr-note">
-        {BRAND}'s own figures for accounts run at this setting — {TRACKED_WEEKS} weeks, updated
-        weekly, last entry {LAST_UPDATED}. <strong>Not an independent audit</strong> and not a
-        promise: every account trades inside its own firm's rules, so an individual account will
-        differ from what is shown here. An evaluation can fail and a funded account can be breached.
+        {BRAND}'s own figures for accounts run at this setting — {TRACKED_SESSIONS} trading sessions
+        across {TRACKED_WEEKS} weeks, last entry {LAST_UPDATED}. Sessions are added as they close,
+        so gaps are days the desk did not trade: outside crypto, nothing is dated to a weekend.{' '}
+        <strong>Not an independent audit</strong> and not a promise: every account trades inside its
+        own firm's rules, so an individual account will differ from what is shown here. An
+        evaluation can fail and a funded account can be breached.
       </p>
     </div>
   )
@@ -193,7 +196,7 @@ function EquityChart({ profile }: { profile: RiskProfile }) {
   const labels = ['Start', ...points.map((p) => p.label)]
   const n = growth.length
 
-  // One tick per month, at the first week that falls in it.
+  // One tick per month, at the first session that falls in it.
   const ticks = labels.reduce<[number, string][]>((acc, lab, i) => {
     if (i > 0 && lab !== labels[i - 1]) acc.push([i, lab])
     return acc
@@ -229,7 +232,7 @@ function EquityChart({ profile }: { profile: RiskProfile }) {
   }
 
   const balanceAt = (i: number) => (i === 0 ? STARTING_BALANCE : points[i - 1].balance)
-  const weekAt = (i: number) => (i === 0 ? 'Start' : profile.weeks[i - 1].w)
+  const dateAt = (i: number) => (i === 0 ? 'Start' : points[i - 1].date)
   const tipX = idx == null ? 0 : Math.min(Math.max(xx(idx) - 68, 4), W - 140)
 
   return (
@@ -271,7 +274,7 @@ function EquityChart({ profile }: { profile: RiskProfile }) {
             <circle cx={xx(idx)} cy={yy(growth[idx])} r="4.5" fill="#1faa6f" stroke="#fff" strokeWidth="2" />
             <g transform={`translate(${tipX}, 8)`}>
               <rect className="mm-eq-tip" width="136" height="46" rx="7" />
-              <text className="mm-eq-tip-d" x="10" y="18">{weekAt(idx)}</text>
+              <text className="mm-eq-tip-d" x="10" y="18">{dateAt(idx)}</text>
               <text className="mm-eq-tip-b" x="10" y="34">{money(balanceAt(idx))}</text>
               <text className="mm-eq-tip-g" x="126" y="34" textAnchor="end">
                 {growth[idx] > 0 ? '+' : ''}{growth[idx].toFixed(1)}%
