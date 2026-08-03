@@ -12,7 +12,7 @@ import { useCallback, useEffect, useRef, useState, type FormEvent, type ReactNod
 import { createPortal } from 'react-dom'
 import { APPLY_ENDPOINT, CONTACT_EMAIL, TELEGRAM_HREF } from '../constants'
 import { PRE_CONTACT, QUALIFICATION, TOTAL_STEPS, type Step } from '../data/questionnaire'
-import { DIAL_CODES, findDial, nationalDigits, samplePlaceholder } from '../data/dial-codes'
+import { DIAL_CODES, detectIso, findDial, nationalDigits, samplePlaceholder } from '../data/dial-codes'
 
 declare global {
   interface Window {
@@ -35,9 +35,8 @@ const EMAIL_RE = /^[^\s@]+@[^\s@.]+(\.[^\s@.]+)*\.[A-Za-z]{2,}$/
 // A person's name carries no digits. Letters from any alphabet, plus the marks
 // that live inside real names: spaces, hyphens, apostrophes and full stops.
 const NAME_RE = /^[\p{L}\p{M}][\p{L}\p{M}\s'’.-]*$/u
-// Telegram allows 5–32 chars: letters, digits and underscores. A leading @ is
-// optional because people type it both ways.
-const TELEGRAM_RE = /^@?[A-Za-z][A-Za-z0-9_]{4,31}$/
+// The Telegram handle shape moved to api/_lib/lead-quality.js: a malformed
+// handle no longer stops the form, it scores the lead down instead.
 
 /** Partner slug parked by the /r/<slug> redirect, if any. */
 function readRef(): string {
@@ -106,11 +105,13 @@ export function ApplyFlow({
   const [restored] = useState(readDraft)
   const [index, setIndex] = useState(() => restored?.index ?? 0)
   const [contact, setContact] = useState<Contact>(() =>
-    // A draft written before the country picker existed simply has no phoneIso,
-    // which is the same blank state a fresh form starts in.
+    // The dialling code starts on the visitor's own country, worked out from the
+    // device's time zone. On a restored draft it is only filled when still
+    // blank: a country the visitor picked themselves, or a draft written before
+    // the picker existed, must never be overwritten by a guess.
     restored?.contact
-      ? { ...EMPTY_CONTACT, ...restored.contact }
-      : { ...EMPTY_CONTACT, name: initialName }
+      ? { ...EMPTY_CONTACT, ...restored.contact, phoneIso: restored.contact.phoneIso || detectIso() }
+      : { ...EMPTY_CONTACT, name: initialName, phoneIso: detectIso() }
   )
   const [answers, setAnswers] = useState<Record<string, string>>(() => restored?.answers ?? {})
   const [outcome, setOutcome] = useState<'open' | 'sent' | 'rejected'>('open')
@@ -198,10 +199,15 @@ export function ApplyFlow({
           name: contact.name.trim(),
           email: contact.email.trim(),
           // Sent as one dialable number, not a bare national part the team
-          // would have to work out the country of.
+          // would have to work out the country of. When no country is set the
+          // digits go as typed and the channel post says so.
           phone: nationalDigits(contact.phone)
             ? `${findDial(contact.phoneIso)?.dial ?? ''} ${nationalDigits(contact.phone)}`.trim()
             : '',
+          // Sent alongside, because "is this number the right length" can only
+          // be answered against a country, and the composed string above has
+          // already lost which one it was.
+          phoneIso: contact.phoneIso,
           telegram: contact.telegram.trim(),
           company: contact.company,
           answers: finalAnswers,
@@ -466,27 +472,12 @@ function ContactStep({
     else if (!email.includes('@')) next.email = 'An email address needs an @ in it.'
     else if (!EMAIL_RE.test(email)) next.email = 'That address is not complete. Check the part after the @.'
 
-    // Optional as a whole, but not half-given: a number typed with no country
-    // picked would reach the team with no dialling code in front of it, and a
-    // number nobody can dial is worse than no number at all.
-    const digits = nationalDigits(value.phone)
-    const c = findDial(value.phoneIso)
-    if (!digits && !value.phoneIso) {
-      // Left blank entirely. Fine.
-    } else if (!c) next.phone = 'Please pick your country, or clear the number.'
-    else if (!digits) next.phone = 'Please add the number, or set the country back to blank.'
-    else {
-      const want = c.min === c.max ? `${c.min} digits` : `${c.min}–${c.max} digits`
-      if (digits.length < c.min || digits.length > c.max) {
-        next.phone = `A number in ${c.name} has ${want} after ${c.dial}. You typed ${digits.length}.`
-      }
-    }
-
-    // Onboarding runs on Telegram, so the handle is not optional — asking for it
-    // here beats chasing it after someone has already been accepted.
-    const tg = value.telegram.trim()
-    if (!tg) next.telegram = 'Please add your Telegram handle. That is where we reply.'
-    else if (!TELEGRAM_RE.test(tg)) next.telegram = 'That handle does not look right. Check it and try again.'
+    // Phone and Telegram are never a reason to stop someone. Both are extras,
+    // and an extra that blocks the form costs more applications than it saves
+    // bad records. Whatever arrives in them is judged after the fact instead:
+    // api/_lib/lead-quality.js scores a two-digit number or a malformed handle
+    // down and marks it in the channel post, so the desk sees the problem
+    // without the applicant ever being argued with.
     setErrs(next)
     const first = FIELD_ORDER.find((k) => next[k])
     if (first) {
@@ -544,10 +535,11 @@ function ContactStep({
         {errs.email && <span className="mm-field-err" id="af-email-err" role="alert">{errs.email}</span>}
       </div>
       <div className="mm-field">
-        <label htmlFor="af-phone">Phone <span className="mm-opt-label">(optional)</span></label>
-        {/* Country first, then the national part. Splitting them is what makes
-            the length check possible at all, and it stops the number arriving
-            without a dialling code in front of it. Nothing is preselected. */}
+        <label htmlFor="af-phone">Phone</label>
+        {/* Country first, then the national part, so the number arrives with a
+            dialling code in front of it. The country is preselected from the
+            device's own time zone; it is a starting point, not a claim, and one
+            tap changes it. */}
         <div className="mm-phone">
           {/* The real <select> sits transparent on top of the chip, so a tap
               opens the platform's own country picker — scrollable and
@@ -574,7 +566,10 @@ function ContactStep({
               ))}
             </select>
           </span>
+          {/* 15 is the most digits any number on earth has, country code
+              included (E.164). Past that it is not a phone number. */}
           <input {...field('phone')} type="tel" inputMode="tel" autoComplete="tel-national"
+            maxLength={15}
             placeholder={chosen ? samplePlaceholder(chosen.min) : 'Phone number'} />
         </div>
         {errs.phone
@@ -585,10 +580,8 @@ function ContactStep({
         <label htmlFor="af-telegram">Telegram</label>
         <input {...field('telegram')} type="text" autoComplete="username"
           autoCapitalize="none" autoCorrect="off" spellCheck={false}
-          placeholder="@yourhandle" required />
-        {errs.telegram
-          ? <span className="mm-field-err" id="af-telegram-err" role="alert">{errs.telegram}</span>
-          : <span className="mm-field-hint">Onboarding and support run on Telegram. This is where we reply.</span>}
+          placeholder="@yourhandle" />
+        <span className="mm-field-hint">Onboarding and support run on Telegram. This is where we reply.</span>
       </div>
 
       <button type="submit" className="mm-btn mm-btn-lg mm-btn-full">Continue</button>

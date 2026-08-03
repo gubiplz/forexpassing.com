@@ -36,11 +36,19 @@ export function formatLead(lead) {
   const rejected = lead.outcome === 'not_qualified';
   const q = rejected ? null : lead.quality ?? gradeLead(lead);
 
+  // A number with no dialling code in front of it is not dialable, and the one
+  // thing worse than not having it is thinking you do. Say so on the row.
+  const phone = lead.phone
+    ? String(lead.phone).startsWith('+')
+      ? lead.phone
+      : `${lead.phone} (no country code)`
+    : '';
+
   const rows = [
     ['Name', lead.name],
     ['Email', lead.email],
     ['Telegram', lead.telegram],
-    ['Phone', lead.phone],
+    ['Phone', phone],
     ['Referred by', lead.ref],
     ['Source', lead.source],
   ].filter(([, v]) => v);
@@ -54,6 +62,10 @@ export function formatLead(lead) {
   // The score shows its working, so nobody has to trust a bare number.
   if (q?.reasons.length) lines.push('', `<b>Why:</b> ${esc(q.reasons.join(' · '))}`);
   if (q?.gaps.length) lines.push(`<b>Gaps:</b> ${esc(q.gaps.join(' · '))}`);
+  // What the form accepted but nobody should take at face value. Its own line,
+  // because this is the one that decides whether the contact details are worth
+  // acting on at all.
+  if (q?.penalties.length) lines.push(`⚠️ <b>Check:</b> ${esc(q.penalties.join(' · '))}`);
 
   const answers = Object.entries(lead.answers ?? {});
   if (answers.length) {

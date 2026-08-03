@@ -41,6 +41,9 @@ export default async function handler(req, res) {
     name: str(body.name).slice(0, 120),
     email: str(body.email).slice(0, 200),
     phone: str(body.phone).slice(0, 40),
+    // The country behind the dialling code, so the grader can tell a plausible
+    // number from a made-up one. Two letters or nothing.
+    phoneIso: str(body.phoneIso).slice(0, 2).toUpperCase(),
     country: str(body.country).slice(0, 80),
     propFirm: str(body.propFirm).slice(0, 80),
     accountSize: str(body.accountSize).slice(0, 40),

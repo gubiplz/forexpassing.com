@@ -111,14 +111,114 @@ export const DIAL_CODES: DialCode[] = [
   { iso: 'VN', name: 'Vietnam', dial: '+84', flag: '🇻🇳', min: 9, max: 10 },
 ]
 
-/**
- * No country is preselected. The field starts blank and the visitor picks,
- * which is also why nothing here guesses at a default: the worker in front of
- * this site keeps the visitor's country out of the injected state on purpose,
- * and a guessed default would only be wrong for anyone travelling or on a VPN.
- */
 export function findDial(iso: string): DialCode | undefined {
   return DIAL_CODES.find((c) => c.iso === iso)
+}
+
+/* -------------------------------------------------------------------------- */
+
+/**
+ * IANA time zone to country, for the zones that map onto a country in the list
+ * above. Only those: a zone resolving to a country we do not carry a dialling
+ * code for is the same as not recognising it at all.
+ *
+ * Countries with several zones list all of them, because the browser reports
+ * whichever one the device is set to — an American in Denver never sends
+ * "America/New_York".
+ */
+const ZONE_TO_ISO: Record<string, string> = {
+  // Europe
+  'Europe/Tirane': 'AL', 'Europe/Vienna': 'AT', 'Europe/Minsk': 'BY', 'Europe/Brussels': 'BE',
+  'Europe/Sarajevo': 'BA', 'Europe/Sofia': 'BG', 'Europe/Zagreb': 'HR', 'Europe/Nicosia': 'CY',
+  'Asia/Nicosia': 'CY', 'Europe/Prague': 'CZ', 'Europe/Copenhagen': 'DK', 'Europe/Tallinn': 'EE',
+  'Europe/Helsinki': 'FI', 'Europe/Paris': 'FR', 'Europe/Berlin': 'DE', 'Europe/Busingen': 'DE',
+  'Europe/Athens': 'GR', 'Europe/Budapest': 'HU', 'Atlantic/Reykjavik': 'IS', 'Europe/Dublin': 'IE',
+  'Europe/Rome': 'IT', 'Europe/Riga': 'LV', 'Europe/Vilnius': 'LT', 'Europe/Luxembourg': 'LU',
+  'Europe/Malta': 'MT', 'Europe/Chisinau': 'MD', 'Europe/Podgorica': 'ME', 'Europe/Amsterdam': 'NL',
+  'Europe/Skopje': 'MK', 'Europe/Oslo': 'NO', 'Europe/Warsaw': 'PL', 'Europe/Lisbon': 'PT',
+  'Atlantic/Azores': 'PT', 'Atlantic/Madeira': 'PT', 'Europe/Bucharest': 'RO',
+  'Europe/Moscow': 'RU', 'Europe/Kaliningrad': 'RU', 'Europe/Samara': 'RU',
+  'Asia/Yekaterinburg': 'RU', 'Asia/Novosibirsk': 'RU', 'Asia/Krasnoyarsk': 'RU',
+  'Asia/Irkutsk': 'RU', 'Asia/Yakutsk': 'RU', 'Asia/Vladivostok': 'RU', 'Asia/Magadan': 'RU',
+  'Asia/Kamchatka': 'RU', 'Europe/Belgrade': 'RS', 'Europe/Bratislava': 'SK',
+  'Europe/Ljubljana': 'SI', 'Europe/Madrid': 'ES', 'Atlantic/Canary': 'ES', 'Africa/Ceuta': 'ES',
+  'Europe/Stockholm': 'SE', 'Europe/Zurich': 'CH', 'Europe/Istanbul': 'TR', 'Asia/Istanbul': 'TR',
+  'Europe/Kyiv': 'UA', 'Europe/Kiev': 'UA', 'Europe/Simferopol': 'UA',
+  'Europe/London': 'GB', 'Europe/Belfast': 'GB', 'Europe/Guernsey': 'GB', 'Europe/Isle_of_Man': 'GB',
+  'Europe/Jersey': 'GB',
+
+  // Americas
+  'America/Argentina/Buenos_Aires': 'AR', 'America/Argentina/Cordoba': 'AR',
+  'America/Argentina/Mendoza': 'AR', 'America/Argentina/Salta': 'AR',
+  'America/Argentina/Tucuman': 'AR', 'America/Buenos_Aires': 'AR',
+  'America/Sao_Paulo': 'BR', 'America/Bahia': 'BR', 'America/Fortaleza': 'BR',
+  'America/Recife': 'BR', 'America/Manaus': 'BR', 'America/Belem': 'BR', 'America/Cuiaba': 'BR',
+  'America/Toronto': 'CA', 'America/Vancouver': 'CA', 'America/Edmonton': 'CA',
+  'America/Winnipeg': 'CA', 'America/Halifax': 'CA', 'America/Montreal': 'CA',
+  'America/St_Johns': 'CA', 'America/Regina': 'CA',
+  'America/Santiago': 'CL', 'Pacific/Easter': 'CL', 'America/Bogota': 'CO',
+  'America/Mexico_City': 'MX', 'America/Monterrey': 'MX', 'America/Tijuana': 'MX',
+  'America/Cancun': 'MX', 'America/Merida': 'MX', 'America/Chihuahua': 'MX',
+  'America/Lima': 'PE',
+  'America/New_York': 'US', 'America/Chicago': 'US', 'America/Denver': 'US',
+  'America/Los_Angeles': 'US', 'America/Phoenix': 'US', 'America/Anchorage': 'US',
+  'America/Detroit': 'US', 'America/Indiana/Indianapolis': 'US', 'America/Kentucky/Louisville': 'US',
+  'America/Boise': 'US', 'Pacific/Honolulu': 'US',
+
+  // Asia and the Middle East
+  'Asia/Dubai': 'AE', 'Asia/Bahrain': 'BH', 'Asia/Shanghai': 'CN', 'Asia/Urumqi': 'CN',
+  'Asia/Chongqing': 'CN', 'Asia/Tbilisi': 'GE', 'Asia/Hong_Kong': 'HK',
+  'Asia/Kolkata': 'IN', 'Asia/Calcutta': 'IN', 'Asia/Jakarta': 'ID', 'Asia/Makassar': 'ID',
+  'Asia/Jayapura': 'ID', 'Asia/Jerusalem': 'IL', 'Asia/Tel_Aviv': 'IL', 'Asia/Tokyo': 'JP',
+  'Asia/Amman': 'JO', 'Asia/Almaty': 'KZ', 'Asia/Aqtobe': 'KZ', 'Asia/Atyrau': 'KZ',
+  'Asia/Kuwait': 'KW', 'Asia/Beirut': 'LB', 'Asia/Kuala_Lumpur': 'MY', 'Asia/Kuching': 'MY',
+  'Asia/Muscat': 'OM', 'Asia/Karachi': 'PK', 'Asia/Manila': 'PH', 'Asia/Qatar': 'QA',
+  'Asia/Riyadh': 'SA', 'Asia/Singapore': 'SG', 'Asia/Seoul': 'KR', 'Asia/Bangkok': 'TH',
+  'Asia/Ho_Chi_Minh': 'VN', 'Asia/Saigon': 'VN',
+
+  // Africa and Oceania
+  'Africa/Algiers': 'DZ', 'Africa/Cairo': 'EG', 'Africa/Accra': 'GH', 'Africa/Nairobi': 'KE',
+  'Africa/Casablanca': 'MA', 'Africa/Lagos': 'NG', 'Africa/Johannesburg': 'ZA',
+  'Africa/Tunis': 'TN',
+  'Australia/Sydney': 'AU', 'Australia/Melbourne': 'AU', 'Australia/Brisbane': 'AU',
+  'Australia/Perth': 'AU', 'Australia/Adelaide': 'AU', 'Australia/Hobart': 'AU',
+  'Australia/Darwin': 'AU', 'Pacific/Auckland': 'NZ',
+}
+
+/**
+ * The visitor's likely country, as an ISO code from the table above, or '' when
+ * there is nothing to go on.
+ *
+ * Read entirely on the device — no request leaves the page. The worker in front
+ * of this site keeps the visitor's country out of the injected state on purpose
+ * (see `injectState` in workers/edge.ts), so asking the server is not an option
+ * and would not be one worth taking.
+ *
+ * The time zone is asked first because it reflects where the device thinks it
+ * is, which is the question. The locale region is only a fallback: plenty of
+ * people run an English system in a country that does not speak it, so it says
+ * more about the user's reading habits than their phone number.
+ *
+ * This only preselects the chip. A traveller or anyone on a VPN gets the wrong
+ * flag and changes it with one tap, and nothing downstream assumes it is right.
+ */
+export function detectIso(): string {
+  try {
+    const zone = Intl.DateTimeFormat().resolvedOptions().timeZone
+    const byZone = zone ? ZONE_TO_ISO[zone] : undefined
+    if (byZone && findDial(byZone)) return byZone
+  } catch {
+    // Intl unavailable or the zone is unset. Fall through to the locale.
+  }
+  try {
+    for (const tag of [navigator.language, ...(navigator.languages ?? [])]) {
+      const region = tag?.split('-')[1]?.toUpperCase()
+      if (region && findDial(region)) return region
+    }
+  } catch {
+    // No locale either. The field stays blank, which is a fine place to start.
+  }
+  return ''
 }
 
 /** Digits only, minus a trunk zero people habitually type in front. */
