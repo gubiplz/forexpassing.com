@@ -42,37 +42,14 @@ export const REVIEWS = [
   { name: 'Tom W.', text: 'No monthly fee is what made it easy to try. If they do nothing, they earn nothing.', ago: '6 days ago' },
 ]
 
-// Cumulative growth (%) per ~weekly point, Jan→Jun 2026. Ends ~+60%.
-export const EQUITY = [
-  0, 1.2, 2.6, 2.1, 4.0, 5.8, 5.0, 6.4, 7.9, 9.1, 8.3, 10.6, 12.9, 14.4,
-  16.0, 19.2, 22.5, 25.4, 27.0, 30.1, 34.5, 39.8, 44.2, 47.8, 54.0, 60.2,
-]
+// The summary widget's figures. They are NOT typed in here: they come from the
+// same session series as the full track record panel, so the headline on the
+// offer page and the headline inside the panel can never be two different
+// claims about the same desk. See src/data/track-record.ts.
+import { EQUITY, EQUITY_DATES, MONTHLY, STATS, TRADES } from '../data/track-record'
 
-export const MONTHLY = [
-  { m: 'Jan', v: 5.8, c: '#a589c9' },
-  { m: 'Feb', v: 3.1, c: '#e0807e' },
-  { m: 'Mar', v: 4.9, c: '#54b4ab' },
-  { m: 'Apr', v: 10.98, c: '#f0a869' },
-  { m: 'May', v: 16.38, c: '#a9c56d' },
-  { m: 'Jun', v: 8.4, c: '#e6c75f' },
-]
-
-export const STATS: [string, string][] = [
-  ['Gain', '+60.2%'], ['Abs. Gain', '+60.2%'], ['Daily', '0.27%'], ['Monthly', '8.15%'],
-  ['Drawdown', '7.41%'], ['Balance', '$160,210'], ['Profit Factor', '2.14'], ['Win Rate', '68%'],
-]
-
-export const TRADES = [
-  { sym: 'NQ', act: 'Long', qty: '3', pts: '+128.5', profit: '+$7,710', up: true },
-  { sym: 'ES', act: 'Short', qty: '4', pts: '+22.25', profit: '+$4,450', up: true },
-  { sym: 'MNQ', act: 'Long', qty: '10', pts: '+96.0', profit: '+$1,920', up: true },
-  { sym: 'CL', act: 'Long', qty: '2', pts: '+1.18', profit: '+$2,360', up: true },
-  { sym: 'GC', act: 'Short', qty: '1', pts: '-9.40', profit: '-$940', up: false },
-  { sym: 'RTY', act: 'Long', qty: '3', pts: '+14.6', profit: '+$2,190', up: true },
-  { sym: 'YM', act: 'Long', qty: '2', pts: '+186', profit: '+$1,860', up: true },
-  { sym: 'NQ', act: 'Short', qty: '2', pts: '+74.0', profit: '+$2,960', up: true },
-]
-
+const MONTH_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+export { EQUITY, EQUITY_DATES, MONTHLY, STATS, TRADES }
 
 export function TopBar({ href = '#top' }: { href?: string }) {
   return (
@@ -311,13 +288,26 @@ export function EquityCurve() {
   const yy = (v: number) => P.t + (1 - v / max) * (H - P.t - P.b)
   const line = EQUITY.map((v, i) => `${i ? 'L' : 'M'}${xx(i).toFixed(1)} ${yy(v).toFixed(1)}`).join(' ')
   const area = `${line} L${xx(n - 1).toFixed(1)} ${yy(0).toFixed(1)} L${xx(0).toFixed(1)} ${yy(0).toFixed(1)} Z`
-  const grid = [0, 15, 30, 45, 60]
-  const ticks: [number, string][] = [[0, 'Jan'], [5, 'Feb'], [9, 'Mar'], [13, 'Apr'], [18, 'May'], [23, 'Jun']]
+  // Gridlines and month ticks follow the data rather than being pinned to it —
+  // the series gains sessions on every deploy, so anything hard-coded here
+  // would be wrong by the following week.
+  const step = max > 120 ? 40 : max > 60 ? 20 : max > 30 ? 10 : 5
+  const grid: number[] = []
+  for (let g = 0; g <= max; g += step) grid.push(g)
+  const ticks = EQUITY_DATES.reduce<[number, string][]>((acc, iso, i) => {
+    if (!iso) return acc
+    const month = iso.slice(0, 7)
+    if (acc.length === 0 || acc[acc.length - 1][1] !== MONTH_SHORT[Number(month.slice(5)) - 1]) {
+      acc.push([i, MONTH_SHORT[Number(month.slice(5)) - 1]])
+    }
+    return acc
+  }, [])
   const dateFor = (i: number) => {
-    const d = new Date(2026, 0, 5)
-    d.setDate(d.getDate() + i * 7)
-    const dd = i === n - 1 ? new Date(2026, 5, 26) : d
-    return dd.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+    const iso = EQUITY_DATES[i]
+    if (!iso) return 'Start'
+    return new Date(`${iso}T00:00:00Z`).toLocaleDateString('en-US', {
+      month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC',
+    })
   }
   const bal = (v: number) => '$' + Math.round(100000 * (1 + v / 100)).toLocaleString('en-US')
   const onMove = (e: MouseEvent<SVGSVGElement>) => {
@@ -346,7 +336,7 @@ export function EquityCurve() {
         </g>
       ))}
       {ticks.map(([i, lab]) => (
-        <text key={lab} className="mm-eq-axis" x={xx(i)} y={H - 10} textAnchor="middle">{lab}</text>
+        <text key={lab + i} className="mm-eq-axis" x={xx(i)} y={H - 10} textAnchor="middle">{lab}</text>
       ))}
       <path d={area} fill="url(#mm-eq-fill)" />
       <path d={line} fill="none" stroke="#1faa6f" strokeWidth="2.4" />
@@ -358,7 +348,7 @@ export function EquityCurve() {
             <rect className="mm-eq-tip" width="140" height="50" rx="7" />
             <text className="mm-eq-tip-d" x="10" y="18">{dateFor(idx)}</text>
             <text className="mm-eq-tip-b" x="10" y="35">{bal(EQUITY[idx])}</text>
-            <text className="mm-eq-tip-g" x="130" y="35" textAnchor="end">+{EQUITY[idx].toFixed(1)}%</text>
+            <text className="mm-eq-tip-g" x="130" y="35" textAnchor="end">{EQUITY[idx] >= 0 ? '+' : ''}{EQUITY[idx].toFixed(1)}%</text>
           </g>
         </g>
       )}
@@ -519,7 +509,7 @@ export function PerformanceWidget() {
           <div className="mm-fx-table-wrap">
             <table className="mm-fx-table">
               <thead>
-                <tr><th>Symbol</th><th>Action</th><th>Contracts</th><th>Pts</th><th>Profit</th></tr>
+                <tr><th>Symbol</th><th>Action</th><th>Lots</th><th>Pts</th><th>Profit</th></tr>
               </thead>
               <tbody>
                 {TRADES.map((t, i) => (
@@ -1531,6 +1521,77 @@ button.mm-tr-pill:hover{border-color:var(--teal);color:var(--teal)}
 .mm-doc ul{margin:0 0 14px 20px;padding:0}
 .mm-doc li{font-size:15.5px;color:var(--mut);line-height:1.75;margin-bottom:7px}
 .mm-doc strong{color:var(--txt);font-weight:700}
+/* ---- the agreement, as a document viewer -------------------------------- */
+/* A sheet of paper inside a framed viewer. The frame is the widget; the sheet
+   scrolls inside it, so the clause you are reading stays framed like paper. */
+.mm-agr{max-width:900px;margin:0 auto}
+.mm-agr-bar{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;
+  padding:13px 16px;background:var(--bg2);border:1px solid var(--line);border-bottom:0;
+  border-radius:14px 14px 0 0}
+.mm-agr-file{display:inline-flex;align-items:center;gap:9px;min-width:0;color:var(--txt)}
+.mm-agr-file svg{flex:none;color:var(--teal)}
+.mm-agr-filename{font-size:14px;font-weight:700;letter-spacing:-.01em;overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap}
+.mm-agr-tools{display:inline-flex;align-items:center;gap:10px;flex:none}
+.mm-agr-chip{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;
+  color:var(--teal);background:rgba(22,163,74,.10);border-radius:6px;padding:4px 8px}
+.mm-agr-print{font:inherit;font-size:12.5px;font-weight:700;color:var(--txt);cursor:pointer;
+  background:#fff;border:1px solid var(--line);border-radius:8px;padding:6px 11px;
+  transition:border-color .15s,background .15s}
+.mm-agr-print:hover{border-color:var(--teal);background:rgba(22,163,74,.08)}
+.mm-agr-sheet{max-height:min(78vh,860px);overflow-y:auto;overscroll-behavior:contain;
+  background:#fbfaf7;border:1px solid var(--line);border-radius:0 0 14px 14px;
+  padding:44px 30px 40px;
+  /* The scroll pane is the tell that this is a document, not a page section. */
+  box-shadow:inset 0 12px 18px -14px rgba(15,30,22,.16)}
+.mm-agr-page{max-width:38rem;margin:0 auto;color:#1b1b1b;
+  font-family:Georgia,'Times New Roman',Times,serif;font-size:15px;line-height:1.78}
+.mm-agr-page p{margin:0 0 12px;text-align:justify;hyphens:auto}
+.mm-agr-title{font-family:inherit;font-size:15.5px;font-weight:700;text-align:center;
+  text-transform:uppercase;letter-spacing:.14em;line-height:1.45;margin:0 0 30px;padding-bottom:18px;
+  border-bottom:1px solid rgba(0,0,0,.16)}
+.mm-agr-preamble{margin-bottom:34px}
+.mm-agr-gap{height:8px}
+.mm-agr-sec{margin-bottom:30px}
+.mm-agr-head{font-family:inherit;font-size:13.5px;font-weight:700;letter-spacing:.06em;
+  text-transform:uppercase;margin:0 0 14px;color:#111}
+.mm-agr-lettered{list-style:none;margin:0 0 12px;padding:0}
+.mm-agr-lettered li{text-align:justify;hyphens:auto;padding-left:1.5rem;text-indent:-1.5rem;
+  margin-bottom:9px}
+.mm-agr-mark{font-weight:700;font-variant-numeric:tabular-nums}
+.mm-agr-listblock{margin-bottom:14px}
+.mm-agr-listlabel{font-weight:700;margin-bottom:7px!important;text-align:left!important}
+.mm-agr-list{list-style:square;margin:0 0 0 1.15rem;padding:0}
+.mm-agr-list li{text-align:justify;hyphens:auto;padding-left:.25rem;margin-bottom:8px}
+/* Blanks are shown, not hidden — the reader should see what gets filled in. */
+.mm-agr-ph{font-family:inherit;font-style:italic;background:rgba(0,0,0,.06);
+  border-bottom:1px solid rgba(0,0,0,.3);padding:0 4px;white-space:nowrap}
+.mm-agr-sign{display:flex;gap:34px;flex-wrap:wrap;margin-top:46px;padding-top:8px}
+.mm-agr-sign-col{flex:1 1 200px;min-width:0}
+.mm-agr-sign-rule{height:1px;background:rgba(0,0,0,.45);margin-bottom:8px}
+.mm-agr-sign-role{font-size:11px!important;text-transform:uppercase;letter-spacing:.1em;
+  color:rgba(0,0,0,.55);margin:0 0 3px!important;text-align:left!important}
+.mm-agr-sign-name{font-size:13.5px!important;margin:0!important;text-align:left!important}
+.mm-agr-note{max-width:620px;margin:18px auto 0;font-size:13px;line-height:1.7;color:var(--mut);
+  text-align:center}
+@media (max-width:640px){
+  .mm-agr-sheet{padding:30px 18px 30px;max-height:70vh}
+  .mm-agr-page{font-size:14.5px}
+  .mm-agr-tools{width:100%;justify-content:space-between}
+}
+/* Printing hands over the whole sheet, not the slice that happens to be
+   scrolled into view — otherwise "save as PDF" produces one page of clause 4. */
+@media print{
+  body{background:#fff}
+  body *{visibility:hidden}
+  .mm-agr,.mm-agr *{visibility:visible}
+  .mm-agr-bar,.mm-agr-note{display:none!important}
+  .mm-agr{position:absolute;left:0;top:0;width:100%;max-width:none}
+  .mm-agr-sheet{max-height:none;overflow:visible;border:0;border-radius:0;box-shadow:none;
+    background:#fff;padding:0}
+  .mm-agr-page{max-width:none;font-size:11.5pt;line-height:1.6}
+  .mm-agr-sec{break-inside:avoid}
+}
 @media (max-width:640px){
   .mm-sub-hero{padding:52px 0 44px}
   .mm-cert-grid,.mm-rev-grid{grid-template-columns:1fr}
