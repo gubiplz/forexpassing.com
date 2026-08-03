@@ -466,12 +466,15 @@ function ContactStep({
     else if (!email.includes('@')) next.email = 'An email address needs an @ in it.'
     else if (!EMAIL_RE.test(email)) next.email = 'That address is not complete. Check the part after the @.'
 
-    // The country has to come first: without it there is nothing to check the
-    // length against, and the number would reach the team with no dialling code.
+    // Optional as a whole, but not half-given: a number typed with no country
+    // picked would reach the team with no dialling code in front of it, and a
+    // number nobody can dial is worse than no number at all.
     const digits = nationalDigits(value.phone)
     const c = findDial(value.phoneIso)
-    if (!c) next.phone = 'Please pick your country first.'
-    else if (!digits) next.phone = 'Please add your phone number.'
+    if (!digits && !value.phoneIso) {
+      // Left blank entirely. Fine.
+    } else if (!c) next.phone = 'Please pick your country, or clear the number.'
+    else if (!digits) next.phone = 'Please add the number, or set the country back to blank.'
     else {
       const want = c.min === c.max ? `${c.min} digits` : `${c.min}–${c.max} digits`
       if (digits.length < c.min || digits.length > c.max) {
@@ -541,7 +544,7 @@ function ContactStep({
         {errs.email && <span className="mm-field-err" id="af-email-err" role="alert">{errs.email}</span>}
       </div>
       <div className="mm-field">
-        <label htmlFor="af-phone">Phone</label>
+        <label htmlFor="af-phone">Phone <span className="mm-opt-label">(optional)</span></label>
         {/* Country first, then the national part. Splitting them is what makes
             the length check possible at all, and it stops the number arriving
             without a dialling code in front of it. Nothing is preselected. */}
@@ -562,7 +565,6 @@ function ContactStep({
               aria-label="Country dialling code"
               value={value.phoneIso}
               onChange={(e) => set('phoneIso', e.target.value)}
-              required
             >
               <option value="">Select your country</option>
               {DIAL_CODES.map((c) => (
@@ -572,7 +574,7 @@ function ContactStep({
               ))}
             </select>
           </span>
-          <input {...field('phone')} type="tel" inputMode="tel" autoComplete="tel-national" required
+          <input {...field('phone')} type="tel" inputMode="tel" autoComplete="tel-national"
             placeholder={chosen ? samplePlaceholder(chosen.min) : 'Phone number'} />
         </div>
         {errs.phone
