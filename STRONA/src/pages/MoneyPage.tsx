@@ -300,16 +300,30 @@ function HeroVsl() {
 // The player is not embedded until the reader presses play. A row of four
 // autoloading YouTube iframes is a third-party script and a few hundred KB each,
 // paid for by everyone who scrolls past.
-const PUBLISHED_TESTIMONIALS = TESTIMONIALS.filter((t) => t.videoId)
-
+//
+// An entry without a videoId keeps its slot and says so. The alternative tried
+// earlier — hiding the whole section until a clip exists — meant the reserved
+// space read as a gap on the page, and there was nothing to drop a recording
+// into. A slot that admits it is empty is honest and still shows the shape.
 function TestimonialCard({ testimonial: t }: { testimonial: Testimonial }) {
   const [playing, setPlaying] = useState(false)
-  const poster = `https://i.ytimg.com/vi/${t.videoId}/hqdefault.jpg`
+  const poster = t.videoId ? `https://i.ytimg.com/vi/${t.videoId}/hqdefault.jpg` : undefined
 
   return (
-    <figure className="mm-testi-card">
-      <div className="mm-testi-video" style={{ backgroundImage: `url(${poster})` }}>
-        {playing ? (
+    <figure className={`mm-testi-card${t.videoId ? '' : ' is-empty'}`}>
+      <div
+        className="mm-testi-video"
+        style={poster ? { backgroundImage: `url(${poster})` } : undefined}
+      >
+        {!t.videoId ? (
+          <span className="mm-testi-soon">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M17 10.5V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-3.5l4 3.5V7l-4 3.5z"
+                fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+            </svg>
+            Clip being filmed
+          </span>
+        ) : playing ? (
           <iframe
             src={`https://www.youtube.com/embed/${t.videoId}?autoplay=1&rel=0`}
             title={`${t.name}, client testimonial`}
@@ -615,19 +629,23 @@ export function MoneyPage() {
       )}
 
       {/* CLIENT TESTIMONIALS — see the warning at the top of data/testimonials.ts.
-          Entries without a videoId render as tall empty rectangles under a
-          heading that promises footage, so the whole section waits until at
-          least one clip is published, and only published ones are listed. */}
-      {PUBLISHED_TESTIMONIALS.length > 0 && (
+          The slots stay on the page while the clips are being recorded: each one
+          says so rather than pretending to be a player. Drop a YouTube id into
+          the entry and that card becomes the real thing. */}
+      {TESTIMONIALS.length > 0 && (
         <section className="mm-section mm-testi mm-reveal" id="testimonials">
           <div className="mm-wrap">
             <h2 className="mm-h2 mm-center">CLIENT TESTIMONIALS</h2>
+            {/* Until a clip is published the page must not promise footage that
+                is not there. The short version is written out either way. */}
             <p className="mm-lead mm-center mm-lead-mid">
-              Real people, with the short version written under each video.
+              {TESTIMONIALS.some((t) => t.videoId)
+                ? 'Real people, with the short version written under each video.'
+                : 'The recordings are being filmed. The short version of each one is written underneath.'}
             </p>
 
             <div className="mm-testi-grid">
-              {PUBLISHED_TESTIMONIALS.map((t) => (
+              {TESTIMONIALS.map((t) => (
                 <TestimonialCard testimonial={t} key={t.name} />
               ))}
             </div>

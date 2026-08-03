@@ -558,6 +558,16 @@ html{scroll-behavior:smooth}
 
 /* ---- client video testimonials (data/testimonials.ts) ------------------- */
 .mm-testi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:20px;margin-top:38px}
+/* Two across on a phone. A 9:16 card is over 600px tall at this width, so one
+   per row turns four of them into a screen and a half of scrolling each. */
+@media (max-width:620px){
+  .mm-testi-grid{grid-template-columns:repeat(2,1fr);gap:12px}
+  .mm-testi-body{padding:12px 12px;gap:5px}
+  .mm-testi-name{font-size:14.5px}
+  .mm-testi-story{font-size:12.5px}
+  .mm-testi-soon{font-size:9.5px;gap:6px;letter-spacing:.07em}
+  .mm-testi-soon svg{width:22px;height:22px}
+}
 .mm-testi-card{margin:0;display:flex;flex-direction:column;gap:14px}
 /* Portrait, because the clips are phone recordings. */
 .mm-testi-video{position:relative;aspect-ratio:9/16;border-radius:14px;overflow:hidden;
@@ -569,6 +579,15 @@ html{scroll-behavior:smooth}
 .mm-testi-play svg{width:26px;height:26px;margin-left:3px}
 /* No clip published yet: the button stays as a marker, not an invitation. */
 .mm-testi-play:disabled{cursor:default;opacity:.55;background:rgba(255,255,255,.22)}
+/* Reserved slot. A dashed frame and a label, so it reads as "recording pending"
+   rather than as a player that failed to load. */
+.mm-testi-card.is-empty .mm-testi-video{background:
+  repeating-linear-gradient(135deg,rgba(255,255,255,.035) 0 10px,transparent 10px 20px),#0d1a13;
+  border:1px dashed rgba(255,255,255,.22)}
+.mm-testi-soon{display:flex;flex-direction:column;align-items:center;gap:9px;
+  color:rgba(255,255,255,.62);font-size:11.5px;font-weight:800;letter-spacing:.1em;
+  text-transform:uppercase;text-align:center;padding:0 12px}
+.mm-testi-soon svg{width:30px;height:30px}
 .mm-testi-body{display:flex;flex-direction:column;gap:7px;background:#fff;border:1px solid var(--line);
   border-radius:14px;padding:16px 17px;text-align:left}
 .mm-testi-name{font-weight:800;font-size:16px}
