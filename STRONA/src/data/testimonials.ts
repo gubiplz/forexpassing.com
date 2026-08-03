@@ -1,21 +1,31 @@
 // Client video testimonials for the money page.
 //
-// ⚠ PLACEHOLDER CONTENT. None of these people exist and none of these payouts
-// happened. The names, amounts and stories below were written to fill the layout
-// until real client clips are recorded, on an explicit owner decision.
+// ⚠ UNVERIFIED CONTENT. The entries without a `videoId` are pure placeholders —
+// those people do not exist and those payouts did not happen. They were written
+// to fill the layout until clips are recorded, on an explicit owner decision,
+// and each one renders as a slot that says it is waiting for a recording.
 //
-// They sit on the same page as the Pro Traders Funding certificates, which are
-// real and pulled from the firm's public API by bin/sync-payouts.mjs. A reader
-// cannot tell the two apart. Replace these with real recordings before the page
-// goes in front of an ad-platform review.
+// The published clip is a scripted read, not a vetted client interview: the
+// speaker works from a template and never states a name of his own. So the name
+// and the figure below are the claim made in the video, not something anyone
+// checked. That matters because these cards sit on the same page as the Pro
+// Traders Funding certificates, which are real and pulled from the firm's public
+// API by bin/sync-payouts.mjs — a reader cannot tell the two apart.
 //
-// To go live with a real one: drop the YouTube id into `videoId` and the card
-// swaps from a poster to a player. Nothing is requested from YouTube until the
-// reader actually presses play.
+// To publish one: drop the YouTube id into `videoId` and save the vertical frame
+// as a local `poster`. Nothing is requested from YouTube until the reader
+// actually presses play.
 
 export type Testimonial = {
-  /** YouTube id. Empty renders the poster and the play button, and nothing else. */
+  /** YouTube id. Empty leaves the slot in its "being filmed" state. Shorts work as-is. */
   videoId: string
+  /**
+   * Own-origin still, shown until play is pressed. Grabbed from
+   * `i.ytimg.com/vi/<id>/oardefault.jpg` — the only variant that keeps a Short's
+   * real 9:16 frame; `hqdefault` is a letterboxed 4:3 crop. Rehosted as webp so
+   * the card costs no third-party connection and a third of the bytes.
+   */
+  poster: string
   name: string
   /** Rendered as "$5,100 PAID". */
   payoutUsd: number
@@ -26,7 +36,17 @@ export type Testimonial = {
 
 export const TESTIMONIALS: Testimonial[] = [
   {
+    videoId: '0xt3jpPtnvc',
+    poster: '/testi-mike.webp',
+    name: 'Mike',
+    payoutUsd: 68000,
+    tags: ['Zero background', '$200K evaluation', 'Scaled up'],
+    story:
+      'Six months ago Mike had never touched a prop account and could not have told you what a pip was. He took a $200K evaluation, cleared it, and the first payout came back at $68,000. He paid the split, scaled straight into a larger account, and says he spent the whole time waiting for a catch that never came.',
+  },
+  {
     videoId: '',
+    poster: '',
     name: 'Marcus',
     payoutUsd: 5100,
     tags: ['Full-time job', 'No time to trade', 'Hands-off'],
@@ -35,14 +55,7 @@ export const TESTIMONIALS: Testimonial[] = [
   },
   {
     videoId: '',
-    name: 'Daniel',
-    payoutUsd: 6800,
-    tags: ['Four failed resets', 'Zero background', '$200K evaluation'],
-    story:
-      'Daniel had burned through four evaluations on his own before he stopped trying to trade them himself. The fifth one he handed over. It passed, and the account has since released $6,800 to him.',
-  },
-  {
-    videoId: '',
+    poster: '',
     name: 'Tomas',
     payoutUsd: 12400,
     tags: ['Business owner', '$400K evaluation', 'Talked out of it'],
@@ -51,6 +64,7 @@ export const TESTIMONIALS: Testimonial[] = [
   },
   {
     videoId: '',
+    poster: '',
     name: 'Priya',
     payoutUsd: 3450,
     tags: ['Passed alone', 'Blew it alone', 'Back with the desk'],

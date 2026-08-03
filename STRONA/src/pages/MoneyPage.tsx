@@ -307,14 +307,10 @@ function HeroVsl() {
 // into. A slot that admits it is empty is honest and still shows the shape.
 function TestimonialCard({ testimonial: t }: { testimonial: Testimonial }) {
   const [playing, setPlaying] = useState(false)
-  const poster = t.videoId ? `https://i.ytimg.com/vi/${t.videoId}/hqdefault.jpg` : undefined
 
   return (
     <figure className={`mm-testi-card${t.videoId ? '' : ' is-empty'}`}>
-      <div
-        className="mm-testi-video"
-        style={poster ? { backgroundImage: `url(${poster})` } : undefined}
-      >
+      <div className="mm-testi-video">
         {!t.videoId ? (
           <span className="mm-testi-soon">
             <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -325,7 +321,7 @@ function TestimonialCard({ testimonial: t }: { testimonial: Testimonial }) {
           </span>
         ) : playing ? (
           <iframe
-            src={`https://www.youtube.com/embed/${t.videoId}?autoplay=1&rel=0`}
+            src={`https://www.youtube.com/embed/${t.videoId}?autoplay=1&rel=0&playsinline=1`}
             title={`${t.name}, client testimonial`}
             allow="autoplay; encrypted-media; fullscreen"
             allowFullScreen
@@ -340,7 +336,13 @@ function TestimonialCard({ testimonial: t }: { testimonial: Testimonial }) {
               setPlaying(true)
             }}
           >
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor" /></svg>
+            {/* An <img> rather than a background, so it can be deferred: the
+                section is far below the fold and this must not compete with
+                the hero. Empty alt — the name and story are already text. */}
+            <img className="mm-testi-poster" src={t.poster} alt="" loading="lazy" decoding="async" />
+            <span className="mm-testi-play-ico" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="currentColor" /></svg>
+            </span>
           </button>
         )}
       </div>
