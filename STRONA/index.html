@@ -2,9 +2,8 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" href="/favicon-32x32.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <link rel="mask-icon" href="/favicon.svg" color="#00E676" />
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#0A0F0D" />
@@ -37,10 +36,11 @@
       content="Trading education done properly: strategy, discipline and process for aspiring traders."
     />
 
-    <link rel="preconnect" href="https://fast.wistia.com" crossorigin />
+    <!-- Resolution only. Every one of these hosts is now fetched after first
+         paint, so holding open a TCP+TLS connection for them would take
+         bandwidth away from the bundle on a mobile connection. -->
     <link rel="dns-prefetch" href="https://fast.wistia.com" />
-    <link rel="preconnect" href="https://www.googletagmanager.com" />
-    <link rel="preconnect" href="https://www.google-analytics.com" />
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
     <link rel="dns-prefetch" href="https://connect.facebook.net" />
 
     <!-- Landing display type. Served from our own origin: the headline is set at
@@ -51,29 +51,44 @@
     <link rel="preload" as="font" type="font/woff2" href="/fonts/anton-latin.woff2" crossorigin />
     <link rel="preload" as="font" type="font/woff2" href="/fonts/inter-latin.woff2" crossorigin />
 
-    <!-- Google tag (gtag.js) — GA4 (live) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SP9H8Q95C1"></script>
+    <!-- Analytics and Meta Pixel — gtag.js and fbevents.js are 267 KB between
+         them, and parsing that competes with React for the main thread during
+         the exact window that decides whether the page feels fast. Both stubs
+         below queue calls immediately, so nothing is lost; only the network
+         fetch waits for the browser to go idle (or for the first touch, if the
+         reader beats it). PageView therefore still fires for bouncers. -->
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
       gtag('config', 'G-SP9H8Q95C1', { 'anonymize_ip': true });
-    </script>
 
-    <!-- Meta Pixel Code -->
-    <script>
-      !function(f,b,e,v,n,t,s)
-      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+      !function(f,n){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
       n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-      n.queue=[];t=b.createElement(e);t.async=!0;
-      t.src=v;s=b.getElementsByTagName(e)[0];
-      s.parentNode.insertBefore(t,s)}(window, document,'script',
-      'https://connect.facebook.net/en_US/fbevents.js');
+      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[]}(window);
       fbq('init', '1566242625059670');
       fbq('track', 'PageView');
+
+      (function () {
+        var done = false;
+        function load() {
+          if (done) return;
+          done = true;
+          ['https://www.googletagmanager.com/gtag/js?id=G-SP9H8Q95C1',
+           'https://connect.facebook.net/en_US/fbevents.js'].forEach(function (src) {
+            var s = document.createElement('script');
+            s.async = true;
+            s.src = src;
+            document.head.appendChild(s);
+          });
+        }
+        ['pointerdown', 'keydown', 'scroll'].forEach(function (t) {
+          addEventListener(t, load, { once: true, passive: true });
+        });
+        if (window.requestIdleCallback) requestIdleCallback(load, { timeout: 3500 });
+        else setTimeout(load, 2500);
+      })();
     </script>
-    <!-- End Meta Pixel Code -->
 
     <meta name="csrf" content="" />
   </head>

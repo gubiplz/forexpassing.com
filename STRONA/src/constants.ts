@@ -35,7 +35,7 @@ export const FORM_PREVIEW_PLACEHOLDER = 'Enter your full name...'
 // statyczna i trzyma je u siebie (grep po media-id).
 export const WISTIA_META_ID = 'jiy7nxpusf'
 /** The CTA green. The Wistia player is told to paint its controls to match. */
-export const BRAND_GREEN = '#16a34a'
+export const BRAND_GREEN = '#15803d'
 
 // Kontakt do zespołu. Statyczne strony w public/ i szablony maili nie mogą
 // importować tego pliku, więc mają adres wpisany wprost — przy zmianie uchwytu

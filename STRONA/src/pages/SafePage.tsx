@@ -64,7 +64,7 @@ export function SafePage() {
       {/* NAV — minimal */}
       <header className="mm-nav">
         <div className="mm-wrap mm-nav-inner">
-          <a href="#top" className="mm-logo"><img className="mm-logo-img" src="/logo.svg" alt="Forex Passing" /></a>
+          <a href="#top" className="mm-logo"><img className="mm-logo-img" src="/logo.webp" alt="Forex Passing" /></a>
           <nav className="mm-nav-links">
             <a href="#top">Home</a>
             <a href="#why">About Us</a>
@@ -138,7 +138,7 @@ export function SafePage() {
         <div className="mm-wrap">
           <div className="mm-footer-top">
             <div className="mm-footer-brand">
-              <img className="mm-logo-img mm-logo-img-sm" src="/logo-light.svg" alt="Forex Passing" />
+              <img className="mm-logo-img mm-logo-img-sm" src="/logo-light.webp" alt="Forex Passing" />
               <p className="mm-footer-tagline">
                 Forex Passing. Trading education in plain language: market structure, risk
                 management, and how prop firm evaluations work. No hype and no income promises.

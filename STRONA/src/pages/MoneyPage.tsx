@@ -30,7 +30,6 @@ import { TESTIMONIALS, type Testimonial } from '../data/testimonials'
 import {
   AutoScroller,
   CertCard,
-  CSS,
   PerformanceWidget,
   REVIEWS,
   ReviewCard,
@@ -148,6 +147,10 @@ function Countdown() {
     const id = setInterval(() => setNow(Date.now()), 1000)
     return () => clearInterval(id)
   }, [])
+  // Past midnight the captured target is in the past, and without this roll the
+  // clamp below pins the display at 00:00:00 — which reads as "closed" sitting
+  // directly above the form.
+  if (now >= target.current) target.current = endOfTodayMs()
   let s = Math.max(0, Math.floor((target.current - now) / 1000))
   const h = String(Math.floor(s / 3600)).padStart(2, '0')
   s %= 3600
@@ -188,15 +191,17 @@ function CheckRow({ title, detail }: { title: string; detail?: string }) {
 // player, never a padded number.
 function HeroVsl() {
   const [pct, setPct] = useState(0)
+  const [started, setStarted] = useState(false)
+  const [failed, setFailed] = useState(false)
   const playerRef = useRef<HTMLElement | null>(null)
 
   useEffect(() => {
-    if (!WISTIA_META_ID) return
+    if (!started) return
 
     // The player runtime plus the one-file module for this specific media. Both
-    // are needed before <wistia-player> upgrades from an inert custom element,
-    // and neither was ever loaded here — which is why the progress bar below
-    // could never have moved.
+    // are needed before <wistia-player> upgrades from an inert custom element.
+    // Together they pull roughly 350 KB, so they wait for a real play intent
+    // rather than loading with the page.
     for (const [src, module] of [
       ['https://fast.wistia.com/player.js', false],
       [`https://fast.wistia.com/embed/${WISTIA_META_ID}.js`, true],
@@ -209,6 +214,16 @@ function HeroVsl() {
       document.head.appendChild(s)
     }
 
+    // If Wistia is blocked — ad blockers and tracking protection do this often
+    // on mobile — the element never upgrades and the reader is left staring at
+    // a dead rectangle. Offer the way forward instead.
+    const timer = window.setTimeout(() => {
+      if (!customElements.get('wistia-player')) setFailed(true)
+    }, 6000)
+    return () => window.clearTimeout(timer)
+  }, [started])
+
+  useEffect(() => {
     // Progress comes off the element itself. The _wq queue and its `secondchange`
     // event belong to the old E-v1 embeds: <wistia-player> never registers there,
     // so onReady never ran and the bar sat at 0%. This player emits `timechange`
@@ -221,7 +236,7 @@ function HeroVsl() {
     }
     el.addEventListener('timechange', onTime)
     return () => el.removeEventListener('timechange', onTime)
-  }, [])
+  }, [started])
 
   if (!WISTIA_META_ID) return null
 
@@ -231,27 +246,34 @@ function HeroVsl() {
         <span className="mm-vsl-badge">Start here</span>
         <span className="mm-vsl-title">Watch this 90 second video</span>
       </div>
-      {/* The blurred still stands in until the element upgrades, so the slot is
-          never a black rectangle. */}
-      <div
-        className="mm-vsl-frame"
-        style={{
-          backgroundImage: `url(https://fast.wistia.com/embed/medias/${WISTIA_META_ID}/swatch)`,
-        }}
-      >
-        {/* Controls locked down the same way the reference funnel locks theirs:
-            no scrub bar, so the video cannot be skipped to the end. */}
-        <wistia-player
-          ref={playerRef}
-          media-id={WISTIA_META_ID}
-          aspect="1.7777777777777777"
-          player-color={BRAND_GREEN}
-          playbar="false"
-          playback-rate-control="false"
-          settings-control="false"
-          resumable="false"
-          controls-visible-on-load="true"
-        />
+      <div className="mm-vsl-frame">
+        {!started ? (
+          <button type="button" className="mm-vsl-facade" onClick={() => setStarted(true)}>
+            <img src="/vsl-poster.webp" alt="" width={960} height={540} decoding="async" />
+            <span className="mm-vsl-play" aria-hidden="true" />
+            <span className="mm-vsl-facade-label">Play video · 2 min</span>
+          </button>
+        ) : failed ? (
+          <div className="mm-vsl-failed">
+            <p>The video could not load — an ad blocker or tracking protection is usually the cause.</p>
+            <p>You can turn it off for this page, or simply apply below.</p>
+          </div>
+        ) : (
+          /* Controls locked down the same way the reference funnel locks theirs:
+             no scrub bar, so the video cannot be skipped to the end. */
+          <wistia-player
+            ref={playerRef}
+            media-id={WISTIA_META_ID}
+            aspect="1.7777777777777777"
+            player-color={BRAND_GREEN}
+            playbar="false"
+            playback-rate-control="false"
+            settings-control="false"
+            resumable="false"
+            controls-visible-on-load="true"
+            autoplay="true"
+          />
+        )}
       </div>
       <div className="mm-vsl-bar">
         <span className="mm-vsl-bar-label">Complete video</span>
@@ -269,16 +291,16 @@ function HeroVsl() {
 // The player is not embedded until the reader presses play. A row of four
 // autoloading YouTube iframes is a third-party script and a few hundred KB each,
 // paid for by everyone who scrolls past.
+const PUBLISHED_TESTIMONIALS = TESTIMONIALS.filter((t) => t.videoId)
+
 function TestimonialCard({ testimonial: t }: { testimonial: Testimonial }) {
   const [playing, setPlaying] = useState(false)
-  const poster = t.videoId
-    ? `https://i.ytimg.com/vi/${t.videoId}/hqdefault.jpg`
-    : undefined
+  const poster = `https://i.ytimg.com/vi/${t.videoId}/hqdefault.jpg`
 
   return (
     <figure className="mm-testi-card">
-      <div className="mm-testi-video" style={poster ? { backgroundImage: `url(${poster})` } : undefined}>
-        {playing && t.videoId ? (
+      <div className="mm-testi-video" style={{ backgroundImage: `url(${poster})` }}>
+        {playing ? (
           <iframe
             src={`https://www.youtube.com/embed/${t.videoId}?autoplay=1&rel=0`}
             title={`${t.name}, client testimonial`}
@@ -289,8 +311,7 @@ function TestimonialCard({ testimonial: t }: { testimonial: Testimonial }) {
           <button
             type="button"
             className="mm-testi-play"
-            disabled={!t.videoId}
-            aria-label={t.videoId ? `Play ${t.name}'s testimonial` : 'Recording not published yet'}
+            aria-label={`Play ${t.name}'s testimonial`}
             onClick={() => {
               track('TestimonialPlay', 'testimonial_play', { name: t.name }, true)
               setPlaying(true)
@@ -488,7 +509,6 @@ export function MoneyPage() {
 
   return (
     <div className="mm-root" ref={rootRef}>
-      <style>{CSS}</style>
 
       <TopTicker />
       <TopBar />
@@ -636,8 +656,11 @@ export function MoneyPage() {
         </section>
       )}
 
-      {/* CLIENT TESTIMONIALS — see the warning at the top of data/testimonials.ts */}
-      {TESTIMONIALS.length > 0 && (
+      {/* CLIENT TESTIMONIALS — see the warning at the top of data/testimonials.ts.
+          Entries without a videoId render as tall empty rectangles under a
+          heading that promises footage, so the whole section waits until at
+          least one clip is published, and only published ones are listed. */}
+      {PUBLISHED_TESTIMONIALS.length > 0 && (
         <section className="mm-section mm-testi mm-reveal" id="testimonials">
           <div className="mm-wrap">
             <h2 className="mm-h2 mm-center">CLIENT TESTIMONIALS</h2>
@@ -646,7 +669,7 @@ export function MoneyPage() {
             </p>
 
             <div className="mm-testi-grid">
-              {TESTIMONIALS.map((t) => (
+              {PUBLISHED_TESTIMONIALS.map((t) => (
                 <TestimonialCard testimonial={t} key={t.name} />
               ))}
             </div>

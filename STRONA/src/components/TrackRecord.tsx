@@ -102,7 +102,7 @@ function TrackHeader({
     <div className="mm-tr-head">
       <div className="mm-tr-ident">
         <span className="mm-tr-logo">
-          <img src="/logo.svg" alt={BRAND} />
+          <img src="/logo.webp" alt={BRAND} />
         </span>
 
         <div className="mm-tr-pills" role="tablist" aria-label="Risk profile">

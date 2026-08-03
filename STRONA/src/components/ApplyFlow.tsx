@@ -8,7 +8,7 @@
 // screen — no lead is sent. That is deliberate: a questionnaire that filters
 // but still submits everybody is just a longer form.
 
-import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react'
+import { useCallback, useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { APPLY_ENDPOINT, CONTACT_EMAIL, TELEGRAM_HREF } from '../constants'
 import {
@@ -53,15 +53,66 @@ const EMPTY_CONTACT: Contact = { name: '', email: '', phone: '', telegram: '', c
 
 const STEPS: (Step | 'contact')[] = [...PRE_CONTACT, 'contact', ...QUALIFICATION]
 
-export function ApplyFlow({ initialName = '', source }: { initialName?: string; source: string }) {
-  const [index, setIndex] = useState(0)
-  const [contact, setContact] = useState<Contact>({ ...EMPTY_CONTACT, name: initialName })
-  const [answers, setAnswers] = useState<Record<string, string>>({})
+// Closing the panel unmounts the flow, and a fourteen-step questionnaire that
+// forgets a typed-in email because someone tapped outside the window is a lead
+// lost for no reason. sessionStorage keeps it for the tab only, and it is
+// cleared the moment the application is sent or turned down.
+const DRAFT_KEY = 'fp_apply_draft'
+
+type Draft = { index: number; contact: Contact; answers: Record<string, string> }
+
+function readDraft(): Draft | null {
+  try {
+    const raw = window.sessionStorage.getItem(DRAFT_KEY)
+    if (!raw) return null
+    const d = JSON.parse(raw) as Draft
+    if (typeof d?.index !== 'number' || !d.contact || !d.answers) return null
+    // A stored index from an older question set would land past the end and
+    // render an empty panel.
+    return { ...d, index: Math.max(0, Math.min(d.index, STEPS.length - 1)) }
+  } catch {
+    return null
+  }
+}
+
+export function ApplyFlow({
+  initialName = '',
+  source,
+  onDirty,
+}: {
+  initialName?: string
+  source: string
+  onDirty?: () => void
+}) {
+  const [restored] = useState(readDraft)
+  const [index, setIndex] = useState(() => restored?.index ?? 0)
+  const [contact, setContact] = useState<Contact>(
+    () => restored?.contact ?? { ...EMPTY_CONTACT, name: initialName }
+  )
+  const [answers, setAnswers] = useState<Record<string, string>>(() => restored?.answers ?? {})
   const [outcome, setOutcome] = useState<'open' | 'sent' | 'rejected'>('open')
   const [sending, setSending] = useState(false)
   const [error, setError] = useState('')
-  const started = useRef(false)
+  // A restored draft means ApplyStart already fired in the earlier visit.
+  const started = useRef(restored !== null)
   const rootRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (restored) onDirty?.()
+  }, [restored, onDirty])
+
+  useEffect(() => {
+    try {
+      if (outcome === 'open') {
+        window.sessionStorage.setItem(DRAFT_KEY, JSON.stringify({ index, contact, answers }))
+      } else {
+        window.sessionStorage.removeItem(DRAFT_KEY)
+      }
+    } catch {
+      // Private mode and quota errors: the draft is a convenience, not a
+      // requirement, so losing it must not break the form.
+    }
+  }, [index, contact, answers, outcome])
 
   // The panel is what scrolls, not the page. Leaving its scrollTop alone means
   // a step reached from a long one opens halfway down its own question.
@@ -70,6 +121,7 @@ export function ApplyFlow({ initialName = '', source }: { initialName?: string; 
   }, [index, outcome])
 
   const markStarted = () => {
+    onDirty?.()
     if (started.current) return
     started.current = true
     track('ApplyStart', 'form_start', { source }, true)
@@ -204,7 +256,6 @@ export function ApplyFlow({ initialName = '', source }: { initialName?: string; 
             advance()
           }}
           onBack={index > 0 ? back : undefined}
-          setError={setError}
         />
       ) : step.kind === 'question' ? (
         <QuestionStep key={index} step={step} onAnswer={answer} onBack={index > 0 ? back : undefined} />
@@ -329,35 +380,71 @@ function InfoStep({
   )
 }
 
+type FieldKey = 'name' | 'email' | 'telegram'
+
+const FIELD_ORDER: FieldKey[] = ['name', 'email', 'telegram']
+
 function ContactStep({
   value,
   onChange,
   onNext,
   onBack,
-  setError,
 }: {
   value: Contact
   onChange: (c: Contact) => void
   onNext: () => void
   onBack?: () => void
-  setError: (s: string) => void
 }) {
-  const set = <K extends keyof Contact>(k: K, v: Contact[K]) => onChange({ ...value, [k]: v })
+  // Per field rather than one message at the foot of the panel: with four
+  // inputs and a scrolling card, a single line saying "add a valid email"
+  // can sit off screen, below a button the reader is already looking at.
+  const [errs, setErrs] = useState<Partial<Record<FieldKey, string>>>({})
+  const formRef = useRef<HTMLFormElement>(null)
+
+  const set = <K extends keyof Contact>(k: K, v: Contact[K]) => {
+    onChange({ ...value, [k]: v })
+    // Leaving the message under a field the reader is already correcting just
+    // makes them read it twice.
+    setErrs((e) => {
+      if (!(k in e)) return e
+      const next = { ...e }
+      delete next[k as FieldKey]
+      return next
+    })
+  }
 
   const submit = (e: FormEvent) => {
     e.preventDefault()
-    if (!value.name.trim()) return setError('Please add your name.')
-    if (!EMAIL_RE.test(value.email.trim())) return setError('Please add a valid email address.')
+    const next: Partial<Record<FieldKey, string>> = {}
+    if (!value.name.trim()) next.name = 'Please add your name.'
+    if (!EMAIL_RE.test(value.email.trim())) next.email = 'Please add a valid email address.'
     // Onboarding runs on Telegram, so the handle is not optional — asking for it
     // here beats chasing it after someone has already been accepted.
     if (!TELEGRAM_RE.test(value.telegram.trim())) {
-      return setError('Please add your Telegram handle. That is where we reply.')
+      next.telegram = 'Please add your Telegram handle. That is where we reply.'
+    }
+    setErrs(next)
+    const first = FIELD_ORDER.find((k) => next[k])
+    if (first) {
+      const el = formRef.current?.querySelector<HTMLInputElement>(`#af-${first}`)
+      el?.focus()
+      el?.scrollIntoView({ block: 'center' })
+      return
     }
     onNext()
   }
 
+  const field = (k: FieldKey) => ({
+    id: `af-${k}`,
+    className: 'mm-input',
+    value: value[k],
+    onChange: (e: { target: { value: string } }) => set(k, e.target.value),
+    'aria-invalid': errs[k] ? (true as const) : undefined,
+    'aria-describedby': errs[k] ? `af-${k}-err` : undefined,
+  })
+
   return (
-    <form className="mm-qflow-body" onSubmit={submit} noValidate>
+    <form className="mm-qflow-body" onSubmit={submit} noValidate ref={formRef}>
       <span className="mm-qflow-kicker">Your details</span>
       <p className="mm-qflow-question">Where should we reply?</p>
       <p className="mm-qflow-desc">
@@ -378,24 +465,31 @@ function ContactStep({
 
       <div className="mm-field">
         <label htmlFor="af-name">Full name</label>
-        <input id="af-name" className="mm-input" type="text" autoComplete="name" placeholder="John Example"
-          value={value.name} onChange={(e) => set('name', e.target.value)} required />
+        <input {...field('name')} type="text" autoComplete="name" placeholder="John Example" required />
+        {errs.name && <span className="mm-field-err" id="af-name-err" role="alert">{errs.name}</span>}
       </div>
       <div className="mm-field">
         <label htmlFor="af-email">Email</label>
-        <input id="af-email" className="mm-input" type="email" autoComplete="email" placeholder="you@email.com"
-          value={value.email} onChange={(e) => set('email', e.target.value)} required />
+        {/* An address is not a sentence: without these iOS capitalises the
+            first letter and autocorrects the domain as it is typed. */}
+        <input {...field('email')} type="email" inputMode="email" autoComplete="email"
+          autoCapitalize="none" autoCorrect="off" spellCheck={false}
+          placeholder="you@email.com" required />
+        {errs.email && <span className="mm-field-err" id="af-email-err" role="alert">{errs.email}</span>}
       </div>
       <div className="mm-field">
         <label htmlFor="af-phone">Phone <span className="mm-opt-label">(optional)</span></label>
-        <input id="af-phone" className="mm-input" type="tel" autoComplete="tel" placeholder="+44 7123 456789"
-          value={value.phone} onChange={(e) => set('phone', e.target.value)} />
+        <input id="af-phone" className="mm-input" type="tel" inputMode="tel" autoComplete="tel"
+          placeholder="+44 7123 456789" value={value.phone} onChange={(e) => set('phone', e.target.value)} />
       </div>
       <div className="mm-field">
-        <label htmlFor="af-tg">Telegram</label>
-        <input id="af-tg" className="mm-input" type="text" placeholder="@yourhandle" required
-          value={value.telegram} onChange={(e) => set('telegram', e.target.value)} />
-        <span className="mm-field-hint">Onboarding and support run on Telegram. This is where we reply.</span>
+        <label htmlFor="af-telegram">Telegram</label>
+        <input {...field('telegram')} type="text" autoComplete="username"
+          autoCapitalize="none" autoCorrect="off" spellCheck={false}
+          placeholder="@yourhandle" required />
+        {errs.telegram
+          ? <span className="mm-field-err" id="af-telegram-err" role="alert">{errs.telegram}</span>
+          : <span className="mm-field-hint">Onboarding and support run on Telegram. This is where we reply.</span>}
       </div>
 
       <button type="submit" className="mm-btn mm-btn-lg mm-btn-full">Continue</button>
@@ -406,7 +500,10 @@ function ContactStep({
 
 /* -------------------------------------------------------------------------- */
 
-/** Modal wrapper. Escape and a backdrop click close it; the page behind stops scrolling. */
+const FOCUSABLE =
+  'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled])'
+
+/** Modal wrapper. Escape closes it; the page behind stops scrolling. */
 export function ApplyModal({
   initialName,
   source,
@@ -417,18 +514,74 @@ export function ApplyModal({
   onClose: () => void
 }) {
   const cardRef = useRef<HTMLDivElement>(null)
+  // Once there is something to lose, a stray tap on the backdrop must not
+  // throw the panel away. The × and Escape stay available.
+  const [dirty, setDirty] = useState(false)
+  const markDirty = useCallback(() => setDirty(true), [])
 
   useEffect(() => {
+    const opener = document.activeElement as HTMLElement | null
+
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose()
+      if (e.key === 'Escape') {
+        onClose()
+        return
+      }
+      if (e.key !== 'Tab') return
+      // Without this, Tab walks straight out of the panel and into the page
+      // behind it, which is still there and still clickable.
+      const card = cardRef.current
+      if (!card) return
+      const items = Array.from(card.querySelectorAll<HTMLElement>(FOCUSABLE)).filter(
+        (n) => n.tabIndex >= 0 && n.getClientRects().length > 0
+      )
+      if (items.length === 0) return
+      const first = items[0]
+      const last = items[items.length - 1]
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault()
+        last.focus()
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault()
+        first.focus()
+      }
     }
     document.addEventListener('keydown', onKey)
-    const prev = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
-    cardRef.current?.querySelector<HTMLElement>('input,button,select,textarea')?.focus()
+
+    // overflow:hidden on <body> does not hold on iOS Safari — the page behind
+    // still rubber-bands once the card is scrolled to its end. Pinning the body
+    // does, at the cost of having to put the scroll position back afterwards.
+    const body = document.body
+    const y = window.scrollY
+    const prev = {
+      position: body.style.position,
+      top: body.style.top,
+      left: body.style.left,
+      width: body.style.width,
+      overflow: body.style.overflow,
+    }
+    body.style.position = 'fixed'
+    body.style.top = `-${y}px`
+    body.style.left = '0'
+    body.style.width = '100%'
+    body.style.overflow = 'hidden'
+
+    // The card, not the first control: the close button would take a visible
+    // focus ring, and an input would open the phone keyboard over the question
+    // before it has been read.
+    cardRef.current?.focus()
+
     return () => {
       document.removeEventListener('keydown', onKey)
-      document.body.style.overflow = prev
+      body.style.position = prev.position
+      body.style.top = prev.top
+      body.style.left = prev.left
+      body.style.width = prev.width
+      body.style.overflow = prev.overflow
+      window.scrollTo(0, y)
+      // Back to the button that opened it, so keyboard readers do not land at
+      // the top of the document.
+      opener?.focus?.()
     }
   }, [onClose])
 
@@ -442,13 +595,13 @@ export function ApplyModal({
       aria-modal="true"
       aria-label="Application"
       onClick={(e) => {
-        if (e.target === e.currentTarget) onClose()
+        if (e.target === e.currentTarget && !dirty) onClose()
       }}
     >
-      <div className="mm-modal-card" ref={cardRef}>
+      <div className="mm-modal-card" ref={cardRef} tabIndex={-1}>
         <button type="button" className="mm-modal-close" onClick={onClose} aria-label="Close">×</button>
         <div className="mm-modal-body">
-          <ApplyFlow initialName={initialName} source={source} />
+          <ApplyFlow initialName={initialName} source={source} onDirty={markDirty} />
         </div>
       </div>
     </div>,

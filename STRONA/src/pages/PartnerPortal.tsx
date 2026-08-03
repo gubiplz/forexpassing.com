@@ -20,7 +20,7 @@ import {
   type PartnerStats,
   type Referral,
 } from '../runtime/supabase'
-import { CSS, SiteFooter, track, useReveal } from './shared'
+import { SiteFooter, track, useReveal } from './shared'
 
 type Mode = 'signin' | 'signup'
 
@@ -49,11 +49,10 @@ export function PartnerPortal() {
 
   return (
     <div className="mm-root mm-root-sub" ref={rootRef}>
-      <style>{CSS}</style>
 
       <div className="mm-topbar mm-topbar-split">
         <a href="/referral-program" className="mm-logo">
-          <img className="mm-logo-img" src="/logo.svg" alt="Forex Passing" />
+          <img className="mm-logo-img" src="/logo.webp" alt="Forex Passing" />
         </a>
         <a href="/referral-program" className="mm-btn mm-btn-ghost mm-btn-sm mm-topbar-login">
           Programme

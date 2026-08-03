@@ -16,6 +16,7 @@ type WistiaPlayerAttributes = DetailedHTMLProps<HTMLAttributes<HTMLElement>, HTM
   'settings-control'?: string
   resumable?: string
   'controls-visible-on-load'?: string
+  autoplay?: string
 }
 
 declare module 'react' {

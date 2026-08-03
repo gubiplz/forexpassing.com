@@ -24,7 +24,6 @@ import {
 import { fetchStats, PORTAL_ENABLED, referralUrl, type PartnerStats } from '../runtime/supabase'
 import {
   AutoScroller,
-  CSS,
   REVIEWS,
   ReviewCard,
   SiteFooter,
@@ -116,11 +115,10 @@ export function ReferralPage() {
 
   return (
     <div className="mm-root mm-root-sub mm-root-sticky" ref={rootRef}>
-      <style>{CSS}</style>
 
       <div className="mm-topbar mm-topbar-split">
         <a href="/referral-program" className="mm-logo">
-          <img className="mm-logo-img" src="/logo.svg" alt="Forex Passing" />
+          <img className="mm-logo-img" src="/logo.webp" alt="Forex Passing" />
         </a>
         <a href="/partner-portal" className="mm-btn mm-btn-ghost mm-btn-sm mm-topbar-login">
           Partner login

@@ -29,7 +29,6 @@ type ProofPageKey = Exclude<SubPageKey, 'referral-program' | 'partner-portal' | 
 import {
   AutoScroller,
   CertCard,
-  CSS,
   PerformanceWidget,
   REVIEWS,
   ReviewCard,
@@ -88,9 +87,10 @@ export function SubPage({ page }: { page: ProofPageKey }) {
 
   const meta = META[page]
 
+  // /contract is the only proof page with a fixed bottom bar, and without the
+  // reserved padding it covers the last rows of the footer.
   return (
-    <div className="mm-root mm-root-sub" ref={rootRef}>
-      <style>{CSS}</style>
+    <div className={`mm-root mm-root-sub${page === 'contract' ? ' mm-root-sticky' : ''}`} ref={rootRef}>
 
       <TopBar href="/meta" />
 

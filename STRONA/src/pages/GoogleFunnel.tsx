@@ -10,7 +10,7 @@
 import { useEffect, useState } from 'react'
 import { ApplyModal } from '../components/ApplyFlow'
 import { GOOGLE_CTA_LABEL } from '../constants'
-import { CSS, SiteFooter, track } from './shared'
+import { SiteFooter, track } from './shared'
 
 export function GoogleFunnel() {
   const [open, setOpen] = useState(false)
@@ -21,11 +21,10 @@ export function GoogleFunnel() {
 
   return (
     <div className="mm-root mm-root-sub mm-gf">
-      <style>{CSS}</style>
 
       <div className="mm-topbar">
         <a href="/google-funnel" className="mm-logo">
-          <img className="mm-logo-img" src="/logo.svg" alt="Forex Passing" />
+          <img className="mm-logo-img" src="/logo.webp" alt="Forex Passing" />
         </a>
       </div>
 

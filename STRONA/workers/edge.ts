@@ -247,8 +247,30 @@ async function serveFailClosed(request: Request, env: Env): Promise<Response> {
   }
 }
 
+/**
+ * Everything under /assets/ is named for its own content hash, so the bytes
+ * behind a given URL can never change and a year in the browser cache is free.
+ * Nothing upstream said so, and the whole bundle was being re-fetched every
+ * four hours on Cloudflare's default TTL.
+ *
+ * Files served straight out of public/ — the logo, the fonts, the favicons —
+ * keep their names across deploys, so they get a day plus a revalidation window
+ * rather than being pinned to a version that can go stale.
+ */
+function cacheControlFor(pathname: string): string {
+  if (pathname.startsWith('/assets/')) return 'public, max-age=31536000, immutable';
+  return 'public, max-age=86400, stale-while-revalidate=604800';
+}
+
 async function fetchAsset(request: Request, env: Env): Promise<Response> {
   const url = new URL(request.url);
+  const withCache = (res: Response) => {
+    if (!res.ok) return res;
+    const headers = new Headers(res.headers);
+    headers.set('cache-control', cacheControlFor(url.pathname));
+    return new Response(res.body, { status: res.status, statusText: res.statusText, headers });
+  };
+
   if (env.ASSETS) {
     // SPA fallback for funnel slugs — rewrite request path to root so [assets]
     // returns index.html (which Worker then transforms with verdict injection).
@@ -257,11 +279,13 @@ async function fetchAsset(request: Request, env: Env): Promise<Response> {
     // (different title, robots: index) under an ad slug.
     if (detectFunnel(url.pathname)) {
       const indexReq = new Request(new URL('/', url).toString(), request);
-      return env.ASSETS.fetch(indexReq);
+      return withCache(await env.ASSETS.fetch(indexReq));
     }
-    return env.ASSETS.fetch(request);
+    return withCache(await env.ASSETS.fetch(request));
   }
-  if (env.ORIGIN_URL) return proxyToOrigin(request, env.ORIGIN_URL, env.ORIGIN_KEY);
+  if (env.ORIGIN_URL) {
+    return withCache(await proxyToOrigin(request, env.ORIGIN_URL, env.ORIGIN_KEY));
+  }
   return new Response('No assets binding configured', { status: 500 });
 }
 
