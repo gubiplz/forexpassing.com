@@ -1177,6 +1177,12 @@ html{scroll-behavior:smooth}
 .mm-modal-card{position:relative;width:100%;max-width:520px;max-height:min(92dvh,92vh);overflow-y:auto;
   border:1px solid rgba(15,30,22,.12);
   background:#fff;border-radius:18px;box-shadow:0 40px 90px -30px rgba(0,0,0,.6)}
+/* The agreement needs a sheet, not a form column. It also brings its own
+   scroll pane, so the card must not scroll as well or the page gets two. */
+.mm-modal-card.is-wide{max-width:960px;overflow:visible}
+.mm-modal-card.is-wide .mm-modal-body{padding:18px}
+.mm-modal-card.is-wide .mm-agr-sheet{max-height:min(70dvh,720px)}
+.mm-modal-card.is-wide .mm-agr-note{display:none}
 .mm-modal-close{position:absolute;top:12px;right:12px;z-index:2;width:34px;height:34px;border:0;border-radius:9px;
   background:transparent;color:var(--mut);font-size:20px;line-height:1;cursor:pointer}
 .mm-modal-close:hover{background:rgba(0,0,0,.05);color:var(--txt)}
@@ -1311,6 +1317,8 @@ html{scroll-behavior:smooth}
 
 /* Sticky bar with two buttons */
 .mm-sticky-bar-2{display:flex;gap:10px;justify-content:center}
+/* The one-button bar centres a single wide button; two must not fly apart. */
+.mm-sticky-bar-2 .mm-btn{width:auto;min-width:190px;max-width:260px;margin:0}
 .mm-sticky-bar-2 .mm-btn{flex:1 1 0;max-width:240px;text-align:center}
 
 /* Portal auth + dashboard */
@@ -1521,6 +1529,53 @@ button.mm-tr-pill:hover{border-color:var(--teal);color:var(--teal)}
 .mm-doc ul{margin:0 0 14px 20px;padding:0}
 .mm-doc li{font-size:15.5px;color:var(--mut);line-height:1.75;margin-bottom:7px}
 .mm-doc strong{color:var(--txt);font-weight:700}
+/* ---- /contract ----------------------------------------------------------- */
+/* Built round one action: open the agreement. Every band ends with the same
+   pair of buttons and a bar carries them at the foot of the screen, because
+   the moment somebody decides to check the wording is not predictable. */
+.mm-sub-h1-accent{color:var(--teal)}
+.mm-lead-alert{color:var(--red);font-weight:700;max-width:760px}
+.mm-ctr-top{padding-top:6px}
+.mm-ctr-card{max-width:720px;margin:0 auto;border:1px solid var(--line);border-radius:18px;
+  padding:30px 32px;background:var(--bg);display:grid;gap:22px}
+.mm-ctr-row{display:flex;gap:14px;align-items:flex-start}
+.mm-ctr-tick{flex:none;color:var(--teal);margin-top:1px}
+.mm-ctr-row p{font-size:15.5px;line-height:1.7;color:var(--mut);text-align:left}
+.mm-ctr-row strong{color:var(--txt);font-weight:800}
+.mm-ctr-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:32px}
+.mm-ctr-actions .mm-btn{min-width:210px}
+
+/* Full-bleed bands. The reviews sit on the brand colour and the guarantee on a
+   mint wash, so the two proof blocks cannot be mistaken for one another. */
+.mm-band{padding:66px 0 60px}
+.mm-band-teal{background:var(--teal)}
+.mm-band-teal .mm-band-h,.mm-band-teal .mm-band-sub{color:#fff}
+.mm-band-teal .mm-band-sub strong{color:#fff}
+.mm-band-mint{background:linear-gradient(180deg,#e8f9ef 0%,#f6fdf9 100%)}
+.mm-band-mint .mm-band-h{color:#0d2b1c}
+.mm-band-mint .mm-band-h span{color:var(--teal)}
+.mm-band-mint .mm-band-sub{color:#2f6b4d}
+.mm-band-h{font-family:'Anton',sans-serif;font-weight:400;text-transform:uppercase;
+  font-size:clamp(30px,5vw,52px);line-height:1.02;text-align:center;letter-spacing:.01em}
+.mm-band-sub{text-align:center;font-size:15px;margin-top:12px}
+.mm-band-rail{margin-top:34px}
+.mm-band-rail .mm-rev-card{width:320px;flex:0 0 320px}
+.mm-gcards{max-width:760px;margin:34px auto 0;display:grid;gap:14px}
+.mm-gcard{display:flex;gap:14px;align-items:flex-start;background:#fff;border-radius:14px;
+  padding:20px 22px;box-shadow:0 1px 2px rgba(13,43,28,.06),0 8px 20px -14px rgba(13,43,28,.28)}
+.mm-gcard-tick{flex:none;width:26px;height:26px;border-radius:7px;background:var(--teal);color:#fff;
+  display:inline-flex;align-items:center;justify-content:center;font-size:15px;font-weight:800}
+.mm-gcard p{font-size:15.5px;line-height:1.7;color:#28503c;text-align:left}
+.mm-gcard strong{color:#0d2b1c;font-weight:800}
+.mm-btn-forest{background:#0f5132;border-color:#0f5132}
+.mm-btn-forest:hover{background:#0b3f27;border-color:#0b3f27}
+@media (max-width:640px){
+  .mm-ctr-card{padding:24px 20px}
+  .mm-ctr-actions .mm-btn{min-width:0;width:100%}
+  .mm-band{padding:48px 0 44px}
+  .mm-band-rail .mm-rev-card{width:270px;flex:0 0 270px}
+}
+
 /* ---- the agreement, as a document viewer -------------------------------- */
 /* A sheet of paper inside a framed viewer. The frame is the widget; the sheet
    scrolls inside it, so the clause you are reading stays framed like paper. */

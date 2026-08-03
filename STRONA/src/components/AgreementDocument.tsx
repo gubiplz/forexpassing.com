@@ -9,6 +9,8 @@
 // [PLACEHOLDERS] in the source data are marked up rather than hidden. Somebody
 // reading it should see exactly which blanks get filled in for them.
 
+import { useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { AGREEMENT, type Block } from '../data/agreement'
 import { track } from '../pages/shared'
 
@@ -131,5 +133,50 @@ export function AgreementDocument() {
         blanks, and that signed copy is the one that governs.
       </p>
     </div>
+  )
+}
+
+/**
+ * The agreement in a window, opened by every "See contract" button on the page.
+ *
+ * On <body> rather than in place: any ancestor with a transform — every
+ * .mm-reveal section has one — becomes the containing block for position:fixed
+ * and the window would open wherever that section happens to sit.
+ */
+export function ContractModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+  useEffect(() => {
+    if (!open) return
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose()
+    window.addEventListener('keydown', onKey)
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      window.removeEventListener('keydown', onKey)
+      document.body.style.overflow = prev
+    }
+  }, [open, onClose])
+
+  if (!open) return null
+
+  return createPortal(
+    <div
+      className="mm-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-label={AGREEMENT.title}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose()
+      }}
+    >
+      <div className="mm-modal-card is-wide">
+        <button type="button" className="mm-modal-close" onClick={onClose} aria-label="Close">
+          ×
+        </button>
+        <div className="mm-modal-body">
+          <AgreementDocument />
+        </div>
+      </div>
+    </div>,
+    document.body
   )
 }
