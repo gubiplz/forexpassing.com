@@ -397,11 +397,19 @@ export function AutoScroller({
     let down = false
     let startX = 0
     let startAcc = 0
+    // Flick momentum. Without it a swipe travels exactly as far as the finger and
+    // stops dead, so browsing the band on a phone takes a dozen swipes.
+    let vel = 0
+    let lastX = 0
+    let lastT = 0
     const onDown = (e: PointerEvent) => {
       bump()
       down = true
+      vel = 0
       startX = e.clientX
       startAcc = acc
+      lastX = e.clientX
+      lastT = performance.now()
       el.setPointerCapture(e.pointerId)
       // Dragging a marquee must not paint a text selection across the cards.
       // preventDefault stops one from starting; the collapse clears a selection
@@ -415,15 +423,35 @@ export function AutoScroller({
     }
     const onMove = (e: PointerEvent) => {
       if (!down) return
+      const now = performance.now()
+      const dt = now - lastT
+      if (dt > 0) {
+        // Velocity in px per frame, signed like acc (finger left = content left).
+        // Smoothed so one jittery sample cannot dominate the flick.
+        const v = (-(e.clientX - lastX) / dt) * 16
+        vel = vel * 0.7 + Math.max(-45, Math.min(45, v)) * 0.3
+        lastX = e.clientX
+        lastT = now
+      }
       acc = wrap(startAcc - (e.clientX - startX))
       apply()
     }
+    // pointercancel fires when the browser claims the gesture for page scroll. It
+    // never pairs with pointerup, so without it `down` stays true and the band
+    // freezes for good.
     const onUp = () => { down = false; bump() }
 
     const frame = (now: number) => {
-      if (half > 0 && now >= resumeAt && !down) {
-        acc = wrap(acc + (reverse ? -speed : speed))
-        apply()
+      if (half > 0 && !down) {
+        if (Math.abs(vel) > 0.1) {
+          acc = wrap(acc + vel)
+          vel *= 0.94
+          apply()
+        } else if (now >= resumeAt) {
+          vel = 0
+          acc = wrap(acc + (reverse ? -speed : speed))
+          apply()
+        }
       }
       raf = requestAnimationFrame(frame)
     }
@@ -436,6 +464,7 @@ export function AutoScroller({
       el.addEventListener('pointerdown', onDown, { passive: false })
       el.addEventListener('pointermove', onMove)
       window.addEventListener('pointerup', onUp)
+      window.addEventListener('pointercancel', onUp)
       el.addEventListener('wheel', bump, { passive: true })
     }
     return () => {
@@ -446,6 +475,7 @@ export function AutoScroller({
         el.removeEventListener('pointerdown', onDown)
         el.removeEventListener('pointermove', onMove)
         window.removeEventListener('pointerup', onUp)
+        window.removeEventListener('pointercancel', onUp)
         el.removeEventListener('wheel', bump)
       }
     }

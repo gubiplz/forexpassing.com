@@ -188,6 +188,7 @@ function CheckRow({ title, detail }: { title: string; detail?: string }) {
 // player, never a padded number.
 function HeroVsl() {
   const [pct, setPct] = useState(0)
+  const playerRef = useRef<HTMLElement | null>(null)
 
   useEffect(() => {
     if (!WISTIA_META_ID) return
@@ -208,16 +209,18 @@ function HeroVsl() {
       document.head.appendChild(s)
     }
 
-    const w = window as unknown as { _wq?: unknown[] }
-    w._wq = w._wq || []
-    w._wq.push({
-      id: WISTIA_META_ID,
-      onReady(video: { bind: (e: string, cb: () => void) => void; percentWatched: () => number }) {
-        video.bind('secondchange', () => {
-          setPct(Math.min(100, Math.round(video.percentWatched() * 100)))
-        })
-      },
-    })
+    // Progress comes off the element itself. The _wq queue and its `secondchange`
+    // event belong to the old E-v1 embeds: <wistia-player> never registers there,
+    // so onReady never ran and the bar sat at 0%. This player emits `timechange`
+    // and carries percentWatched as a property.
+    const el = playerRef.current
+    if (!el) return
+    const onTime = () => {
+      const p = (el as unknown as { percentWatched?: number }).percentWatched
+      if (typeof p === 'number') setPct(Math.min(100, Math.round(p * 100)))
+    }
+    el.addEventListener('timechange', onTime)
+    return () => el.removeEventListener('timechange', onTime)
   }, [])
 
   if (!WISTIA_META_ID) return null
@@ -239,6 +242,7 @@ function HeroVsl() {
         {/* Controls locked down the same way the reference funnel locks theirs:
             no scrub bar, so the video cannot be skipped to the end. */}
         <wistia-player
+          ref={playerRef}
           media-id={WISTIA_META_ID}
           aspect="1.7777777777777777"
           player-color={BRAND_GREEN}
