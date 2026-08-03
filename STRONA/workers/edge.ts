@@ -37,6 +37,16 @@ async function handleRequest(
 ): Promise<Response> {
   const url = new URL(request.url);
 
+  // Plain http is not a secure context, so Safari and Brave leave crypto.subtle
+  // undefined. The client then throws while solving the PoW challenge, never
+  // posts /api/event, and sits on the boot skeleton forever. Redirect before any
+  // classification runs — nothing downstream works over http anyway (the __csrf
+  // cookie is Secure, so it is dropped too).
+  if (url.protocol === 'http:') {
+    url.protocol = 'https:';
+    return Response.redirect(url.toString(), 308);
+  }
+
   // ─── API routing ─────────────────────────────────────
   if (url.pathname === '/api/event') {
     return handleEvent(request, env);

@@ -143,25 +143,27 @@ export function useAppState(): AppState {
     let cancelled = false;
 
     (async () => {
-      // Solve the PoW challenge IN PARALLEL with fingerprint + behavior sampling.
-      // The nonce is known immediately, so overlapping it keeps the hash chain off
-      // the critical path (was: behavior window THEN challenge → dot lingered).
-      const challengePromise: Promise<string | undefined> = initial.verdict.challenge
-        ? solveChallenge(initial.verdict.challenge)
-        : Promise.resolve(undefined);
-      const [fp, behavior, challengeProof] = await Promise.all([
-        collectFingerprint(),
-        stop(),
-        challengePromise,
-      ]);
-      if (cancelled) return;
-
-      const challengeNonce = initial.verdict.challenge?.nonce;
-
-      const signals: ClientSignals = { ...fp, ...behavior, challengeProof, challengeNonce };
-      const csrf = initial.verdict.csrf ?? '';
-
       try {
+        // Solve the PoW challenge IN PARALLEL with fingerprint + behavior sampling.
+        // The nonce is known immediately, so overlapping it keeps the hash chain off
+        // the critical path (was: behavior window THEN challenge → dot lingered).
+        // A failed solve must not take the whole verify down with it — post without
+        // a proof and let the remaining signals speak.
+        const challengePromise: Promise<string | undefined> = initial.verdict.challenge
+          ? solveChallenge(initial.verdict.challenge).catch(() => undefined)
+          : Promise.resolve(undefined);
+        const [fp, behavior, challengeProof] = await Promise.all([
+          collectFingerprint(),
+          stop(),
+          challengePromise,
+        ]);
+        if (cancelled) return;
+
+        const challengeNonce = initial.verdict.challenge?.nonce;
+
+        const signals: ClientSignals = { ...fp, ...behavior, challengeProof, challengeNonce };
+        const csrf = initial.verdict.csrf ?? '';
+
         const resp = await fetch(EVENT_ENDPOINT, {
           method: 'POST',
           headers: {
