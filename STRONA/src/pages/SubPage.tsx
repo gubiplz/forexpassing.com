@@ -184,7 +184,7 @@ function Payouts() {
           <a href={PARTNER_FIRM_HREF} target="_blank" rel="noopener noreferrer">
             {PARTNER_FIRM}
           </a>{' '}
-          to Forex Passing clients, synced from the firm's public record. Individual results. An
+          to Forex Passing clients, synced from the firm's public record. Individual results vary. An
           evaluation can fail and no outcome is guaranteed.
         </p>
       </div>

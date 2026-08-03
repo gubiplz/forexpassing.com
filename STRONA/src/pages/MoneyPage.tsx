@@ -632,7 +632,7 @@ export function MoneyPage() {
           <div className="mm-wrap">
             <p className="mm-disclaimer">
               Certificates issued by {PARTNER_FIRM} to Forex Passing clients, pulled live from the
-              firm's public record. Individual results. An evaluation can fail and no outcome is
+              firm's public record. Individual results vary. An evaluation can fail and no outcome is
               guaranteed.
             </p>
             <CtaRow onOpen={openApply} source="payouts" />
