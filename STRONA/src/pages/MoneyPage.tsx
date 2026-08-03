@@ -642,7 +642,7 @@ export function MoneyPage() {
                 is not there. The short version is written out either way. */}
             <p className="mm-lead mm-center mm-lead-mid">
               {TESTIMONIALS.some((t) => t.videoId)
-                ? 'Real people, with the short version written under each video.'
+                ? 'The short version is written under each video.'
                 : 'The recordings are being filmed. The short version of each one is written underneath.'}
             </p>
 
