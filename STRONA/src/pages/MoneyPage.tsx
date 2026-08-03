@@ -490,42 +490,28 @@ export function MoneyPage() {
       <TopBar />
 
       {/* HERO — message-matched to the ad: we trade it, you own it */}
-      <section className="mm-hero" id="top">
-        <div className="mm-wrap mm-hero-grid">
-          <div className="mm-hero-copy">
-            <span className="mm-eyebrow mm-eyebrow-teal">Forex Passing · Prop account management</span>
-            <h1 className="mm-h1">WE PASS YOUR CHALLENGE.<br />YOU KEEP THE ACCOUNT.</h1>
-            <p className="mm-lead">
-              Our desk runs your prop firm evaluation and manages the funded account inside the firm's
-              risk rules. <strong>You don't sit at the charts.</strong>
-            </p>
-            <ul className="mm-hero-points">
-              <li>You buy the evaluation and it stays <strong>in your name</strong></li>
-              <li>We trade it. You keep <strong>{CLIENT_SPLIT}</strong> of every payout</li>
-              <li>We are paid <strong>only after</strong> a payout is released, never before</li>
-            </ul>
-            <div className="mm-cta-row mm-cta-left">
-              <Cta onOpen={openApply} source="hero" />
-              <a href="#fix" className="mm-btn mm-btn-ghost mm-btn-lg">See how it works</a>
-            </div>
-            <p className="mm-microtrust">Nothing to pay on this page · Questionnaire first · Firm rules checked before we start</p>
-          </div>
-          <div className="mm-hero-card">
-            <TermsCard />
-          </div>
-        </div>
-        <div className="mm-hero-glow" aria-hidden="true" />
-      </section>
-
-      {/* HERO VIDEO — renders only once a clip is configured (constants.ts) */}
-      <section className="mm-section mm-reveal" style={{ paddingTop: 0 }}>
+      {/* One column, centred, laid out like the reference funnel: the headline
+          says what we do, the warning kills the two objections that stop people
+          reading, and the video is the next thing under their thumb. */}
+      <section className="mm-hero mm-hero-solo" id="top">
         <div className="mm-wrap">
-          <p className="mm-warn">
-            You don't need trading experience, and you pay us nothing up front. You buy a prop firm
-            evaluation. We run it for you.
+          <span className="mm-eyebrow mm-eyebrow-teal mm-eyebrow-c">Prop account management</span>
+          <h1 className="mm-h1 mm-h1-solo">
+            WE PASS YOUR CHALLENGE &amp; MANAGE YOUR ACCOUNT <span className="mm-teal">FOR YOU</span>
+          </h1>
+          <p className="mm-warn mm-warn-hero">
+            You don't need any experience at all, and you pay us nothing up front. You buy a prop
+            firm evaluation, and that is the account we manage for you. The video below walks
+            through it.
           </p>
           <HeroVsl />
+          <div className="mm-cta-row mm-cta-center-row">
+            <Cta onOpen={openApply} source="hero" />
+            <a href="#fix" className="mm-btn mm-btn-ghost mm-btn-lg">See how it works</a>
+          </div>
+          <p className="mm-microtrust">Nothing to pay on this page · Questionnaire first · Firm rules checked before we start</p>
         </div>
+        <div className="mm-hero-glow" aria-hidden="true" />
       </section>
 
       {/* HOW IT WORKS */}
@@ -577,6 +563,12 @@ export function MoneyPage() {
             {CONTROL.map((c) => (
               <CheckRow title={c.t} detail={c.d} key={c.t} />
             ))}
+          </div>
+
+          {/* Was in the hero. It belongs with the terms it summarises, and the
+              hero is now a single centred column like the reference funnel. */}
+          <div className="mm-terms-slot">
+            <TermsCard />
           </div>
         </div>
       </section>

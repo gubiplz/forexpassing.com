@@ -676,6 +676,21 @@ html{scroll-behavior:smooth}
 /* HERO */
 .mm-hero{position:relative;padding:74px 0 70px;overflow:hidden}
 .mm-hero .mm-wrap{position:relative;z-index:1}
+/* Single centred column, the way the reference funnel runs it: headline, the
+   warning that answers the two objections, then the video. Same shape on a
+   phone and on a desktop, only the type scale changes. */
+.mm-hero-solo{padding:56px 0 46px;text-align:center}
+.mm-hero-solo .mm-wrap{display:flex;flex-direction:column;align-items:center}
+.mm-h1-solo{margin:14px auto 0;font-size:clamp(34px,7.2vw,72px);line-height:.94}
+/* Wide enough to break into full lines rather than two or three words each. */
+@media(min-width:901px){.mm-h1-solo{max-width:19ch}}
+.mm-warn-hero{max-width:640px;margin:26px auto 0;font-size:clamp(15px,2.2vw,17px);line-height:1.55}
+.mm-hero-solo .mm-vsl{margin-top:26px;width:100%}
+.mm-cta-center-row{justify-content:center;margin-top:24px}
+/* The terms card moved out of the hero and into the section it describes. */
+.mm-terms-slot{display:flex;justify-content:center;margin-top:30px}
+@media(max-width:560px){.mm-hero-solo{padding:36px 0 34px}}
+
 .mm-hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center;text-align:left}
 @media(max-width:900px){.mm-hero-grid{grid-template-columns:1fr;gap:34px;text-align:center}}
 .mm-hero-grid .mm-lead{margin:0;max-width:560px}
