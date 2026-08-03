@@ -1149,8 +1149,11 @@ html{scroll-behavior:smooth}
 .mm-preview-label{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--mut);margin-bottom:12px}
 .mm-preview-dot{width:8px;height:8px;border-radius:50%;background:var(--teal)}
 .mm-preview-input{width:100%;border:1px solid var(--line);border-radius:10px;padding:13px 14px;font-size:15px;
-  font-family:inherit;color:var(--txt);background:#fff;margin-bottom:12px}
+  font-family:inherit;color:var(--txt);background:#fff;margin-bottom:12px;
+  /* It opens the questionnaire instead of taking text, so it points like a button. */
+  cursor:pointer;caret-color:transparent}
 .mm-preview-input:focus{outline:none;border-color:var(--teal)}
+.mm-preview-input:hover{border-color:var(--teal)}
 
 /* Repeated CTA under each section */
 .mm-cta-center{display:flex;justify-content:center;margin:36px 0 0}
@@ -1159,8 +1162,11 @@ html{scroll-behavior:smooth}
 /* Sticky bar — always visible, mirrors the reference funnel */
 .mm-sticky-bar{position:fixed;left:0;right:0;bottom:0;z-index:60;background:rgba(255,255,255,.96);
   backdrop-filter:blur(6px);border-top:1px solid var(--line);
-  padding:12px 16px;padding-bottom:max(12px,env(safe-area-inset-bottom))}
+  padding:12px 16px;padding-bottom:max(12px,env(safe-area-inset-bottom));
+  transition:transform .3s var(--ease),opacity .3s var(--ease)}
 .mm-sticky-bar .mm-btn{display:block;max-width:420px;margin:0 auto;text-align:center;width:100%}
+/* Out of the way while the form itself is on screen — never the same button twice. */
+.mm-sticky-bar.is-hidden{transform:translateY(130%);opacity:0;pointer-events:none}
 
 /* Questionnaire modal */
 /* The dialog is portalled onto <body>, i.e. outside .mm-root — so it has to
@@ -1382,8 +1388,11 @@ html{scroll-behavior:smooth}
  * ------------------------------------------------------------------------- */
 
 .mm-qflow{display:block}
+/* The close button is absolutely positioned over this row, so the percentage
+   has to be kept out from under it. */
 .mm-qflow-head{display:flex;justify-content:space-between;font-size:11px;font-weight:700;
-  letter-spacing:.14em;text-transform:uppercase;color:var(--mut);margin-bottom:8px}
+  letter-spacing:.14em;text-transform:uppercase;color:var(--mut);margin-bottom:8px;
+  padding-right:30px}
 .mm-qflow-track{height:6px;border-radius:99px;background:rgba(15,30,22,.08);overflow:hidden;margin-bottom:22px}
 .mm-qflow-fill{height:100%;border-radius:99px;background:var(--teal);transition:width .35s var(--ease)}
 .mm-qflow-body{display:flex;flex-direction:column;text-align:left}

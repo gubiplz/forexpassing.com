@@ -258,17 +258,26 @@ function CtaRow({ onOpen, source, tight }: { onOpen: () => void; source: string;
   )
 }
 
-// Low-friction entry point: one field, then the full questionnaire opens with
-// the name already filled in.
+// Low-friction entry point: the card looks like the first field of the form, and
+// the field opens the questionnaire rather than collecting anything itself.
+//
+// Read-only on purpose. Tapping it means "I want to fill this in", so the
+// questionnaire opens there and then — it asks for the name itself, and a name
+// typed twice is a name typed once too many. Read-only also keeps the phone
+// keyboard from flashing open and shut behind the modal. Focus is the only
+// handler needed: a read-only field still takes focus from a tap, a click and
+// the Tab key alike, so one listener covers every way in.
 function FormPreview({ onOpen }: { onOpen: (name: string) => void }) {
-  const [name, setName] = useState('')
+  const open = (source: string) => {
+    track('CTAClick', 'cta_click', { source }, true)
+    onOpen('')
+  }
   return (
     <form
       className="mm-preview"
       onSubmit={(e) => {
         e.preventDefault()
-        track('CTAClick', 'cta_click', { source: 'preview' }, true)
-        onOpen(name)
+        open('preview')
       }}
     >
       <span className="mm-preview-label">
@@ -281,9 +290,14 @@ function FormPreview({ onOpen }: { onOpen: (name: string) => void }) {
         name="name"
         autoComplete="name"
         placeholder={FORM_PREVIEW_PLACEHOLDER}
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        aria-label="Your full name"
+        value=""
+        readOnly
+        aria-haspopup="dialog"
+        aria-label="Your full name — opens the application"
+        onFocus={(e) => {
+          e.currentTarget.blur()
+          open('preview_field')
+        }}
       />
       <button type="submit" className="mm-btn mm-btn-lg mm-btn-full">{CTA_LABEL}</button>
     </form>
@@ -344,6 +358,24 @@ export function MoneyPage() {
     setApplyName(name)
     setApplyOpen(true)
   }
+
+  // The sticky bar steps aside while the application section is on screen.
+  // Otherwise it sits on top of the very card it is pointing at: on a phone it
+  // covers the note under the form, on a 844px-tall screen it clips the card's
+  // own button, and either way the reader gets the same green "LET'S START NOW"
+  // twice at once.
+  const [hideSticky, setHideSticky] = useState(false)
+  useEffect(() => {
+    const apply = document.getElementById('apply')
+    if (!apply || !('IntersectionObserver' in window)) return
+    const io = new IntersectionObserver((entries) => setHideSticky(entries[0].isIntersecting), {
+      // Only once the section reaches the bar, not the moment it appears.
+      rootMargin: '0px 0px -84px 0px',
+      threshold: 0,
+    })
+    io.observe(apply)
+    return () => io.disconnect()
+  }, [])
 
   return (
     <div className="mm-root" ref={rootRef}>
@@ -815,8 +847,8 @@ export function MoneyPage() {
 
       <SiteFooter variant="meta" />
 
-      {/* Always on screen: one step, visible the whole way down the page. */}
-      <div className="mm-sticky-bar">
+      {/* One step, visible the whole way down the page — except over the form. */}
+      <div className={`mm-sticky-bar${hideSticky ? ' is-hidden' : ''}`}>
         <Cta onOpen={openApply} source="sticky" />
       </div>
 
