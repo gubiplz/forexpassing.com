@@ -13,6 +13,8 @@
 //
 // Without both vars set this is a no-op: the lead is still logged and emailed.
 
+import { gradeLead } from './lead-quality.js';
+
 const MAX = 3900; // Telegram caps a message at 4096 characters.
 
 const esc = (s) =>
@@ -21,9 +23,18 @@ const esc = (s) =>
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;');
 
-/** One lead as a readable channel post. */
+/**
+ * One lead as a readable channel post.
+ *
+ * The first line is the grade, because that is the line Telegram puts in the
+ * channel list: a hot lead has to be recognisable before the message is opened.
+ * The grade is normally computed once in the endpoint and passed in on
+ * `lead.quality`; it is recomputed here when it is missing so this function
+ * still works on its own.
+ */
 export function formatLead(lead) {
-  const head = lead.outcome === 'not_qualified' ? '🔴 Not qualified' : '🟢 Qualified';
+  const rejected = lead.outcome === 'not_qualified';
+  const q = rejected ? null : lead.quality ?? gradeLead(lead);
 
   const rows = [
     ['Name', lead.name],
@@ -34,17 +45,25 @@ export function formatLead(lead) {
     ['Source', lead.source],
   ].filter(([, v]) => v);
 
-  const lines = [
-    `<b>${head}</b>`,
-    '',
-    ...rows.map(([k, v]) => `<b>${k}:</b> ${esc(v)}`),
-  ];
+  const lines = rejected
+    ? ['🔴 <b>Not qualified</b>']
+    : [`${q.emoji} <b>${q.label}</b> · ${q.score}/${q.max}`, '🟢 Qualified'];
+
+  lines.push('', ...rows.map(([k, v]) => `<b>${k}:</b> ${esc(v)}`));
+
+  // The score shows its working, so nobody has to trust a bare number.
+  if (q?.reasons.length) lines.push('', `<b>Why:</b> ${esc(q.reasons.join(' · '))}`);
+  if (q?.gaps.length) lines.push(`<b>Gaps:</b> ${esc(q.gaps.join(' · '))}`);
 
   const answers = Object.entries(lead.answers ?? {});
   if (answers.length) {
     lines.push('', '<b>Answers</b>');
-    for (const [q, a] of answers) lines.push(`• ${esc(q)}\n   → <b>${esc(a)}</b>`);
+    for (const [q2, a] of answers) lines.push(`• ${esc(q2)}\n   → <b>${esc(a)}</b>`);
   }
+
+  // Tapping the tag in Telegram searches the channel for it, which is the
+  // cheapest way to pull up every hot lead without a CRM.
+  lines.push('', rejected ? '#lead_out' : q.tag);
 
   const text = lines.join('\n');
   return text.length > MAX ? `${text.slice(0, MAX)}\n…` : text;

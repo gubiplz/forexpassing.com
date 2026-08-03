@@ -7,23 +7,32 @@
 //   qualified     — we are taking it on; here is what happens next
 //   notQualified  — we are not, and here is what would change that
 //
-// Styled the way Apple writes transactional mail: a white sheet on light grey,
-// one large quiet headline, generous space, hairline rules instead of boxes,
-// a single pill button, and legal text small and grey at the bottom. Colour is
-// used once — on the button — rather than as a banner.
+// They are deliberately set differently, because they are trying to land in
+// different places.
 //
-// Inline-styled tables throughout, because that is the only layout email
-// clients agree on: no flexbox, no grid, no external stylesheet.
+// The acceptance is plain: no logo, no pill button, no card. Gmail sorts mail
+// into Promotions largely on those exact signals — a remote hero image, a
+// styled call to action, a heavy template — and an acceptance filed under
+// Promotions is an acceptance nobody reads. This one is set the way a person
+// types a note: one column, system font, links as links.
+//
+// The rejection keeps the branded sheet below: it is a courtesy, nothing is
+// waiting on a reply to it, and it costs nothing if it lands a tab across.
+//
+// The sheet uses inline-styled tables throughout, because that is the only
+// layout email clients agree on: no flexbox, no grid, no external stylesheet.
 
 const BRAND = 'Forex Passing';
 const SITE = 'forexpassing.com';
 const TELEGRAM = 'https://t.me/forexpassingadmin';
 const CONTACT = 'contact@forexpassing.com';
 
-// Where the logo is fetched from. The custom domain does not serve yet (its
-// Vercel CNAME is behind Cloudflare's proxy), so this points at the deployment
-// URL until that is sorted; then set PUBLIC_BASE_URL to https://forexpassing.com.
-const ASSETS = process.env.PUBLIC_BASE_URL || 'https://forexpassing-com.vercel.app';
+// Where the logo is fetched from. This has to be the same domain the mail is
+// sent from: a message signed by forexpassing.com that pulls its image off
+// forexpassing-com.vercel.app is a mismatch spam filters read as a forwarded or
+// spoofed template. The apex serves the file through Cloudflare, so it is used
+// directly and PUBLIC_BASE_URL only exists to point previews somewhere else.
+const ASSETS = process.env.PUBLIC_BASE_URL || `https://${SITE}`;
 
 // Apple's neutral ramp, with our green as the one accent.
 const PAGE = '#f5f5f7';
@@ -146,69 +155,98 @@ function step(n, title, desc, last = false) {
 
 /* -------------------------------------------------------------------------- */
 
+/**
+ * The plain wrapper used by the acceptance email. One column, no images, no
+ * background, nothing a filter can read as a campaign. `color-scheme` is
+ * declared for both so dark-mode clients invert it sensibly instead of leaving
+ * grey text on a grey card.
+ */
+function note(bodyHtml) {
+  return `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="color-scheme" content="light dark" />
+</head>
+<body style="margin:0;padding:0;">
+  <div style="max-width:560px;padding:16px 18px;font-family:${FONT};font-size:16px;line-height:1.6;color:${INK};">
+    ${bodyHtml}
+  </div>
+</body>
+</html>`;
+}
+
 export function qualifiedEmail({ name }) {
-  const body = `
-    <p style="margin:0 0 26px;">Hey ${firstName(name)},</p>
+  const html = note(`
+    <p style="margin:0 0 16px;">Hey ${firstName(name)},</p>
 
-    <p style="margin:0 0 30px;color:${SUBTLE};font-size:17px;line-height:1.55;">
-      Your application has been accepted. Our desk is ready to run your prop firm evaluation and
-      manage the funded account on your behalf.
+    <p style="margin:0 0 16px;">
+      Your application is accepted. Here is exactly what happens next, in order.
     </p>
 
-    ${hairline(0)}
-
-    <div style="margin:28px 0 22px;font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:${FAINT};">
-      What happens next
-    </div>
-
-    ${step(1, 'Message us on Telegram', 'Onboarding happens there. Bring any questions and we answer them before anything is signed.')}
-    ${step(2, 'We check your firm&rsquo;s rules', 'Before we touch anything we confirm the firm allows a third party to trade the account. If it does not, we say so.')}
-    ${step(3, 'Agreement, then we trade', 'Risk limits and the split go in writing first. You keep 70% of every payout; we invoice 30% only once the money has reached you.', true)}
-
-    ${hairline(30)}
-
-    ${button('Open Telegram', TELEGRAM)}
-
-    <p style="margin:18px 0 0;color:${FAINT};font-size:14px;line-height:1.5;text-align:center;">
-      Someone from the team will reach out within one business day.
+    <p style="margin:0 0 16px;">
+      <b>1. Message us on Telegram.</b> Onboarding happens there:
+      <a href="${TELEGRAM}" style="color:${ACCENT};">t.me/forexpassingadmin</a>.
+      Bring whatever you want to ask; it gets answered before anything is signed.
     </p>
 
-    <p style="margin:26px 0 0;color:${FAINT};font-size:13px;line-height:1.6;">
-      Nothing has been charged and nothing is owed. If you would rather talk over email, just reply
-      to this message.
-    </p>`;
+    <p style="margin:0 0 16px;">
+      <b>2. We check your firm&rsquo;s rules first.</b> Some firms allow a third party to trade the
+      account and some void the results for it. If yours does not allow it, we tell you rather than
+      risk your evaluation on it.
+    </p>
+
+    <p style="margin:0 0 16px;">
+      <b>3. Then it goes in writing.</b> Risk limits and the split, before a single trade. You keep
+      70% of every payout, and we invoice our 30% only once the money has actually reached you.
+    </p>
+
+    <p style="margin:0 0 16px;">
+      Nothing has been charged and nothing is owed. Someone from the team will be in touch within one
+      business day.
+    </p>
+
+    <p style="margin:0 0 16px;">
+      ${BRAND}<br />
+      <a href="https://${SITE}" style="color:${ACCENT};">${SITE}</a>
+    </p>
+
+    <p style="margin:24px 0 0;color:${FAINT};font-size:12px;line-height:1.55;">
+      Trading carries risk. A prop firm evaluation can fail and no outcome is guaranteed. Nothing
+      here is investment advice.
+    </p>`);
 
   const text = [
     `Hey ${firstName(name)},`,
     '',
-    'Your application has been accepted. Our desk is ready to run your prop firm',
-    'evaluation and manage the funded account on your behalf.',
+    'Your application is accepted. Here is exactly what happens next, in order.',
     '',
-    'WHAT HAPPENS NEXT',
-    '1. Message us on Telegram. Onboarding happens there.',
-    "2. We check your firm's rules before we touch anything.",
-    '3. Agreement in writing, then we trade. You keep 70% of every payout;',
-    '   we invoice 30% only once the money has reached you.',
+    `1. Message us on Telegram. Onboarding happens there: ${TELEGRAM}`,
+    '   Bring whatever you want to ask; it gets answered before anything is signed.',
     '',
-    `Open Telegram: ${TELEGRAM}`,
+    "2. We check your firm's rules first. Some firms allow a third party to trade",
+    '   the account and some void the results for it. If yours does not allow it,',
+    '   we tell you rather than risk your evaluation on it.',
     '',
-    'Someone from the team will reach out within one business day.',
-    'Nothing has been charged and nothing is owed.',
+    '3. Then it goes in writing. Risk limits and the split, before a single trade.',
+    '   You keep 70% of every payout, and we invoice our 30% only once the money',
+    '   has actually reached you.',
     '',
-    `${BRAND} · https://${SITE} · ${CONTACT}`,
+    'Nothing has been charged and nothing is owed. Someone from the team will be',
+    'in touch within one business day.',
+    '',
+    BRAND,
+    `https://${SITE}`,
+    '',
     'Trading carries risk. A prop firm evaluation can fail and no outcome is',
     'guaranteed. Nothing here is investment advice.',
   ].join('\n');
 
   return {
-    subject: `Your ${BRAND} application was accepted`,
+    subject: `Your ${BRAND} application is accepted`,
     text,
-    html: shell({
-      eyebrow: 'Application accepted',
-      heading: 'You’re in.',
-      intro: 'Here is what happens from here.',
-      body,
-    }),
+    html,
   };
 }
 
@@ -246,8 +284,7 @@ export function notQualifiedEmail({ name }) {
     ${button('Message us', TELEGRAM, '#1d1d1f')}
 
     <p style="margin:26px 0 0;color:${FAINT};font-size:13px;line-height:1.6;">
-      Nothing has been charged and nothing is owed. You can reach us any time by replying to this
-      message.
+      Nothing has been charged and nothing is owed.
     </p>`;
 
   const text = [
@@ -293,7 +330,7 @@ export function notQualifiedEmail({ name }) {
  * already been recorded by the time this runs, and a mail outage must never
  * turn a captured lead into a 500 for the person who just applied.
  */
-export async function sendEmail({ to, subject, html, text }) {
+export async function sendEmail({ to, subject, html, text, bulk = false }) {
   const key = process.env.RESEND_API_KEY;
   if (!key) {
     console.warn('[email] RESEND_API_KEY not set, skipping', subject);
@@ -303,7 +340,11 @@ export async function sendEmail({ to, subject, html, text }) {
   // The domain has to be verified in Resend before this address will send.
   // Until then set RESEND_FROM to onboarding@resend.dev, which only delivers
   // to the Resend account owner — enough to test the flow end to end.
-  const from = process.env.RESEND_FROM || `${BRAND} <noreply@${SITE}>`;
+  //
+  // Not noreply@. Gmail scores a no-reply sender down, and more to the point,
+  // an address nobody can answer is the wrong thing to put on a message whose
+  // whole purpose is to start a conversation.
+  const from = process.env.RESEND_FROM || `${BRAND} <${CONTACT}>`;
 
   try {
     const res = await fetch('https://api.resend.com/emails', {
@@ -321,12 +362,19 @@ export async function sendEmail({ to, subject, html, text }) {
         // is: HTML-only mail scores badly with every major filter.
         text,
         reply_to: CONTACT,
-        headers: {
-          // Gmail and Yahoo expect these on anything they treat as bulk, and
-          // they cost nothing on transactional mail.
-          'List-Unsubscribe': `<mailto:${CONTACT}?subject=unsubscribe>`,
-          'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
-        },
+        // Unsubscribe headers belong on bulk mail and only there. Gmail reads
+        // them as one of the marks of a mailing list, and a list is what gets
+        // filed under Promotions. Both messages this module sends are a direct
+        // answer to a form the person submitted a second earlier, so neither is
+        // bulk — but a newsletter added later must pass bulk:true.
+        ...(bulk
+          ? {
+              headers: {
+                'List-Unsubscribe': `<mailto:${CONTACT}?subject=unsubscribe>`,
+                'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+              },
+            }
+          : {}),
       }),
     });
     if (!res.ok) {

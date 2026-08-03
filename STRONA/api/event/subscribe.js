@@ -10,6 +10,7 @@
 // applications will be visible in Vercel's runtime logs and nowhere else.
 
 import { notQualifiedEmail, qualifiedEmail, sendEmail } from '../_lib/emails.js';
+import { gradeLead } from '../_lib/lead-quality.js';
 import { sendLeadToTelegram } from '../_lib/telegram.js';
 
 const str = (v) => (typeof v === 'string' ? v.trim() : '');
@@ -70,6 +71,11 @@ export default async function handler(req, res) {
     res.status(400).json({ error: 'invalid' });
     return;
   }
+
+  // Graded once, here, so the channel post, the webhook and the function log
+  // all carry the same verdict instead of each consumer working it out again.
+  // A rejected applicant is not scored: the grade only ranks people we want.
+  lead.quality = lead.outcome === 'qualified' ? gradeLead(lead) : null;
 
   // Always log — this is the only record when no webhook is configured.
   console.log('[lead]', JSON.stringify(lead));
