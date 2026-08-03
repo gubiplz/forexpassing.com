@@ -423,13 +423,11 @@ function ContactStep({
     const next: Partial<Record<FieldKey, string>> = {}
     if (!value.name.trim()) next.name = 'Please add your name.'
     if (!EMAIL_RE.test(value.email.trim())) next.email = 'Please add a valid email address.'
-    // The handle is optional: the last step asks them to message us, so the
-    // first move is theirs and there is nothing to chase. Still validated when
-    // filled, because a mistyped handle is worse than a blank one.
+    // Onboarding runs on Telegram, so the handle is not optional — asking for it
+    // here beats chasing it after someone has already been accepted.
     const tg = value.telegram.trim()
-    if (tg && !TELEGRAM_RE.test(tg)) {
-      next.telegram = 'That handle does not look right. Leave it blank if you are not sure.'
-    }
+    if (!tg) next.telegram = 'Please add your Telegram handle. That is where we reply.'
+    else if (!TELEGRAM_RE.test(tg)) next.telegram = 'That handle does not look right. Check it and try again.'
     setErrs(next)
     const first = FIELD_ORDER.find((k) => next[k])
     if (first) {
@@ -490,13 +488,13 @@ function ContactStep({
           placeholder="+44 7123 456789" value={value.phone} onChange={(e) => set('phone', e.target.value)} />
       </div>
       <div className="mm-field">
-        <label htmlFor="af-telegram">Telegram <span className="mm-opt-label">(optional)</span></label>
+        <label htmlFor="af-telegram">Telegram</label>
         <input {...field('telegram')} type="text" autoComplete="username"
           autoCapitalize="none" autoCorrect="off" spellCheck={false}
-          placeholder="@yourhandle" />
+          placeholder="@yourhandle" required />
         {errs.telegram
           ? <span className="mm-field-err" id="af-telegram-err" role="alert">{errs.telegram}</span>
-          : <span className="mm-field-hint">Onboarding runs on Telegram. Leave it out and we reply by email.</span>}
+          : <span className="mm-field-hint">Onboarding and support run on Telegram. This is where we reply.</span>}
       </div>
 
       <button type="submit" className="mm-btn mm-btn-lg mm-btn-full">Continue</button>

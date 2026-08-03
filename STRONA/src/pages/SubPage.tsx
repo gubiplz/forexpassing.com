@@ -123,7 +123,7 @@ export function SubPage({ page }: { page: ProofPageKey }) {
         <div className="mm-wrap">
           <h2>Want us to run yours?</h2>
           <p>
-            Four questions and your email, about a minute. No payment, no card. We read it, check
+            Four questions and your contact details, about a minute. No payment, no card. We read it, check
             your firm's rules and come back to you.
           </p>
           <a

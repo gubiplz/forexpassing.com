@@ -688,7 +688,7 @@ export function MoneyPage() {
           <FormPreview onOpen={openApply} />
 
           <p className="mm-disclaimer" style={{ marginTop: 22 }}>
-            Four questions and your email, about a minute. Nothing to pay. The rule check comes
+            Four questions and your contact details, about a minute. Nothing to pay. The rule check comes
             first, then a call, then the agreement.
           </p>
         </div>
