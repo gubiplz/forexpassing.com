@@ -12,6 +12,7 @@ import { useCallback, useEffect, useRef, useState, type FormEvent, type ReactNod
 import { createPortal } from 'react-dom'
 import { APPLY_ENDPOINT, CONTACT_EMAIL, TELEGRAM_HREF } from '../constants'
 import { PRE_CONTACT, QUALIFICATION, TOTAL_STEPS, type Step } from '../data/questionnaire'
+import { DEFAULT_ISO, DIAL_CODES, findDial, guessIso, nationalDigits } from '../data/dial-codes'
 
 declare global {
   interface Window {
@@ -27,7 +28,13 @@ function track(fbEvent: string, gaEvent: string, params?: Record<string, unknown
   window.gtag?.('event', gaEvent, params)
 }
 
-const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/
+// Local part, one @, a dotted domain, and a TLD of at least two letters. Stops
+// the two mistakes that actually arrive: a handle with no @ at all, and
+// "name@gmail" with the .com left off.
+const EMAIL_RE = /^[^\s@]+@[^\s@.]+(\.[^\s@.]+)*\.[A-Za-z]{2,}$/
+// A person's name carries no digits. Letters from any alphabet, plus the marks
+// that live inside real names: spaces, hyphens, apostrophes and full stops.
+const NAME_RE = /^[\p{L}\p{M}][\p{L}\p{M}\s'’.-]*$/u
 // Telegram allows 5–32 chars: letters, digits and underscores. A leading @ is
 // optional because people type it both ways.
 const TELEGRAM_RE = /^@?[A-Za-z][A-Za-z0-9_]{4,31}$/
@@ -41,9 +48,26 @@ function readRef(): string {
   }
 }
 
-type Contact = { name: string; email: string; phone: string; telegram: string; company: string }
+// `phone` holds the national part only; `phoneIso` picks the dialling code in
+// front of it. They are joined into one +.. number at submit time, so the team
+// never has to guess which country a bare nine-digit number belongs to.
+type Contact = {
+  name: string
+  email: string
+  phone: string
+  phoneIso: string
+  telegram: string
+  company: string
+}
 
-const EMPTY_CONTACT: Contact = { name: '', email: '', phone: '', telegram: '', company: '' }
+const EMPTY_CONTACT: Contact = {
+  name: '',
+  email: '',
+  phone: '',
+  phoneIso: DEFAULT_ISO,
+  telegram: '',
+  company: '',
+}
 
 const STEPS: (Step | 'contact')[] = [...PRE_CONTACT, 'contact', ...QUALIFICATION]
 
@@ -80,8 +104,11 @@ export function ApplyFlow({
 }) {
   const [restored] = useState(readDraft)
   const [index, setIndex] = useState(() => restored?.index ?? 0)
-  const [contact, setContact] = useState<Contact>(
-    () => restored?.contact ?? { ...EMPTY_CONTACT, name: initialName }
+  const [contact, setContact] = useState<Contact>(() =>
+    restored?.contact
+      ? // A draft written before the country picker existed has no phoneIso.
+        { ...EMPTY_CONTACT, ...restored.contact, phoneIso: restored.contact.phoneIso || guessIso() }
+      : { ...EMPTY_CONTACT, name: initialName, phoneIso: guessIso() }
   )
   const [answers, setAnswers] = useState<Record<string, string>>(() => restored?.answers ?? {})
   const [outcome, setOutcome] = useState<'open' | 'sent' | 'rejected'>('open')
@@ -168,7 +195,11 @@ export function ApplyFlow({
         body: JSON.stringify({
           name: contact.name.trim(),
           email: contact.email.trim(),
-          phone: contact.phone.trim(),
+          // Sent as one dialable number, not a bare national part the team
+          // would have to work out the country of.
+          phone: nationalDigits(contact.phone)
+            ? `${findDial(contact.phoneIso).dial} ${nationalDigits(contact.phone)}`
+            : '',
           telegram: contact.telegram.trim(),
           company: contact.company,
           answers: finalAnswers,
@@ -385,9 +416,9 @@ function InfoStep({
   )
 }
 
-type FieldKey = 'name' | 'email' | 'telegram'
+type FieldKey = 'name' | 'email' | 'phone' | 'telegram'
 
-const FIELD_ORDER: FieldKey[] = ['name', 'email', 'telegram']
+const FIELD_ORDER: FieldKey[] = ['name', 'email', 'phone', 'telegram']
 
 function ContactStep({
   value,
@@ -421,8 +452,29 @@ function ContactStep({
   const submit = (e: FormEvent) => {
     e.preventDefault()
     const next: Partial<Record<FieldKey, string>> = {}
-    if (!value.name.trim()) next.name = 'Please add your name.'
-    if (!EMAIL_RE.test(value.email.trim())) next.email = 'Please add a valid email address.'
+
+    const name = value.name.trim()
+    if (!name) next.name = 'Please add your name.'
+    else if (/\d/.test(name)) next.name = 'A name has no numbers in it. Please write it as it reads.'
+    else if (!NAME_RE.test(name)) next.name = 'Please use letters only, as your name is written.'
+    else if (name.length < 2) next.name = 'That looks too short to be a name.'
+
+    const email = value.email.trim()
+    if (!email) next.email = 'Please add your email address.'
+    else if (!email.includes('@')) next.email = 'An email address needs an @ in it.'
+    else if (!EMAIL_RE.test(email)) next.email = 'That address is not complete. Check the part after the @.'
+
+    // Optional, but a half-typed number is worse than none: it looks like a way
+    // to reach someone and is not one.
+    const digits = nationalDigits(value.phone)
+    if (digits) {
+      const c = findDial(value.phoneIso)
+      const want = c.min === c.max ? `${c.min} digits` : `${c.min}–${c.max} digits`
+      if (digits.length < c.min || digits.length > c.max) {
+        next.phone = `A number in ${c.name} has ${want} after ${c.dial}. You typed ${digits.length}.`
+      }
+    }
+
     // Onboarding runs on Telegram, so the handle is not optional — asking for it
     // here beats chasing it after someone has already been accepted.
     const tg = value.telegram.trim()
@@ -484,8 +536,40 @@ function ContactStep({
       </div>
       <div className="mm-field">
         <label htmlFor="af-phone">Phone <span className="mm-opt-label">(optional)</span></label>
-        <input id="af-phone" className="mm-input" type="tel" inputMode="tel" autoComplete="tel"
-          placeholder="+44 7123 456789" value={value.phone} onChange={(e) => set('phone', e.target.value)} />
+        {/* Country first, then the national part. Splitting them is what makes
+            the length check possible at all, and it stops the number arriving
+            without a dialling code in front of it. */}
+        <div className="mm-phone">
+          {/* The real <select> sits transparent on top of the chip, so a tap
+              opens the platform's own country picker — scrollable and
+              searchable on every phone — while the page keeps its own look. */}
+          <span className="mm-phone-cc">
+            <span className="mm-phone-dial" aria-hidden="true">
+              {findDial(value.phoneIso).flag} {findDial(value.phoneIso).dial}
+              <svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true">
+                <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" strokeWidth="2.4"
+                  strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </span>
+            <select
+              id="af-phone-cc"
+              aria-label="Country dialling code"
+              value={value.phoneIso}
+              onChange={(e) => set('phoneIso', e.target.value)}
+            >
+              {DIAL_CODES.map((c) => (
+                <option value={c.iso} key={c.iso}>
+                  {c.flag} {c.name} {c.dial}
+                </option>
+              ))}
+            </select>
+          </span>
+          <input {...field('phone')} type="tel" inputMode="tel" autoComplete="tel-national"
+            placeholder={'1'.repeat(findDial(value.phoneIso).min)} />
+        </div>
+        {errs.phone
+          ? <span className="mm-field-err" id="af-phone-err" role="alert">{errs.phone}</span>
+          : <span className="mm-field-hint">Pick your country, then the number without the code.</span>}
       </div>
       <div className="mm-field">
         <label htmlFor="af-telegram">Telegram</label>
