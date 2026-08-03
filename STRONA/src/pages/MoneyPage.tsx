@@ -253,7 +253,7 @@ function HeroVsl() {
     <div className="mm-vsl">
       <div className="mm-vsl-head">
         <span className="mm-vsl-badge">Start here</span>
-        <span className="mm-vsl-title">Watch this 90 second video</span>
+        <span className="mm-vsl-title">Watch this 120 second video</span>
       </div>
       <div className="mm-vsl-frame">
         {!started ? (

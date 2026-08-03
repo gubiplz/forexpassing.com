@@ -111,34 +111,33 @@ export const DIAL_CODES: DialCode[] = [
   { iso: 'VN', name: 'Vietnam', dial: '+84', flag: '🇻🇳', min: 9, max: 10 },
 ]
 
-/** Fallback when the browser gives us nothing to go on. */
-export const DEFAULT_ISO = 'PL'
-
-export function findDial(iso: string): DialCode {
-  return DIAL_CODES.find((c) => c.iso === iso) ?? DIAL_CODES.find((c) => c.iso === DEFAULT_ISO)!
-}
-
 /**
- * Best guess at the visitor's country, from the browser's own locale.
- *
- * Deliberately NOT from the edge: the worker in front of this site keeps the
- * visitor's country out of the injected state on purpose, and adding it back
- * for a form default would leak how the classifier sees people.
+ * No country is preselected. The field starts blank and the visitor picks,
+ * which is also why nothing here guesses at a default: the worker in front of
+ * this site keeps the visitor's country out of the injected state on purpose,
+ * and a guessed default would only be wrong for anyone travelling or on a VPN.
  */
-export function guessIso(): string {
-  try {
-    const langs = [navigator.language, ...(navigator.languages ?? [])]
-    for (const l of langs) {
-      const region = l?.split('-')[1]?.toUpperCase()
-      if (region && DIAL_CODES.some((c) => c.iso === region)) return region
-    }
-  } catch {
-    // Locale unavailable: the default below is as good a guess as any.
-  }
-  return DEFAULT_ISO
+export function findDial(iso: string): DialCode | undefined {
+  return DIAL_CODES.find((c) => c.iso === iso)
 }
 
 /** Digits only, minus a trunk zero people habitually type in front. */
 export function nationalDigits(raw: string): string {
   return raw.replace(/\D/g, '').replace(/^0+/, '')
+}
+
+/**
+ * A sample number of the right length for the chosen country, grouped in
+ * threes: "123 456 789". Ascending digits read as an example at a glance,
+ * where a run of the same digit reads as a broken field.
+ */
+export function samplePlaceholder(digits: number): string {
+  const n = '123456789012345'.slice(0, digits)
+  const groups: string[] = []
+  for (let i = 0; i < n.length; i += 3) groups.push(n.slice(i, i + 3))
+  // A trailing single digit looks like a typo; fold it into the group before.
+  if (groups.length > 1 && groups[groups.length - 1].length === 1) {
+    groups[groups.length - 2] += groups.pop()
+  }
+  return groups.join(' ')
 }

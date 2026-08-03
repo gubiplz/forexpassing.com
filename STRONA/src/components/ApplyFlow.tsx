@@ -12,7 +12,7 @@ import { useCallback, useEffect, useRef, useState, type FormEvent, type ReactNod
 import { createPortal } from 'react-dom'
 import { APPLY_ENDPOINT, CONTACT_EMAIL, TELEGRAM_HREF } from '../constants'
 import { PRE_CONTACT, QUALIFICATION, TOTAL_STEPS, type Step } from '../data/questionnaire'
-import { DEFAULT_ISO, DIAL_CODES, findDial, guessIso, nationalDigits } from '../data/dial-codes'
+import { DIAL_CODES, findDial, nationalDigits, samplePlaceholder } from '../data/dial-codes'
 
 declare global {
   interface Window {
@@ -64,7 +64,8 @@ const EMPTY_CONTACT: Contact = {
   name: '',
   email: '',
   phone: '',
-  phoneIso: DEFAULT_ISO,
+  // Blank on purpose: nothing is preselected, the visitor picks.
+  phoneIso: '',
   telegram: '',
   company: '',
 }
@@ -105,10 +106,11 @@ export function ApplyFlow({
   const [restored] = useState(readDraft)
   const [index, setIndex] = useState(() => restored?.index ?? 0)
   const [contact, setContact] = useState<Contact>(() =>
+    // A draft written before the country picker existed simply has no phoneIso,
+    // which is the same blank state a fresh form starts in.
     restored?.contact
-      ? // A draft written before the country picker existed has no phoneIso.
-        { ...EMPTY_CONTACT, ...restored.contact, phoneIso: restored.contact.phoneIso || guessIso() }
-      : { ...EMPTY_CONTACT, name: initialName, phoneIso: guessIso() }
+      ? { ...EMPTY_CONTACT, ...restored.contact }
+      : { ...EMPTY_CONTACT, name: initialName }
   )
   const [answers, setAnswers] = useState<Record<string, string>>(() => restored?.answers ?? {})
   const [outcome, setOutcome] = useState<'open' | 'sent' | 'rejected'>('open')
@@ -198,7 +200,7 @@ export function ApplyFlow({
           // Sent as one dialable number, not a bare national part the team
           // would have to work out the country of.
           phone: nationalDigits(contact.phone)
-            ? `${findDial(contact.phoneIso).dial} ${nationalDigits(contact.phone)}`
+            ? `${findDial(contact.phoneIso)?.dial ?? ''} ${nationalDigits(contact.phone)}`.trim()
             : '',
           telegram: contact.telegram.trim(),
           company: contact.company,
@@ -464,11 +466,13 @@ function ContactStep({
     else if (!email.includes('@')) next.email = 'An email address needs an @ in it.'
     else if (!EMAIL_RE.test(email)) next.email = 'That address is not complete. Check the part after the @.'
 
-    // Optional, but a half-typed number is worse than none: it looks like a way
-    // to reach someone and is not one.
+    // The country has to come first: without it there is nothing to check the
+    // length against, and the number would reach the team with no dialling code.
     const digits = nationalDigits(value.phone)
-    if (digits) {
-      const c = findDial(value.phoneIso)
+    const c = findDial(value.phoneIso)
+    if (!c) next.phone = 'Please pick your country first.'
+    else if (!digits) next.phone = 'Please add your phone number.'
+    else {
       const want = c.min === c.max ? `${c.min} digits` : `${c.min}–${c.max} digits`
       if (digits.length < c.min || digits.length > c.max) {
         next.phone = `A number in ${c.name} has ${want} after ${c.dial}. You typed ${digits.length}.`
@@ -490,6 +494,8 @@ function ContactStep({
     }
     onNext()
   }
+
+  const chosen = findDial(value.phoneIso)
 
   const field = (k: FieldKey) => ({
     id: `af-${k}`,
@@ -535,17 +541,17 @@ function ContactStep({
         {errs.email && <span className="mm-field-err" id="af-email-err" role="alert">{errs.email}</span>}
       </div>
       <div className="mm-field">
-        <label htmlFor="af-phone">Phone <span className="mm-opt-label">(optional)</span></label>
+        <label htmlFor="af-phone">Phone</label>
         {/* Country first, then the national part. Splitting them is what makes
             the length check possible at all, and it stops the number arriving
-            without a dialling code in front of it. */}
+            without a dialling code in front of it. Nothing is preselected. */}
         <div className="mm-phone">
           {/* The real <select> sits transparent on top of the chip, so a tap
               opens the platform's own country picker — scrollable and
               searchable on every phone — while the page keeps its own look. */}
-          <span className="mm-phone-cc">
+          <span className={`mm-phone-cc${chosen ? '' : ' is-empty'}`}>
             <span className="mm-phone-dial" aria-hidden="true">
-              {findDial(value.phoneIso).flag} {findDial(value.phoneIso).dial}
+              {chosen ? `${chosen.flag} ${chosen.dial}` : 'Country'}
               <svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true">
                 <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" strokeWidth="2.4"
                   strokeLinecap="round" strokeLinejoin="round" />
@@ -556,7 +562,9 @@ function ContactStep({
               aria-label="Country dialling code"
               value={value.phoneIso}
               onChange={(e) => set('phoneIso', e.target.value)}
+              required
             >
+              <option value="">Select your country</option>
               {DIAL_CODES.map((c) => (
                 <option value={c.iso} key={c.iso}>
                   {c.flag} {c.name} {c.dial}
@@ -564,8 +572,8 @@ function ContactStep({
               ))}
             </select>
           </span>
-          <input {...field('phone')} type="tel" inputMode="tel" autoComplete="tel-national"
-            placeholder={'1'.repeat(findDial(value.phoneIso).min)} />
+          <input {...field('phone')} type="tel" inputMode="tel" autoComplete="tel-national" required
+            placeholder={chosen ? samplePlaceholder(chosen.min) : 'Phone number'} />
         </div>
         {errs.phone
           ? <span className="mm-field-err" id="af-phone-err" role="alert">{errs.phone}</span>
