@@ -30,7 +30,6 @@ export function formatLead(lead) {
     ['Email', lead.email],
     ['Telegram', lead.telegram],
     ['Phone', lead.phone],
-    ['Income', lead.income],
     ['Referred by', lead.ref],
     ['Source', lead.source],
   ].filter(([, v]) => v);

@@ -1,16 +1,21 @@
 // Forex Passing — the application questionnaire.
 //
-// Question for question the same set the reference funnel runs, by explicit
-// owner decision. The order is: one pre-contact question, the contact details,
-// then the qualification steps.
+// Seven steps. It used to be seventeen, copied question for question off the
+// reference funnel, which asks the same thing three different ways (three
+// separate money questions, three information tiles in a row). Cut on the
+// owner's instruction to the questions that actually change what we do:
+// did they watch the video, do they accept that they buy the evaluation, do
+// they know what one is, and when are they buying.
 //
 // `qualified: false` on an option ends the flow: that person sees the
-// "not a fit" screen with a Telegram link and no lead is submitted. That is how
-// the reference funnel behaves and it is the point of the questionnaire — it
-// filters before anyone's time is spent.
+// "not a fit" screen with a Telegram link and no lead is submitted. Two answers
+// do that, and they are the two that make the service impossible: not accepting
+// that the evaluation is bought by the client, and having no money for one.
 //
 // Info steps carry no question; they exist to set expectations before the next
 // answer. `template` picks the layout, `completeOnContinue` marks the final one.
+
+import { CLIENT_SPLIT, EVAL_DISCOUNT, OUR_SPLIT, TELEGRAM_HREF } from '../constants'
 
 export type Option = { label: string; qualified: boolean }
 
@@ -34,17 +39,39 @@ export type Step =
       completeOnContinue?: boolean
     }
 
+/** @forexpassingadmin, without the https://t.me/ in front of it. */
+const TELEGRAM_HANDLE = `@${TELEGRAM_HREF.split('/').pop()}`
+
+/**
+ * The discount is only ever stated where EVAL_DISCOUNT is set. Empty constant
+ * ⇒ the sentence reads as if the discount never existed.
+ */
+const BUY_IT_YOURSELF =
+  'You buy the prop firm evaluation yourself, in your own name, and it stays yours. ' +
+  'We do not buy it for you.' +
+  (EVAL_DISCOUNT ? ` What we do is take ${EVAL_DISCOUNT} off the price through our partner link.` : '')
+
 /** Asked before we take any contact details. */
 export const PRE_CONTACT: Step[] = [
   {
     kind: 'question',
-    title: 'How this service works',
-    description:
-      "You purchase a prop firm evaluation yourself. We provide account-management services under the prop firm's rules. We do not purchase the evaluation for you, and outcomes are not guaranteed.",
+    title: 'Before anything else',
+    question: 'Did you watch the video the whole way through?',
+    // Both answers pass. Someone who skipped it is still a real applicant, and
+    // the answer tells the desk which conversation they are walking into.
+    options: [
+      { label: 'Yes, all of it', qualified: true },
+      { label: 'Not yet, only part of it', qualified: true },
+    ],
+  },
+  {
+    kind: 'question',
+    title: 'How this works',
+    description: BUY_IT_YOURSELF,
     question: 'Do you understand that you buy the evaluation yourself?',
     options: [
       { label: 'Yes, I understand', qualified: true },
-      { label: 'No, I thought you paid for it', qualified: false },
+      { label: "No, that doesn't work for me", qualified: false },
     ],
   },
 ]
@@ -53,155 +80,50 @@ export const PRE_CONTACT: Step[] = [
 export const QUALIFICATION: Step[] = [
   {
     kind: 'question',
-    question: 'Are you interested in a hands-off prop firm account management service?',
+    question: 'Do you know what a prop firm evaluation is?',
+    // None of these disqualify. Someone who has never done one is the easiest
+    // person to help, and someone who failed one is exactly who this is for.
     options: [
-      { label: 'Yes', qualified: true },
-      { label: 'Not sure yet', qualified: true },
-      { label: 'No', qualified: false },
-    ],
-  },
-  {
-    kind: 'question',
-    question: 'Have you heard of prop firm evaluations before?',
-    options: [
-      { label: 'Yes', qualified: true },
-      { label: 'A little', qualified: true },
-      { label: 'No, this is new to me', qualified: true },
+      { label: "Yes, I've done one", qualified: true },
+      { label: "Yes, but I didn't pass it", qualified: true },
+      { label: "No, I've never done one", qualified: true },
     ],
   },
   {
     kind: 'info',
-    body: 'We currently work with a limited set of prop firms. Service availability depends on eligibility and capacity.',
+    title: 'One more time, so there is no confusion',
+    body: BUY_IT_YOURSELF,
+    note: 'Nothing is charged here, and nothing is owed to us until a payout has actually been released to you.',
+    continueLabel: 'Understood',
   },
   {
     kind: 'question',
-    question: 'If accepted, when would you want to begin the application process?',
+    question: 'When do you want to buy the evaluation?',
     options: [
-      { label: 'As soon as possible', qualified: true },
-      { label: 'Within the next few weeks', qualified: true },
-      { label: 'Next month', qualified: true },
-      { label: 'Just researching for now', qualified: false },
+      { label: 'Now', qualified: true },
+      { label: 'Within a few weeks', qualified: true },
+      { label: "I'm researching, I don't have the money right now", qualified: false },
     ],
-  },
-  {
-    kind: 'question',
-    question: 'Are you open to using a prop firm we recommend, provided the terms are explained first?',
-    options: [
-      { label: 'Yes', qualified: true },
-      { label: "I'd like more information first", qualified: true },
-      { label: 'No, I only want a specific firm', qualified: false },
-    ],
-  },
-  {
-    kind: 'info',
-    title: 'Service overview',
-    bullets: [
-      'You purchase the prop firm evaluation',
-      "We manage the account under that firm's rules",
-      'Fees and terms are explained before you commit. Results vary and are not guaranteed',
-    ],
-  },
-  {
-    kind: 'question',
-    question: 'What is your approximate monthly income from your primary source?',
-    options: [
-      { label: 'Under $1,000', qualified: true },
-      { label: '$1,000 – $3,000', qualified: true },
-      { label: '$3,000 – $5,000', qualified: true },
-      { label: '$5,000+', qualified: true },
-    ],
-  },
-  {
-    kind: 'question',
-    description:
-      'Starting requires purchasing a prop firm evaluation yourself. Typical evaluation fees vary by firm and account size. Our management fee structure is explained before you commit.',
-    question: 'Are you able and willing to purchase an evaluation if accepted?',
-    options: [
-      { label: 'Yes', qualified: true },
-      { label: 'Not at this time', qualified: false },
-    ],
-  },
-  {
-    kind: 'question',
-    question:
-      'Do you currently have funds available for an evaluation without borrowing or using money needed for essential expenses?',
-    options: [
-      { label: 'Yes', qualified: true },
-      { label: 'Not yet, but I may within a few weeks', qualified: true },
-      { label: 'No', qualified: false },
-    ],
-  },
-  {
-    kind: 'question',
-    question: 'Is there anything that would stop you from applying right now?',
-    options: [
-      { label: "Nothing, I'm ready to apply", qualified: true },
-      { label: 'I need more time to decide', qualified: false },
-      { label: 'Timing is not right', qualified: false },
-    ],
-  },
-  {
-    kind: 'question',
-    title: 'Communication',
-    description:
-      'If accepted, onboarding and support continue through Telegram. This keeps service communication in one place.',
-    question: 'Are you comfortable continuing through Telegram if accepted?',
-    options: [
-      { label: 'Yes', qualified: true },
-      { label: 'No', qualified: false },
-    ],
-  },
-  {
-    kind: 'info',
-    template: 'official',
-    title: 'Official Forex Passing communication',
-    body: 'Before continuing, please note that impersonators exist. Use only our official channels.',
-    detailRows: [
-      ['Official website', 'forexpassing.com'],
-      ['Official email', 'contact@forexpassing.com'],
-      ['Official Telegram', '@forexpassingadmin'],
-    ],
-    note: 'That is our only official Telegram account. Anyone contacting you from another account claiming to be Forex Passing is not us.',
-    continueLabel: 'Continue',
-  },
-  {
-    kind: 'info',
-    template: 'team',
-    title: 'Who you will be dealing with',
-    body: 'Our desk provides support and account-management services. Experience and availability vary.',
-    bullets: [
-      'Account management, which places and manages the trades inside the firm rules',
-      'Risk, which watches daily loss and drawdown limits on every account we run',
-      'Client support, which answers questions before and after an account is funded',
-    ],
-    note: 'The team can answer questions about the process and the next steps.',
-    continueLabel: 'Continue',
-  },
-  {
-    kind: 'info',
-    template: 'social',
-    title: 'Community & support channels',
-    bullets: ['Support team', 'Educational livestreams', 'Community updates', 'Service communications'],
-    note: 'Please verify you join the official channel shared after approval.',
-    continueLabel: 'Continue',
   },
   {
     kind: 'info',
     template: 'contract',
-    title: 'Service acknowledgement',
-    body: 'Please confirm you understand how the service works. Trading and prop firm evaluations involve risk of loss. Past performance is not indicative of future results.',
+    title: 'Once you are in, message us',
+    body: 'Three things happen, in this order. Nothing else is asked of you.',
     bullets: [
-      'I purchase the prop firm evaluation myself',
-      'Service terms and fees are explained before I commit',
-      'Outcomes are not guaranteed and may vary',
+      EVAL_DISCOUNT
+        ? `You buy the prop firm evaluation. Our partner link takes ${EVAL_DISCOUNT} off the price.`
+        : 'You buy the prop firm evaluation, in your own name.',
+      'We guarantee the pass and manage the account for you.',
+      `You get paid. Once the payout has landed, you send us ${OUR_SPLIT} and keep ${CLIENT_SPLIT}. Not before.`,
     ],
+    // Carries what the deleted anti-impersonation tile used to say, without
+    // costing a step: people get approached by fake accounts after applying.
+    note: `Trading carries risk and an evaluation can fail; that is what the guarantee is for. ${TELEGRAM_HANDLE} is our only Telegram account, and anyone writing to you from another one is not us.`,
     continueLabel: 'Submit my application',
     completeOnContinue: true,
   },
 ]
 
-/** Steps in order: pre-contact question, contact details, qualification. */
+/** Steps in order: two pre-contact questions, contact details, qualification. */
 export const TOTAL_STEPS = PRE_CONTACT.length + 1 + QUALIFICATION.length
-
-/** The step where the income bracket is asked — flagged in the privacy policy. */
-export const INCOME_QUESTION = 'What is your approximate monthly income from your primary source?'

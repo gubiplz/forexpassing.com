@@ -15,6 +15,26 @@ export const PASS_WINDOW = '7–14 days'
 export const GUARANTEE_CREDIT = '$500'
 export const REFUND_WINDOW = '120 days'
 
+// ⚠ ZNIŻKA PARTNERSKA NA CHALLENGE — obietnica wobec klienta.
+// To NIE jest przelew od nas: klient płaci mniej w kasie prop firmy, bo kupuje
+// przez nasz link partnerski. Formułujemy to zawsze jako "you pay X less", nigdy
+// jako "we cover X" — pieniądze nie przechodzą przez nas i umowa (§5) tego nie
+// pokrywa.
+//
+// PUSTY STRING = obietnica znika ze strony, ankiety i umowy. Tak ma zostać,
+// dopóki zniżka nie jest realnie ustalona z prop firmą. Zob. renderowanie
+// warunkowe w MoneyPage, SubPage, TermsCard i questionnaire.
+export const EVAL_DISCOUNT = '20%'
+export const EVAL_DISCOUNT_NOTE = 'through our partner link, sent once you are accepted'
+
+// Gwarancja w jednym zdaniu — jedno źródło dla strony ofertowej, ankiety i FAQ.
+// Każdy jej człon MUSI mieć pokrycie w umowie (src/data/agreement.ts §5):
+// kolejne podejście na nasz koszt = remedium c), zwrot + kredyt = a) i b),
+// okno = REFUND_WINDOW. Zmiana tego zdania bez zmiany §5 robi z niego kłamstwo.
+export const GUARANTEE_LINE =
+  `Lose the account with us and the next evaluation is on us, or you take back every fee you paid ` +
+  `us plus a ${GUARANTEE_CREDIT} credit. Your choice, for ${REFUND_WINDOW}.`
+
 // Kwestionariusz → worker (routes/event.ts) lub funkcja Vercela (api/event/subscribe.js).
 export const APPLY_ENDPOINT = '/api/event/subscribe'
 // Kotwica sekcji z kartą podglądu formularza — używana przez CTA spoza /meta.

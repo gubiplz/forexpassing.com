@@ -123,8 +123,8 @@ export function SubPage({ page }: { page: ProofPageKey }) {
         <div className="mm-wrap">
           <h2>Want us to run yours?</h2>
           <p>
-            A short questionnaire, about three minutes. No payment, no card. We read it, check your firm's
-            rules and come back to you.
+            Four questions and your email, about a minute. No payment, no card. We read it, check
+            your firm's rules and come back to you.
           </p>
           <a
             href={APPLY_HREF}
@@ -289,12 +289,19 @@ const GUARANTEES: [string, React.ReactNode][] = [
   [
     'If we lose your challenge',
     <>
-      you get back what you paid us <strong>plus a {GUARANTEE_CREDIT} credit</strong> toward the
-      next attempt, spelled out in clause 5 of the agreement.
+      <strong>the next evaluation is on us</strong>, bought by us at the same size and traded under
+      the same agreement. That is clause 5(c), not a line on a landing page.
     </>,
   ],
   [
-    `Refund guarantee for ${REFUND_WINDOW}`,
+    'Or your money back',
+    <>
+      you take back what you paid us <strong>plus a {GUARANTEE_CREDIT} credit</strong> toward the
+      next attempt. Which of the two you take is your call, not ours.
+    </>,
+  ],
+  [
+    `${REFUND_WINDOW} to decide`,
     <>
       whether the evaluation fails or you decide you want out. The terms and the process are in the
       written contract.

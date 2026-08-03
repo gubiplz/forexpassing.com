@@ -14,7 +14,10 @@ import { TrackRecordModal } from '../components/TrackRecord'
 import {
   CTA_LABEL,
   CLIENT_SPLIT,
+  EVAL_DISCOUNT,
+  EVAL_DISCOUNT_NOTE,
   GUARANTEE_CREDIT,
+  GUARANTEE_LINE,
   OUR_SPLIT,
   PARTNER_FIRM,
   FORM_PREVIEW_LABEL,
@@ -53,7 +56,7 @@ const PAIN_STEPS = [
 
 // How the service runs, in order. Step 02 is the one nobody else puts in writing.
 const HOW: [string, string, string][] = [
-  ['01', 'You send the questionnaire', 'A short questionnaire about your firm, account size and where you are right now. Three minutes, costs nothing.'],
+  ['01', 'You send the questionnaire', `A few questions about your firm, account size and where you are right now. Under a minute, costs nothing.${EVAL_DISCOUNT ? ` Accepted applicants buy the evaluation ${EVAL_DISCOUNT} cheaper through our partner link.` : ''}`],
   ['02', 'We check the firm rules', 'Before anything starts we confirm the firm allows a third party to trade the account. If it does not, we say so.'],
   ['03', 'Written management agreement', 'Risk limits, the split and how you exit, all on paper. Nobody touches an account until it is signed.'],
   ['04', 'We trade, you collect', 'Our desk runs the account inside the firm rules. Payouts are requested by you and land in your account.'],
@@ -65,6 +68,12 @@ const CONTROL: { tag?: string; t: string; d: string }[] = [
   { t: 'Payouts go straight to you', d: 'The firm pays you directly. Our share is invoiced afterwards, out of money already in your hands.' },
   { t: `You keep ${CLIENT_SPLIT}`, d: `Our share is ${OUR_SPLIT} of a released payout. That is the entire commercial relationship.` },
   { t: 'No subscription', d: 'Nothing monthly, nothing upfront to us. If nothing is paid out, there is nothing to split.' },
+  ...(EVAL_DISCOUNT
+    ? [{
+        t: `You pay ${EVAL_DISCOUNT} less for the evaluation`,
+        d: `You still buy it yourself, in your name. The discount comes off at the firm's checkout ${EVAL_DISCOUNT_NOTE}.`,
+      }]
+    : []),
   { t: 'You can watch every trade', d: 'Your platform login stays yours. Positions, orders and drawdown are visible to you in real time.' },
   { t: 'You can stop', d: 'The agreement sets a notice period and how access is revoked. Change the password and it ends.' },
 ]
@@ -80,12 +89,12 @@ const FAQ = [
   { q: 'Do I have to trade at all?', a: 'No. That is the whole point. You are not expected to watch charts or place orders. If you want to keep trading your own separate accounts, that is your call.' },
   { q: `How does the ${CLIENT_SPLIT}/${OUR_SPLIT} split work?`, a: `You keep ${CLIENT_SPLIT} of every payout, we take ${OUR_SPLIT}. The firm pays you first. Our share is invoiced after the money has actually landed with you.` },
   { q: 'When exactly do you get paid?', a: 'Only after a payout is released by the prop firm. There is no fee for trying, no monthly charge, and nothing to pay while an evaluation is running.' },
-  { q: 'What if you fail the challenge?', a: `If the account is lost while we are managing it, you get back what you paid us plus a ${GUARANTEE_CREDIT} credit toward the next attempt. The exact wording is in the agreement. Read it before you sign, not after.` },
-  { q: 'How long is the guarantee?', a: `${REFUND_WINDOW}. Inside that window you can ask for the refund without an interrogation; you return the managed account to us and we settle up.` },
+  { q: 'What if you fail the challenge?', a: `${GUARANTEE_LINE} The exact wording is clause 5 of the agreement. Read it before you sign, not after.` },
+  { q: 'How long is the guarantee?', a: `${REFUND_WINDOW}. Inside that window you pick the remedy without an interrogation; you return the managed account to us and we settle up.` },
   { q: 'How long does it take to pass?', a: `Usually ${PASS_WINDOW}, depending on the firm’s rules (minimum trading days and daily drawdown mostly) and on the market. It can take longer. It can also fail; nobody can promise otherwise.` },
   { q: 'Which prop firms do you work with?', a: `Only firms whose terms permit a third party to trade the account. We work with ${PARTNER_FIRM} and check the current rules for whichever firm you bring before anything starts.` },
   { q: 'Is this even allowed?', a: 'It depends entirely on the firm. Some permit managed accounts under an agreement, others ban it outright and will void results. We check yours first and tell you straight if the answer is no.' },
-  { q: 'Do I have to buy the evaluation myself?', a: 'Yes. You buy the evaluation and it stays in your name. That is what keeps the account, and the payouts, yours.' },
+  { q: 'Do I have to buy the evaluation myself?', a: `Yes. You buy the evaluation and it stays in your name. That is what keeps the account, and the payouts, yours.${EVAL_DISCOUNT ? ` You do not pay full price for it: our partner link takes ${EVAL_DISCOUNT} off at the firm's checkout, and we send it once you are accepted.` : ''}` },
   { q: 'What happens to my data?', a: 'The questionnaire goes to our team and nowhere else. We use it to prepare the call and the agreement. We do not sell it and we do not pass it on.' },
   { q: 'Why you and not one of the other management services?', a: 'Because everything above is written down before you commit: who trades, what happens when it fails, when we get paid, and how you walk away. Ask any of the others for that in writing.' },
 ]
@@ -94,7 +103,7 @@ const TICKER = [
   'Hands-free prop challenges',
   `You keep ${CLIENT_SPLIT} of the profit`,
   'Fee only after a real payout',
-  'No subscription',
+  EVAL_DISCOUNT ? `${EVAL_DISCOUNT} off your evaluation` : 'No subscription',
   'Written management agreement',
   'The account stays in your name',
   `${REFUND_WINDOW} guarantee`,
@@ -525,8 +534,8 @@ export function MoneyPage() {
           </h1>
           <p className="mm-warn mm-warn-hero">
             You don't need any experience at all, and you pay us nothing up front. You buy a prop
-            firm evaluation, and that is the account we manage for you. The video below walks
-            through it.
+            firm evaluation{EVAL_DISCOUNT ? `, ${EVAL_DISCOUNT} cheaper through our partner link,` : ','} and
+            that is the account we manage for you. The video below walks through it.
           </p>
           <HeroVsl />
           <div className="mm-cta-row mm-cta-center-row">
@@ -574,61 +583,10 @@ export function MoneyPage() {
         </div>
       </section>
 
-      {/* WHAT YOU KEEP CONTROL OF */}
-      <section className="mm-section mm-system mm-reveal" id="inside">
-        <div className="mm-wrap">
-          <span className="mm-eyebrow mm-eyebrow-teal mm-eyebrow-c">Your side of the deal</span>
-          <h2 className="mm-h2 mm-center">What you <span className="mm-teal">keep control of</span></h2>
-          <p className="mm-lead mm-lead-mid mm-center">
-            The terms are short on purpose. Read them before you apply, not after.
-          </p>
-
-          <div className="mm-checks">
-            {CONTROL.map((c) => (
-              <CheckRow title={c.t} detail={c.d} key={c.t} />
-            ))}
-          </div>
-
-          {/* Was in the hero. It belongs with the terms it summarises, and the
-              hero is now a single centred column like the reference funnel. */}
-          <div className="mm-terms-slot">
-            <TermsCard />
-          </div>
-        </div>
-      </section>
-
-      {/* APPLICATION — the only conversion on the page */}
-      <section className="mm-section mm-pricing mm-reveal" id="apply">
-        <div className="mm-wrap">
-          <div className="mm-price-proof" role="list" aria-label="Proof">
-            <span className="mm-price-proof-item" role="listitem"><strong>4.9/5</strong> from 500+ traders</span>
-            <span className="mm-price-proof-sep" aria-hidden="true" />
-            {PAYOUT_TOTALS && (
-              <>
-                <span className="mm-price-proof-item" role="listitem">
-                  <strong>{PAYOUT_TOTALS.totalUsd}</strong> released at {PARTNER_FIRM}
-                </span>
-                <span className="mm-price-proof-sep" aria-hidden="true" />
-              </>
-            )}
-            <span className="mm-price-proof-item" role="listitem"><strong>{CLIENT_SPLIT}/{OUR_SPLIT}</strong> split, paid after payout</span>
-          </div>
-
-          {/* ⚠ Invented scarcity, kept by an explicit owner decision. */}
-          <p className="mm-warn mm-warn-mb">
-            We don't have many spots left. Today's applications close in <Countdown />
-          </p>
-
-          <FormPreview onOpen={openApply} />
-
-          <p className="mm-disclaimer" style={{ marginTop: 22 }}>
-            A short questionnaire, about three minutes. Nothing to pay. The rule check comes first, then a
-            call, then the agreement.
-          </p>
-        </div>
-      </section>
-
       {/* PAYOUT CERTIFICATES — real records from the partner firm's public API */}
+      {/* Proof sits directly under the claim, before the terms and before the
+          form. It used to sit after the form, where the reader who stopped at
+          "why should I believe you" never reached it. */}
       {cards.length > 0 && (
         <section className="mm-section mm-payouts mm-reveal" id="payouts">
           <div className="mm-wrap">
@@ -682,6 +640,60 @@ export function MoneyPage() {
         </section>
       )}
 
+      {/* WHAT YOU KEEP CONTROL OF */}
+      <section className="mm-section mm-system mm-reveal" id="inside">
+        <div className="mm-wrap">
+          <span className="mm-eyebrow mm-eyebrow-teal mm-eyebrow-c">Your side of the deal</span>
+          <h2 className="mm-h2 mm-center">What you <span className="mm-teal">keep control of</span></h2>
+          <p className="mm-lead mm-lead-mid mm-center">
+            The terms are short on purpose. Read them before you apply, not after.
+          </p>
+
+          <div className="mm-checks">
+            {CONTROL.map((c) => (
+              <CheckRow title={c.t} detail={c.d} key={c.t} />
+            ))}
+          </div>
+
+          {/* Was in the hero. It belongs with the terms it summarises, and the
+              hero is now a single centred column like the reference funnel. */}
+          <div className="mm-terms-slot">
+            <TermsCard />
+          </div>
+        </div>
+      </section>
+
+      {/* APPLICATION — the only conversion on the page */}
+      <section className="mm-section mm-pricing mm-reveal" id="apply">
+        <div className="mm-wrap">
+          <div className="mm-price-proof" role="list" aria-label="Proof">
+            <span className="mm-price-proof-item" role="listitem"><strong>4.9/5</strong> from 500+ traders</span>
+            <span className="mm-price-proof-sep" aria-hidden="true" />
+            {PAYOUT_TOTALS && (
+              <>
+                <span className="mm-price-proof-item" role="listitem">
+                  <strong>{PAYOUT_TOTALS.totalUsd}</strong> released at {PARTNER_FIRM}
+                </span>
+                <span className="mm-price-proof-sep" aria-hidden="true" />
+              </>
+            )}
+            <span className="mm-price-proof-item" role="listitem"><strong>{CLIENT_SPLIT}/{OUR_SPLIT}</strong> split, paid after payout</span>
+          </div>
+
+          {/* ⚠ Invented scarcity, kept by an explicit owner decision. */}
+          <p className="mm-warn mm-warn-mb">
+            We don't have many spots left. Today's applications close in <Countdown />
+          </p>
+
+          <FormPreview onOpen={openApply} />
+
+          <p className="mm-disclaimer" style={{ marginTop: 22 }}>
+            Four questions and your email, about a minute. Nothing to pay. The rule check comes
+            first, then a call, then the agreement.
+          </p>
+        </div>
+      </section>
+
       {/* VERIFIED REVIEWS — Trustpilot-style */}
       <section className="mm-reviews mm-reveal" id="reviews">
         <div className="mm-wrap">
@@ -706,11 +718,15 @@ export function MoneyPage() {
           </p>
           <div className="mm-checks">
             <CheckRow
-              title={`If we fail your evaluation, you get back what you paid us plus a ${GUARANTEE_CREDIT} service credit.`}
-              detail="A losing evaluation that stayed inside the firm's rules is not a breach. Markets do that, and no service can promise otherwise."
+              title="If we lose your account, the next evaluation is on us."
+              detail="We buy it, at the same size, and trade it under the same agreement. That is clause 5(c), not a line on a landing page."
             />
             <CheckRow
-              title={`${REFUND_WINDOW} refund guarantee. Ask for the refund and you return the managed account to us.`}
+              title={`Or take your money back, plus a ${GUARANTEE_CREDIT} service credit.`}
+              detail="Your choice, not ours. A losing evaluation that stayed inside the firm's rules is not a breach; markets do that, and no service can promise otherwise."
+            />
+            <CheckRow
+              title={`${REFUND_WINDOW} to decide, on either remedy.`}
               detail="The exact wording is in the management agreement. Read it before you sign, not after."
             />
           </div>

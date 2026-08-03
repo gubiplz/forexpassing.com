@@ -11,13 +11,7 @@
 import { useCallback, useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { APPLY_ENDPOINT, CONTACT_EMAIL, TELEGRAM_HREF } from '../constants'
-import {
-  INCOME_QUESTION,
-  PRE_CONTACT,
-  QUALIFICATION,
-  TOTAL_STEPS,
-  type Step,
-} from '../data/questionnaire'
+import { PRE_CONTACT, QUALIFICATION, TOTAL_STEPS, type Step } from '../data/questionnaire'
 
 declare global {
   interface Window {
@@ -178,7 +172,6 @@ export function ApplyFlow({
           telegram: contact.telegram.trim(),
           company: contact.company,
           answers: finalAnswers,
-          income: finalAnswers[INCOME_QUESTION] ?? '',
           outcome: result,
           source,
           ref: readRef(),
@@ -206,9 +199,21 @@ export function ApplyFlow({
           We usually reply within one business day. Nothing has been charged. We check your firm's
           rules first, then talk, then put the agreement in writing.
         </span>
+        {/* The last step tells them to message us, so the button has to be here
+            rather than an address they are expected to copy out by hand. */}
         <span className="mm-form-ok-d">
-          If you want to talk sooner, write to <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
+          Message us now and we pick it up sooner, or write to{' '}
+          <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
         </span>
+        <a
+          href={TELEGRAM_HREF}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mm-btn mm-btn-lg"
+          style={{ marginTop: 6 }}
+        >
+          Message us on Telegram
+        </a>
       </div>
     )
   }
@@ -418,10 +423,12 @@ function ContactStep({
     const next: Partial<Record<FieldKey, string>> = {}
     if (!value.name.trim()) next.name = 'Please add your name.'
     if (!EMAIL_RE.test(value.email.trim())) next.email = 'Please add a valid email address.'
-    // Onboarding runs on Telegram, so the handle is not optional — asking for it
-    // here beats chasing it after someone has already been accepted.
-    if (!TELEGRAM_RE.test(value.telegram.trim())) {
-      next.telegram = 'Please add your Telegram handle. That is where we reply.'
+    // The handle is optional: the last step asks them to message us, so the
+    // first move is theirs and there is nothing to chase. Still validated when
+    // filled, because a mistyped handle is worse than a blank one.
+    const tg = value.telegram.trim()
+    if (tg && !TELEGRAM_RE.test(tg)) {
+      next.telegram = 'That handle does not look right. Leave it blank if you are not sure.'
     }
     setErrs(next)
     const first = FIELD_ORDER.find((k) => next[k])
@@ -483,13 +490,13 @@ function ContactStep({
           placeholder="+44 7123 456789" value={value.phone} onChange={(e) => set('phone', e.target.value)} />
       </div>
       <div className="mm-field">
-        <label htmlFor="af-telegram">Telegram</label>
+        <label htmlFor="af-telegram">Telegram <span className="mm-opt-label">(optional)</span></label>
         <input {...field('telegram')} type="text" autoComplete="username"
           autoCapitalize="none" autoCorrect="off" spellCheck={false}
-          placeholder="@yourhandle" required />
+          placeholder="@yourhandle" />
         {errs.telegram
           ? <span className="mm-field-err" id="af-telegram-err" role="alert">{errs.telegram}</span>
-          : <span className="mm-field-hint">Onboarding and support run on Telegram. This is where we reply.</span>}
+          : <span className="mm-field-hint">Onboarding runs on Telegram. Leave it out and we reply by email.</span>}
       </div>
 
       <button type="submit" className="mm-btn mm-btn-lg mm-btn-full">Continue</button>

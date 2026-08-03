@@ -47,8 +47,6 @@ export default async function handler(req, res) {
     // Partner slug parked by /r/<slug>. Empty for direct traffic.
     ref: str(body.ref).slice(0, 40),
     telegram: str(body.telegram).slice(0, 60),
-    // Income bracket from the qualification questions — see public/privacy.html.
-    income: str(body.income).slice(0, 40),
     // Every question/answer pair, so the team reads the whole picture.
     answers:
       body.answers && typeof body.answers === 'object'

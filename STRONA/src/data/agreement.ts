@@ -141,7 +141,8 @@ export const AGREEMENT: Agreement = {
           type: 'lettered',
           items: [
             'a refund of all amounts the Client has paid to the Company in respect of that account; or',
-            `a refund of those amounts together with a ${GUARANTEE_CREDIT} credit toward the cost of a further evaluation.`,
+            `a refund of those amounts together with a ${GUARANTEE_CREDIT} credit toward the cost of a further evaluation; or`,
+            'a further evaluation of the same size, with the same firm or another firm whose rules permit management by a third party, purchased at the cost of the Company and traded under this Agreement.',
           ],
         },
         {
@@ -150,7 +151,15 @@ export const AGREEMENT: Agreement = {
         },
         {
           type: 'paragraph',
-          text: 'This clause covers what the Client has paid the Company. It does not cover the fee the Client paid the proprietary trading firm for the evaluation itself, which is a matter between the Client and that firm.',
+          text: 'Where the Client elects the remedy at (c), the Company pays for one further evaluation. This Section then applies to that evaluation as it applied to the first.',
+        },
+        {
+          type: 'paragraph',
+          text: 'Save for the remedy at (c), this clause covers what the Client has paid the Company. It does not cover the fee the Client paid the proprietary trading firm for the first evaluation, which is a matter between the Client and that firm.',
+        },
+        {
+          type: 'paragraph',
+          text: 'Where the issuing firm operates a partner arrangement with the Company, the Company shall make the resulting discount available to the Client at the point of purchase. That discount is granted and applied by the firm; it is not a payment made by the Company and creates no obligation on the Company where the firm withdraws it.',
         },
       ],
     },
@@ -222,6 +231,10 @@ export const AGREEMENT: Agreement = {
         {
           type: 'paragraph',
           text: `The Company does not warrant that any evaluation will be passed, that any account will be funded, or that any payout will arise. Where an evaluation is passed it has typically taken ${PASS_WINDOW}; that is a description of past accounts and not an undertaking as to this one.`,
+        },
+        {
+          type: 'paragraph',
+          text: 'What the Company does undertake is Section 5. Where the guarantee is described elsewhere, including on the Company\'s website, it means the remedies in that Section, which the Client may rely on whether or not the evaluation is passed. It does not mean that a particular result is promised.',
         },
         {
           type: 'paragraph',

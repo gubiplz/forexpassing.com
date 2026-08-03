@@ -16,6 +16,7 @@ import { useEffect, useRef, useState, type MouseEvent, type ReactNode } from 're
 import {
   CLIENT_SPLIT,
   CONTACT_EMAIL,
+  EVAL_DISCOUNT,
   OUR_SPLIT,
   PARTNER_FIRM,
   PASS_WINDOW,
@@ -95,6 +96,12 @@ export function TermsCard() {
           <dt>Typical evaluation</dt>
           <dd>{PASS_WINDOW}</dd>
         </div>
+        {EVAL_DISCOUNT && (
+          <div className="mm-tcard-row">
+            <dt>Evaluation price</dt>
+            <dd className="mm-tcard-strong">{EVAL_DISCOUNT} off</dd>
+          </div>
+        )}
         <div className="mm-tcard-row">
           <dt>Account owner</dt>
           <dd>You</dd>
