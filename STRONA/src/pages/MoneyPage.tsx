@@ -669,16 +669,22 @@ export function MoneyPage() {
             The terms are short on purpose. Read them before you apply, not after.
           </p>
 
-          <div className="mm-checks">
-            {CONTROL.map((c) => (
-              <CheckRow title={c.t} detail={c.d} key={c.t} />
-            ))}
-          </div>
+          {/* The list and the card say the same thing at two levels of detail,
+              so they sit side by side rather than one after the other: the card
+              reads as the summary of the list next to it instead of a second
+              thing to scroll past. Stacks back under 980px. */}
+          <div className="mm-control-grid">
+            <div className="mm-checks">
+              {CONTROL.map((c) => (
+                <CheckRow title={c.t} detail={c.d} key={c.t} />
+              ))}
+            </div>
 
-          {/* Was in the hero. It belongs with the terms it summarises, and the
-              hero is now a single centred column like the reference funnel. */}
-          <div className="mm-terms-slot">
-            <TermsCard />
+            {/* Was in the hero. It belongs with the terms it summarises, and the
+                hero is now a single centred column like the reference funnel. */}
+            <div className="mm-terms-slot">
+              <TermsCard />
+            </div>
           </div>
         </div>
       </section>
