@@ -161,7 +161,13 @@ const pem = (raw) =>
     .replace(/^["']|["']$/g, '')
     .trim();
 
-async function accessToken(email, key) {
+/**
+ * Exported for bin/check-sheets.mjs. That script has to fail and succeed for
+ * exactly the same reasons production does, so it borrows this rather than
+ * signing its own JWT — a second implementation could pass while this one is
+ * broken, which is the one thing a diagnostic must never do.
+ */
+export async function accessToken(email, key) {
   const now = Math.floor(Date.now() / 1000);
   if (cachedToken && cachedToken.exp > now + 60) return cachedToken.token;
 
