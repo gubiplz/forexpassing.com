@@ -292,6 +292,16 @@ html{scroll-behavior:smooth}
 .mm-qr-box svg{display:block;width:100%;height:100%}
 .mm-cert-qr>span{font-family:'CertDisplay',sans-serif;font-weight:600;text-transform:uppercase;
   letter-spacing:.12em;font-size:clamp(4.5px,1.2cqw,6px);color:#93a3c9}
+/* Numer certyfikatu i adres weryfikacji — tylko na kartach ze zgodą. Token jest
+   monospace i łamie się w środku, bo to 22 losowe znaki: bez `anywhere` jedna
+   długa linia rozpycha kartę i psuje siatkę pasa. */
+.mm-cert-token{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-weight:500;
+  font-size:clamp(4.5px,1.25cqw,6.5px);letter-spacing:.04em;color:#c8d3ee;
+  max-width:100%;overflow-wrap:anywhere;text-align:center;line-height:1.25}
+.mm-cert-verify{margin:clamp(5px,1.6cqw,9px) 0 0;padding:0 clamp(10px,6cqw,24px)
+  clamp(6px,1.8cqw,10px);font-family:'CertDisplay',sans-serif;
+  font-size:clamp(4.5px,1.15cqw,6px);line-height:1.45;color:#7e8db4;text-align:center}
+.mm-cert-verify span{color:#a9b7db;overflow-wrap:anywhere}
 
 /* PRICING */
 .mm-price-proof{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:14px 20px;margin-bottom:30px;

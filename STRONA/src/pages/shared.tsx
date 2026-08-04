@@ -26,7 +26,6 @@ import {
 } from '../constants'
 import { type PayoutCert } from '../data/payouts'
 import { type Testimonial } from '../data/testimonials'
-import { VERIFY_QR_SVG } from '../data/verify-qr'
 
 declare global {
   interface Window {
@@ -735,9 +734,17 @@ export function TestimonialCard({ testimonial: t }: { testimonial: Testimonial }
 // protradersfunding.com (logo, eyebrow, amount, recipient, metrics, signature,
 // verify QR). Assets live in public/cert/.
 //
-// The QR is the generic /verify code, exactly as PTF does it: their public API
-// does not publish per-certificate tokens, so no card can link to a single one.
+// A card only carries a QR when the trader agreed to publish the full document.
+// Then the code, the certificate number and the verify link all belong to THAT
+// payout, so scanning it lands on the firm's confirmation of this exact one.
+//
+// Without that consent the strip shows a masked entry — first name, last
+// initial, whole dollars — and no QR at all. It used to print the generic
+// /verify code under a "Scan to verify" caption, which reads as a promise that
+// this payout can be checked, when the code went to a page that knows nothing
+// about it. A missing QR is a smaller claim than a QR that resolves to nothing.
 export function CertCard({ cert }: { cert: PayoutCert }) {
+  const verifiable = Boolean(cert.certToken && cert.qrSvg)
   return (
     <figure
       className={`mm-certcard${cert.payout ? ' is-payout' : ''}`}
@@ -770,11 +777,20 @@ export function CertCard({ cert }: { cert: PayoutCert }) {
             <i className="mm-sig-line" />
             <span>Chief Executive Officer</span>
           </div>
-          <div className="mm-cert-qr">
-            <span className="mm-qr-box" dangerouslySetInnerHTML={{ __html: VERIFY_QR_SVG }} />
-            <span>Scan to verify</span>
-          </div>
+          {verifiable && (
+            <div className="mm-cert-qr">
+              <span className="mm-qr-box" dangerouslySetInnerHTML={{ __html: cert.qrSvg! }} />
+              <b className="mm-cert-token">{cert.certToken}</b>
+              <span>Certificate #</span>
+            </div>
+          )}
         </div>
+
+        {verifiable && (
+          <p className="mm-cert-verify">
+            Verify this certificate at <span>{cert.verifyUrl}</span>
+          </p>
+        )}
       </div>
     </figure>
   )

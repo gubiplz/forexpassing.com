@@ -17,10 +17,23 @@ import { fileURLToPath } from 'node:url';
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'src', 'data', 'payouts.ts');
 
-const API = 'https://protradersfunding.com/api/public/certificates/recent';
-const STATS_API = 'https://protradersfunding.com/api/public/stats';
+// PTF_ORIGIN pozwala wycelować skrypt w lokalną instancję PTF i sprawdzić, jak
+// wygląda karta z pełnym certyfikatem, zanim zmiana pojedzie na produkcję.
+const ORIGIN = process.env.PTF_ORIGIN || 'https://protradersfunding.com';
+const API = `${ORIGIN}/api/public/certificates/recent`;
+const STATS_API = `${ORIGIN}/api/public/stats`;
 
-const money = (n) => `$${Number(n).toLocaleString('en-US')}`;
+// Grosze pokazujemy tylko wtedy, gdy naprawdę są. Zaokrąglona wypłata ma iść
+// jako "$5,760", a nie "$5,760.00" — ale $900.40 nie może wyjść jako "$900.4",
+// bo samo toLocaleString obcina końcowe zero i kwota przestaje wyglądać na kwotę.
+const money = (n) => {
+  const v = Number(n);
+  const cents = !Number.isInteger(v);
+  return `$${v.toLocaleString('en-US', {
+    minimumFractionDigits: cents ? 2 : 0,
+    maximumFractionDigits: cents ? 2 : 0,
+  })}`;
+};
 
 const res = await fetch(API);
 if (!res.ok) {
@@ -60,8 +73,37 @@ const certs = rows
       // Druga metryka: przy wypłacie rozmiar konta, przy reszcie nazwa programu.
       metaLabel: payout ? 'Account size' : 'Program',
       metaValue: payout ? money(r.account_size) : String(r.program ?? '').trim(),
+      // Token pojawia się tylko przy wypłatach, na które trader zgodził się
+      // publikacją pełnego dokumentu — PTF nie wystawia go dla reszty.
+      certToken: String(r.cert_token ?? '').trim(),
     };
   });
+
+// Dla certyfikatów ze zgodą dociągamy dokument: kod QR jest per certyfikat, więc
+// karta na stronie skanuje się do TEJ wypłaty, a nie do ogólnej strony
+// weryfikacji. To jest cała różnica między „zeskanuj, a firma to potwierdzi"
+// będącym obietnicą a byciem prawdą.
+for (const c of certs) {
+  if (!c.certToken) continue;
+  try {
+    const v = await fetch(`${ORIGIN}/api/verify/${encodeURIComponent(c.certToken)}`);
+    if (!v.ok) throw new Error(`HTTP ${v.status}`);
+    const doc = await v.json();
+    if (!doc.found) throw new Error('found=false');
+    // Dokument jest źródłem prawdy dla kwoty i nazwiska — pas i weryfikacja nie
+    // mogą się rozjechać, bo rozjazd zauważy dokładnie ten człowiek, który
+    // sprawdza, czy to prawda.
+    if (doc.amount) c.amount = String(doc.amount);
+    if (doc.trader_name) c.trader = String(doc.trader_name);
+    c.qrSvg = String(doc.qr_svg ?? '').trim();
+    c.verifyUrl = `${ORIGIN}/verify/${c.certToken}`;
+  } catch (err) {
+    // Nie da się potwierdzić => karta zostaje w wersji zamaskowanej. Lepiej
+    // pokazać mniej niż numer certyfikatu, którego nikt nie zweryfikuje.
+    console.warn(`[sync-payouts] ${c.certToken}: ${err.message} — karta bez weryfikacji`);
+    c.certToken = '';
+  }
+}
 
 const header = `// WYGENEROWANE PRZEZ bin/sync-payouts.mjs — nie edytować ręcznie.
 // Źródło: ${API}
@@ -80,6 +122,13 @@ export type PayoutCert = {
   date: string
   metaLabel: string
   metaValue: string
+  /** Numer certyfikatu — jest tylko wtedy, gdy trader zgodził się na publikację
+   *  pełnego dokumentu. Pusty string = karta w wersji zamaskowanej. */
+  certToken: string
+  /** Kod QR TEJ wypłaty, prosto z dokumentu. Bez tokenu nie istnieje. */
+  qrSvg?: string
+  /** Pełny adres weryfikacji, do wydrukowania pod kodem. */
+  verifyUrl?: string
 }
 `;
 
@@ -91,7 +140,7 @@ export const PAYOUT_TOTALS = ${
   stats
     ? JSON.stringify(
         {
-          count: stats.payouts_count ?? payouts.length,
+          count: stats.payouts_count ?? certs.filter((c) => c.payout).length,
           totalUsd: money(stats.payouts_total_usd ?? 0),
           largestUsd: money(stats.largest_payout_usd ?? 0),
           fundedAccounts: stats.funded_accounts ?? 0,
@@ -111,14 +160,27 @@ console.log(
     (stats ? ` (łącznie ${money(stats.payouts_total_usd ?? 0)})` : '')
 );
 
-// The endpoint is called "recent" — if it ever starts trimming the list we want
-// to know, rather than quietly publishing a slice of the record.
+// Pas pokazuje mniej wypłat niż `/stats` liczy i to jest NORMALNE: na pas
+// wchodzą tylko te oznaczone w panelu PTF jako "On LP", a licznik obejmuje
+// wszystkie wypłacone. Wcześniejsza wersja tego ostrzeżenia mówiła "endpoint
+// obcina listę, trzeba go stronicować" — czyli wysyłała człowieka naprawiać
+// stronicowanie, którego nie ma. Różnica to lista niewpuszczonych, nie usterka.
 if (stats?.payouts_count != null) {
-  const fetched = certs.filter((c) => c.payout).length;
-  if (fetched < stats.payouts_count) {
-    console.warn(
-      `[sync-payouts] UWAGA: API oddało ${fetched} wypłat, a /stats mówi o ${stats.payouts_count}. ` +
-        'Endpoint obcina listę — trzeba go stronicować, inaczej publikujemy wycinek.'
+  const naPasie = certs.filter((c) => c.payout).length;
+  const poza = stats.payouts_count - naPasie;
+  if (poza > 0) {
+    console.log(
+      `[sync-payouts] ${naPasie} z ${stats.payouts_count} wypłat jest na pasie; ` +
+        `${poza} nie wpuszczono (przełącznik "On LP" w panelu PTF). ` +
+        'Nagłówek liczy wszystkie wypłacone, więc te liczby mają prawo się różnić.'
     );
   }
 }
+
+const zeZgoda = certs.filter((c) => c.certToken).length;
+console.log(
+  zeZgoda
+    ? `[sync-payouts] ${zeZgoda} kart z pełnym certyfikatem (nazwisko, kwota co do centa, QR do weryfikacji).`
+    : '[sync-payouts] Wszystkie karty w wersji zamaskowanej — żadna wypłata nie ma jeszcze ' +
+        'zgody na pełny dokument ("Full cert" w panelu PTF).'
+);

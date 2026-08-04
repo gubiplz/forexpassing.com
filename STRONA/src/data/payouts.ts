@@ -1,6 +1,6 @@
 // WYGENEROWANE PRZEZ bin/sync-payouts.mjs — nie edytować ręcznie.
 // Źródło: https://protradersfunding.com/api/public/certificates/recent
-// Pobrano: 2026-08-02
+// Pobrano: 2026-08-04
 //
 // Certyfikaty wystawione przez Pro Traders Funding klientom Forex Passing.
 // Kształt pól odwzorowuje pasek "Recently issued" na protradersfunding.com,
@@ -15,9 +15,38 @@ export type PayoutCert = {
   date: string
   metaLabel: string
   metaValue: string
+  /** Numer certyfikatu — jest tylko wtedy, gdy trader zgodził się na publikację
+   *  pełnego dokumentu. Pusty string = karta w wersji zamaskowanej. */
+  certToken: string
+  /** Kod QR TEJ wypłaty, prosto z dokumentu. Bez tokenu nie istnieje. */
+  qrSvg?: string
+  /** Pełny adres weryfikacji, do wydrukowania pod kodem. */
+  verifyUrl?: string
 }
 
 export const PAYOUT_CERTS: PayoutCert[] = [
+  {
+    "payout": true,
+    "eyebrow": "Payout",
+    "amountLabel": "for the amount of",
+    "amount": "$1,219",
+    "trader": "Eleanor K.",
+    "date": "Aug 4, 2026",
+    "metaLabel": "Account size",
+    "metaValue": "$50,000",
+    "certToken": ""
+  },
+  {
+    "payout": true,
+    "eyebrow": "Payout",
+    "amountLabel": "for the amount of",
+    "amount": "$6,219",
+    "trader": "Imogen I.",
+    "date": "Aug 4, 2026",
+    "metaLabel": "Account size",
+    "metaValue": "$100,000",
+    "certToken": ""
+  },
   {
     "payout": true,
     "eyebrow": "Payout",
@@ -26,7 +55,8 @@ export const PAYOUT_CERTS: PayoutCert[] = [
     "trader": "Caleb M.",
     "date": "Aug 1, 2026",
     "metaLabel": "Account size",
-    "metaValue": "$800,000"
+    "metaValue": "$800,000",
+    "certToken": ""
   },
   {
     "payout": true,
@@ -36,7 +66,8 @@ export const PAYOUT_CERTS: PayoutCert[] = [
     "trader": "Austin R.",
     "date": "Jul 30, 2026",
     "metaLabel": "Account size",
-    "metaValue": "$400,000"
+    "metaValue": "$400,000",
+    "certToken": ""
   },
   {
     "payout": true,
@@ -46,7 +77,8 @@ export const PAYOUT_CERTS: PayoutCert[] = [
     "trader": "Tyler B.",
     "date": "Jul 28, 2026",
     "metaLabel": "Account size",
-    "metaValue": "$100,000"
+    "metaValue": "$100,000",
+    "certToken": ""
   },
   {
     "payout": true,
@@ -56,7 +88,8 @@ export const PAYOUT_CERTS: PayoutCert[] = [
     "trader": "Dylan C.",
     "date": "Jul 25, 2026",
     "metaLabel": "Account size",
-    "metaValue": "$200,000"
+    "metaValue": "$200,000",
+    "certToken": ""
   },
   {
     "payout": true,
@@ -66,7 +99,8 @@ export const PAYOUT_CERTS: PayoutCert[] = [
     "trader": "Ryan F.",
     "date": "Jul 22, 2026",
     "metaLabel": "Account size",
-    "metaValue": "$800,000"
+    "metaValue": "$800,000",
+    "certToken": ""
   },
   {
     "payout": true,
@@ -76,7 +110,8 @@ export const PAYOUT_CERTS: PayoutCert[] = [
     "trader": "Jacob P.",
     "date": "Jul 19, 2026",
     "metaLabel": "Account size",
-    "metaValue": "$50,000"
+    "metaValue": "$50,000",
+    "certToken": ""
   },
   {
     "payout": true,
@@ -86,7 +121,8 @@ export const PAYOUT_CERTS: PayoutCert[] = [
     "trader": "Logan T.",
     "date": "Jul 15, 2026",
     "metaLabel": "Account size",
-    "metaValue": "$400,000"
+    "metaValue": "$400,000",
+    "certToken": ""
   },
   {
     "payout": true,
@@ -96,7 +132,8 @@ export const PAYOUT_CERTS: PayoutCert[] = [
     "trader": "Noah M.",
     "date": "Jul 11, 2026",
     "metaLabel": "Account size",
-    "metaValue": "$200,000"
+    "metaValue": "$200,000",
+    "certToken": ""
   },
   {
     "payout": true,
@@ -106,7 +143,8 @@ export const PAYOUT_CERTS: PayoutCert[] = [
     "trader": "Mason C.",
     "date": "Jul 7, 2026",
     "metaLabel": "Account size",
-    "metaValue": "$100,000"
+    "metaValue": "$100,000",
+    "certToken": ""
   },
   {
     "payout": true,
@@ -116,14 +154,15 @@ export const PAYOUT_CERTS: PayoutCert[] = [
     "trader": "Ethan B.",
     "date": "Jul 3, 2026",
     "metaLabel": "Account size",
-    "metaValue": "$50,000"
+    "metaValue": "$50,000",
+    "certToken": ""
   }
 ]
 
 // Zbiorcze liczby z /api/public/stats — `null`, gdy endpoint nie odpowiedział.
 export const PAYOUT_TOTALS = {
-  "count": 10,
-  "totalUsd": "$49,850",
+  "count": 16,
+  "totalUsd": "$72,834",
   "largestUsd": "$7,980",
-  "fundedAccounts": 12
+  "fundedAccounts": 29
 }

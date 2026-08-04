@@ -188,8 +188,10 @@ function Payouts() {
           <a href={PARTNER_FIRM_HREF} target="_blank" rel="noopener noreferrer">
             {PARTNER_FIRM}
           </a>{' '}
-          to Forex Passing clients, synced from the firm's public record. Individual results vary. An
-          evaluation can fail and no outcome is guaranteed.
+          to Forex Passing clients, synced from the firm's public record. The totals above count
+          every payout the firm released; not every trader publishes their certificate, so fewer
+          appear below. Individual results vary. An evaluation can fail and no outcome is
+          guaranteed.
         </p>
       </div>
     </section>

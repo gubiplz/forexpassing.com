@@ -380,6 +380,9 @@ export function MoneyPage() {
   const rootRef = useRef<HTMLDivElement>(null)
   // Doubled so the marquee wraps seamlessly. Empty array = section not rendered.
   const cards = [...PAYOUT_CERTS, ...PAYOUT_CERTS]
+  // Czy w pasie jest choć jeden certyfikat, który da się zweryfikować z zewnątrz.
+  // Steruje zdaniem nad pasem — patrz komentarz w tamtym miejscu.
+  const anyVerifiable = PAYOUT_CERTS.some((c) => c.certToken)
   const reviewRows = [
     [...REVIEWS, ...REVIEWS],
     [...[...REVIEWS].reverse(), ...[...REVIEWS].reverse()],
@@ -541,9 +544,17 @@ export function MoneyPage() {
         <section className="mm-section mm-payouts mm-reveal" id="payouts">
           <div className="mm-wrap">
             <h2 className="mm-h2 mm-center">THIS IS WHAT OUR CLIENTS WALK AWAY WITH</h2>
+            {/* Obietnica skanowania jest warunkowa, bo weryfikowalna jest tylko
+                karta, na której trader zgodził się opublikować pełny dokument.
+                Wcześniej to zdanie stało bezwarunkowo nad pasem, gdzie każdy kod
+                QR był tym samym ogólnym kodem prowadzącym do strony, która o tej
+                wypłacie nic nie wie — czyli obiecywało dowód, którego nie było. */}
             <p className="mm-lead mm-center mm-lead-mid">
               Certificates {PARTNER_FIRM} issued to our clients: payouts released, evaluations
-              passed, accounts funded. Scan any of them and the firm confirms it.
+              passed, accounts funded.{' '}
+              {anyVerifiable
+                ? 'Scan the ones that carry a certificate number and the firm confirms them.'
+                : 'Names are shortened, the way the firm publishes them.'}
             </p>
           </div>
 
