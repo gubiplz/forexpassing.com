@@ -186,8 +186,16 @@ const ZONE_TO_ISO: Record<string, string> = {
 }
 
 /**
- * The visitor's likely country, as an ISO code from the table above, or '' when
- * there is nothing to go on.
+ * Where the field lands when the device tells us nothing. The offer is written
+ * in English and sold mainly into the United States, so a visitor we cannot
+ * place is far more likely to be dialling +1 than anything else. It is only a
+ * starting point: the two reads below both outrank it.
+ */
+export const FALLBACK_ISO = 'US'
+
+/**
+ * The visitor's likely country, as an ISO code from the table above, falling
+ * back to FALLBACK_ISO when neither signal recognises them.
  *
  * Read entirely on the device — no request leaves the page. The worker in front
  * of this site keeps the visitor's country out of the injected state on purpose
@@ -216,9 +224,14 @@ export function detectIso(): string {
       if (region && findDial(region)) return region
     }
   } catch {
-    // No locale either. The field stays blank, which is a fine place to start.
+    // No locale either. The fallback below is as good a guess as there is.
   }
-  return ''
+  return FALLBACK_ISO
+}
+
+/** The flag artwork for a country, served from our own origin. */
+export function flagSrc(iso: string): string {
+  return `/flags/${iso.toLowerCase()}.svg`
 }
 
 /** Digits only, minus a trunk zero people habitually type in front. */

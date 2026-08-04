@@ -12,7 +12,9 @@ import { useCallback, useEffect, useRef, useState, type FormEvent, type ReactNod
 import { createPortal } from 'react-dom'
 import { APPLY_ENDPOINT, CONTACT_EMAIL, TELEGRAM_HREF } from '../constants'
 import { PRE_CONTACT, QUALIFICATION, TOTAL_STEPS, type Step } from '../data/questionnaire'
-import { DIAL_CODES, detectIso, findDial, nationalDigits, samplePlaceholder } from '../data/dial-codes'
+import {
+  DIAL_CODES, detectIso, findDial, flagSrc, nationalDigits, samplePlaceholder,
+} from '../data/dial-codes'
 
 declare global {
   interface Window {
@@ -546,7 +548,17 @@ function ContactStep({
               searchable on every phone — while the page keeps its own look. */}
           <span className={`mm-phone-cc${chosen ? '' : ' is-empty'}`}>
             <span className="mm-phone-dial" aria-hidden="true">
-              {chosen ? `${chosen.flag} ${chosen.dial}` : 'Country'}
+              {/* Real artwork rather than the flag emoji. Windows ships no flag
+                  glyphs at all, so the emoji renders there as the two letters
+                  of the country code — this looks the same on every platform.
+                  Exactly one file is fetched, for the country on show. */}
+              {chosen ? (
+                <>
+                  <img className="mm-phone-flag" src={flagSrc(chosen.iso)} alt=""
+                    width="20" height="15" decoding="async" />
+                  {chosen.dial}
+                </>
+              ) : 'Country'}
               <svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true">
                 <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" strokeWidth="2.4"
                   strokeLinecap="round" strokeLinejoin="round" />

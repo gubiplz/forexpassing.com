@@ -342,6 +342,12 @@ html{scroll-behavior:smooth}
   border:1px solid var(--line);border-radius:10px;padding:13px 12px;background:#fff;
   font-size:16px;font-weight:700;color:var(--txt);line-height:1.2}
 .mm-phone-dial svg{color:var(--mut);flex:0 0 auto}
+/* The flag is artwork, not type, so it needs its own box. Width and height are
+   on the element as well, so the chip does not resize when the file lands.
+   The hairline matters: half of Poland's flag is white, and against a white
+   chip it would otherwise read as a flag with the top missing. */
+.mm-phone-flag{flex:0 0 auto;display:block;width:20px;height:15px;border-radius:2px;
+  object-fit:cover;box-shadow:0 0 0 1px rgba(15,30,22,.12)}
 /* Nothing picked yet: the chip reads as a prompt, in the same grey the input
    placeholders use, so it does not look like an already-answered field. */
 .mm-phone-cc.is-empty .mm-phone-dial{font-weight:600;color:var(--mut)}
