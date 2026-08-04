@@ -480,11 +480,25 @@ html{scroll-behavior:smooth}
 .mm-pos{color:#1faa6f;font-weight:600}
 .mm-neg{color:#e0544a;font-weight:600}
 
-/* REVIEWS (Trustpilot-style) */
+/* REVIEWS */
 .mm-reviews{background:var(--teal);color:#fff;overflow:hidden;padding:64px 0}
 .mm-reviews-h{color:#fff;margin-bottom:8px}
 .mm-reviews-sub{text-align:center;font-size:clamp(15px,2vw,18px);opacity:.9}
 .mm-reviews-sub strong{font-weight:800}
+
+/* Rating badge. Both states are 72px tall, so publishing the artwork cannot
+   push the rest of the section down. Width is deliberately left to the file:
+   it costs nothing vertically, and pinning it would letterboard a badge whose
+   proportions we do not know yet. Border and label take currentColor, because
+   this sits on dark teal on /meta and on white on /reviews. */
+/* The outer element always spans the column and centres its contents — the
+   reserved box sizes the inner span, never this one, or the badge lands against
+   the left edge instead of under the heading. */
+.mm-rev-badge{display:flex;justify-content:center;align-items:center;height:72px;margin:16px 0 14px}
+.mm-rev-badge img{display:block;height:72px;width:auto;max-width:min(300px,78vw);object-fit:contain}
+.mm-rev-badge.is-empty span{display:flex;align-items:center;justify-content:center;width:200px;height:72px;
+  border:1px dashed currentColor;border-radius:12px;opacity:.42;
+  font-size:10.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase}
 .mm-reviews .mm-scroller-rev{margin:34px 0 0}
 .mm-reviews .mm-scroller-rev+.mm-scroller-rev{margin-top:20px}
 .mm-scroller-rev .mm-scroller-track{gap:20px}
@@ -583,8 +597,11 @@ html{scroll-behavior:smooth}
 /* ---- client video testimonials (data/testimonials.ts) ------------------- */
 /* Columns are capped rather than 1fr: with a single clip published, a stretching
    track would hand one card the full 1032px and a 9:16 frame 1800px tall. Capped
-   and centred, the count can change without the layout falling apart. */
-.mm-testi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,300px));
+   and centred, the count can change without the layout falling apart.
+   The cap is 240 and not 300 because auto-fit counts columns off the MAXIMUM:
+   at 300 only three fit the 1032px wrap, so the fourth card — the section now
+   runs one clip and three reserved slots — dropped onto a row of its own. */
+.mm-testi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,240px));
   justify-content:center;gap:20px;margin-top:38px}
 /* Two across on a phone once there are enough to fill a row — a 9:16 card runs
    over 600px tall, so one per row would be a screen and a half of scrolling
@@ -629,6 +646,9 @@ html{scroll-behavior:smooth}
 .mm-testi-tags{font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
   color:var(--mut);line-height:1.5}
 .mm-testi-story{font-size:13.5px;color:var(--mut);line-height:1.6}
+/* Caption of a reserved slot. No stars and no payout pill — there is nobody to
+   attribute them to until the clip exists. */
+.mm-testi-pending{font-size:11.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--mut)}
 @media (hover:hover) and (pointer:fine){.mm-testi-play:hover .mm-testi-play-ico{transform:scale(1.08)}}
 
 /* Check rows — "what you keep control of", guarantees */
@@ -1119,6 +1139,11 @@ html{scroll-behavior:smooth}
 .mm-cert-grid .mm-certcard{width:100%;min-width:0}
 .mm-rev-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px;margin-top:38px}
 .mm-rev-grid .mm-rev-card{flex:1 1 auto;width:100%;min-width:0}
+/* /reviews stacks two blocks inside one section — clips, then written reviews.
+   On /meta the two live in separate sections and the section padding spaces
+   them; here they need the gap spelled out. */
+.mm-sub-block{margin-top:56px}
+@media (max-width:760px){.mm-sub-block{margin-top:40px}}
 .mm-doc{max-width:760px;margin:0 auto}
 .mm-doc h3{font-size:19px;font-weight:800;margin:38px 0 10px;letter-spacing:-.01em}
 .mm-doc h3:first-child{margin-top:0}

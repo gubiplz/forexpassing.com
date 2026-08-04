@@ -16,7 +16,12 @@
 // actually presses play.
 
 export type Testimonial = {
-  /** YouTube id. Empty leaves the slot in its "being filmed" state. Shorts work as-is. */
+  /**
+   * YouTube id. Empty leaves the slot in its "being filmed" state, and then
+   * every field below is ignored — a slot renders no name, no rating and no
+   * payout, because there is nobody to attribute them to yet. Leave them empty
+   * rather than filling them in advance. Shorts work as-is.
+   */
   videoId: string
   /**
    * Own-origin still, shown until play is pressed. Use the cover art from the
@@ -45,4 +50,11 @@ export const TESTIMONIALS: Testimonial[] = [
     story:
       'Six months ago Mike had never touched a prop account and could not have told you what a pip was. He took a $200K evaluation, cleared it, and the first payout came back at $68,340. He paid the split, scaled straight into a larger account, and says he spent the whole time waiting for a catch that never came.',
   },
+
+  // Three reserved slots. Filling one is two values — the YouTube id and a local
+  // poster — plus the name, payout and story from the clip itself. Until then
+  // they render as dashed frames that say a recording is on the way.
+  { videoId: '', poster: '', name: '', payoutUsd: 0, tags: [], story: '' },
+  { videoId: '', poster: '', name: '', payoutUsd: 0, tags: [], story: '' },
+  { videoId: '', poster: '', name: '', payoutUsd: 0, tags: [], story: '' },
 ]

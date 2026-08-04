@@ -57,6 +57,19 @@ export const WISTIA_META_ID = 'jiy7nxpusf'
 /** The CTA green. The Wistia player is told to paint its controls to match. */
 export const BRAND_GREEN = '#15803d'
 
+// Plakietka oceny nad opiniami na /meta i /reviews. Pusty string renderuje
+// zarezerwowane miejsce o docelowym rozmiarze — dokładnie jak EVAL_DISCOUNT
+// wygasza claim o zniżce, a videoId: '' w data/testimonials.ts zamienia kartę
+// klienta w slot. Żeby ją opublikować: wrzuć plik do public/ i wpisz tu ścieżkę.
+// Nic poza tą jedną linijką nie wymaga zmiany.
+//
+// Plakietka musi opisywać ocenę, którą da się sprawdzić u jej wystawcy. Znak
+// niezależnego serwisu opinii (Trustpilot, Google) wolno tu wstawić tylko wtedy,
+// gdy pod tym adresem faktycznie stoi nasz profil z tymi opiniami — inaczej
+// plakietka twierdzi, że ktoś nas zweryfikował, a nikt tego nie zrobił.
+export const REVIEW_BADGE_SRC = ''
+export const REVIEW_BADGE_ALT = 'Our rating'
+
 // Kontakt do zespołu. Statyczne strony w public/ i szablony maili nie mogą
 // importować tego pliku, więc mają adres wpisany wprost — przy zmianie uchwytu
 // trzeba je podmienić razem z tą stałą (grep po "t.me/").

@@ -21,6 +21,7 @@ import {
 import { ContractModal } from '../components/AgreementDocument'
 import { TrackRecordModal } from '../components/TrackRecord'
 import { PAYOUT_CERTS, PAYOUT_TOTALS } from '../data/payouts'
+import { TESTIMONIALS } from '../data/testimonials'
 import type { SubPageKey } from '../runtime/no-edge'
 
 // The proof pages this component covers. /referral-program and /partner-portal
@@ -31,8 +32,10 @@ import {
   CertCard,
   PerformanceWidget,
   REVIEWS,
+  ReviewBadge,
   ReviewCard,
   SiteFooter,
+  TestimonialCard,
   TopBar,
   track,
   useReveal,
@@ -239,14 +242,38 @@ function Reviews() {
   return (
     <section className="mm-section mm-reveal" style={{ background: 'var(--bg)' }}>
       <div className="mm-wrap">
+        <ReviewBadge />
         <p className="mm-reviews-sub mm-center">
           Rated <strong>4.9</strong> out of 5 based on <strong>500+</strong> reviews
         </p>
 
-        <div className="mm-rev-grid">
-          {REVIEWS.map((r, i) => (
-            <ReviewCard review={r} key={r.name + i} />
-          ))}
+        {/* Clips first. A recording carries more than a paragraph does, and the
+            page somebody opens looking for reviews is where they should meet one
+            — until now they only existed on /meta. Reserved slots stay visible
+            while the rest are filmed; see the note in data/testimonials.ts. */}
+        {TESTIMONIALS.length > 0 && (
+          <div className="mm-sub-block">
+            <h2 className="mm-h2 mm-center">CLIENT CLIPS</h2>
+            <p className="mm-lead mm-center mm-lead-mid">
+              {TESTIMONIALS.some((t) => t.videoId)
+                ? 'The short version is written under each video.'
+                : 'The recordings are being filmed. The short version of each one is written underneath.'}
+            </p>
+            <div className="mm-testi-grid">
+              {TESTIMONIALS.map((t, i) => (
+                <TestimonialCard testimonial={t} key={t.videoId || `slot-${i}`} />
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div className="mm-sub-block">
+          <h2 className="mm-h2 mm-center">WRITTEN REVIEWS</h2>
+          <div className="mm-rev-grid">
+            {REVIEWS.map((r, i) => (
+              <ReviewCard review={r} key={r.name + i} />
+            ))}
+          </div>
         </div>
 
         <p className="mm-disclaimer" style={{ marginTop: 40 }}>

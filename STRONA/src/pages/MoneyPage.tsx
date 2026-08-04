@@ -29,15 +29,17 @@ import {
   APPLY_ANCHOR,
 } from '../constants'
 import { PAYOUT_CERTS, PAYOUT_TOTALS } from '../data/payouts'
-import { TESTIMONIALS, type Testimonial } from '../data/testimonials'
+import { TESTIMONIALS } from '../data/testimonials'
 import {
   AutoScroller,
   CertCard,
   PerformanceWidget,
   REVIEWS,
+  ReviewBadge,
   ReviewCard,
   SiteFooter,
   TermsCard,
+  TestimonialCard,
   TopBar,
   track,
   useReveal,
@@ -295,74 +297,6 @@ function HeroVsl() {
   )
 }
 
-// One client story: the clip on top, the context underneath.
-//
-// The player is not embedded until the reader presses play. A row of four
-// autoloading YouTube iframes is a third-party script and a few hundred KB each,
-// paid for by everyone who scrolls past.
-//
-// An entry without a videoId keeps its slot and says so. The alternative tried
-// earlier — hiding the whole section until a clip exists — meant the reserved
-// space read as a gap on the page, and there was nothing to drop a recording
-// into. A slot that admits it is empty is honest and still shows the shape.
-function TestimonialCard({ testimonial: t }: { testimonial: Testimonial }) {
-  const [playing, setPlaying] = useState(false)
-
-  return (
-    <figure className={`mm-testi-card${t.videoId ? '' : ' is-empty'}`}>
-      <div className="mm-testi-video">
-        {!t.videoId ? (
-          <span className="mm-testi-soon">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M17 10.5V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-3.5l4 3.5V7l-4 3.5z"
-                fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
-            </svg>
-            Clip being filmed
-          </span>
-        ) : playing ? (
-          <iframe
-            src={`https://www.youtube.com/embed/${t.videoId}?autoplay=1&rel=0&playsinline=1`}
-            title={`${t.name}, client testimonial`}
-            allow="autoplay; encrypted-media; fullscreen"
-            allowFullScreen
-          />
-        ) : (
-          <button
-            type="button"
-            className="mm-testi-play"
-            aria-label={`Play ${t.name}'s testimonial`}
-            onClick={() => {
-              track('TestimonialPlay', 'testimonial_play', { name: t.name }, true)
-              setPlaying(true)
-            }}
-          >
-            {/* An <img> rather than a background, so it can be deferred: the
-                section is far below the fold and this must not compete with
-                the hero. Empty alt — the name and story are already text. */}
-            <img className="mm-testi-poster" src={t.poster} alt="" loading="lazy" decoding="async" />
-            <span className="mm-testi-play-ico" aria-hidden="true">
-              <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="currentColor" /></svg>
-            </span>
-          </button>
-        )}
-      </div>
-
-      <figcaption className="mm-testi-body">
-        <span className="mm-testi-name">{t.name}</span>
-        <span className="mm-testi-stars" aria-label="Rated 5 out of 5">
-          {[0, 1, 2, 3, 4].map((i) => (
-            <svg key={i} viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 6.91-1.01L12 2z" />
-            </svg>
-          ))}
-        </span>
-        <span className="mm-testi-paid">${t.payoutUsd.toLocaleString('en-US')} PAID</span>
-        <span className="mm-testi-tags">{t.tags.join(' · ')}</span>
-        <p className="mm-testi-story">{t.story}</p>
-      </figcaption>
-    </figure>
-  )
-}
 
 // The one button on the page. Every instance opens the same questionnaire.
 function Cta({
@@ -646,9 +580,11 @@ export function MoneyPage() {
                 : 'The recordings are being filmed. The short version of each one is written underneath.'}
             </p>
 
+            {/* Keyed by position, not by name: a reserved slot has no name, so
+                keying on one collides the moment there is more than one. */}
             <div className="mm-testi-grid">
-              {TESTIMONIALS.map((t) => (
-                <TestimonialCard testimonial={t} key={t.name} />
+              {TESTIMONIALS.map((t, i) => (
+                <TestimonialCard testimonial={t} key={t.videoId || `slot-${i}`} />
               ))}
             </div>
 
@@ -724,6 +660,7 @@ export function MoneyPage() {
       <section className="mm-reviews mm-reveal" id="reviews">
         <div className="mm-wrap">
           <h2 className="mm-h2 mm-center mm-reviews-h">OUR VERIFIED REVIEWS</h2>
+          <ReviewBadge />
           <p className="mm-reviews-sub">Rated <strong>4.9</strong> out of 5 based on <strong>500+</strong> reviews</p>
         </div>
         {reviewRows.map((row, ri) => (

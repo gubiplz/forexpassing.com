@@ -20,8 +20,11 @@ import {
   OUR_SPLIT,
   PARTNER_FIRM,
   PASS_WINDOW,
+  REVIEW_BADGE_ALT,
+  REVIEW_BADGE_SRC,
 } from '../constants'
 import { type PayoutCert } from '../data/payouts'
+import { type Testimonial } from '../data/testimonials'
 import { VERIFY_QR_SVG } from '../data/verify-qr'
 
 declare global {
@@ -599,6 +602,110 @@ export function ReviewCard({ review }: { review: { name: string; text: string; a
         </span>
       </div>
     </div>
+  )
+}
+
+/**
+ * The rating badge above the reviews, on both /meta and /reviews.
+ *
+ * Until REVIEW_BADGE_SRC points at a file the box renders empty but at its final
+ * height, so dropping the artwork in later cannot push the rest of the section
+ * down — the same reason the country flag in the application carries an explicit
+ * 20×15 box. Width is left to the artwork: it changes nothing vertically, and
+ * pinning it would letterbox a badge whose proportions we do not know yet.
+ */
+export function ReviewBadge() {
+  if (!REVIEW_BADGE_SRC) {
+    return (
+      <div className="mm-rev-badge is-empty">
+        <span>Rating badge</span>
+      </div>
+    )
+  }
+  return (
+    <div className="mm-rev-badge">
+      <img src={REVIEW_BADGE_SRC} alt={REVIEW_BADGE_ALT} height="72" decoding="async" />
+    </div>
+  )
+}
+
+// One client clip. Rendered on /meta and on /reviews, so it lives here.
+//
+// The player is not embedded until the reader presses play. A row of four
+// autoloading YouTube iframes is a third-party script and a few hundred KB each,
+// paid for by everyone who scrolls past.
+//
+// An entry without a videoId keeps its slot and says so. The alternative tried
+// earlier — hiding the whole section until a clip exists — meant the reserved
+// space read as a gap on the page, and there was nothing to drop a recording
+// into. A slot that admits it is empty is honest and still shows the shape.
+export function TestimonialCard({ testimonial: t }: { testimonial: Testimonial }) {
+  const [playing, setPlaying] = useState(false)
+  const empty = !t.videoId
+
+  return (
+    <figure className={`mm-testi-card${empty ? ' is-empty' : ''}`}>
+      <div className="mm-testi-video">
+        {empty ? (
+          <span className="mm-testi-soon">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M17 10.5V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-3.5l4 3.5V7l-4 3.5z"
+                fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+            </svg>
+            Clip being filmed
+          </span>
+        ) : playing ? (
+          <iframe
+            src={`https://www.youtube.com/embed/${t.videoId}?autoplay=1&rel=0&playsinline=1`}
+            title={`${t.name}, client testimonial`}
+            allow="autoplay; encrypted-media; fullscreen"
+            allowFullScreen
+          />
+        ) : (
+          <button
+            type="button"
+            className="mm-testi-play"
+            aria-label={`Play ${t.name}'s testimonial`}
+            onClick={() => {
+              track('TestimonialPlay', 'testimonial_play', { name: t.name }, true)
+              setPlaying(true)
+            }}
+          >
+            {/* An <img> rather than a background, so it can be deferred: the
+                section is far below the fold and this must not compete with
+                the hero. Empty alt — the name and story are already text. */}
+            <img className="mm-testi-poster" src={t.poster} alt="" loading="lazy" decoding="async" />
+            <span className="mm-testi-play-ico" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="currentColor" /></svg>
+            </span>
+          </button>
+        )}
+      </div>
+
+      {/* A slot has no name, no rating and no payout, so it renders none of
+          them. Reaching this with an empty entry used to print five stars and a
+          "$0 PAID" pill under a frame that says the clip is still being filmed —
+          nobody had seen it because every published entry is filled. */}
+      <figcaption className="mm-testi-body">
+        {empty ? (
+          <span className="mm-testi-pending">Recording pending</span>
+        ) : (
+          <>
+            <span className="mm-testi-name">{t.name}</span>
+            <span className="mm-testi-stars" aria-label="Rated 5 out of 5">
+              {[0, 1, 2, 3, 4].map((i) => (
+                <svg key={i} viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 6.91-1.01L12 2z" />
+                </svg>
+              ))}
+            </span>
+            <span className="mm-testi-paid">${t.payoutUsd.toLocaleString('en-US')} PAID</span>
+            <span className="mm-testi-tags">{t.tags.join(' · ')}</span>
+            <p className="mm-testi-story">{t.story}</p>
+          </>
+        )}
+      </figcaption>
+    </figure>
   )
 }
 
