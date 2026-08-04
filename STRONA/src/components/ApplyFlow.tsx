@@ -682,7 +682,15 @@ export function ApplyModal({
       body.style.left = prev.left
       body.style.width = prev.width
       body.style.overflow = prev.overflow
+      // Unpinning drops the page back to offset 0, and the global
+      // scroll-behavior:smooth would then animate the way back — the page flies
+      // to the top and glides down again every time the card is closed. Putting
+      // the position back has to be instant to read as "nothing moved".
+      const html = document.documentElement
+      const prevBehavior = html.style.scrollBehavior
+      html.style.scrollBehavior = 'auto'
       window.scrollTo(0, y)
+      html.style.scrollBehavior = prevBehavior
       // Back to the button that opened it, so keyboard readers do not land at
       // the top of the document.
       opener?.focus?.()

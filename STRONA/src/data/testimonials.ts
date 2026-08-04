@@ -19,10 +19,12 @@ export type Testimonial = {
   /** YouTube id. Empty leaves the slot in its "being filmed" state. Shorts work as-is. */
   videoId: string
   /**
-   * Own-origin still, shown until play is pressed. Grabbed from
-   * `i.ytimg.com/vi/<id>/oardefault.jpg` — the only variant that keeps a Short's
-   * real 9:16 frame; `hqdefault` is a letterboxed 4:3 crop. Rehosted as webp so
-   * the card costs no third-party connection and a third of the bytes.
+   * Own-origin still, shown until play is pressed. Use the cover art from the
+   * shoot — the `-cover-hook.jpg` next to the footage in TESTIMONIALS —
+   * converted to webp. Never pull it from i.ytimg.com: those endpoints only
+   * return a frame YouTube picked out of the video, while the custom thumbnail
+   * the channel uploaded is not exposed publicly. Taking the easy route there
+   * silently ships a different image than the one people see on YouTube.
    */
   poster: string
   name: string
@@ -38,9 +40,9 @@ export const TESTIMONIALS: Testimonial[] = [
     videoId: 'OMzdaKxAM7g',
     poster: '/testi-mike.webp',
     name: 'Mike',
-    payoutUsd: 68000,
+    payoutUsd: 68340,
     tags: ['Zero background', '$200K evaluation', 'Scaled up'],
     story:
-      'Six months ago Mike had never touched a prop account and could not have told you what a pip was. He took a $200K evaluation, cleared it, and the first payout came back at $68,000. He paid the split, scaled straight into a larger account, and says he spent the whole time waiting for a catch that never came.',
+      'Six months ago Mike had never touched a prop account and could not have told you what a pip was. He took a $200K evaluation, cleared it, and the first payout came back at $68,340. He paid the split, scaled straight into a larger account, and says he spent the whole time waiting for a catch that never came.',
   },
 ]
