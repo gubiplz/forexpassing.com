@@ -5,12 +5,16 @@
 // contract (honeypot + validation + {ok:true}) and forwards the lead to the
 // LEAD_WEBHOOK env var.
 //
-// WITHOUT LEAD_WEBHOOK SET, THE LEAD IS ONLY WRITTEN TO THE FUNCTION LOG.
-// Set LEAD_WEBHOOK in the Vercel project (e.g. a Make.com / Zapier hook) or
-// applications will be visible in Vercel's runtime logs and nowhere else.
+// From here the lead goes four ways, each configured on its own and each
+// independent of the others: the function log (always), LEAD_WEBHOOK, the
+// Telegram channel, and the team's Google Sheet. Every one of them past the log
+// is a no-op until its env vars are set — see _lib/telegram.js and
+// _lib/sheets.js — so on a deployment with none of them configured an
+// application is visible in Vercel's runtime logs and nowhere else.
 
 import { notQualifiedEmail, qualifiedEmail, sendEmail } from '../_lib/emails.js';
 import { gradeLead } from '../_lib/lead-quality.js';
+import { appendLeadToSheet } from '../_lib/sheets.js';
 import { sendLeadToTelegram } from '../_lib/telegram.js';
 
 const str = (v) => (typeof v === 'string' ? v.trim() : '');
@@ -96,21 +100,26 @@ export default async function handler(req, res) {
     }
   }
 
-  // Channel post and confirmation email go out together rather than one after
-  // the other: they are independent, and running them in sequence made the
-  // applicant wait for both. Both are best-effort — the lead is already logged
-  // and forwarded above, so neither may turn a captured application into a 500
-  // for the person who just filled the form in.
+  // Channel post, sheet row and confirmation email go out together rather than
+  // one after the other: they are independent, and running them in sequence
+  // made the applicant wait for all three. All are best-effort — the lead is
+  // already logged and forwarded above, so none of them may turn a captured
+  // application into a 500 for the person who just filled the form in.
+  //
+  // Both outcomes are filed. The sheet has an `outcome` column precisely so a
+  // rejection is a row that can be counted, rather than something that happened
+  // and left no trace.
   const mail =
     lead.outcome === 'qualified'
       ? qualifiedEmail({ name: lead.name })
       : notQualifiedEmail({ name: lead.name });
 
-  const [posted, sent] = await Promise.all([
+  const [posted, sent, filed] = await Promise.all([
     sendLeadToTelegram(lead),
     sendEmail({ to: lead.email, subject: mail.subject, html: mail.html, text: mail.text }),
+    appendLeadToSheet(lead),
   ]);
-  console.log('[lead]', lead.outcome, 'telegram:', posted, 'email:', sent);
+  console.log('[lead]', lead.outcome, 'telegram:', posted, 'email:', sent, 'sheet:', filed);
 
   res.status(200).json({ ok: true });
 }
