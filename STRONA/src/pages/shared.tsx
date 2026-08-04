@@ -21,6 +21,7 @@ import {
   PARTNER_FIRM,
   PASS_WINDOW,
   REVIEW_BADGE_ALT,
+  REVIEW_BADGE_ON_DARK_SRC,
   REVIEW_BADGE_SRC,
 } from '../constants'
 import { type PayoutCert } from '../data/payouts'
@@ -614,7 +615,7 @@ export function ReviewCard({ review }: { review: { name: string; text: string; a
  * 20×15 box. Width is left to the artwork: it changes nothing vertically, and
  * pinning it would letterbox a badge whose proportions we do not know yet.
  */
-export function ReviewBadge() {
+export function ReviewBadge({ onDark = false }: { onDark?: boolean } = {}) {
   if (!REVIEW_BADGE_SRC) {
     return (
       <div className="mm-rev-badge is-empty">
@@ -622,9 +623,10 @@ export function ReviewBadge() {
       </div>
     )
   }
+  const src = onDark ? REVIEW_BADGE_ON_DARK_SRC : REVIEW_BADGE_SRC
   return (
     <div className="mm-rev-badge">
-      <img src={REVIEW_BADGE_SRC} alt={REVIEW_BADGE_ALT} height="72" decoding="async" />
+      <img src={src} alt={REVIEW_BADGE_ALT} height="58" decoding="async" />
     </div>
   )
 }

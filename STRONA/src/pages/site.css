@@ -494,8 +494,8 @@ html{scroll-behavior:smooth}
 /* The outer element always spans the column and centres its contents — the
    reserved box sizes the inner span, never this one, or the badge lands against
    the left edge instead of under the heading. */
-.mm-rev-badge{display:flex;justify-content:center;align-items:center;height:50px;margin:16px 0 14px}
-.mm-rev-badge img{display:block;height:50px;width:auto;max-width:min(300px,78vw);object-fit:contain}
+.mm-rev-badge{display:flex;justify-content:center;align-items:center;height:58px;margin:16px 0 14px}
+.mm-rev-badge img{display:block;height:58px;width:auto;max-width:min(300px,78vw);object-fit:contain}
 .mm-rev-badge.is-empty span{display:flex;align-items:center;justify-content:center;width:200px;height:72px;
   border:1px dashed currentColor;border-radius:12px;opacity:.42;
   font-size:10.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase}

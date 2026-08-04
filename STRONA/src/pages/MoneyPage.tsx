@@ -660,7 +660,7 @@ export function MoneyPage() {
       <section className="mm-reviews mm-reveal" id="reviews">
         <div className="mm-wrap">
           <h2 className="mm-h2 mm-center mm-reviews-h">OUR VERIFIED REVIEWS</h2>
-          <ReviewBadge />
+          <ReviewBadge onDark />
           <p className="mm-reviews-sub">Rated <strong>4.9</strong> out of 5 based on <strong>500+</strong> reviews</p>
         </div>
         {reviewRows.map((row, ri) => (
