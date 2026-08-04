@@ -31,7 +31,7 @@ declare global {
   }
 }
 
-// Conversion tracking. Fires Meta Pixel (1566242625059670) + GA4 (G-SP9H8Q95C1). IDs live in index.html.
+// Conversion tracking. Fires Meta Pixel (1566242625059670) + GA4 (G-LVFV0JTWBE). IDs live in index.html.
 export function track(fbEvent: string, gaEvent: string, params?: Record<string, unknown>, custom = false) {
   if (typeof window === 'undefined') return
   if (custom) window.fbq?.('trackCustom', fbEvent, params)
