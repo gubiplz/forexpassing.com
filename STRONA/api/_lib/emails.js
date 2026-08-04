@@ -32,6 +32,10 @@ const TELEGRAM_ACCEPTED = telegramWith(
   'My application was accepted. I am ready to get funded and start earning payouts. What happens next?',
 );
 
+const TELEGRAM_REJECTED = telegramWith(
+  'I applied recently and was not accepted. Can we go through what would change that?',
+);
+
 // Where the logo is fetched from. The custom domain does not serve yet (its
 // Vercel CNAME is behind Cloudflare's proxy), so this points at the deployment
 // URL until that is sorted; then set PUBLIC_BASE_URL to https://forexpassing.com.
@@ -255,7 +259,7 @@ export function notQualifiedEmail({ name }) {
       feelings and no queue to rejoin.
     </p>
 
-    ${button('Message us', TELEGRAM, '#1d1d1f')}
+    ${button('Message us', TELEGRAM_REJECTED, '#1d1d1f')}
 
     <p style="margin:26px 0 0;color:${FAINT};font-size:13px;line-height:1.6;">
       Nothing has been charged and nothing is owed. You can reach us any time by replying to this
@@ -276,7 +280,7 @@ export function notQualifiedEmail({ name }) {
     '- Your prop firm permits third-party trading.',
     '- You want to start in the next few weeks.',
     '',
-    `If any of that changes, apply again or message us: ${TELEGRAM}`,
+    `If any of that changes, apply again or message us: ${TELEGRAM_REJECTED}`,
     'Nothing has been charged and nothing is owed.',
     '',
     `${BRAND} · https://${SITE} · ${CONTACT}`,

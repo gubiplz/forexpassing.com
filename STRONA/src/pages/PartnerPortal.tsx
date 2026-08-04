@@ -8,7 +8,7 @@
 // of the site must keep working whether or not the portal has been set up.
 
 import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react'
-import { CONTACT_EMAIL, TELEGRAM_HREF } from '../constants'
+import { CONTACT_EMAIL, telegramWith } from '../constants'
 import {
   fetchReferrals,
   fetchStats,
@@ -94,7 +94,16 @@ function NotConfigured() {
       <h3>The portal isn't switched on yet</h3>
       <p>
         Partner accounts are not accepting sign-ups on this deployment. Message us on{' '}
-        <a href={TELEGRAM_HREF} target="_blank" rel="noopener noreferrer">Telegram</a> or write to{' '}
+        <a
+          href={telegramWith(
+            'The partner portal is not open for sign-ups yet. Can you set up my partner account by hand?',
+          )}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Telegram
+        </a>{' '}
+        or write to{' '}
         <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> and we will set you up by hand in
         the meantime.
       </p>
