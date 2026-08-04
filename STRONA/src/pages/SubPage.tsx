@@ -242,11 +242,6 @@ function Reviews() {
   return (
     <section className="mm-section mm-reveal" style={{ background: 'var(--bg)' }}>
       <div className="mm-wrap">
-        <ReviewBadge />
-        <p className="mm-reviews-sub mm-center">
-          Rated <strong>4.9</strong> out of 5 based on <strong>500+</strong> reviews
-        </p>
-
         {/* Clips first. A recording carries more than a paragraph does, and the
             page somebody opens looking for reviews is where they should meet one
             — until now they only existed on /meta. Reserved slots stay visible
@@ -269,6 +264,10 @@ function Reviews() {
 
         <div className="mm-sub-block">
           <h2 className="mm-h2 mm-center">WRITTEN REVIEWS</h2>
+          <ReviewBadge />
+          <p className="mm-reviews-sub mm-center">
+            Rated <strong>4.9</strong> out of 5 based on <strong>500+</strong> reviews
+          </p>
           <div className="mm-rev-grid">
             {REVIEWS.map((r, i) => (
               <ReviewCard review={r} key={r.name + i} />
