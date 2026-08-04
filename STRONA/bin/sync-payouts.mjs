@@ -93,8 +93,13 @@ for (const c of certs) {
     // Dokument jest źródłem prawdy dla kwoty i nazwiska — pas i weryfikacja nie
     // mogą się rozjechać, bo rozjazd zauważy dokładnie ten człowiek, który
     // sprawdza, czy to prawda.
+    //
+    // Ale tylko wtedy, gdy dokument ma co powiedzieć. Certyfikat wystawiony na
+    // koncie bez wypełnionego `trader_name` wypisuje „—" i bez tego warunku ta
+    // kreska wjechałaby na kartę zamiast nazwiska, które pas podał poprawnie.
     if (doc.amount) c.amount = String(doc.amount);
-    if (doc.trader_name) c.trader = String(doc.trader_name);
+    const zDokumentu = String(doc.trader_name ?? '').trim();
+    if (zDokumentu && !/^[—–-]+$/.test(zDokumentu)) c.trader = zDokumentu;
     c.qrSvg = String(doc.qr_svg ?? '').trim();
     c.verifyUrl = `${ORIGIN}/verify/${c.certToken}`;
   } catch (err) {
