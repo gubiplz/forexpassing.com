@@ -52,6 +52,18 @@ export const REVIEWS = [
   { name: 'James T.', text: 'Was convinced this was a scam. Asked a lot of annoying questions, got straight answers, started small. Still here.', ago: '3 days ago' },
   { name: 'Elena V.', text: 'Funded account has been running two months without me touching it. That is the whole review, honestly.', ago: '5 days ago' },
   { name: 'Tom W.', text: 'No monthly fee is what made it easy to try. If they do nothing, they earn nothing.', ago: '6 days ago' },
+  { name: 'Nina S.', text: 'Second payout landed this week. Same split as the contract said. Boring in the best way.', ago: '2 days ago' },
+  { name: 'Omar H.', text: 'They rejected my first firm on the call. Saved me buying another evaluation that would have been wasted.', ago: '3 days ago' },
+  { name: 'Lisa P.', text: 'I only wanted someone to pass the challenge. They did it in under two weeks and I still have the credentials.', ago: '4 days ago' },
+  { name: 'Marcus B.', text: 'Chat responses are short and specific. No hype, just “here is what we can and cannot do.”', ago: '5 days ago' },
+  { name: 'Ana G.', text: 'Watched the equity curve daily for a month. Drawdown stayed inside the limits they put in writing.', ago: '1 week ago' },
+  { name: 'Chris N.', text: 'Started with one account. Added a second after the first payout cleared. That is my proof, not a screenshot.', ago: '1 week ago' },
+  { name: 'Yuki T.', text: 'Timezone difference was my worry. They trade while I sleep and send a weekly note. Enough for me.', ago: '1 week ago' },
+  { name: 'Ben F.', text: 'I paid for the evaluation, they ran it, I got funded. Split arrives after the firm pays out. Clean loop.', ago: '2 weeks ago' },
+  { name: 'Sofia R.', text: 'Asked for the agreement before sending money. Got it the same day. Signed, then applied. Order matters.', ago: '2 weeks ago' },
+  { name: 'Derek J.', text: 'Blew two prop accounts alone last year. Letting someone else run the rules was the only change that worked.', ago: '3 weeks ago' },
+  { name: 'Maya K.', text: 'Support answered the max daily loss question with a number, not a paragraph. That was enough to start.', ago: '3 weeks ago' },
+  { name: 'Paul C.', text: 'No pressure to scale. One funded account, steady payouts, I leave it alone. That is the product.', ago: '3 weeks ago' },
 ]
 
 // The summary widget's figures. They are NOT typed in here: they come from the
