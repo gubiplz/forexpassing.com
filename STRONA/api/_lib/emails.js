@@ -20,6 +20,18 @@ const SITE = 'forexpassing.com';
 const TELEGRAM = 'https://t.me/forexpassingadmin';
 const CONTACT = 'contact@forexpassing.com';
 
+/**
+ * Telegram prefills the composer from ?text=, so the chat opens with the first
+ * message already written. Two things follow from that: the person does not
+ * have to work out how to open, and the desk can tell at a glance which email
+ * the conversation came from.
+ */
+const telegramWith = (message) => `${TELEGRAM}?text=${encodeURIComponent(message)}`;
+
+const TELEGRAM_ACCEPTED = telegramWith(
+  'My application was accepted. I am ready to get funded and start earning payouts. What happens next?',
+);
+
 // Where the logo is fetched from. The custom domain does not serve yet (its
 // Vercel CNAME is behind Cloudflare's proxy), so this points at the deployment
 // URL until that is sorted; then set PUBLIC_BASE_URL to https://forexpassing.com.
@@ -167,7 +179,7 @@ export function qualifiedEmail({ name }) {
 
     ${hairline(30)}
 
-    ${button('Open Telegram', TELEGRAM)}
+    ${button('Open Telegram', TELEGRAM_ACCEPTED)}
 
     <p style="margin:18px 0 0;color:${FAINT};font-size:14px;line-height:1.5;text-align:center;">
       Someone from the team will reach out within one business day.
@@ -190,7 +202,7 @@ export function qualifiedEmail({ name }) {
     '3. Agreement in writing, then we trade. You keep 70% of every payout;',
     '   we invoice 30% only once the money has reached you.',
     '',
-    `Open Telegram: ${TELEGRAM}`,
+    `Open Telegram: ${TELEGRAM_ACCEPTED}`,
     '',
     'Someone from the team will reach out within one business day.',
     'Nothing has been charged and nothing is owed.',
