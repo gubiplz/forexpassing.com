@@ -34,6 +34,7 @@ import {
   REVIEWS,
   ReviewBadge,
   ReviewCard,
+  WRITTEN_REVIEWS,
   SiteFooter,
   TestimonialCard,
   TopBar,
@@ -269,7 +270,7 @@ function Reviews() {
             Rated <strong>4.9</strong> out of 5 based on <strong>500+</strong> reviews
           </p>
           <div className="mm-rev-grid">
-            {REVIEWS.map((r, i) => (
+            {WRITTEN_REVIEWS.map((r, i) => (
               <ReviewCard review={r} key={r.name + i} />
             ))}
           </div>

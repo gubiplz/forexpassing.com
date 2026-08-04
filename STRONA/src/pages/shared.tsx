@@ -43,6 +43,8 @@ export function track(fbEvent: string, gaEvent: string, params?: Record<string, 
   window.gtag?.('event', gaEvent, params)
 }
 
+// Short set for the /meta and referral scrollers — keep this lean so the rail
+ // does not feel padded. The full grid on /reviews uses WRITTEN_REVIEWS.
 export const REVIEWS = [
   { name: 'Mike R.', text: 'Three failed evaluations before this. They passed the fourth one in nine days while I was at work. Weird feeling, but the payout was real.', ago: '4 days ago' },
   { name: 'Sarah L.', text: 'What sold me was the rule check. They told me my first firm banned managed accounts and refused to touch it. Nobody else said that.', ago: '1 week ago' },
@@ -52,6 +54,11 @@ export const REVIEWS = [
   { name: 'James T.', text: 'Was convinced this was a scam. Asked a lot of annoying questions, got straight answers, started small. Still here.', ago: '3 days ago' },
   { name: 'Elena V.', text: 'Funded account has been running two months without me touching it. That is the whole review, honestly.', ago: '5 days ago' },
   { name: 'Tom W.', text: 'No monthly fee is what made it easy to try. If they do nothing, they earn nothing.', ago: '6 days ago' },
+]
+
+// Extra tiles only on /reviews (WRITTEN REVIEWS grid). Not fed into /meta.
+export const WRITTEN_REVIEWS = [
+  ...REVIEWS,
   { name: 'Nina S.', text: 'Second payout landed this week. Same split as the contract said. Boring in the best way.', ago: '2 days ago' },
   { name: 'Omar H.', text: 'They rejected my first firm on the call. Saved me buying another evaluation that would have been wasted.', ago: '3 days ago' },
   { name: 'Lisa P.', text: 'I only wanted someone to pass the challenge. They did it in under two weeks and I still have the credentials.', ago: '4 days ago' },
