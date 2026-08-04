@@ -67,7 +67,7 @@ export const BRAND_GREEN = '#15803d'
 // niezależnego serwisu opinii (Trustpilot, Google) wolno tu wstawić tylko wtedy,
 // gdy pod tym adresem faktycznie stoi nasz profil z tymi opiniami — inaczej
 // plakietka twierdzi, że ktoś nas zweryfikował, a nikt tego nie zrobił.
-export const REVIEW_BADGE_SRC = ''
+export const REVIEW_BADGE_SRC = '/rating-badge.png'
 export const REVIEW_BADGE_ALT = 'Our rating'
 
 // Kontakt do zespołu. Statyczne strony w public/ i szablony maili nie mogą
