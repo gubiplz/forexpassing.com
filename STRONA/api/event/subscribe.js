@@ -70,7 +70,13 @@ export default async function handler(req, res) {
     // 'qualified' | 'not_qualified'. The questionnaire sends both; the safe-page
     // form has no qualification step, so it defaults to qualified.
     outcome: body.outcome === 'not_qualified' ? 'not_qualified' : 'qualified',
-    ip: req.headers['x-forwarded-for'] || '',
+    // Strona stoi za Cloudflarem, więc x-forwarded-for w wersji, którą widzi
+    // Vercel, to węzeł brzegowy Cloudflare — kolumna `ip` w arkuszu czytała
+    // 162.158.x.x dla każdego zgłoszenia. Prawdziwy adres jest w
+    // cf-connecting-ip; to samo pole czyta workerowa wersja tego endpointu w
+    // workers/routes/event.ts. Jeśli kiedyś Cloudflare zniknie z drogi,
+    // zostaje pierwszy skok z x-forwarded-for, czyli klient.
+    ip: str(req.headers['cf-connecting-ip']) || str(req.headers['x-forwarded-for']).split(',')[0].trim(),
     ua: (req.headers['user-agent'] || '').slice(0, 200),
   };
 
