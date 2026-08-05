@@ -71,7 +71,15 @@ export const BRAND_GREEN = '#15803d'
 // zawęża stałą do typu literalnego '' i każde `if (!WISTIA_TYP_ID)` staje się
 // gałęzią zawsze prawdziwą, a druga — martwym kodem, który przestaje się
 // sprawdzać. To samo dotyczy pozostałych pustych stałych niżej.
-export const WISTIA_TYP_ID: string = ''
+export const WISTIA_TYP_ID: string = 'efyfqeekwt'
+/**
+ * Klatka z tego klipu, zapisana u nas (`bin` → 960×540 webp) zamiast swatcha
+ * z fast.wistia.com. Wistia podaje własny podgląd pod
+ * /embed/medias/<id>/swatch, ale użycie go zaciągałoby ich serwer przy każdym
+ * wejściu na stronę, także od kogoś, kto nigdy nie kliknie play — a cały sens
+ * fasady jest taki, żeby do tego nie doszło. Ten sam układ co /vsl-poster.webp.
+ */
+export const WISTIA_TYP_POSTER = '/typ-poster.webp'
 
 // Plakietka oceny nad opiniami na /meta i /reviews. Pusty string renderuje
 // zarezerwowane miejsce o docelowym rozmiarze — dokładnie jak EVAL_DISCOUNT
@@ -129,8 +137,8 @@ export const TEAM_YEARS: string = '60+'
 // weryfikację platformy reklamowej.
 export const TYP_SPOTS_BANNER: string = 'ONLY 7 MORE SPOTS AVAILABLE'
 export const TYP_ALERTS: { t: string; d?: string }[] = [
-  { t: 'Onboarding for this intake closes today' },
-  { t: 'Only 2 places left this week', d: 'Real-time tracking' },
+  { t: 'Upgrade offer ends today' },
+  { t: 'Only 2 Spots Available', d: 'Real-time tracking' },
 ]
 
 /**
