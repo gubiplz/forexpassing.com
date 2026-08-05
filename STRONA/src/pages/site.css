@@ -1298,16 +1298,36 @@ html{scroll-behavior:smooth}
   border-radius:14px;overflow:hidden}
 .mm-typ-alert{display:flex;align-items:center;gap:14px;padding:15px 18px}
 .mm-typ-alert+.mm-typ-alert{border-top:1px solid var(--line)}
-.mm-typ-alert-ico{flex:none;display:inline-flex;align-items:center;justify-content:center;
+.mm-typ-alert-ico{position:relative;flex:none;display:inline-flex;align-items:center;justify-content:center;
   width:38px;height:38px;border-radius:50%;background:rgba(239,68,68,.10);color:var(--red)}
 .mm-typ-alert-ico svg{width:19px;height:19px}
 .mm-typ-alert-txt{display:flex;flex-direction:column;gap:2px;min-width:0}
 .mm-typ-alert-t{font-size:15.5px;font-weight:800;color:#b91c1c;line-height:1.35}
 .mm-typ-alert-d{font-size:10.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--mut)}
-.mm-typ-alert-dot{flex:none;margin-left:auto;width:9px;height:9px;border-radius:50%;background:#22c55e;
-  animation:mm-typ-blink 1.4s infinite}
+/* Pierscien w kolorze tla odcina kropke od ikonki pod spodem — bez niego zlewa
+   sie z konturem i wyglada jak artefakt, a nie jak wskaznik. */
+.mm-typ-alert-dot{position:absolute;top:0;right:0;width:11px;height:11px;border-radius:50%;
+  background:#22c55e;border:2px solid var(--bg);animation:mm-typ-blink 1.4s infinite}
 @keyframes mm-typ-blink{0%,100%{opacity:1}50%{opacity:.25}}
 @media (prefers-reduced-motion:reduce){.mm-typ-alert-dot{animation:none}}
+
+/* Stan przejsciowy formularza: przyjety aplikant czeka tu ulamek sekundy na
+   /thank-you. Celowo nie ma tu przycisku ani slowa "Telegram" — to, co widac
+   przez chwile przed zmiana strony, ma nie wygladac na inny ekran, ktory zaraz
+   znika. */
+.mm-form-wait{display:flex;flex-direction:column;align-items:center;gap:10px;padding:38px 20px;text-align:center}
+.mm-form-wait-spin{width:34px;height:34px;border-radius:50%;border:3px solid rgba(21,128,61,.22);
+  border-top-color:var(--teal);animation:mm-form-spin .8s linear infinite}
+.mm-form-wait-t{font-size:17px;font-weight:800}
+.mm-form-wait-d{font-size:14.5px;color:var(--mut)}
+@keyframes mm-form-spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.mm-form-wait-spin{animation:none}}
+
+/* Naglowki sekcji na tej stronie sa o stopien mniejsze niz na /meta: tam h2
+   otwiera dlugi blok sprzedazowy, tutaj tylko tytuluje krotki panel, a przy
+   pelnej wielkosci przykrywal to, co pod nim stoi. */
+.mm-typ .mm-h2{font-size:clamp(23px,3.4vw,34px)}
+.mm-typ .mm-lead-mid{font-size:clamp(14.5px,1.7vw,16.5px);max-width:640px}
 
 .mm-typ-hero{background:var(--bg2);border-bottom:1px solid var(--line);padding:52px 0 46px;text-align:center}
 .mm-typ-h1{margin:18px 0 14px}
@@ -1334,8 +1354,8 @@ html{scroll-behavior:smooth}
 /* Przyciemnienie pod podpisem. Plakat jest kadrem z klipu i bywa jasny — bez
    tego bialy napis na bialej klatce po prostu znika. Gradient dziala niezaleznie
    od tego, jaka klatka trafi tu nastepnym razem. */
-.mm-typ-video-facade::after{content:'';position:absolute;left:0;right:0;bottom:0;height:84px;
-  background:linear-gradient(to top,rgba(0,0,0,.62),transparent);pointer-events:none}
+.mm-typ-video-facade::after{content:'';position:absolute;left:0;right:0;bottom:0;height:58px;
+  background:linear-gradient(to top,rgba(0,0,0,.45),transparent);pointer-events:none}
 .mm-typ-video-facade-label{position:absolute;left:0;right:0;bottom:14px;text-align:center;color:#fff;
   font-size:13px;font-weight:800;letter-spacing:.04em;z-index:1}
 .mm-typ-video-frame.is-empty{display:flex;align-items:center;justify-content:center;
@@ -1352,14 +1372,14 @@ html{scroll-behavior:smooth}
 .mm-typ-slot-label{font-size:10.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;
   text-align:center;padding:0 14px;opacity:.75}
 .mm-typ-shot{display:block;width:100%;height:auto;object-fit:cover;border-radius:14px;border:1px solid var(--line)}
-.mm-typ-shot-wrap{max-width:720px;margin:26px auto 0}
+.mm-typ-shot-wrap{max-width:720px;margin:0 auto}
 
 /* Kolumna, nie .mm-cta-center — tamten jest flex-row i ustawialby podpis obok
    przycisku zamiast pod nim. */
 .mm-typ-cta{display:flex;flex-direction:column;align-items:center;gap:12px;margin:36px 0 0}
 /* Sekcja "join" nie ma tytulu ani leadu, wiec 84px u gory zostawialoby dziure
    dokladnie tam, gdzie wczesniej byl pusty placeholder. */
-.mm-typ-howto{padding-top:0}
+.mm-typ-howto{padding-top:44px}
 .mm-typ-cta-note{margin:0;max-width:520px;text-align:center;font-size:14px;color:var(--mut)}
 
 /* ---- official channels -------------------------------------------------- */

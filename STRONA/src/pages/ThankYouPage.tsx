@@ -286,7 +286,9 @@ const REASSURANCE: { t: string; d: string; href?: string; hrefLabel?: string }[]
 // ktorej konkurencja akurat nie daje.
 const PROOF: { k: string; t: React.ReactNode }[] = [
   { k: 'star', t: <>Rated 4.9 out of 5</> },
-  ...(PAYOUT_TOTALS ? [{ k: 'check', t: <>{PAYOUT_TOTALS.count} Verified Payouts</> }] : []),
+  // Bez liczby w etykiecie — konkretne kwoty stoja w podpisie pod lista, gdzie
+  // sasiaduja ze zrodlem, z ktorego pochodza.
+  { k: 'check', t: <>Verified Payouts</> },
   { k: 'shield', t: <>Official Support</> },
   // W miejscu, gdzie wzorzec ma "Daily Livestreams". Streamow nie prowadzimy,
   // a to jest ta rzecz, ktorej konkurencja akurat nie daje na pismie.
@@ -348,7 +350,7 @@ export function ThankYouPage() {
           <div className="mm-typ-video">
             <div className="mm-typ-video-head">
               <span className="mm-typ-video-eyebrow">YOUR NEXT STEP</span>
-              <span className="mm-typ-video-title">Watch this before you message us</span>
+              <span className="mm-typ-video-title">Watch this 60 second video before you join</span>
             </div>
             <TypVideo />
           </div>
@@ -369,12 +371,14 @@ export function ThankYouPage() {
                         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
                       </svg>
                     )}
+                    {/* Kropka siedzi NA ikonce, nie obok wiersza — dopiero w
+                        rogu awatara czyta sie jak status "online". */}
+                    {i === 1 && <span className="mm-typ-alert-dot" />}
                   </span>
                   <span className="mm-typ-alert-txt">
                     <span className="mm-typ-alert-t">{a.t}</span>
                     {a.d && <span className="mm-typ-alert-d">{a.d}</span>}
                   </span>
-                  {i === 1 && <span className="mm-typ-alert-dot" aria-hidden="true" />}
                 </div>
               ))}
             </div>
@@ -383,26 +387,24 @@ export function ThankYouPage() {
       </section>
 
       {/* ── JOIN ──────────────────────────────────────────────────────── */}
-      {/* Bez nagłówka i bez zarezerwowanej ramki: dopóki zrzutu z Telegrama nie
-          ma, pusty prostokąt byłby tylko dziurą między wideo a przyciskiem.
-          Wpisanie TYP_TELEGRAM_SHOT_SRC wstawia obrazek dokładnie tutaj. */}
+      {/* Bez naglowka i bez leadu — zostaje sam zrzut z Telegrama i przycisk pod
+          nim, dokladnie jak we wzorcu. Dopoki obrazka nie ma, stoi tu ramka o
+          jego docelowym ksztalcie, wiec wgranie pliku niczego nie przesunie. */}
       <section className="mm-section mm-typ-howto mm-reveal">
         <div className="mm-wrap">
-          {TYP_TELEGRAM_SHOT_SRC && (
-            <div className="mm-typ-shot-wrap">
-              <ImageSlot
-                src={TYP_TELEGRAM_SHOT_SRC}
-                alt="Where to tap in Telegram: message the admin, then press Join"
-                ratio="16 / 10"
-                label="Telegram screenshot going here"
-              />
-            </div>
-          )}
+          <div className="mm-typ-shot-wrap">
+            <ImageSlot
+              src={TYP_TELEGRAM_SHOT_SRC}
+              alt="Where to tap in Telegram: message the admin, then press Join"
+              ratio="6 / 5"
+              label="Telegram screenshot going here"
+            />
+          </div>
           <TelegramCta
             label="JOIN TELEGRAM NOW"
             to="channel"
             source="typ_join_top"
-            note="Tap above to open the channel, then send us a message to get started."
+            note="Tap above to message the team and lock in your spot."
           />
         </div>
       </section>
@@ -517,6 +519,7 @@ export function ThankYouPage() {
             label="MESSAGE US ON TELEGRAM"
             to="admin"
             source="typ_message_team"
+            note="Double-check the handle above before you send your first message."
             message="My application was accepted. I have read the page — what do you need from me to get started?"
           />
         </div>
