@@ -831,11 +831,10 @@ export function TestimonialCard({ testimonial: t }: { testimonial: Testimonial }
         ) : (
           <>
             <span className="mm-testi-name">{t.name}</span>
-            {/* Ten sam pasek co w opiniach pisanych, żeby /reviews nie pokazywało
-                dwóch różnych rodzajów gwiazdek na jednej stronie. Tu zawsze pięć:
-                to nagrane klipy wybranych klientów z wypłatą, nie próbka opinii,
-                więc nie ma czego stopniować. */}
-            <RatingStars rating={5} className="mm-testi-stars" />
+            {/* Bez gwiazdek. Karta klipu niesie kwotę wypłaty i całą historię —
+                ocena była tu ozdobą, a nie dowodem, i konkurowała z kwotą o
+                uwagę. Gwiazdki zostają tam, gdzie coś znaczą: w opiniach
+                pisanych i w plakietce. */}
             <span className="mm-testi-paid">${t.payoutUsd.toLocaleString('en-US')} PAID</span>
             <span className="mm-testi-tags">{t.tags.join(' · ')}</span>
             <p className="mm-testi-story">{t.story}</p>
