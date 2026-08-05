@@ -73,6 +73,9 @@
       window.clarity = window.clarity || function () {
         (window.clarity.q = window.clarity.q || []).push(arguments);
       };
+      // public/safe.html sets this to "safe" and is served at the same URLs, so
+      // the recorded path alone cannot tell the two versions apart.
+      clarity('set', 'page_variant', 'money');
 
       (function () {
         var done = false;
