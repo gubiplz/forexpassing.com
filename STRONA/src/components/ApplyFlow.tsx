@@ -116,7 +116,7 @@ export function ApplyFlow({
       : { ...EMPTY_CONTACT, name: initialName, phoneIso: detectIso() }
   )
   const [answers, setAnswers] = useState<Record<string, string>>(() => restored?.answers ?? {})
-  const [outcome, setOutcome] = useState<'open' | 'sent' | 'rejected'>('open')
+  const [outcome, setOutcome] = useState<'open' | 'sent' | 'rejected' | 'leaving'>('open')
   const [sending, setSending] = useState(false)
   const [error, setError] = useState('')
   // A restored draft means ApplyStart already fired in the earlier visit.
@@ -224,13 +224,26 @@ export function ApplyFlow({
       // is undefined and nobody is sent anywhere, which is the safe default.
       const data = (await res.json().catch(() => ({}))) as { hq?: boolean }
       if (result === 'not_qualified') return
+
+      // Accepted applicants are leaving for /thank-you, so they must NOT see the
+      // confirmation card on the way out: it names Telegram and offers a button,
+      // and flashing that for a few hundred milliseconds before the page changes
+      // reads as a glitch. They get a quiet holding state instead.
+      //
+      // The pixel still fires before the jump — a redirect in the same tick can
+      // cut the beacon off mid-flight.
+      if (data.hq) {
+        setOutcome('leaving')
+        track('Lead', 'generate_lead', { source })
+        window.location.assign(THANK_YOU_HREF)
+        // If the browser refuses the jump — some in-app webviews do — fall back
+        // to the normal confirmation rather than leaving them on a spinner.
+        window.setTimeout(() => setOutcome('sent'), 2500)
+        return
+      }
+
       setOutcome('sent')
       track('Lead', 'generate_lead', { source })
-      // Render the confirmation and fire the pixel BEFORE navigating. A redirect
-      // in the same tick can cut the beacon off mid-flight, and anyone whose
-      // browser refuses the jump is then left looking at the confirmation rather
-      // than at a form that appears to have done nothing.
-      if (data.hq) window.location.assign(THANK_YOU_HREF)
     } catch {
       // A failed send on the rejection path is silent: that person is already
       // looking at the "not a fit" screen and has nothing to retry.
@@ -238,6 +251,16 @@ export function ApplyFlow({
     } finally {
       setSending(false)
     }
+  }
+
+  if (outcome === 'leaving') {
+    return (
+      <div className="mm-form-wait" role="status" aria-live="polite">
+        <span className="mm-form-wait-spin" aria-hidden="true" />
+        <span className="mm-form-wait-t">Application accepted</span>
+        <span className="mm-form-wait-d">Taking you to your next step…</span>
+      </div>
+    )
   }
 
   if (outcome === 'sent') {
