@@ -216,7 +216,25 @@ function HeroVsl() {
     const timer = window.setTimeout(() => {
       if (!customElements.get('wistia-player')) setFailed(true)
     }, 6000)
-    return () => window.clearTimeout(timer)
+
+    // W Chrome samo autoplay="true" wystarcza — zmierzone. Gorzej tam, gdzie
+    // polityka odtwarzania jest ostrzejsza: element powstaje dopiero PO
+    // klikniecu, wiec player startuje juz poza oknem gestu i klip z dzwiekiem
+    // bywa blokowany. Jesli po upgradzie stoi w "beforeplay" — czyli nie ruszyl
+    // ANI RAZU — popychamy go jawnie. Kazdy inny stan, w tym "paused" po pauzie
+    // uzytkownika, konczy probe: nie wznawiamy filmu, ktory ktos sam zatrzymal.
+    let tries = 0
+    const nudge = window.setInterval(() => {
+      const el = playerRef.current as unknown as { state?: string; play?: () => void } | null
+      if (el?.state && el.state !== 'beforeplay') return window.clearInterval(nudge)
+      el?.play?.()
+      if (++tries >= 5) window.clearInterval(nudge)
+    }, 700)
+
+    return () => {
+      window.clearTimeout(timer)
+      window.clearInterval(nudge)
+    }
   }, [started])
 
   useEffect(() => {

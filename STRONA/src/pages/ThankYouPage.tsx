@@ -102,6 +102,8 @@ function ImageSlot({
 function TypVideo() {
   const [started, setStarted] = useState(false)
   const [failed, setFailed] = useState(false)
+  const [pct, setPct] = useState(0)
+  const playerRef = useRef<HTMLElement | null>(null)
 
   useEffect(() => {
     if (!started || !WISTIA_TYP_ID) return
@@ -121,7 +123,39 @@ function TypVideo() {
     const timer = window.setTimeout(() => {
       if (!customElements.get('wistia-player')) setFailed(true)
     }, 6000)
-    return () => window.clearTimeout(timer)
+
+    // W Chrome samo autoplay="true" wystarcza — zmierzone. Gorzej tam, gdzie
+    // polityka odtwarzania jest ostrzejsza: element powstaje dopiero PO
+    // klikniecu, wiec player startuje juz poza oknem gestu i klip z dzwiekiem
+    // bywa blokowany. Jesli po upgradzie stoi w "beforeplay" — czyli nie ruszyl
+    // ANI RAZU — popychamy go jawnie. Kazdy inny stan, w tym "paused" po pauzie
+    // uzytkownika, konczy probe: nie wznawiamy filmu, ktory ktos sam zatrzymal.
+    let tries = 0
+    const nudge = window.setInterval(() => {
+      const el = playerRef.current as unknown as { state?: string; play?: () => void } | null
+      if (el?.state && el.state !== 'beforeplay') return window.clearInterval(nudge)
+      el?.play?.()
+      if (++tries >= 5) window.clearInterval(nudge)
+    }, 700)
+
+    return () => {
+      window.clearTimeout(timer)
+      window.clearInterval(nudge)
+    }
+  }, [started])
+
+  // Postep leci z samego elementu, tak jak na /meta: kolejka _wq i zdarzenie
+  // `secondchange` naleza do starych osadzen E-v1, w ktorych <wistia-player>
+  // sie nie rejestruje. Ten player emituje `timechange` i niesie percentWatched.
+  useEffect(() => {
+    const el = playerRef.current
+    if (!el) return
+    const onTime = () => {
+      const p = (el as unknown as { percentWatched?: number }).percentWatched
+      if (typeof p === 'number') setPct(Math.min(100, Math.round(p * 100)))
+    }
+    el.addEventListener('timechange', onTime)
+    return () => el.removeEventListener('timechange', onTime)
   }, [started])
 
   if (!WISTIA_TYP_ID) {
@@ -133,6 +167,7 @@ function TypVideo() {
   }
 
   return (
+    <>
     <div className="mm-typ-video-frame">
       {!started ? (
         <button
@@ -154,6 +189,7 @@ function TypVideo() {
         </div>
       ) : (
         <wistia-player
+          ref={playerRef}
           media-id={WISTIA_TYP_ID}
           aspect="1.7777777777777777"
           player-color={BRAND_GREEN}
@@ -165,6 +201,16 @@ function TypVideo() {
         />
       )}
     </div>
+    {/* Te same klasy co pasek na /meta — .mm-typ-video ma to samo ciemne tlo
+        co .mm-vsl, wiec wyglada identycznie i zostaje jedno miejsce do zmiany. */}
+    <div className="mm-vsl-bar">
+      <span className="mm-vsl-bar-label">Complete video</span>
+      <span className="mm-vsl-bar-track">
+        <span className="mm-vsl-bar-fill" style={{ width: `${pct}%` }} />
+      </span>
+      <span className="mm-vsl-bar-pct">{pct}%</span>
+    </div>
+    </>
   )
 }
 
