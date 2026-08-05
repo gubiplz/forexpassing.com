@@ -173,8 +173,17 @@ export const TEAM_YEARS: string = '60+'
 // To pierwsza rzecz, którą trzeba zdjąć, jeśli strona ma kiedyś przejść
 // weryfikację platformy reklamowej.
 export const TYP_SPOTS_BANNER: string = 'ONLY 7 MORE SPOTS AVAILABLE'
-export const TYP_ALERTS: { t: string; d?: string }[] = [
-  { t: 'Upgrade offer ends today' },
+//
+// `timer: true` dokłada do paska odliczanie do PÓŁNOCY CZASU NOWOJORSKIEGO —
+// końca dnia w USA, czyli 6:00 rano w Polsce. W przeciwieństwie do napisu wyżej
+// ten licznik NIE jest wymyślony: pokazuje realną granicę doby i po jej minięciu
+// sam rusza od nowa. Szczegóły i pułapki stref czasowych — przy OfferCountdown
+// w ThankYouPage.tsx.
+// „BOGO", nie „Upgrade" — to nazwa oferty, którą faktycznie prowadzimy na
+// kanale („Buy One, Get One FREE"), więc pasek mówi o czymś, co istnieje.
+// Zdanie urywa się na „ends in", bo domyka je licznik doklejany w komponencie.
+export const TYP_ALERTS: { t: string; d?: string; timer?: boolean }[] = [
+  { t: 'BOGO offer ends in', timer: true },
   { t: 'Only 2 Spots Available', d: 'Real-time tracking' },
 ]
 
