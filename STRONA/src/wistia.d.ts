@@ -17,6 +17,17 @@ type WistiaPlayerAttributes = DetailedHTMLProps<HTMLAttributes<HTMLElement>, HTM
   resumable?: string
   'controls-visible-on-load'?: string
   autoplay?: string
+  /**
+   * Klip startuje wyciszony. Bez tego autoplay z dźwiękiem blokuje każda
+   * przeglądarka i film stoi na pierwszej klatce.
+   *
+   * React przepuszcza nieznane atrybuty z myślnikiem (stąd 'silent-autoplay'
+   * przechodziłoby i bez wpisu), ale `muted` bez myślnika już nie — i po to
+   * jest ten plik: żeby to, co ustawiamy, było sprawdzone, a nie przemycone.
+   */
+  muted?: string
+  /** Wystawia przycisk "Sound On", którym widz sam włącza dźwięk. */
+  'silent-autoplay'?: string
 }
 
 declare module 'react' {

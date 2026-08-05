@@ -650,6 +650,64 @@ export function ReviewBadge({ onDark = false }: { onDark?: boolean } = {}) {
   )
 }
 
+/**
+ * "Tap for sound" nad autostartującym klipem — na /meta i na /thank-you, więc
+ * stoi tutaj.
+ *
+ * Klip rusza sam i wyciszony, bo autoplay z dźwiękiem blokuje każda
+ * przeglądarka. Wistia ma pod `silent-autoplay` własny przycisk „Click for
+ * sound", ale RENDERUJE GO Z ROZMIAREM 0×0 — zmierzone w Chrome — więc widzowi
+ * zostaje ikonka głośnika 40×34 w pasku sterowania, której nikt nie szuka.
+ * Ta nakładka robi ten sam gest, tylko widocznie.
+ *
+ * Zakrywa cały kadr celowo: pierwsze kliknięcie gdziekolwiek w film ma włączać
+ * dźwięk, a nie pauzować. Znika po odciszeniu i nie wraca — również wtedy, gdy
+ * ktoś odciszy sam, ikonką w pasku, bo stan czytamy z playera, nie z siebie.
+ */
+export function SoundGate({ player }: { player: { current: HTMLElement | null } }) {
+  const [muted, setMuted] = useState(true)
+
+  useEffect(() => {
+    const el = player.current
+    if (!el) return
+    const sync = () => setMuted(!!(el as unknown as { muted?: boolean }).muted)
+    sync()
+    // `timechange` leci przez cały czas odtwarzania, więc łapie też odciszenie
+    // ikonką w pasku, na wypadek gdyby `mutechange` nie było emitowane.
+    el.addEventListener('timechange', sync)
+    el.addEventListener('mutechange', sync)
+    return () => {
+      el.removeEventListener('timechange', sync)
+      el.removeEventListener('mutechange', sync)
+    }
+  }, [player])
+
+  if (!muted) return null
+
+  return (
+    <button
+      type="button"
+      className="mm-sound-gate"
+      onClick={() => {
+        const el = player.current as unknown as { muted?: boolean } | null
+        if (el) el.muted = false
+        setMuted(false)
+        track('SoundOn', 'video_sound_on', {}, true)
+      }}
+    >
+      <span className="mm-sound-pill">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+          <path
+            fill="currentColor"
+            d="M4 9v6h4l5 4V5L8 9H4zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4zM14 2v2a8 8 0 0 1 0 16v2a10 10 0 0 0 0-20z"
+          />
+        </svg>
+        Tap for sound
+      </span>
+    </button>
+  )
+}
+
 // One client clip. Rendered on /meta and on /reviews, so it lives here.
 //
 // The player is not embedded until the reader presses play. A row of four
