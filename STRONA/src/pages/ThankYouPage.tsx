@@ -30,6 +30,7 @@ import {
   TELEGRAM_CHANNEL_HREF,
   TELEGRAM_HREF,
   telegramWith,
+  WISTIA_TYP_POSTER,
   TYP_ALERTS,
   TYP_SPOTS_BANNER,
   TYP_TELEGRAM_SHOT_SRC,
@@ -143,8 +144,9 @@ function TypVideo() {
             setStarted(true)
           }}
         >
+          <img src={WISTIA_TYP_POSTER} alt="" width={960} height={540} decoding="async" />
           <span className="mm-vsl-play" aria-hidden="true" />
-          <span className="mm-typ-video-facade-label">Play video</span>
+          <span className="mm-typ-video-facade-label">Play video · 1 min</span>
         </button>
       ) : failed ? (
         <div className="mm-vsl-failed">
@@ -216,6 +218,31 @@ function TelegramCta({
   )
 }
 
+/**
+ * Ikony wierszy w kolumnach. Kontur, 24×24, `currentColor` — ta sama konwencja
+ * co wszystkie inline'owe SVG w repo (SafePage.tsx, MoneyPage.tsx), bo projekt
+ * nie ma i nie chce biblioteki ikon.
+ */
+const PATHS: Record<string, string> = {
+  people: 'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75',
+  award: 'M12 15a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM8.2 13.9 7 23l5-3 5 3-1.2-9.1',
+  star: 'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z',
+  check: 'M9 12l2 2 4-4M12 3l1.9 1.4 2.3-.3 1 2.1 2.1 1-.3 2.3L20.4 12l-1.4 1.9.3 2.3-2.1 1-1 2.1-2.3-.3L12 20.4l-1.9-1.4-2.3.3-1-2.1-2.1-1 .3-2.3L3.6 12l1.4-1.9-.3-2.3 2.1-1 1-2.1 2.3.3L12 3z',
+  shield: 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10zM9 12l2 2 4-4',
+  doc: 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M9 13h6M9 17h6',
+  eye: 'M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7zM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z',
+}
+
+function Ico({ k, className }: { k: keyof typeof PATHS | string; className: string }) {
+  return (
+    <span className={className} aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+        <path d={PATHS[k]} />
+      </svg>
+    </span>
+  )
+}
+
 function TickIcon() {
   return (
     <span className="mm-typ-tick-ico" aria-hidden="true">
@@ -250,6 +277,21 @@ const REASSURANCE: { t: string; d: string; href?: string; hrefLabel?: string }[]
     href: '/payouts',
     hrefLabel: 'See the certificates',
   },
+]
+
+// Kolumna dowodu. Odwzorowuje uklad ze strony wzorcowej, ale kazdy wiersz jest
+// czyms, co da sie u nas sprawdzic: liczby ida z publicznego rejestru prop
+// firmy, reszta z umowy. W miejscu, gdzie wzorzec ma "Daily Livestreams",
+// stoi umowa na pismie — bo streamow nie prowadzimy, a to jest ta rzecz,
+// ktorej konkurencja akurat nie daje.
+const PROOF: { k: string; t: React.ReactNode }[] = [
+  { k: 'star', t: <>Rated 4.9 out of 5</> },
+  ...(PAYOUT_TOTALS ? [{ k: 'check', t: <>{PAYOUT_TOTALS.count} Verified Payouts</> }] : []),
+  { k: 'shield', t: <>Official Support</> },
+  // W miejscu, gdzie wzorzec ma "Daily Livestreams". Streamow nie prowadzimy,
+  // a to jest ta rzecz, ktorej konkurencja akurat nie daje na pismie.
+  { k: 'doc', t: <>Written Agreement on Every Account</> },
+  { k: 'eye', t: <>Real-Time Account Updates</> },
 ]
 
 /* --------------------------------------------------------------------------
@@ -340,22 +382,22 @@ export function ThankYouPage() {
         </div>
       </section>
 
-      {/* ── WHERE TO CLICK ────────────────────────────────────────────── */}
+      {/* ── JOIN ──────────────────────────────────────────────────────── */}
+      {/* Bez nagłówka i bez zarezerwowanej ramki: dopóki zrzutu z Telegrama nie
+          ma, pusty prostokąt byłby tylko dziurą między wideo a przyciskiem.
+          Wpisanie TYP_TELEGRAM_SHOT_SRC wstawia obrazek dokładnie tutaj. */}
       <section className="mm-section mm-typ-howto mm-reveal">
         <div className="mm-wrap">
-          <h2 className="mm-h2 mm-center">WHERE TO CLICK</h2>
-          <p className="mm-lead mm-center mm-lead-mid">
-            Open the channel, then send us a message. Both handles are listed further down — check
-            them against this page before you write to anybody.
-          </p>
-          <div className="mm-typ-shot-wrap">
-            <ImageSlot
-              src={TYP_TELEGRAM_SHOT_SRC}
-              alt="Where to tap in Telegram: message the admin, then press Join"
-              ratio="16 / 10"
-              label="Telegram screenshot going here"
-            />
-          </div>
+          {TYP_TELEGRAM_SHOT_SRC && (
+            <div className="mm-typ-shot-wrap">
+              <ImageSlot
+                src={TYP_TELEGRAM_SHOT_SRC}
+                alt="Where to tap in Telegram: message the admin, then press Join"
+                ratio="16 / 10"
+                label="Telegram screenshot going here"
+              />
+            </div>
+          )}
           <TelegramCta
             label="JOIN TELEGRAM NOW"
             to="channel"
@@ -415,7 +457,10 @@ export function ThankYouPage() {
         <div className="mm-wrap">
           <div className="mm-typ-cols">
             <div className="mm-typ-col">
-              <h3 className="mm-typ-col-h">MEET YOUR TEAM</h3>
+              <div className="mm-typ-col-head">
+                <Ico k="people" className="mm-typ-col-ico" />
+                <h3 className="mm-typ-col-h">MEET YOUR TEAM</h3>
+              </div>
               <ImageSlot
                 src={TEAM_PHOTO_SRC}
                 alt="The Forex Passing team"
@@ -442,37 +487,27 @@ export function ThankYouPage() {
             </div>
 
             <div className="mm-typ-col">
-              <h3 className="mm-typ-col-h">WHAT YOU'RE JOINING</h3>
+              <div className="mm-typ-col-head">
+                <Ico k="award" className="mm-typ-col-ico" />
+                <h3 className="mm-typ-col-h">WHAT YOU'RE JOINING</h3>
+              </div>
               <ReviewBadge />
               <div className="mm-typ-proof">
-                <div className="mm-typ-proof-row">
-                  Rated <strong>4.9</strong> out of 5 by our clients
-                </div>
-                {PAYOUT_TOTALS && (
-                  <>
-                    <div className="mm-typ-proof-row">
-                      <strong>{PAYOUT_TOTALS.count}</strong> payout certificates issued by{' '}
-                      {PARTNER_FIRM}
-                    </div>
-                    <div className="mm-typ-proof-row">
-                      <strong>{PAYOUT_TOTALS.totalUsd}</strong> released to clients, largest{' '}
-                      {PAYOUT_TOTALS.largestUsd}
-                    </div>
-                    <div className="mm-typ-proof-row">
-                      <strong>{PAYOUT_TOTALS.fundedAccounts}</strong> funded accounts under
-                      management
-                    </div>
-                  </>
-                )}
-                <div className="mm-typ-proof-row">
-                  A written management agreement on <strong>every</strong> account
-                </div>
-                <div className="mm-typ-proof-row">
-                  <strong>Official support</strong> on Telegram, from the desk that trades
-                </div>
+                {PROOF.map((r) => (
+                  <div className="mm-typ-proof-row" key={r.k}>
+                    <Ico k={r.k} className="mm-typ-proof-ico" />
+                    <span>{r.t}</span>
+                  </div>
+                ))}
               </div>
               <p className="mm-typ-col-d">
-                Every certificate is pulled from the firm's public record, not made here.{' '}
+                {PAYOUT_TOTALS && (
+                  <>
+                    {PAYOUT_TOTALS.totalUsd} released across {PAYOUT_TOTALS.fundedAccounts} funded
+                    accounts.{' '}
+                  </>
+                )}
+                Every certificate is pulled from {PARTNER_FIRM}'s public record, not made here.{' '}
                 <a href="/payouts">Check them yourself</a>.
               </p>
             </div>

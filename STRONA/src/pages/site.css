@@ -1329,9 +1329,15 @@ html{scroll-behavior:smooth}
    exists for the reason the one on /meta does: the player is ~350 KB from a
    third party and must not load for someone who never presses play. */
 .mm-typ-video-facade{position:absolute;inset:0;width:100%;height:100%;padding:0;border:0;cursor:pointer;
-  display:block;background:radial-gradient(120% 120% at 50% 0%,#12231a 0%,#080d0a 100%)}
+  display:block;overflow:hidden;background:#fff}
+.mm-typ-video-facade img{width:100%;height:100%;object-fit:cover;display:block}
+/* Przyciemnienie pod podpisem. Plakat jest kadrem z klipu i bywa jasny — bez
+   tego bialy napis na bialej klatce po prostu znika. Gradient dziala niezaleznie
+   od tego, jaka klatka trafi tu nastepnym razem. */
+.mm-typ-video-facade::after{content:'';position:absolute;left:0;right:0;bottom:0;height:84px;
+  background:linear-gradient(to top,rgba(0,0,0,.62),transparent);pointer-events:none}
 .mm-typ-video-facade-label{position:absolute;left:0;right:0;bottom:14px;text-align:center;color:#fff;
-  font-size:13px;font-weight:800;letter-spacing:.04em;text-shadow:0 2px 10px rgba(0,0,0,.8)}
+  font-size:13px;font-weight:800;letter-spacing:.04em;z-index:1}
 .mm-typ-video-frame.is-empty{display:flex;align-items:center;justify-content:center;
   background:repeating-linear-gradient(135deg,rgba(255,255,255,.035) 0 10px,transparent 10px 20px),#0d1a13;
   border-top:1px dashed rgba(255,255,255,.22);color:rgba(255,255,255,.62)}
@@ -1351,6 +1357,9 @@ html{scroll-behavior:smooth}
 /* Kolumna, nie .mm-cta-center — tamten jest flex-row i ustawialby podpis obok
    przycisku zamiast pod nim. */
 .mm-typ-cta{display:flex;flex-direction:column;align-items:center;gap:12px;margin:36px 0 0}
+/* Sekcja "join" nie ma tytulu ani leadu, wiec 84px u gory zostawialoby dziure
+   dokladnie tam, gdzie wczesniej byl pusty placeholder. */
+.mm-typ-howto{padding-top:0}
 .mm-typ-cta-note{margin:0;max-width:520px;text-align:center;font-size:14px;color:var(--mut)}
 
 /* ---- official channels -------------------------------------------------- */
@@ -1375,7 +1384,12 @@ html{scroll-behavior:smooth}
 /* ---- team + proof ------------------------------------------------------- */
 .mm-typ-cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px;align-items:start}
 .mm-typ-col{background:var(--bg);border:1px solid var(--line);border-radius:16px;padding:24px 22px;min-width:0}
-.mm-typ-col-h{margin:0 0 16px;font-family:Anton,'Anton Fallback',system-ui,sans-serif;font-weight:400;
+/* Naglowek kolumny: kafelek z ikona + tytul w jednej linii, jak we wzorcu. */
+.mm-typ-col-head{display:flex;align-items:center;gap:13px;margin-bottom:16px}
+.mm-typ-col-ico{flex:none;display:inline-flex;align-items:center;justify-content:center;
+  width:46px;height:46px;border-radius:13px;background:rgba(21,128,61,.10);color:var(--teal)}
+.mm-typ-col-ico svg{width:23px;height:23px}
+.mm-typ-col-h{margin:0;font-family:Anton,'Anton Fallback',system-ui,sans-serif;font-weight:400;
   letter-spacing:.01em;text-transform:uppercase;font-size:clamp(19px,2.6vw,23px)}
 .mm-typ-col-d{margin:16px 0 0;color:var(--mut);font-size:14.5px;line-height:1.65}
 .mm-typ-col-d a{color:var(--teal);font-weight:700}
@@ -1385,9 +1399,11 @@ html{scroll-behavior:smooth}
 .mm-typ-stat-n{font-family:Anton,'Anton Fallback',system-ui,sans-serif;font-size:30px;color:var(--teal);line-height:1}
 .mm-typ-stat-l{font-size:10.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--mut)}
 .mm-typ-proof{display:flex;flex-direction:column;gap:10px;margin-top:4px}
-.mm-typ-proof-row{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:13px 15px;
-  font-size:14.5px;line-height:1.5}
-.mm-typ-proof-row strong{font-weight:800;color:var(--teal)}
+.mm-typ-proof-row{display:flex;align-items:center;gap:12px;background:var(--bg);
+  border:1px solid var(--line);border-radius:12px;padding:14px 16px;
+  font-size:15.5px;font-weight:700;line-height:1.4}
+.mm-typ-proof-ico{flex:none;display:inline-flex;color:var(--teal)}
+.mm-typ-proof-ico svg{width:21px;height:21px}
 
 /* ---- the objection ------------------------------------------------------ */
 .mm-typ-note{background:var(--bg2)}
