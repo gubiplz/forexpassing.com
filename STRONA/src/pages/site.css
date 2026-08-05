@@ -515,10 +515,10 @@ html{scroll-behavior:smooth}
    celowo: pigułka ma być podkładką pod gwiazdki, nie osobnym kafelkiem, więc
    nie ma marginesu ani mocnego cienia.
 
-   Promień 9 przy wysokości 28 px, a nie więcej: pigułka jest tak ciasna, że
-   przy większym zaokrągleniu łuk narożnika wchodzi na skrajny kafel i przycina
-   mu róg. Zwiększając promień, zwiększ razem z nim padding boczny. */
-.mm-rev-badge.is-on-dark .mm-rev-badge-stars{background:#fff;border-radius:9px;padding:2px 5px;
+   Promień 8 przy wysokości 28 px. Górna granica to ~9: wyżej łuk narożnika
+   wchodzi na skrajny kafel i przycina mu róg, bo pigułka jest bardzo ciasna.
+   Zwiększając promień, zwiększ razem z nim padding boczny. */
+.mm-rev-badge.is-on-dark .mm-rev-badge-stars{background:#fff;border-radius:8px;padding:2px 5px;
   box-shadow:0 3px 10px rgba(0,0,0,.12)}
 .mm-rev-badge.is-empty{height:58px}
 .mm-rev-badge.is-empty span{display:flex;align-items:center;justify-content:center;width:200px;height:72px;
@@ -1436,8 +1436,15 @@ html{scroll-behavior:smooth}
   background:repeating-linear-gradient(135deg,rgba(15,30,22,.035) 0 10px,transparent 10px 20px)}
 .mm-typ-slot-label{font-size:10.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;
   text-align:center;padding:0 14px;opacity:.75}
-.mm-typ-shot{display:block;width:100%;height:auto;object-fit:cover;border-radius:14px;border:1px solid var(--line)}
-.mm-typ-shot-wrap{max-width:720px;margin:0 auto}
+/* BEZ `border`. Obie grafiki niosą własną ramkę WPALONĄ W PLIK — zrzut z
+   Telegrama białą kartę z cieniem, zdjęcie zespołu zieloną obwódkę — więc
+   ramka z CSS-a dokładała im drugą, cieńszą i w innym kolorze. Wracając tu z
+   `border`, najpierw sprawdź, czy plik nie ma już własnej: przy tych dwóch ma.
+   `border-radius` zostaje, bo dotyczy prostokąta pliku i przycina to, co poza
+   wpaloną ramką — przy surowym zdjęciu bez ramki nadal jest potrzebny. */
+.mm-typ-shot{display:block;width:100%;height:auto;object-fit:cover;border-radius:14px}
+/* 720 → 778 px, czyli +8%. Mieści się w .mm-wrap (1032 px) z zapasem. */
+.mm-typ-shot-wrap{max-width:778px;margin:0 auto}
 
 /* Kolumna, nie .mm-cta-center — tamten jest flex-row i ustawialby podpis obok
    przycisku zamiast pod nim. */
