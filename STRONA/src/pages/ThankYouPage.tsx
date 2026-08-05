@@ -37,7 +37,6 @@ import {
   WISTIA_TYP_ID,
 } from '../constants'
 import { FAQ } from '../data/faq'
-import { PAYOUT_TOTALS } from '../data/payouts'
 import { TESTIMONIALS } from '../data/testimonials'
 import {
   AutoScroller,
@@ -388,15 +387,15 @@ export function ThankYouPage() {
 
       {/* ── JOIN ──────────────────────────────────────────────────────── */}
       {/* Bez naglowka i bez leadu — zostaje sam zrzut z Telegrama i przycisk pod
-          nim, dokladnie jak we wzorcu. Dopoki obrazka nie ma, stoi tu ramka o
-          jego docelowym ksztalcie, wiec wgranie pliku niczego nie przesunie. */}
+          nim, dokladnie jak we wzorcu. Proporcja jest proporcja pliku, wiec
+          object-fit:cover niczego nie obcina. */}
       <section className="mm-section mm-typ-howto mm-reveal">
         <div className="mm-wrap">
           <div className="mm-typ-shot-wrap">
             <ImageSlot
               src={TYP_TELEGRAM_SHOT_SRC}
               alt="Where to tap in Telegram: message the admin, then press Join"
-              ratio="6 / 5"
+              ratio="1200 / 888"
               label="Telegram screenshot going here"
             />
           </div>
@@ -463,10 +462,12 @@ export function ThankYouPage() {
                 <Ico k="people" className="mm-typ-col-ico" />
                 <h3 className="mm-typ-col-h">MEET YOUR TEAM</h3>
               </div>
+              {/* 1200/679 to proporcja pliku. Przy 4/3 object-fit:cover zjadlby
+                  boki, a na tej grafice na bokach stoja ludzie. */}
               <ImageSlot
                 src={TEAM_PHOTO_SRC}
-                alt="The Forex Passing team"
-                ratio="4 / 3"
+                alt="The Forex Passing team: Alex from support, Adam the manager and Mark, the trader on the desk"
+                ratio="1200 / 679"
                 label="Team photo going here"
               />
               {/* Rendered only for figures that were actually supplied. An empty
@@ -502,14 +503,13 @@ export function ThankYouPage() {
                   </div>
                 ))}
               </div>
+              {/* Bez kwoty i bez liczby kont. Twarde dane stoja na /payouts,
+                  obok certyfikatow, z ktorych sa policzone — tutaj, dwa ekrany
+                  po "jesteś zakwalifikowany", licza sie nie cyfry, tylko to, ze
+                  wyplaty juz sie wydarzyly i mozna je sprawdzic samemu. */}
               <p className="mm-typ-col-d">
-                {PAYOUT_TOTALS && (
-                  <>
-                    {PAYOUT_TOTALS.totalUsd} released across {PAYOUT_TOTALS.fundedAccounts} funded
-                    accounts.{' '}
-                  </>
-                )}
-                Every certificate is pulled from {PARTNER_FIRM}'s public record, not made here.{' '}
+                Payouts here are not a promise — they are already on the record, certificate after
+                certificate, in other traders' names. Yours is the next one we go after.{' '}
                 <a href="/payouts">Check them yourself</a>.
               </p>
             </div>
