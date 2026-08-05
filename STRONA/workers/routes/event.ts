@@ -200,7 +200,13 @@ export async function handleSubscribe(request: Request, env: Env): Promise<Respo
     }
   }
 
-  return json({ ok: true });
+  // `hq: false` always. There is no grader on this path — it lives in the Vercel
+  // function (api/_lib/lead-quality.js) — and this handler also drops the
+  // answers the grader reads, so there is nothing here to score. Saying so
+  // explicitly keeps the response shape identical to the origin's and leaves the
+  // applicant on the confirmation the form already shows, rather than sending
+  // them to a page we cannot say they earned.
+  return json({ ok: true, hq: false });
 }
 
 // POST /api/lead — post-purchase onboarding form on the welcome page. The buyer

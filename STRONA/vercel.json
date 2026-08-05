@@ -55,6 +55,10 @@
     {
       "source": "/partner-portal",
       "destination": "/"
+    },
+    {
+      "source": "/thank-you",
+      "destination": "/"
     }
   ]
 }

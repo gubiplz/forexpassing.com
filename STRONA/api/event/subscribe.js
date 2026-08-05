@@ -12,7 +12,7 @@
 // _lib/sheets.js — so on a deployment with none of them configured an
 // application is visible in Vercel's runtime logs and nowhere else.
 
-import { notQualifiedEmail, qualifiedEmail, sendEmail } from '../_lib/emails.js';
+import { qualifiedEmail, sendEmail } from '../_lib/emails.js';
 import { gradeLead } from '../_lib/lead-quality.js';
 import { appendLeadToSheet } from '../_lib/sheets.js';
 import { sendLeadToTelegram } from '../_lib/telegram.js';
@@ -106,6 +106,13 @@ export default async function handler(req, res) {
     }
   }
 
+  // The one verdict the browser is allowed to act on. `high` is unreachable
+  // without "buying now" and without a single piece of junk in the form (see
+  // _lib/lead-quality.js), so this is a narrow gate on purpose: these are the
+  // applicants worth a page of their own. A rejected applicant is never scored,
+  // so this is false for them too.
+  const hq = lead.quality?.tier === 'high';
+
   // Channel post, sheet row and confirmation email go out together rather than
   // one after the other: they are independent, and running them in sequence
   // made the applicant wait for all three. All are best-effort — the lead is
@@ -115,19 +122,41 @@ export default async function handler(req, res) {
   // Both outcomes are filed. The sheet has an `outcome` column precisely so a
   // rejection is a row that can be counted, rather than something that happened
   // and left no trace.
-  const mail =
-    lead.outcome === 'qualified'
-      ? qualifiedEmail({ name: lead.name })
-      : notQualifiedEmail({ name: lead.name });
+  //
+  // The email is the exception: it goes to HQ and nobody else. Writing to every
+  // applicant was the previous behaviour and is now deliberately off — warm and
+  // cold get the confirmation the form itself shows and the Telegram button on
+  // it, no inbox. Reversing that is one line here plus the `notQualifiedEmail`
+  // export that _lib/emails.js still carries for exactly this reason.
+  const mail = hq ? qualifiedEmail({ name: lead.name }) : null;
 
   const [posted, sent, filed] = await Promise.all([
     sendLeadToTelegram(lead),
-    sendEmail({ to: lead.email, subject: mail.subject, html: mail.html, text: mail.text }),
+    // 'skipped' rather than false, so the log below distinguishes "we chose not
+    // to write" from "the send failed" — otherwise a broken Resend key looks
+    // exactly like a warm lead.
+    mail
+      ? sendEmail({ to: lead.email, subject: mail.subject, html: mail.html, text: mail.text })
+      : Promise.resolve('skipped'),
     appendLeadToSheet(lead),
   ]);
-  console.log('[lead]', lead.outcome, 'telegram:', posted, 'email:', sent, 'sheet:', filed);
+  console.log(
+    '[lead]',
+    lead.outcome,
+    lead.quality?.tier ?? 'unscored',
+    'telegram:',
+    posted,
+    'email:',
+    sent,
+    'sheet:',
+    filed
+  );
 
-  res.status(200).json({ ok: true });
+  // `hq` and nothing else. The browser needs to know whether to send this person
+  // to /thank-you, not what the grader thought of them — no tier name, and no
+  // URL either: the destination is hardcoded client-side, so there is nothing
+  // here for anyone to point somewhere else.
+  res.status(200).json({ ok: true, hq });
 }
 
 function safeParse(s) {

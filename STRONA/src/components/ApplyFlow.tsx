@@ -10,7 +10,7 @@
 
 import { useCallback, useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
-import { APPLY_ENDPOINT, CONTACT_EMAIL, TELEGRAM_HREF } from '../constants'
+import { APPLY_ENDPOINT, CONTACT_EMAIL, TELEGRAM_HREF, THANK_YOU_HREF } from '../constants'
 import { PRE_CONTACT, QUALIFICATION, TOTAL_STEPS, type Step } from '../data/questionnaire'
 import {
   DIAL_CODES, detectIso, findDial, flagSrc, nationalDigits, samplePlaceholder,
@@ -219,9 +219,18 @@ export function ApplyFlow({
         }),
       })
       if (!res.ok) throw new Error('request failed')
+      // The grade is worked out server-side and comes back as a single flag.
+      // An older deploy, or the Worker fallback, answers without it — then this
+      // is undefined and nobody is sent anywhere, which is the safe default.
+      const data = (await res.json().catch(() => ({}))) as { hq?: boolean }
       if (result === 'not_qualified') return
       setOutcome('sent')
       track('Lead', 'generate_lead', { source })
+      // Render the confirmation and fire the pixel BEFORE navigating. A redirect
+      // in the same tick can cut the beacon off mid-flight, and anyone whose
+      // browser refuses the jump is then left looking at the confirmation rather
+      // than at a form that appears to have done nothing.
+      if (data.hq) window.location.assign(THANK_YOU_HREF)
     } catch {
       // A failed send on the rejection path is silent: that person is already
       // looking at the "not a fit" screen and has nothing to retry.

@@ -55,6 +55,14 @@ const SUB_ROUTES = {
     description:
       'We run your prop firm evaluation and manage the funded account under the firm rules. Apply to see whether you qualify.',
   },
+  // Nie jest w stopce: trafia tu tylko przyjęty aplikant, przerzucony z
+  // formularza. noindex dokłada ten skrypt wszystkim trasom, a middleware.ts
+  // dodatkowo bramkuje ścieżkę na brzegu.
+  'thank-you': {
+    title: 'You are qualified · Forex Passing',
+    description:
+      'Your application was accepted. Watch the short video, then message the team on Telegram to get started.',
+  },
 };
 
 const shell = await readFile(join(DIST, 'index.html'), 'utf8');

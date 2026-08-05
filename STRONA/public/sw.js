@@ -14,8 +14,9 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   const req = event.request;
-  // Only intercept HTML navigations to the root SPA. Static standalone pages
-  // (/watch, /thank-you, legal) must NOT be re-fetched: CF Assets canonicalizes
+  // Only intercept HTML navigations to the root SPA. Every other page — the
+  // standalone ones (/watch, legal) and the routed subpages alike, /thank-you
+  // among them — must NOT be re-fetched: CF Assets canonicalizes
   // them (/x.html → /x, trailing-slash) and a manual-redirect re-fetch turns
   // that into an extra browser navigation — a visible "double refresh".
   if (req.mode !== 'navigate') return;

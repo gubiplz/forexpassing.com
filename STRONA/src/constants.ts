@@ -40,6 +40,12 @@ export const APPLY_ENDPOINT = '/api/event/subscribe'
 // Kotwica sekcji z kartą podglądu formularza — używana przez CTA spoza /meta.
 export const APPLY_ANCHOR = '#apply'
 
+// Dokąd trafia przyjęty aplikant po wysłaniu ankiety. Adres stoi TUTAJ, a nie
+// w odpowiedzi API — endpoint mówi wyłącznie „hq: true/false". Gdyby wracał
+// stamtąd URL, każdy, kto podmieni odpowiedź, wskazywałby, dokąd wysłać
+// człowieka po naszej stronie.
+export const THANK_YOU_HREF = '/thank-you'
+
 // JEDNA etykieta przycisku na całej stronie ofertowej. Powtarza się pod każdą
 // sekcją i w pasku na dole — czytelnik ma widzieć zawsze ten sam krok, nie trzy
 // różne nazwy tej samej rzeczy.
@@ -56,6 +62,16 @@ export const FORM_PREVIEW_PLACEHOLDER = 'Enter your full name...'
 export const WISTIA_META_ID = 'jiy7nxpusf'
 /** The CTA green. The Wistia player is told to paint its controls to match. */
 export const BRAND_GREEN = '#15803d'
+
+// Wideo na /thank-you — inne niż hero na /meta, bo mówi do kogoś, kto już
+// zaaplikował i został przyjęty ("watch this before you join"). Puste renderuje
+// zarezerwowane miejsce o docelowych proporcjach, nie chowa sekcji: strona ma
+// wtedy nadal ten sam kształt, a wgranie klipu to podmiana tej jednej wartości.
+// Anotacja `: string` jest tu potrzebna, nie ozdobna: bez niej TypeScript
+// zawęża stałą do typu literalnego '' i każde `if (!WISTIA_TYP_ID)` staje się
+// gałęzią zawsze prawdziwą, a druga — martwym kodem, który przestaje się
+// sprawdzać. To samo dotyczy pozostałych pustych stałych niżej.
+export const WISTIA_TYP_ID: string = ''
 
 // Plakietka oceny nad opiniami na /meta i /reviews. Pusty string renderuje
 // zarezerwowane miejsce o docelowym rozmiarze — dokładnie jak EVAL_DISCOUNT
@@ -76,6 +92,29 @@ export const REVIEW_BADGE_ALT = 'Our rating'
 // trzeba je podmienić razem z tą stałą (grep po "t.me/").
 export const TELEGRAM_HREF = 'https://t.me/forexpassingadmin'
 export const CONTACT_EMAIL = 'contact@forexpassing.com'
+
+// Dwa różne byty na Telegramie, i strona nie może ich mylić: KANAŁ się
+// subskrybuje ("Join"), do ADMINA się pisze ("Message us"). /thank-you pokazuje
+// oba obok siebie jako listę oficjalnych kanałów, bo to jedyna obrona przed
+// kimś, kto założy @forexpassing_support i napisze pierwszy.
+export const TELEGRAM_CHANNEL_HREF = 'https://t.me/forexpassingcom'
+export const TELEGRAM_CHANNEL_HANDLE = '@forexpassingcom'
+export const TELEGRAM_ADMIN_HANDLE = '@forexpassingadmin'
+export const SITE_DOMAIN = 'forexpassing.com'
+
+// Materiały na /thank-you, których jeszcze nie ma. Pusty string = ramka
+// przerywana o DOCELOWYM rozmiarze, ta sama konwencja co REVIEW_BADGE_SRC
+// i videoId: '' w data/testimonials.ts — wgranie pliku nie przesuwa układu.
+//
+// TYP_TELEGRAM_SHOT_SRC: zrzut z Telegrama ze strzałką na "Message us" i na
+// przycisk "Join". Bez niego część ludzi nie wie, w co kliknąć po wejściu.
+export const TYP_TELEGRAM_SHOT_SRC: string = ''
+export const TEAM_PHOTO_SRC: string = ''
+
+// Liczby o zespole. Puste = kafelek się nie renderuje. Wpisujemy wyłącznie to,
+// co jest prawdą — kafelek, którego nie ma, nie szkodzi, wymyślony szkodzi.
+export const TEAM_SIZE: string = ''
+export const TEAM_YEARS: string = ''
 
 // Prop firma, z którą pracujemy. Certyfikaty w pasie na /meta pochodzą z jej
 // publicznego API (zob. bin/sync-payouts.mjs i src/data/payouts.ts).
