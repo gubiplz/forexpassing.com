@@ -172,7 +172,12 @@ export const TEAM_YEARS: string = '60+'
 //
 // To pierwsza rzecz, którą trzeba zdjąć, jeśli strona ma kiedyś przejść
 // weryfikację platformy reklamowej.
-export const TYP_SPOTS_BANNER: string = 'ONLY 7 MORE SPOTS AVAILABLE'
+// `{n}` podstawia liczbę wolnych miejsc. Ta sama liczba trafia w oba miejsca na
+// stronie — wcześniej stały tu na sztywno „7" i „2" naraz. Liczba spada z 7 do 1
+// w ciągu doby nowojorskiej i resetuje się o północy razem z licznikiem oferty;
+// mechanika przy spotsAt() w ThankYouPage.tsx. Nadal jest wymyślona: nie stoi za
+// nią żaden rejestr miejsc, tylko pora dnia.
+export const TYP_SPOTS_BANNER: string = 'ONLY {n} MORE SPOTS AVAILABLE'
 //
 // `timer: true` dokłada do paska odliczanie do PÓŁNOCY CZASU NOWOJORSKIEGO —
 // końca dnia w USA, czyli 6:00 rano w Polsce. W przeciwieństwie do napisu wyżej
@@ -184,7 +189,7 @@ export const TYP_SPOTS_BANNER: string = 'ONLY 7 MORE SPOTS AVAILABLE'
 // Zdanie urywa się na „ends in", bo domyka je licznik doklejany w komponencie.
 export const TYP_ALERTS: { t: string; d?: string; timer?: boolean }[] = [
   { t: 'BOGO offer ends in', timer: true },
-  { t: 'Only 2 Spots Available', d: 'Real-time tracking' },
+  { t: 'Only {n} Spots Available', d: 'Real-time tracking' },
 ]
 
 /**
