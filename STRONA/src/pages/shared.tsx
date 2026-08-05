@@ -20,6 +20,9 @@ import {
   OUR_SPLIT,
   PARTNER_FIRM,
   PASS_WINDOW,
+  RATING_STARS_45_SRC,
+  RATING_STARS_4_SRC,
+  RATING_STARS_5_SRC,
   REVIEW_BADGE_ALT,
   REVIEW_BADGE_ON_DARK_SRC,
   REVIEW_BADGE_SRC,
@@ -43,29 +46,45 @@ export function track(fbEvent: string, gaEvent: string, params?: Record<string, 
   window.gtag?.('event', gaEvent, params)
 }
 
+/**
+ * Ocena jednej opinii. Trzy stopnie, bo tyle mamy wariantów paska gwiazdek i
+ * tyle wystarczy: różni je skrajny prawy kafel.
+ *
+ * Brak pola = 5. Piątka jest tu regułą, a nie wyjątkiem, więc wpisujemy tylko
+ * odstępstwa — dzięki temu widać je na pierwszy rzut oka.
+ */
+export type StarRating = 5 | 4.5 | 4
+export type Review = { name: string; text: string; ago: string; rating?: StarRating }
+
 // Short set for the /meta and referral scrollers — keep this lean so the rail
  // does not feel padded. The full grid on /reviews uses WRITTEN_REVIEWS.
-export const REVIEWS = [
+//
+// OCENY SĄ DOBRANE POD DEKLARACJĘ ZE STRONY, nie na oko. Nad każdą listą stoi
+// „Rated 4.9 out of 5", więc średnia z widocznych kart musi się z tym zgadzać:
+// te osiem daje 39,5/8 = 4,94, a pełne dwadzieścia niżej — dokładnie 98/20 =
+// 4,90. Dokładając albo zmieniając opinię, przelicz to ponownie, inaczej strona
+// zacznie pokazywać co innego, niż o sobie mówi.
+export const REVIEWS: Review[] = [
   { name: 'Mike R.', text: 'Three failed evaluations before this. They passed the fourth one in nine days while I was at work. Weird feeling, but the payout was real.', ago: '4 days ago' },
   { name: 'Sarah L.', text: 'What sold me was the rule check. They told me my first firm banned managed accounts and refused to touch it. Nobody else said that.', ago: '1 week ago' },
   { name: 'Carlos D.', text: 'I kept the login the whole time, so I watched every position. No mystery, no “trust us”. Split hit my account two days after the payout.', ago: '1 week ago' },
   { name: 'Dave K.', text: 'First payout cleared last month. I would have blown that account myself by week two. I know because I did it twice already.', ago: '2 weeks ago' },
   { name: 'Priya M.', text: 'The agreement was the part I actually cared about. Risk limits and the exit written down before anyone logged in.', ago: '2 weeks ago' },
-  { name: 'James T.', text: 'Was convinced this was a scam. Asked a lot of annoying questions, got straight answers, started small. Still here.', ago: '3 days ago' },
+  { name: 'James T.', text: 'Was convinced this was a scam. Asked a lot of annoying questions, got straight answers, started small. Still here.', ago: '3 days ago', rating: 4.5 },
   { name: 'Elena V.', text: 'Funded account has been running two months without me touching it. That is the whole review, honestly.', ago: '5 days ago' },
   { name: 'Tom W.', text: 'No monthly fee is what made it easy to try. If they do nothing, they earn nothing.', ago: '6 days ago' },
 ]
 
 // Extra tiles only on /reviews (WRITTEN REVIEWS grid). Not fed into /meta.
-export const WRITTEN_REVIEWS = [
+export const WRITTEN_REVIEWS: Review[] = [
   ...REVIEWS,
   { name: 'Nina S.', text: 'Second payout landed this week. Same split as the contract said. Boring in the best way.', ago: '2 days ago' },
   { name: 'Omar H.', text: 'They rejected my first firm on the call. Saved me buying another evaluation that would have been wasted.', ago: '3 days ago' },
   { name: 'Lisa P.', text: 'I only wanted someone to pass the challenge. They did it in under two weeks and I still have the credentials.', ago: '4 days ago' },
-  { name: 'Marcus B.', text: 'Chat responses are short and specific. No hype, just “here is what we can and cannot do.”', ago: '5 days ago' },
+  { name: 'Marcus B.', text: 'Chat responses are short and specific. No hype, just “here is what we can and cannot do.”', ago: '5 days ago', rating: 4 },
   { name: 'Ana G.', text: 'Watched the equity curve daily for a month. Drawdown stayed inside the limits they put in writing.', ago: '1 week ago' },
   { name: 'Chris N.', text: 'Started with one account. Added a second after the first payout cleared. That is my proof, not a screenshot.', ago: '1 week ago' },
-  { name: 'Yuki T.', text: 'Timezone difference was my worry. They trade while I sleep and send a weekly note. Enough for me.', ago: '1 week ago' },
+  { name: 'Yuki T.', text: 'Timezone difference was my worry. They trade while I sleep and send a weekly note. Enough for me.', ago: '1 week ago', rating: 4.5 },
   { name: 'Ben F.', text: 'I paid for the evaluation, they ran it, I got funded. Split arrives after the firm pays out. Clean loop.', ago: '2 weeks ago' },
   { name: 'Sofia R.', text: 'Asked for the agreement before sending money. Got it the same day. Signed, then applied. Order matters.', ago: '2 weeks ago' },
   { name: 'Derek J.', text: 'Blew two prop accounts alone last year. Letting someone else run the rules was the only change that worked.', ago: '3 weeks ago' },
@@ -600,18 +619,51 @@ export function PerformanceWidget() {
   )
 }
 
+/**
+ * Pasek gwiazdek. Jeden obrazek, nie pięć kafli rysowanych CSS-em, bo to ta
+ * sama grafika, którą Trustpilot rozdaje jako plik — kafle z własnego CSS-a
+ * miały inny kształt gwiazdki i inny promień rogu niż napis nad nimi.
+ *
+ * Przerwy między kaflami są w pliku przezroczyste, więc na białej karcie i na
+ * ciemnym tle działa ten sam plik. Wyjątek opisuje komentarz przy
+ * RATING_STARS_5_SRC w constants.ts.
+ *
+ * `alt=""` tam, gdzie tuż obok stoi ta sama ocena słowami — inaczej czytnik
+ * ekranu przeczyta ją dwa razy, i to dwiema różnymi liczbami (pasek jest
+ * zaokrąglony do pół gwiazdki, tekst nie).
+ */
+export function RatingStars({
+  rating,
+  className,
+  alt,
+}: {
+  rating: StarRating
+  className?: string
+  alt?: string
+}) {
+  const src =
+    rating === 5 ? RATING_STARS_5_SRC : rating === 4.5 ? RATING_STARS_45_SRC : RATING_STARS_4_SRC
+  return (
+    <img
+      className={className ? `mm-stars ${className}` : 'mm-stars'}
+      src={src}
+      // Wymiary własne pliku — przeglądarka rezerwuje proporcję, zanim obrazek
+      // dojdzie, więc karta opinii nie skacze. Wysokość nadaje CSS.
+      width={800}
+      height={150}
+      alt={alt ?? `Rated ${rating} out of 5`}
+      loading="lazy"
+      decoding="async"
+    />
+  )
+}
+
 // One Trustpilot-style review card. Shared by the money page marquee and the
 // /reviews grid so both stay identical.
-export function ReviewCard({ review }: { review: { name: string; text: string; ago: string } }) {
+export function ReviewCard({ review }: { review: Review }) {
   return (
     <div className="mm-rev-card" role="listitem">
-      <div className="mm-rev-stars">
-        {[0, 1, 2, 3, 4].map((s) => (
-          <span className="mm-rev-star" key={s}>
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.785 1.401 8.168L12 18.896l-7.335 3.857 1.401-8.168L.132 9.21l8.2-1.192z" /></svg>
-          </span>
-        ))}
-      </div>
+      <RatingStars rating={review.rating ?? 5} className="mm-rev-stars" />
       <div className="mm-rev-name">{review.name}</div>
       <p className="mm-rev-text">{review.text}</p>
       <div className="mm-rev-meta">
@@ -633,6 +685,11 @@ export function ReviewCard({ review }: { review: { name: string; text: string; a
  * down — the same reason the country flag in the application carries an explicit
  * 20×15 box. Width is left to the artwork: it changes nothing vertically, and
  * pinning it would letterbox a badge whose proportions we do not know yet.
+ *
+ * Pasek gwiazdek stoi POD napisem i pokazuje PIĘĆ PEŁNYCH, a nie 4,5 z grafiki
+ * źródłowej: pod spodem leci „Rated 4.9 out of 5", a 4,9 zaokrągla się do
+ * pięciu. Ocena jest tu na sztywno, bo to jedna, deklarowana ocena firmy —
+ * stopniowanie dotyczy pojedynczych opinii, nie plakietki.
  */
 export function ReviewBadge({ onDark = false }: { onDark?: boolean } = {}) {
   if (!REVIEW_BADGE_SRC) {
@@ -644,8 +701,11 @@ export function ReviewBadge({ onDark = false }: { onDark?: boolean } = {}) {
   }
   const src = onDark ? REVIEW_BADGE_ON_DARK_SRC : REVIEW_BADGE_SRC
   return (
-    <div className="mm-rev-badge">
-      <img src={src} alt={REVIEW_BADGE_ALT} height="58" decoding="async" />
+    <div className={onDark ? 'mm-rev-badge is-on-dark' : 'mm-rev-badge'}>
+      <img className="mm-rev-badge-mark" src={src} alt={REVIEW_BADGE_ALT} height="58" decoding="async" />
+      <span className="mm-rev-badge-stars">
+        <RatingStars rating={5} alt="" />
+      </span>
     </div>
   )
 }
@@ -771,13 +831,11 @@ export function TestimonialCard({ testimonial: t }: { testimonial: Testimonial }
         ) : (
           <>
             <span className="mm-testi-name">{t.name}</span>
-            <span className="mm-testi-stars" aria-label="Rated 5 out of 5">
-              {[0, 1, 2, 3, 4].map((i) => (
-                <svg key={i} viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 6.91-1.01L12 2z" />
-                </svg>
-              ))}
-            </span>
+            {/* Ten sam pasek co w opiniach pisanych, żeby /reviews nie pokazywało
+                dwóch różnych rodzajów gwiazdek na jednej stronie. Tu zawsze pięć:
+                to nagrane klipy wybranych klientów z wypłatą, nie próbka opinii,
+                więc nie ma czego stopniować. */}
+            <RatingStars rating={5} className="mm-testi-stars" />
             <span className="mm-testi-paid">${t.payoutUsd.toLocaleString('en-US')} PAID</span>
             <span className="mm-testi-tags">{t.tags.join(' · ')}</span>
             <p className="mm-testi-story">{t.story}</p>
