@@ -110,14 +110,20 @@ export const TELEGRAM_CHANNEL_HANDLE = '@forexpassingcom'
 export const TELEGRAM_ADMIN_HANDLE = '@forexpassingadmin'
 export const SITE_DOMAIN = 'forexpassing.com'
 
-// Materiały na /thank-you, których jeszcze nie ma. Pusty string = ramka
-// przerywana o DOCELOWYM rozmiarze, ta sama konwencja co REVIEW_BADGE_SRC
-// i videoId: '' w data/testimonials.ts — wgranie pliku nie przesuwa układu.
+// Materiały na /thank-you. Pusty string = ramka przerywana o DOCELOWYM
+// rozmiarze, ta sama konwencja co REVIEW_BADGE_SRC i videoId: '' w
+// data/testimonials.ts — wgranie pliku nie przesuwa układu.
+//
+// Oba pliki są przycięte do krawędzi karty (strona ma białe tło, więc
+// margines dookoła byłby martwym miejscem) i mają PROPORCJE WPISANE NA SZTYWNO
+// w ThankYouPage.tsx: 1200/888 i 1200/679. Podmiana pliku o innym kształcie
+// wymaga poprawienia tam `ratio` — .mm-typ-shot ma object-fit:cover, więc
+// inaczej obcięłoby boki (na zdjęciu zespołu zjadłoby skrajne osoby).
 //
 // TYP_TELEGRAM_SHOT_SRC: zrzut z Telegrama ze strzałką na "Message us" i na
 // przycisk "Join". Bez niego część ludzi nie wie, w co kliknąć po wejściu.
-export const TYP_TELEGRAM_SHOT_SRC: string = ''
-export const TEAM_PHOTO_SRC: string = ''
+export const TYP_TELEGRAM_SHOT_SRC: string = '/typ-telegram.webp'
+export const TEAM_PHOTO_SRC: string = '/typ-team.webp'
 
 // ⚠ LICZBY O ZESPOLE — TWIERDZENIE O NASZEJ FIRMIE, NIE O CUDZEJ.
 // Wartości poniżej są przeniesione ze strony wzorcowej (MGMT) na wyraźne
