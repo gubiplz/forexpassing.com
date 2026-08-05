@@ -103,6 +103,29 @@ export const REVIEW_BADGE_SRC = '/rating-badge.png'
 export const REVIEW_BADGE_ON_DARK_SRC = '/rating-badge-on-dark.png'
 export const REVIEW_BADGE_ALT = 'Our rating'
 
+// Pasek gwiazdek: pod plakietką i w każdej karcie opinii. Trzy warianty, bo
+// oceny mają się między opiniami różnić, a różni je WYŁĄCZNIE skrajny prawy
+// kafel — pełny, w połowie albo szary. Cztery pierwsze są zawsze zielone.
+//
+// Pliki są wycięte z grafiki źródłowej po kaflach (5 × 150 px, skok 162,5 px),
+// a przerwy między kaflami zostały PRZEZROCZYSTE. Dzięki temu jeden plik siada
+// i na białej karcie, i na zielonej sekcji — nie ma osobnej wersji „na ciemnym"
+// tak jak przy napisie Trustpilota wyżej.
+//
+// UWAGA NA ZIELEŃ: kafle mają #00b67a, a sekcja .mm-reviews tło var(--teal)
+// #15803d. To kontrast ~1,9:1 i pasek rozpływa się w tle — niosą go wtedy same
+// białe gwiazdki. Dlatego na ciemnym CSS podkłada mu biały talerzyk
+// (.mm-rev-badge.is-on-dark .mm-rev-badge-stars). Przy przenoszeniu paska na
+// nowe tło sprawdź to samo: zielony na zielonym znika.
+//
+// Wariantu 4,5 NIE używamy pod plakietką, mimo że taka przyszła grafika
+// źródłowa. Strona pięć razy mówi „Rated 4.9 out of 5", a Trustpilot rysuje
+// ocenę zaokrągloną do pół gwiazdki — 4,9 to pięć pełnych. Pasek 4,5 pod
+// napisem „4.9" czytałby się jak pomyłka.
+export const RATING_STARS_5_SRC = '/rating-stars-50.png'
+export const RATING_STARS_45_SRC = '/rating-stars-45.png'
+export const RATING_STARS_4_SRC = '/rating-stars-40.png'
+
 // Kontakt do zespołu. Statyczne strony w public/ i szablony maili nie mogą
 // importować tego pliku, więc mają adres wpisany wprost — przy zmianie uchwytu
 // trzeba je podmienić razem z tą stałą (grep po "t.me/").

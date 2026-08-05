@@ -494,8 +494,19 @@ html{scroll-behavior:smooth}
 /* The outer element always spans the column and centres its contents — the
    reserved box sizes the inner span, never this one, or the badge lands against
    the left edge instead of under the heading. */
-.mm-rev-badge{display:flex;justify-content:center;align-items:center;height:58px;margin:16px 0 14px}
-.mm-rev-badge img{display:block;height:58px;width:auto;max-width:min(300px,78vw);object-fit:contain}
+/* Plakietka to teraz LOCKUP: napis, pod nim pasek gwiazdek. Wysokość nie jest
+   już rezerwowana na sztywno, bo oba obrazki mają wpisane własne wymiary i
+   narzuconą wysokość — przeglądarka zna miejsce, zanim pliki dojdą. */
+.mm-rev-badge{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:11px;margin:16px 0 14px}
+.mm-rev-badge-mark{display:block;height:58px;width:auto;max-width:min(300px,78vw);object-fit:contain}
+.mm-rev-badge-stars{display:block;line-height:0}
+.mm-rev-badge-stars .mm-stars{height:30px}
+/* Jedyne miejsce, w którym plakietka różni się między tłami. Kafle #00b67a mają
+   wobec tła sekcji #15803d kontrast ~1,9:1 — bez tego talerzyka pasek rozpływa
+   się w zieleni i zostają z niego same białe gwiazdki. */
+.mm-rev-badge.is-on-dark .mm-rev-badge-stars{background:#fff;border-radius:9px;padding:7px 11px;
+  box-shadow:0 8px 22px rgba(0,0,0,.18)}
+.mm-rev-badge.is-empty{height:58px}
 .mm-rev-badge.is-empty span{display:flex;align-items:center;justify-content:center;width:200px;height:72px;
   border:1px dashed currentColor;border-radius:12px;opacity:.42;
   font-size:10.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase}
@@ -503,9 +514,17 @@ html{scroll-behavior:smooth}
 .mm-reviews .mm-scroller-rev+.mm-scroller-rev{margin-top:20px}
 .mm-scroller-rev .mm-scroller-track{gap:20px}
 .mm-rev-card{flex:0 0 330px;width:330px;background:#fff;border-radius:14px;padding:22px 24px;box-shadow:0 10px 28px rgba(0,0,0,.16);text-align:left;color:var(--txt);display:flex;flex-direction:column}
-.mm-rev-stars{display:flex;gap:3px;margin-bottom:14px}
-.mm-rev-star{width:22px;height:22px;background:#00b67a;display:inline-flex;align-items:center;justify-content:center;border-radius:2px}
-.mm-rev-star svg{width:14px;height:14px;fill:#fff}
+/* Pasek gwiazdek — jeden plik zamiast pięciu kafli rysowanych CSS-em. Szerokość
+   idzie z proporcji pliku, więc wersja z szarym kaflem zajmuje dokładnie tyle
+   samo miejsca co pełna piątka i karty w rzędzie się nie rozjeżdżają.
+
+   width:fit-content, a NIE auto. Blokowy element zastępowany z width:auto
+   rozciąga się na całą szerokość rodzica i ignoruje własne proporcje — w karcie
+   opinii dawało to pasek 284×22 zamiast 117×22, czyli kafle spłaszczone w
+   prostokąty. object-fit:contain jest zabezpieczeniem na wypadek, gdyby
+   max-width kiedyś przyciął pasek: wtedy się zmniejszy, a nie zniekształci. */
+.mm-stars{display:block;width:fit-content;max-width:100%;object-fit:contain}
+.mm-rev-stars{height:22px;margin-bottom:14px}
 .mm-rev-name{font-weight:700;font-size:15px;margin-bottom:8px}
 .mm-rev-text{font-size:14px;color:#2b3a33;line-height:1.55;margin-bottom:16px;flex:1}
 .mm-rev-meta{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#6b7671}
@@ -660,8 +679,9 @@ html{scroll-behavior:smooth}
 .mm-testi-body{display:flex;flex-direction:column;gap:7px;background:#fff;border:1px solid var(--line);
   border-radius:14px;padding:16px 17px;text-align:left}
 .mm-testi-name{font-weight:800;font-size:16px}
-.mm-testi-stars{display:inline-flex;gap:2px}
-.mm-testi-stars svg{width:14px;height:14px;fill:#f5a623}
+/* Było 14 px luźnych złotych gwiazdek. Kafle są cięższe wizualnie od luźnych
+   gwiazdek, więc przy tej samej wysokości robiły się zbitą plamą — stąd 16. */
+.mm-testi-stars{height:16px}
 .mm-testi-paid{align-self:flex-start;font-size:12px;font-weight:800;letter-spacing:.04em;
   color:#15803d;background:rgba(22,163,74,.12);border-radius:99px;padding:5px 11px}
 .mm-testi-tags{font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
