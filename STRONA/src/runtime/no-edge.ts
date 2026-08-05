@@ -37,6 +37,10 @@ export const SUB_PATHS = [
   'referral-program',
   'partner-portal',
   'google-funnel',
+  // Nie jest w stopce ani w żadnej nawigacji: trafia tu wyłącznie przyjęty
+  // aplikant, przerzucony z formularza. Bramkowana w middleware.ts razem ze
+  // ścieżkami ofertowymi — bez klucza brzegowego oddaje /safe.
+  'thank-you',
 ] as const;
 
 export type SubPageKey = (typeof SUB_PATHS)[number];

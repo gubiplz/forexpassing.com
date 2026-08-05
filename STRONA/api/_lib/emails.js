@@ -228,6 +228,12 @@ export function qualifiedEmail({ name }) {
   };
 }
 
+/**
+ * Currently unwired. api/event/subscribe.js writes only to HQ applicants, so
+ * nothing calls this — it is kept whole, and correct, because turning the
+ * rejection email back on is meant to stay a one-line decision there rather
+ * than a rewrite here. Do not delete without checking that endpoint first.
+ */
 export function notQualifiedEmail({ name }) {
   const body = `
     <p style="margin:0 0 26px;">Hey ${firstName(name)},</p>

@@ -27,7 +27,8 @@ const END = '<!-- FOOTER:END -->';
 // all by owner decision.
 const PAGES = [
   'watch.html',
-  'thank-you.html',
+  // thank-you.html nie ma tu już nic do roboty — /thank-you jest teraz stroną
+  // Reacta (src/pages/ThankYouPage.tsx) i bierze stopkę z <SiteFooter/>.
   'welcome.html',
   '404.html',
   'terms.html',

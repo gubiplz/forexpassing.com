@@ -1275,6 +1275,142 @@ html{scroll-behavior:smooth}
   .mm-cert-grid,.mm-rev-grid{grid-template-columns:1fr}
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+ * THANK YOU (/thank-you — src/pages/ThankYouPage.tsx)
+ *
+ * Everything structural is borrowed from above: .mm-wrap, .mm-section, .mm-h1,
+ * .mm-btn, .mm-acc, .mm-testi-grid, .mm-reviews, .mm-rev-badge. What is left
+ * here is the page's own furniture — the video card, the official-channels
+ * block, the two-column team panel and the reserved slots for artwork that does
+ * not exist yet.
+ *
+ * Every slot below shares its rectangle with the image that will replace it
+ * (aspect-ratio is set inline from the component, identically in both states),
+ * so publishing a file never moves the rest of the page.
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Pas i karta alertów. Oba niosą treść wymyśloną — zob. TYP_SPOTS_BANNER
+   w constants.ts. Wydzielone na własne klasy, żeby zdjęcie ich było usunięciem
+   dwóch stałych, a nie operacją na układzie strony. */
+.mm-typ-band{background:var(--red);color:#fff;text-align:center;padding:11px 16px;
+  font-size:clamp(12px,2.3vw,15px);font-weight:800;letter-spacing:.06em;text-transform:uppercase}
+.mm-typ-alerts{max-width:860px;margin:22px auto 0;background:var(--bg);border:1px solid var(--line);
+  border-radius:14px;overflow:hidden}
+.mm-typ-alert{display:flex;align-items:center;gap:14px;padding:15px 18px}
+.mm-typ-alert+.mm-typ-alert{border-top:1px solid var(--line)}
+.mm-typ-alert-ico{flex:none;display:inline-flex;align-items:center;justify-content:center;
+  width:38px;height:38px;border-radius:50%;background:rgba(239,68,68,.10);color:var(--red)}
+.mm-typ-alert-ico svg{width:19px;height:19px}
+.mm-typ-alert-txt{display:flex;flex-direction:column;gap:2px;min-width:0}
+.mm-typ-alert-t{font-size:15.5px;font-weight:800;color:#b91c1c;line-height:1.35}
+.mm-typ-alert-d{font-size:10.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--mut)}
+.mm-typ-alert-dot{flex:none;margin-left:auto;width:9px;height:9px;border-radius:50%;background:#22c55e;
+  animation:mm-typ-blink 1.4s infinite}
+@keyframes mm-typ-blink{0%,100%{opacity:1}50%{opacity:.25}}
+@media (prefers-reduced-motion:reduce){.mm-typ-alert-dot{animation:none}}
+
+.mm-typ-hero{background:var(--bg2);border-bottom:1px solid var(--line);padding:52px 0 46px;text-align:center}
+.mm-typ-h1{margin:18px 0 14px}
+.mm-typ-tick-ico{display:inline-flex;align-items:center;justify-content:center;width:74px;height:74px;
+  border-radius:50%;background:rgba(21,128,61,.10);color:var(--teal)}
+.mm-typ-tick-ico svg{width:34px;height:34px}
+
+/* ---- next step: the video ---------------------------------------------- */
+.mm-typ-video{max-width:860px;margin:0 auto;border-radius:16px;overflow:hidden;
+  background:var(--teal);box-shadow:0 26px 70px -34px rgba(0,0,0,.55)}
+.mm-typ-video-head{padding:14px 18px 16px;text-align:center;color:#fff}
+.mm-typ-video-eyebrow{display:block;font-size:11px;font-weight:800;letter-spacing:.2em;
+  text-transform:uppercase;opacity:.85}
+.mm-typ-video-title{display:block;font-size:clamp(16px,2.4vw,20px);font-weight:800;margin-top:4px}
+.mm-typ-video-frame{position:relative;aspect-ratio:16/9;background:#000}
+.mm-typ-video-frame wistia-player:not(:defined){display:block;height:100%;filter:blur(5px)}
+.mm-typ-video-frame wistia-player,.mm-typ-video-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+/* No poster yet, so the facade is a plain plate with the play control. It still
+   exists for the reason the one on /meta does: the player is ~350 KB from a
+   third party and must not load for someone who never presses play. */
+.mm-typ-video-facade{position:absolute;inset:0;width:100%;height:100%;padding:0;border:0;cursor:pointer;
+  display:block;background:radial-gradient(120% 120% at 50% 0%,#12231a 0%,#080d0a 100%)}
+.mm-typ-video-facade-label{position:absolute;left:0;right:0;bottom:14px;text-align:center;color:#fff;
+  font-size:13px;font-weight:800;letter-spacing:.04em;text-shadow:0 2px 10px rgba(0,0,0,.8)}
+.mm-typ-video-frame.is-empty{display:flex;align-items:center;justify-content:center;
+  background:repeating-linear-gradient(135deg,rgba(255,255,255,.035) 0 10px,transparent 10px 20px),#0d1a13;
+  border-top:1px dashed rgba(255,255,255,.22);color:rgba(255,255,255,.62)}
+@media (hover:hover) and (pointer:fine){
+  .mm-typ-video-facade:hover .mm-vsl-play{transform:translate(-50%,-50%) scale(1.08);background:rgba(0,0,0,.7)}
+}
+
+/* ---- reserved artwork --------------------------------------------------- */
+.mm-typ-slot{display:flex;align-items:center;justify-content:center;width:100%;
+  border:1px dashed rgba(15,30,22,.28);border-radius:14px;color:var(--mut);
+  background:repeating-linear-gradient(135deg,rgba(15,30,22,.035) 0 10px,transparent 10px 20px)}
+.mm-typ-slot-label{font-size:10.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;
+  text-align:center;padding:0 14px;opacity:.75}
+.mm-typ-shot{display:block;width:100%;height:auto;object-fit:cover;border-radius:14px;border:1px solid var(--line)}
+.mm-typ-shot-wrap{max-width:720px;margin:26px auto 0}
+
+/* Kolumna, nie .mm-cta-center — tamten jest flex-row i ustawialby podpis obok
+   przycisku zamiast pod nim. */
+.mm-typ-cta{display:flex;flex-direction:column;align-items:center;gap:12px;margin:36px 0 0}
+.mm-typ-cta-note{margin:0;max-width:520px;text-align:center;font-size:14px;color:var(--mut)}
+
+/* ---- official channels -------------------------------------------------- */
+.mm-typ-official{background:var(--bg2)}
+.mm-typ-card{max-width:920px;margin:26px auto 0;background:var(--bg);border:1px solid var(--line);
+  border-radius:16px;padding:26px 24px;box-shadow:0 18px 44px -30px rgba(0,0,0,.35)}
+.mm-typ-card-head{text-align:center;margin-bottom:20px}
+.mm-typ-card-head h3{margin:0 0 6px}
+.mm-typ-card-head p{margin:0;color:var(--mut);font-size:15px}
+.mm-typ-channels{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.mm-typ-channel{display:flex;flex-direction:column;gap:5px;background:var(--bg2);border:1px solid var(--line);
+  border-radius:12px;padding:15px 16px;min-width:0}
+.mm-typ-channel-k{font-size:10.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--teal)}
+/* The handles and the address are the whole point of this block, so they wrap
+   rather than clip — at 320px "contact@forexpassing.com" is wider than the tile. */
+.mm-typ-channel-v{font-size:15.5px;font-weight:800;overflow-wrap:anywhere}
+.mm-typ-channel-sub{font-size:13px;color:var(--mut);overflow-wrap:anywhere}
+.mm-typ-warn{margin:18px 0 0;padding:14px 16px;border-radius:12px;font-size:14.5px;line-height:1.6;
+  color:#7f1d1d;background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.28)}
+.mm-typ-warn strong{color:var(--red);font-weight:800}
+
+/* ---- team + proof ------------------------------------------------------- */
+.mm-typ-cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px;align-items:start}
+.mm-typ-col{background:var(--bg);border:1px solid var(--line);border-radius:16px;padding:24px 22px;min-width:0}
+.mm-typ-col-h{margin:0 0 16px;font-family:Anton,'Anton Fallback',system-ui,sans-serif;font-weight:400;
+  letter-spacing:.01em;text-transform:uppercase;font-size:clamp(19px,2.6vw,23px)}
+.mm-typ-col-d{margin:16px 0 0;color:var(--mut);font-size:14.5px;line-height:1.65}
+.mm-typ-col-d a{color:var(--teal);font-weight:700}
+.mm-typ-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:16px}
+.mm-typ-stat{display:flex;flex-direction:column;gap:2px;align-items:center;background:var(--bg2);
+  border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.mm-typ-stat-n{font-family:Anton,'Anton Fallback',system-ui,sans-serif;font-size:30px;color:var(--teal);line-height:1}
+.mm-typ-stat-l{font-size:10.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--mut)}
+.mm-typ-proof{display:flex;flex-direction:column;gap:10px;margin-top:4px}
+.mm-typ-proof-row{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:13px 15px;
+  font-size:14.5px;line-height:1.5}
+.mm-typ-proof-row strong{font-weight:800;color:var(--teal)}
+
+/* ---- the objection ------------------------------------------------------ */
+.mm-typ-note{background:var(--bg2)}
+.mm-typ-grid4{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:26px}
+.mm-typ-tile{display:flex;flex-direction:column;gap:8px;background:var(--bg);border:1px solid var(--line);
+  border-radius:14px;padding:20px 20px;min-width:0}
+.mm-typ-tile .mm-typ-tick-ico{width:34px;height:34px;align-self:flex-start}
+.mm-typ-tile .mm-typ-tick-ico svg{width:18px;height:18px}
+.mm-typ-tile-t{font-size:16px;font-weight:800}
+.mm-typ-tile-d{font-size:14px;color:var(--mut);line-height:1.6}
+.mm-typ-tile-a{margin-top:2px;font-size:13.5px;font-weight:800;color:var(--teal)}
+
+@media (max-width:900px){
+  .mm-typ-cols{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:760px){
+  .mm-typ-hero{padding:40px 0 34px}
+  .mm-typ-channels{grid-template-columns:minmax(0,1fr)}
+  .mm-typ-grid4{grid-template-columns:minmax(0,1fr)}
+  .mm-typ-card{padding:22px 18px}
+  .mm-typ-col{padding:20px 17px}
+}
+
 /* ---------------------------------------------------------------------------
  * Last in the sheet on purpose: it has to beat every per-component font-size
  * above it. 16px on touch is not a style choice — below it, iOS Safari zooms

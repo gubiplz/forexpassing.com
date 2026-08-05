@@ -24,9 +24,12 @@ import { PAYOUT_CERTS, PAYOUT_TOTALS } from '../data/payouts'
 import { TESTIMONIALS } from '../data/testimonials'
 import type { SubPageKey } from '../runtime/no-edge'
 
-// The proof pages this component covers. /referral-program and /partner-portal
-// each have their own file — see App.tsx.
-type ProofPageKey = Exclude<SubPageKey, 'referral-program' | 'partner-portal' | 'google-funnel'>
+// The proof pages this component covers. /referral-program, /partner-portal,
+// /google-funnel and /thank-you each have their own file — see App.tsx.
+type ProofPageKey = Exclude<
+  SubPageKey,
+  'referral-program' | 'partner-portal' | 'google-funnel' | 'thank-you'
+>
 import {
   AutoScroller,
   CertCard,

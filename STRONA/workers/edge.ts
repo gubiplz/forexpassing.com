@@ -173,9 +173,14 @@ async function handleRequest(
   );
 
   // ─── Money-only subpages: hide from bots & reviewers ──
-  // /watch, /thank-you and /welcome are standalone pages (not the SPA), so they cannot
-  // swap money/safe client-side. Gate them at the edge: bots and reviewers
-  // get the clean safe page; humans (and borderline-suspicious) get the page.
+  // /watch and /welcome are standalone pages (not the SPA), so they cannot swap
+  // money/safe client-side. /thank-you is the SPA, but App.tsx routes it by path
+  // and never consults the verdict — a subpage renders for whoever asks for it.
+  // Either way the swap has to happen here. Gate them at the edge: bots and
+  // reviewers get the clean safe page; humans (and borderline-suspicious) get
+  // the page. This block is the only thing keeping /thank-you off a reviewer's
+  // screen; the origin backstop in middleware.ts covers the *.vercel.app route
+  // to the same file.
   if (
     isMoneyOnlyPath(url.pathname) &&
     (verdict.classification === 'bot' || verdict.classification === 'reviewer')
