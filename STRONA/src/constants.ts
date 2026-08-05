@@ -77,9 +77,17 @@ export const WISTIA_TYP_ID: string = 'efyfqeekwt'
  * z fast.wistia.com. Wistia podaje własny podgląd pod
  * /embed/medias/<id>/swatch, ale użycie go zaciągałoby ich serwer przy każdym
  * wejściu na stronę, także od kogoś, kto nigdy nie kliknie play — a cały sens
- * fasady jest taki, żeby do tego nie doszło. Ten sam układ co /vsl-poster.webp.
+ * fasady jest taki, żeby do tego nie doszło. Ten sam układ co /vsl-poster-2.webp.
+ *
+ * Skutek uboczny: zmiana miniaturki po stronie Wistii NIE zmienia tego, co widać
+ * na stronie — trzeba przegenerować ten plik z ich still_image
+ * (/embed/medias/<id>.json → assets[type=still_image], 1920×1080 → 960×540).
+ *
+ * UWAGA NA CACHE: public/ leci z max-age=86400 i stale-while-revalidate=604800,
+ * więc nadpisanie pliku pod tą samą nazwą zostawia wracającym stary obrazek
+ * nawet na tydzień. Przy każdej podmianie BUMPUJ NUMER w nazwie i tutaj.
  */
-export const WISTIA_TYP_POSTER = '/typ-poster.webp'
+export const WISTIA_TYP_POSTER = '/typ-poster-2.webp'
 
 // Plakietka oceny nad opiniami na /meta i /reviews. Pusty string renderuje
 // zarezerwowane miejsce o docelowym rozmiarze — dokładnie jak EVAL_DISCOUNT

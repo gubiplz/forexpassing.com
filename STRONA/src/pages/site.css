@@ -583,7 +583,9 @@ html{scroll-behavior:smooth}
   transform:translate(-50%,-50%);border-style:solid;border-width:15px 0 15px 25px;
   border-color:transparent transparent transparent #fff}
 .mm-vsl-facade:hover .mm-vsl-play{transform:translate(-50%,-50%) scale(1.08);background:rgba(0,0,0,.7)}
-.mm-vsl-facade-label{position:absolute;left:0;right:0;bottom:12px;text-align:center;
+/* Lewy gorny rog z tego samego powodu co na /thank-you: plakat ma na dole
+   wlasny pasek z podpisem z klipu, a wysrodkowana etykieta na nim siadala. */
+.mm-vsl-facade-label{position:absolute;left:14px;top:12px;
   color:#fff;font-size:13px;font-weight:800;letter-spacing:.04em;
   text-shadow:0 2px 10px rgba(0,0,0,.8)}
 .mm-vsl-failed{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;
@@ -1351,13 +1353,14 @@ html{scroll-behavior:smooth}
 .mm-typ-video-facade{position:absolute;inset:0;width:100%;height:100%;padding:0;border:0;cursor:pointer;
   display:block;overflow:hidden;background:#fff}
 .mm-typ-video-facade img{width:100%;height:100%;object-fit:cover;display:block}
-/* Przyciemnienie pod podpisem. Plakat jest kadrem z klipu i bywa jasny — bez
-   tego bialy napis na bialej klatce po prostu znika. Gradient dziala niezaleznie
-   od tego, jaka klatka trafi tu nastepnym razem. */
-.mm-typ-video-facade::after{content:'';position:absolute;left:0;right:0;bottom:0;height:58px;
-  background:linear-gradient(to top,rgba(0,0,0,.45),transparent);pointer-events:none}
-.mm-typ-video-facade-label{position:absolute;left:0;right:0;bottom:14px;text-align:center;color:#fff;
-  font-size:13px;font-weight:800;letter-spacing:.04em;z-index:1}
+/* Etykieta stoi w LEWYM GORNYM rogu, nie na dole. Plakat ma na dole wlasny
+   pasek z podpisem z klipu — bialy napis ladowal dokladnie na nim i dwa biale
+   teksty zlewaly sie w jedno. Gora-lewa jest wolna, bo logo siedzi po prawej.
+   Cien zamiast gradientu pod spodem: dziala niezaleznie od tego, jak jasna
+   klatka trafi tu nastepnym razem, i nie przyciemnia samego plakatu. */
+.mm-typ-video-facade-label{position:absolute;left:14px;top:12px;color:#fff;
+  font-size:13px;font-weight:800;letter-spacing:.04em;z-index:1;
+  text-shadow:0 2px 10px rgba(0,0,0,.85)}
 .mm-typ-video-frame.is-empty{display:flex;align-items:center;justify-content:center;
   background:repeating-linear-gradient(135deg,rgba(255,255,255,.035) 0 10px,transparent 10px 20px),#0d1a13;
   border-top:1px dashed rgba(255,255,255,.22);color:rgba(255,255,255,.62)}
