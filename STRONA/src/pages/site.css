@@ -755,6 +755,16 @@ html{scroll-behavior:smooth}
   background:var(--teal);color:#fff;font-weight:800;font-size:15px;margin-bottom:14px}
 .mm-step-t{display:block;font-weight:800;font-size:16px;margin-bottom:7px}
 .mm-step-d{display:block;font-size:14px;color:var(--mut);line-height:1.6}
+/* Karty dzielą SIATKĘ WIERSZY rodzica, więc numer, nagłówek i opis stoją w tych
+   samych trzech wierszach we wszystkich kartach — opis zaczyna się na tej samej
+   wysokości niezależnie od tego, czy nagłówek zawinął się na jedną linię czy na
+   dwie. `min-height` na nagłówku dawałby to samo tylko do chwili, w której któryś
+   zawinie się na trzy; subgrid nie ma tego ograniczenia.
+   row-gap:0, bo subgrid dziedziczy odstęp rodzica (18 px) i bez tego wchodziłby
+   między numer, nagłówek i opis WEWNĄTRZ karty.
+   Selektor przez .mm-steps, bo .mm-step nosi też sekcja .mm-spiral wyżej. */
+.mm-steps .mm-step{display:grid;grid-template-rows:subgrid;grid-row:span 3;row-gap:0}
+.mm-steps .mm-step-n{justify-self:center}
 
 /* FAQ accordion */
 .mm-acc{max-width:820px;margin:32px auto 0;display:flex;flex-direction:column;gap:10px}
@@ -1474,7 +1484,9 @@ html{scroll-behavior:smooth}
 .mm-typ-warn strong{color:var(--red);font-weight:800}
 
 /* ---- team + proof ------------------------------------------------------- */
-.mm-typ-cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px;align-items:start}
+/* stretch, nie start: obie kolumny mają ramkę, więc krótsza kończyła się wyżej
+   i para wyglądała na niedokończoną. Teraz obie sięgają dołu wyższej. */
+.mm-typ-cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px;align-items:stretch}
 .mm-typ-col{background:var(--bg);border:1px solid var(--line);border-radius:16px;padding:24px 22px;min-width:0}
 /* Naglowek kolumny: kafelek z ikona + tytul w jednej linii, jak we wzorcu. */
 .mm-typ-col-head{display:flex;align-items:center;gap:13px;margin-bottom:16px}
