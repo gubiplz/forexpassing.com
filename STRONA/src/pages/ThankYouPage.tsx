@@ -55,6 +55,81 @@ import {
  * Pieces
  * ------------------------------------------------------------------------ */
 
+/* Odliczanie przy pasku „Upgrade offer ends today".
+ *
+ * Termin to PÓŁNOC CZASU NOWOJORSKIEGO, czyli koniec dnia w USA — a zarazem
+ * 6:00 rano w Polsce. Ta godzina trzyma się przez cały rok, bo obie strefy
+ * przestawiają zegary w tym samym kierunku: latem północ ET = 04:00 UTC =
+ * 06:00 CEST, zimą północ ET = 05:00 UTC = 06:00 CET.
+ *
+ * Licznik nie potrzebuje przez to ŻADNEJ PAMIĘCI: jest policzony z zegara, więc
+ * odświeżenie strony nie cofa go na start, każdy widzi tę samą wartość, a po
+ * północy sam przetacza się na kolejną dobę. Pierwsza wersja losowała termin na
+ * sesję i trzymała go w sessionStorage — to była wymyślona presja i wymagało
+ * zapisu w przeglądarce; koniec dnia w Nowym Jorku jest granicą, która
+ * naprawdę istnieje.
+ *
+ * UWAGA: Countdown na /meta liczy do LOKALNEJ północy odwiedzającego, nie do
+ * nowojorskiej. Te dwa liczniki nie są ze sobą zsynchronizowane.
+ */
+const OFFER_TZ = 'America/New_York'
+// Formatter budowany raz — to jego konstrukcja jest kosztowna, nie samo
+// formatowanie, a wołamy go co sekundę.
+const OFFER_FMT = new Intl.DateTimeFormat('en-US', {
+  timeZone: OFFER_TZ,
+  hourCycle: 'h23', // bez tego północ potrafi sformatować się jako 24
+  hour: '2-digit',
+  minute: '2-digit',
+  second: '2-digit',
+})
+
+/** Ile sekund doby upłynęło już w Nowym Jorku. */
+function etSecondsOfDay(ms: number) {
+  const parts = OFFER_FMT.formatToParts(ms)
+  const get = (t: string) => Number(parts.find((p) => p.type === t)?.value ?? 0)
+  return get('hour') * 3600 + get('minute') * 60 + get('second')
+}
+
+/** Najbliższa północ w Nowym Jorku, w milisekundach epoki. */
+function nextEtMidnight(now: number) {
+  const guess = now + (86_400 - etSecondsOfDay(now)) * 1000
+  // W dniu zmiany czasu doba ma 23 albo 25 godzin, więc przybliżenie „doba ma
+  // 24 h" mija się z północą o godzinę. Dociągamy je do najbliższej: jeśli w
+  // Nowym Jorku jest wtedy późny wieczór, brakuje reszty doby; jeśli wczesny
+  // ranek — przestrzeliliśmy. Jedna korekta wystarcza, bo skok to zawsze godzina.
+  const off = etSecondsOfDay(guess)
+  if (off === 0) return guess
+  return off > 43_200 ? guess + (86_400 - off) * 1000 : guess - off * 1000
+}
+
+function OfferCountdown() {
+  const [now, setNow] = useState(() => Date.now())
+
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 1000)
+    return () => clearInterval(id)
+  }, [])
+
+  // Po północy nextEtMidnight zwraca już kolejną dobę, więc licznik sam rusza od
+  // nowa — nie ma tu żadnego resetu do dopisania.
+  //
+  // Sufit 23:59:59: w dniu cofnięcia zegarów doba w Nowym Jorku ma 25 godzin i
+  // bez tego licznik pokazywałby przez godzinę „24:59:50", co pod napisem
+  // „ends today" czyta się jak błąd.
+  let s = Math.min(86_399, Math.max(0, Math.floor((nextEtMidnight(now) - now) / 1000)))
+  const h = String(Math.floor(s / 3600)).padStart(2, '0')
+  s %= 3600
+  const m = String(Math.floor(s / 60)).padStart(2, '0')
+  const sec = String(s % 60).padStart(2, '0')
+  // role="timer" ma domyślnie aria-live:off, więc czytnik ekranu nie przeczyta
+  // tego na głos co sekundę.
+  return (
+    <span className="mm-typ-alert-timer mm-count" role="timer">
+      {h}:{m}:{sec}
+    </span>
+  )
+}
+
 /**
  * A picture we do not have yet. Renders the exact rectangle the artwork will
  * occupy, so dropping the file in later moves nothing on the page — the same
@@ -418,7 +493,15 @@ export function ThankYouPage() {
                     {i === 1 && <span className="mm-typ-alert-dot" />}
                   </span>
                   <span className="mm-typ-alert-txt">
-                    <span className="mm-typ-alert-t">{a.t}</span>
+                    {/* Licznik domyka zdanie („…ends in 07:14:22"), więc siedzi
+                        WEWNĄTRZ napisu, a nie przy prawej krawędzi paska. */}
+                    <span className="mm-typ-alert-t">
+                      {a.t}
+                      {/* Spacja jest jawna, bo JSX jej tu nie wstawi. Odstęp z
+                          CSS-a widać, ale w samej treści napis skleiłby się w
+                          „ends in06:02:34" — i tak przeczytałby go czytnik. */}
+                      {a.timer && <>{' '}<OfferCountdown /></>}
+                    </span>
                     {a.d && <span className="mm-typ-alert-d">{a.d}</span>}
                   </span>
                 </div>
