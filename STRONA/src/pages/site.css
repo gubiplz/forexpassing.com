@@ -1289,6 +1289,26 @@ html{scroll-behavior:smooth}
  * so publishing a file never moves the rest of the page.
  * ═══════════════════════════════════════════════════════════════════════════ */
 
+/* Pas i karta alertów. Oba niosą treść wymyśloną — zob. TYP_SPOTS_BANNER
+   w constants.ts. Wydzielone na własne klasy, żeby zdjęcie ich było usunięciem
+   dwóch stałych, a nie operacją na układzie strony. */
+.mm-typ-band{background:var(--red);color:#fff;text-align:center;padding:11px 16px;
+  font-size:clamp(12px,2.3vw,15px);font-weight:800;letter-spacing:.06em;text-transform:uppercase}
+.mm-typ-alerts{max-width:860px;margin:22px auto 0;background:var(--bg);border:1px solid var(--line);
+  border-radius:14px;overflow:hidden}
+.mm-typ-alert{display:flex;align-items:center;gap:14px;padding:15px 18px}
+.mm-typ-alert+.mm-typ-alert{border-top:1px solid var(--line)}
+.mm-typ-alert-ico{flex:none;display:inline-flex;align-items:center;justify-content:center;
+  width:38px;height:38px;border-radius:50%;background:rgba(239,68,68,.10);color:var(--red)}
+.mm-typ-alert-ico svg{width:19px;height:19px}
+.mm-typ-alert-txt{display:flex;flex-direction:column;gap:2px;min-width:0}
+.mm-typ-alert-t{font-size:15.5px;font-weight:800;color:#b91c1c;line-height:1.35}
+.mm-typ-alert-d{font-size:10.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--mut)}
+.mm-typ-alert-dot{flex:none;margin-left:auto;width:9px;height:9px;border-radius:50%;background:#22c55e;
+  animation:mm-typ-blink 1.4s infinite}
+@keyframes mm-typ-blink{0%,100%{opacity:1}50%{opacity:.25}}
+@media (prefers-reduced-motion:reduce){.mm-typ-alert-dot{animation:none}}
+
 .mm-typ-hero{background:var(--bg2);border-bottom:1px solid var(--line);padding:52px 0 46px;text-align:center}
 .mm-typ-h1{margin:18px 0 14px}
 .mm-typ-tick-ico{display:inline-flex;align-items:center;justify-content:center;width:74px;height:74px;
@@ -1328,7 +1348,10 @@ html{scroll-behavior:smooth}
 .mm-typ-shot{display:block;width:100%;height:auto;object-fit:cover;border-radius:14px;border:1px solid var(--line)}
 .mm-typ-shot-wrap{max-width:720px;margin:26px auto 0}
 
-.mm-typ-cta-note{margin:12px 0 0;text-align:center;font-size:14px;color:var(--mut)}
+/* Kolumna, nie .mm-cta-center — tamten jest flex-row i ustawialby podpis obok
+   przycisku zamiast pod nim. */
+.mm-typ-cta{display:flex;flex-direction:column;align-items:center;gap:12px;margin:36px 0 0}
+.mm-typ-cta-note{margin:0;max-width:520px;text-align:center;font-size:14px;color:var(--mut)}
 
 /* ---- official channels -------------------------------------------------- */
 .mm-typ-official{background:var(--bg2)}

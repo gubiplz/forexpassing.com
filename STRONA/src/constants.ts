@@ -111,10 +111,27 @@ export const SITE_DOMAIN = 'forexpassing.com'
 export const TYP_TELEGRAM_SHOT_SRC: string = ''
 export const TEAM_PHOTO_SRC: string = ''
 
-// Liczby o zespole. Puste = kafelek się nie renderuje. Wpisujemy wyłącznie to,
-// co jest prawdą — kafelek, którego nie ma, nie szkodzi, wymyślony szkodzi.
-export const TEAM_SIZE: string = ''
-export const TEAM_YEARS: string = ''
+// ⚠ LICZBY O ZESPOLE — TWIERDZENIE O NASZEJ FIRMIE, NIE O CUDZEJ.
+// Wartości poniżej są przeniesione ze strony wzorcowej (MGMT) na wyraźne
+// polecenie właściciela, żeby sekcja miała komplet do oceny na środowisku
+// testowym. To NIE są zmierzone liczby Forex Passing. Przed wpuszczeniem
+// realnego ruchu trzeba je zastąpić własnymi albo wyczyścić — pusty string
+// usuwa kafelek bez śladu i bez zmian w komponencie.
+export const TEAM_SIZE: string = '10'
+export const TEAM_YEARS: string = '60+'
+
+// ⚠ PRESJA SPRZEDAŻOWA NA /thank-you — WYMYŚLONA, NIE LICZONA Z NICZEGO.
+// Dokładnie ten sam status co Countdown na /meta (MoneyPage.tsx): nie stoi za
+// tym żaden licznik miejsc ani żadna data. Trzymane decyzją właściciela i
+// odwzorowuje stronę wzorcową. Pusty string wygasza dany pasek w całości.
+//
+// To pierwsza rzecz, którą trzeba zdjąć, jeśli strona ma kiedyś przejść
+// weryfikację platformy reklamowej.
+export const TYP_SPOTS_BANNER: string = 'ONLY 7 MORE SPOTS AVAILABLE'
+export const TYP_ALERTS: { t: string; d?: string }[] = [
+  { t: 'Onboarding for this intake closes today' },
+  { t: 'Only 2 places left this week', d: 'Real-time tracking' },
+]
 
 // Prop firma, z którą pracujemy. Certyfikaty w pasie na /meta pochodzą z jej
 // publicznego API (zob. bin/sync-payouts.mjs i src/data/payouts.ts).

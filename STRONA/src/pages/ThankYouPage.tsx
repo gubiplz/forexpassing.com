@@ -29,6 +29,8 @@ import {
   TELEGRAM_CHANNEL_HANDLE,
   TELEGRAM_CHANNEL_HREF,
   TELEGRAM_HREF,
+  TYP_ALERTS,
+  TYP_SPOTS_BANNER,
   TYP_TELEGRAM_SHOT_SRC,
   WISTIA_TYP_ID,
 } from '../constants'
@@ -178,8 +180,10 @@ function TelegramCta({
   note?: string
   white?: boolean
 }) {
+  // Wlasny kontener, nie .mm-cta-center: tamten jest flex-row, wiec podpis
+  // ladowal OBOK przycisku zamiast pod nim.
   return (
-    <div className="mm-cta-center">
+    <div className="mm-typ-cta">
       <a
         href={to === 'channel' ? TELEGRAM_CHANNEL_HREF : TELEGRAM_HREF}
         target="_blank"
@@ -259,6 +263,10 @@ export function ThankYouPage() {
     <div className="mm-root mm-root-sub mm-typ" ref={rootRef}>
       <TopBar />
 
+      {/* ⚠ Wymyślona presja — patrz komentarz nad TYP_SPOTS_BANNER. Nie stoi za
+          tym żaden licznik; pusta stała zdejmuje pasek. */}
+      {TYP_SPOTS_BANNER && <div className="mm-typ-band">{TYP_SPOTS_BANNER}</div>}
+
       {/* ── QUALIFIED ─────────────────────────────────────────────────── */}
       <header className="mm-typ-hero">
         <div className="mm-wrap">
@@ -284,6 +292,33 @@ export function ThankYouPage() {
             </div>
             <TypVideo />
           </div>
+
+          {/* ⚠ To samo co pasek na górze: żadna z tych linii nie jest liczona
+              ani datowana. Pusta tablica usuwa całą kartę. */}
+          {TYP_ALERTS.length > 0 && (
+            <div className="mm-typ-alerts">
+              {TYP_ALERTS.map((a, i) => (
+                <div className="mm-typ-alert" key={a.t}>
+                  <span className="mm-typ-alert-ico" aria-hidden="true">
+                    {i === 0 ? (
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M12 8v13M3 12v9h18v-9M2 8h20v4H2zM12 8a4 4 0 0 0-4-4 2 2 0 0 0 0 4h4zM12 8a4 4 0 0 1 4-4 2 2 0 0 1 0 4h-4z" />
+                      </svg>
+                    ) : (
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+                      </svg>
+                    )}
+                  </span>
+                  <span className="mm-typ-alert-txt">
+                    <span className="mm-typ-alert-t">{a.t}</span>
+                    {a.d && <span className="mm-typ-alert-d">{a.d}</span>}
+                  </span>
+                  {i === 1 && <span className="mm-typ-alert-dot" aria-hidden="true" />}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -392,6 +427,9 @@ export function ThankYouPage() {
               <h3 className="mm-typ-col-h">WHAT YOU'RE JOINING</h3>
               <ReviewBadge />
               <div className="mm-typ-proof">
+                <div className="mm-typ-proof-row">
+                  Rated <strong>4.9</strong> out of 5 by our clients
+                </div>
                 {PAYOUT_TOTALS && (
                   <>
                     <div className="mm-typ-proof-row">
@@ -410,6 +448,9 @@ export function ThankYouPage() {
                 )}
                 <div className="mm-typ-proof-row">
                   A written management agreement on <strong>every</strong> account
+                </div>
+                <div className="mm-typ-proof-row">
+                  <strong>Official support</strong> on Telegram, from the desk that trades
                 </div>
               </div>
               <p className="mm-typ-col-d">
