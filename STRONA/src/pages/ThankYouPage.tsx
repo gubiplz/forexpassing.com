@@ -102,6 +102,60 @@ function nextEtMidnight(now: number) {
   return off > 43_200 ? guess + (86_400 - off) * 1000 : guess - off * 1000
 }
 
+/* ⚠ LICZBA WOLNYCH MIEJSC — WYMYŚLONA PRESJA, nie rejestr niczego. Patrz
+ * komentarz nad TYP_SPOTS_BANNER w constants.ts.
+ *
+ * Jedna funkcja dla czerwonego pasa i dla alertu niżej, bo wcześniej stały tam
+ * dwie różne liczby wpisane ręcznie — „7" i „2" naraz na jednej stronie.
+ *
+ * Wartość idzie z pory dnia w Nowym Jorku, tej samej doby, którą odlicza
+ * OfferCountdown: tuż po północy SPOTS_START, na koniec doby SPOTS_END, potem
+ * reset razem z licznikiem. Liczone z zegara, więc nie ma czego zapisywać ani
+ * uzgadniać między kartami.
+ */
+const SPOTS_TOKEN = '{n}'
+const SPOTS_START = 7
+const SPOTS_END = 1
+// Siedem wartości (7…1) na dobę, więc siedem przedziałów po ~3 h 26 min.
+const SPOTS_STEP = 86_400 / (SPOTS_START - SPOTS_END + 1)
+
+function spotsAt(now: number) {
+  return Math.max(SPOTS_END, SPOTS_START - Math.floor(etSecondsOfDay(now) / SPOTS_STEP))
+}
+
+/** Najbliższa chwila, w której liczba się zmieni: kolejny próg albo północ. */
+function nextSpotsChange(now: number) {
+  const elapsed = etSecondsOfDay(now)
+  const prog = now + Math.ceil((Math.floor(elapsed / SPOTS_STEP) + 1) * SPOTS_STEP - elapsed) * 1000
+  return Math.min(prog, nextEtMidnight(now))
+}
+
+function useSpotsLeft() {
+  const [now, setNow] = useState(() => Date.now())
+  useEffect(() => {
+    let id = 0
+    // Budzik ustawiany DOKŁADNIE na próg zmiany, nie co kilkanaście sekund.
+    // Dzięki temu pas i alert przeskakują w tej samej chwili i nigdy — nawet
+    // przez sekundę — nie pokazują dwóch różnych liczb. Przy okazji to sześć
+    // wybudzeń na dobę zamiast tysięcy.
+    const schedule = () => {
+      const t = Date.now()
+      id = window.setTimeout(() => {
+        setNow(Date.now())
+        schedule()
+      }, Math.max(1000, nextSpotsChange(t) - t))
+    }
+    schedule()
+    return () => window.clearTimeout(id)
+  }, [])
+  return spotsAt(now)
+}
+
+function SpotsText({ template }: { template: string }) {
+  const n = useSpotsLeft()
+  return <>{template.split(SPOTS_TOKEN).join(String(n))}</>
+}
+
 function OfferCountdown() {
   const [now, setNow] = useState(() => Date.now())
 
@@ -444,7 +498,9 @@ export function ThankYouPage() {
 
       {/* ⚠ Wymyślona presja — patrz komentarz nad TYP_SPOTS_BANNER. Nie stoi za
           tym żaden licznik; pusta stała zdejmuje pasek. */}
-      {TYP_SPOTS_BANNER && <div className="mm-typ-band">{TYP_SPOTS_BANNER}</div>}
+      {TYP_SPOTS_BANNER && (
+        <div className="mm-typ-band"><SpotsText template={TYP_SPOTS_BANNER} /></div>
+      )}
 
       {/* ── QUALIFIED ─────────────────────────────────────────────────── */}
       <header className="mm-typ-hero">
@@ -496,7 +552,7 @@ export function ThankYouPage() {
                     {/* Licznik domyka zdanie („…ends in 07:14:22"), więc siedzi
                         WEWNĄTRZ napisu, a nie przy prawej krawędzi paska. */}
                     <span className="mm-typ-alert-t">
-                      {a.t}
+                      {a.t.includes(SPOTS_TOKEN) ? <SpotsText template={a.t} /> : a.t}
                       {/* Spacja jest jawna, bo JSX jej tu nie wstawi. Odstęp z
                           CSS-a widać, ale w samej treści napis skleiłby się w
                           „ends in06:02:34" — i tak przeczytałby go czytnik. */}
