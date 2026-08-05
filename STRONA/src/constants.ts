@@ -133,6 +133,18 @@ export const TYP_ALERTS: { t: string; d?: string }[] = [
   { t: 'Only 2 places left this week', d: 'Real-time tracking' },
 ]
 
+/**
+ * Telegram wypełnia okienko wiadomości z ?text=, więc czat otwiera się z już
+ * napisanym zagajeniem: piszący nie musi go wymyślać, a zespół po treści widzi,
+ * z którego miejsca strony przyszedł. Treść zostaje przy wywołaniu, nie tutaj —
+ * zależy od tego, kto klika i w którym momencie.
+ *
+ * TELEGRAM_HREF zostaje goły: questionnaire.ts wyprowadza z niego @uchwyt
+ * przez split('/').pop(), więc doklejony query string by go zepsuł.
+ */
+export const telegramWith = (message: string) =>
+  `${TELEGRAM_HREF}?text=${encodeURIComponent(message)}`
+
 // Prop firma, z którą pracujemy. Certyfikaty w pasie na /meta pochodzą z jej
 // publicznego API (zob. bin/sync-payouts.mjs i src/data/payouts.ts).
 export const PARTNER_FIRM = 'Pro Traders Funding'

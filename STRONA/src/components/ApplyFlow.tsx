@@ -10,7 +10,7 @@
 
 import { useCallback, useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
-import { APPLY_ENDPOINT, CONTACT_EMAIL, TELEGRAM_HREF, THANK_YOU_HREF } from '../constants'
+import { APPLY_ENDPOINT, CONTACT_EMAIL, THANK_YOU_HREF, telegramWith } from '../constants'
 import { PRE_CONTACT, QUALIFICATION, TOTAL_STEPS, type Step } from '../data/questionnaire'
 import {
   DIAL_CODES, detectIso, findDial, flagSrc, nationalDigits, samplePlaceholder,
@@ -256,7 +256,9 @@ export function ApplyFlow({
           <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
         </span>
         <a
-          href={TELEGRAM_HREF}
+          href={telegramWith(
+            'I have just sent my application. I am ready to get funded and start earning payouts. What happens next?',
+          )}
           target="_blank"
           rel="noopener noreferrer"
           className="mm-btn mm-btn-lg"
@@ -282,7 +284,9 @@ export function ApplyFlow({
           and we will look again.
         </span>
         <a
-          href={TELEGRAM_HREF}
+          href={telegramWith(
+            'I filled in the application and it came back as not a fit. Can you take another look?',
+          )}
           target="_blank"
           rel="noopener noreferrer"
           className="mm-btn mm-btn-lg"

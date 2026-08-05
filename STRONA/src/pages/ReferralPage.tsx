@@ -19,7 +19,7 @@ import {
   REFERRAL_TIERS,
   REFERRAL_TIERS_DATA,
   REFUND_WINDOW,
-  TELEGRAM_HREF,
+  telegramWith,
 } from '../constants'
 import { fetchStats, PORTAL_ENABLED, referralUrl, type PartnerStats } from '../runtime/supabase'
 import {
@@ -391,7 +391,9 @@ export function ReferralPage() {
             </a>
             <a href="/contract" className="mm-btn mm-btn-outline-white mm-btn-lg">See contract</a>
             <a
-              href={TELEGRAM_HREF}
+              href={telegramWith(
+                'I have a question about the referral program, on eligibility and payout timing.',
+              )}
               target="_blank"
               rel="noopener noreferrer"
               className="mm-btn mm-btn-outline-white mm-btn-lg"

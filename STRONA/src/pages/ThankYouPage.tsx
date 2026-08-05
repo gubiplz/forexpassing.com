@@ -29,6 +29,7 @@ import {
   TELEGRAM_CHANNEL_HANDLE,
   TELEGRAM_CHANNEL_HREF,
   TELEGRAM_HREF,
+  telegramWith,
   TYP_ALERTS,
   TYP_SPOTS_BANNER,
   TYP_TELEGRAM_SHOT_SRC,
@@ -166,18 +167,29 @@ function TypVideo() {
   )
 }
 
-/** The repeated call to action. `channel` is the one people join, `admin` the one they write to. */
+/**
+ * The repeated call to action. `channel` is the one people join, `admin` the one
+ * they write to — and only the latter can carry a prefilled opener, because
+ * `?text=` fills a composer and a channel has none.
+ *
+ * Every admin CTA here passes its own `message`, the same way the questionnaire
+ * and the acceptance email do: the person does not have to work out what to
+ * write, and the desk can tell from the wording which part of the page they
+ * pressed.
+ */
 function TelegramCta({
   label,
   to,
   source,
   note,
+  message,
   white = false,
 }: {
   label: string
   to: 'channel' | 'admin'
   source: string
   note?: string
+  message?: string
   white?: boolean
 }) {
   // Wlasny kontener, nie .mm-cta-center: tamten jest flex-row, wiec podpis
@@ -185,7 +197,13 @@ function TelegramCta({
   return (
     <div className="mm-typ-cta">
       <a
-        href={to === 'channel' ? TELEGRAM_CHANNEL_HREF : TELEGRAM_HREF}
+        href={
+          to === 'channel'
+            ? TELEGRAM_CHANNEL_HREF
+            : message
+              ? telegramWith(message)
+              : TELEGRAM_HREF
+        }
         target="_blank"
         rel="noopener noreferrer"
         className={`mm-btn mm-btn-lg${white ? ' mm-btn-white' : ''}`}
@@ -460,7 +478,12 @@ export function ThankYouPage() {
             </div>
           </div>
 
-          <TelegramCta label="MESSAGE US ON TELEGRAM" to="admin" source="typ_message_team" />
+          <TelegramCta
+            label="MESSAGE US ON TELEGRAM"
+            to="admin"
+            source="typ_message_team"
+            message="My application was accepted. I have read the page — what do you need from me to get started?"
+          />
         </div>
       </section>
 
@@ -488,7 +511,12 @@ export function ThankYouPage() {
               </div>
             ))}
           </div>
-          <TelegramCta label="MESSAGE US ON TELEGRAM" to="admin" source="typ_message_objection" />
+          <TelegramCta
+            label="MESSAGE US ON TELEGRAM"
+            to="admin"
+            source="typ_message_objection"
+            message="My application was accepted and I have a couple of questions before we start."
+          />
         </div>
       </section>
 
