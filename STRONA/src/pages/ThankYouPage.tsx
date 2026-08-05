@@ -362,7 +362,10 @@ export function ThankYouPage() {
 
   return (
     <div className="mm-root mm-root-sub mm-typ" ref={rootRef}>
-      <TopBar />
+      {/* href="/meta" jak na pozostałych podstronach. Domyślne "#top" nie robiło
+          tu nic widocznego: logo stoi na samej górze strony, więc skok na górę
+          dokumentu jest skokiem w miejsce. */}
+      <TopBar href="/meta" />
 
       {/* ⚠ Wymyślona presja — patrz komentarz nad TYP_SPOTS_BANNER. Nie stoi za
           tym żaden licznik; pusta stała zdejmuje pasek. */}
