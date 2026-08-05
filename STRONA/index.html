@@ -42,6 +42,7 @@
     <link rel="dns-prefetch" href="https://fast.wistia.com" />
     <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
     <link rel="dns-prefetch" href="https://connect.facebook.net" />
+    <link rel="dns-prefetch" href="https://www.clarity.ms" />
 
     <!-- Landing display type. Served from our own origin: the headline is set at
          80px, and going out to Google costs a round trip for the stylesheet and
@@ -51,12 +52,12 @@
     <link rel="preload" as="font" type="font/woff2" href="/fonts/anton-latin.woff2" crossorigin />
     <link rel="preload" as="font" type="font/woff2" href="/fonts/inter-latin.woff2" crossorigin />
 
-    <!-- Analytics and Meta Pixel — gtag.js and fbevents.js are 267 KB between
-         them, and parsing that competes with React for the main thread during
-         the exact window that decides whether the page feels fast. Both stubs
-         below queue calls immediately, so nothing is lost; only the network
-         fetch waits for the browser to go idle (or for the first touch, if the
-         reader beats it). PageView therefore still fires for bouncers. -->
+    <!-- Analytics, Meta Pixel and Clarity — gtag.js and fbevents.js alone are
+         267 KB, and parsing that competes with React for the main thread during
+         the exact window that decides whether the page feels fast. All three
+         stubs below queue calls immediately, so nothing is lost; only the
+         network fetch waits for the browser to go idle (or for the first touch,
+         if the reader beats it). PageView therefore still fires for bouncers. -->
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
@@ -69,13 +70,18 @@
       fbq('init', '1566242625059670');
       fbq('track', 'PageView');
 
+      window.clarity = window.clarity || function () {
+        (window.clarity.q = window.clarity.q || []).push(arguments);
+      };
+
       (function () {
         var done = false;
         function load() {
           if (done) return;
           done = true;
           ['https://www.googletagmanager.com/gtag/js?id=G-LVFV0JTWBE',
-           'https://connect.facebook.net/en_US/fbevents.js'].forEach(function (src) {
+           'https://connect.facebook.net/en_US/fbevents.js',
+           'https://www.clarity.ms/tag/xxn8s6f69i'].forEach(function (src) {
             var s = document.createElement('script');
             s.async = true;
             s.src = src;
