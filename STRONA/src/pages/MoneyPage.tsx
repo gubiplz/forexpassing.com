@@ -38,6 +38,7 @@ import {
   ReviewBadge,
   ReviewCard,
   SiteFooter,
+  SoundGate,
   TermsCard,
   TestimonialCard,
   TopBar,
@@ -187,17 +188,16 @@ function CheckRow({ title, detail }: { title: string; detail?: string }) {
 // player, never a padded number.
 function HeroVsl() {
   const [pct, setPct] = useState(0)
-  const [started, setStarted] = useState(false)
   const [failed, setFailed] = useState(false)
   const playerRef = useRef<HTMLElement | null>(null)
+  const seen = useRef(false)
 
   useEffect(() => {
-    if (!started) return
-
     // The player runtime plus the one-file module for this specific media. Both
     // are needed before <wistia-player> upgrades from an inert custom element.
-    // Together they pull roughly 350 KB, so they wait for a real play intent
-    // rather than loading with the page.
+    // Together they pull roughly 350 KB — the price of a VSL that starts on its
+    // own. Do NOT put this behind a click again without dropping the autoplay:
+    // a clip cannot start by itself if its player only loads once someone taps.
     for (const [src, module] of [
       ['https://fast.wistia.com/player.js', false],
       [`https://fast.wistia.com/embed/${WISTIA_META_ID}.js`, true],
@@ -216,26 +216,8 @@ function HeroVsl() {
     const timer = window.setTimeout(() => {
       if (!customElements.get('wistia-player')) setFailed(true)
     }, 6000)
-
-    // W Chrome samo autoplay="true" wystarcza — zmierzone. Gorzej tam, gdzie
-    // polityka odtwarzania jest ostrzejsza: element powstaje dopiero PO
-    // klikniecu, wiec player startuje juz poza oknem gestu i klip z dzwiekiem
-    // bywa blokowany. Jesli po upgradzie stoi w "beforeplay" — czyli nie ruszyl
-    // ANI RAZU — popychamy go jawnie. Kazdy inny stan, w tym "paused" po pauzie
-    // uzytkownika, konczy probe: nie wznawiamy filmu, ktory ktos sam zatrzymal.
-    let tries = 0
-    const nudge = window.setInterval(() => {
-      const el = playerRef.current as unknown as { state?: string; play?: () => void } | null
-      if (el?.state && el.state !== 'beforeplay') return window.clearInterval(nudge)
-      el?.play?.()
-      if (++tries >= 5) window.clearInterval(nudge)
-    }, 700)
-
-    return () => {
-      window.clearTimeout(timer)
-      window.clearInterval(nudge)
-    }
-  }, [started])
+    return () => window.clearTimeout(timer)
+  }, [])
 
   useEffect(() => {
     // Progress comes off the element itself. The _wq queue and its `secondchange`
@@ -248,9 +230,20 @@ function HeroVsl() {
       const p = (el as unknown as { percentWatched?: number }).percentWatched
       if (typeof p === 'number') setPct(Math.min(100, Math.round(p * 100)))
     }
+    // Zdarzenie zamiast kliku w fasade: klip rusza sam, wiec nie ma juz czego
+    // klikac. `seen` pilnuje, zeby pauza i wznowienie nie liczyly sie drugi raz.
+    const onPlay = () => {
+      if (seen.current) return
+      seen.current = true
+      track('VideoPlay', 'video_start', { source: 'meta_hero' }, true)
+    }
     el.addEventListener('timechange', onTime)
-    return () => el.removeEventListener('timechange', onTime)
-  }, [started])
+    el.addEventListener('play', onPlay)
+    return () => {
+      el.removeEventListener('timechange', onTime)
+      el.removeEventListener('play', onPlay)
+    }
+  }, [failed])
 
   if (!WISTIA_META_ID) return null
 
@@ -260,30 +253,27 @@ function HeroVsl() {
         <span className="mm-vsl-badge">Start here</span>
         <span className="mm-vsl-title">Watch this 120 second video</span>
       </div>
-      <div className="mm-vsl-frame">
-        {!started ? (
-          <button type="button" className="mm-vsl-facade" onClick={() => setStarted(true)}>
-            {/* Plakat jest NASZ, nie miniaturka pobierana z Wistii — fasada z
-                zalozenia nie odpytuje ich przed kliknieciem. Podmiana miniaturki
-                u Wistii nie zmienia wiec tego, co widac na stronie: trzeba
-                przegenerowac ten plik.
+      {/* Plakat jako tlo ramki, zeby przez sekunde bootowania playera nie stala
+          tu czarna dziura. Jest NASZ, nie miniaturka ciagnieta z Wistii — ich
+          podmiana nie zmienia tego, co widac, trzeba przegenerowac plik.
 
-                UWAGA NA CACHE: pliki z public/ leca z max-age=86400 i
-                stale-while-revalidate=604800, wiec nadpisanie ich pod ta sama
-                nazwa zostawia starym odwiedzajacym stary obrazek nawet na
-                tydzien. Przy kazdej zmianie plakatu BUMPUJ NUMER w nazwie
-                (vsl-poster-2 → vsl-poster-3) i popraw go tutaj. */}
-            <img src="/vsl-poster-2.webp" alt="" width={960} height={540} decoding="async" />
-            <span className="mm-vsl-play" aria-hidden="true" />
-            <span className="mm-vsl-facade-label">Play video · 2 min</span>
-          </button>
-        ) : failed ? (
+          UWAGA NA CACHE: public/ leci z max-age=86400 i
+          stale-while-revalidate=604800, wiec nadpisanie pod ta sama nazwa
+          zostawia wracajacym stary obrazek nawet na tydzien. Przy kazdej
+          zmianie plakatu BUMPUJ NUMER (vsl-poster-2 → vsl-poster-3). */}
+      <div className="mm-vsl-frame" style={{ backgroundImage: 'url(/vsl-poster-2.webp)' }}>
+        {failed ? (
           <div className="mm-vsl-failed">
             <p>The video could not load — an ad blocker or tracking protection is usually the cause.</p>
             <p>You can turn it off for this page, or simply apply below.</p>
           </div>
         ) : (
-          /* Controls locked down the same way the reference funnel locks theirs:
+          /* Startuje SAM i WYCISZONY — z dzwiekiem zablokowalaby to kazda
+             przegladarka. silent-autoplay wystawia przycisk "Sound On", ktorym
+             widz sam wlacza dzwiek; to jego klikniecie jest gestem, ktorego
+             polityka odtwarzania wymaga.
+
+             Controls locked down the same way the reference funnel locks theirs:
              no scrub bar, so the video cannot be skipped to the end. */
           <wistia-player
             ref={playerRef}
@@ -296,8 +286,11 @@ function HeroVsl() {
             resumable="false"
             controls-visible-on-load="true"
             autoplay="true"
+            muted="true"
+            silent-autoplay="true"
           />
         )}
+        {!failed && <SoundGate player={playerRef} />}
       </div>
       <div className="mm-vsl-bar">
         <span className="mm-vsl-bar-label">Complete video</span>

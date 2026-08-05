@@ -44,6 +44,7 @@ import {
   ReviewBadge,
   ReviewCard,
   SiteFooter,
+  SoundGate,
   TestimonialCard,
   TopBar,
   track,
@@ -100,14 +101,17 @@ function ImageSlot({
  * page keeps its shape while the clip is being cut.
  */
 function TypVideo() {
-  const [started, setStarted] = useState(false)
   const [failed, setFailed] = useState(false)
   const [pct, setPct] = useState(0)
   const playerRef = useRef<HTMLElement | null>(null)
+  const seen = useRef(false)
 
   useEffect(() => {
-    if (!started || !WISTIA_TYP_ID) return
+    if (!WISTIA_TYP_ID) return
 
+    // Ladowane od razu, nie po klikniecu: klip ma ruszac sam, a nie ruszy, jesli
+    // jego player wstaje dopiero, gdy ktos w cos stuknie. Kosztuje to ~350 KB
+    // od Wistii dla kazdego wchodzacego — swiadoma cena autostartu.
     for (const [src, module] of [
       ['https://fast.wistia.com/player.js', false],
       [`https://fast.wistia.com/embed/${WISTIA_TYP_ID}.js`, true],
@@ -123,26 +127,8 @@ function TypVideo() {
     const timer = window.setTimeout(() => {
       if (!customElements.get('wistia-player')) setFailed(true)
     }, 6000)
-
-    // W Chrome samo autoplay="true" wystarcza — zmierzone. Gorzej tam, gdzie
-    // polityka odtwarzania jest ostrzejsza: element powstaje dopiero PO
-    // klikniecu, wiec player startuje juz poza oknem gestu i klip z dzwiekiem
-    // bywa blokowany. Jesli po upgradzie stoi w "beforeplay" — czyli nie ruszyl
-    // ANI RAZU — popychamy go jawnie. Kazdy inny stan, w tym "paused" po pauzie
-    // uzytkownika, konczy probe: nie wznawiamy filmu, ktory ktos sam zatrzymal.
-    let tries = 0
-    const nudge = window.setInterval(() => {
-      const el = playerRef.current as unknown as { state?: string; play?: () => void } | null
-      if (el?.state && el.state !== 'beforeplay') return window.clearInterval(nudge)
-      el?.play?.()
-      if (++tries >= 5) window.clearInterval(nudge)
-    }, 700)
-
-    return () => {
-      window.clearTimeout(timer)
-      window.clearInterval(nudge)
-    }
-  }, [started])
+    return () => window.clearTimeout(timer)
+  }, [])
 
   // Postep leci z samego elementu, tak jak na /meta: kolejka _wq i zdarzenie
   // `secondchange` naleza do starych osadzen E-v1, w ktorych <wistia-player>
@@ -154,9 +140,20 @@ function TypVideo() {
       const p = (el as unknown as { percentWatched?: number }).percentWatched
       if (typeof p === 'number') setPct(Math.min(100, Math.round(p * 100)))
     }
+    // Zdarzenie zamiast kliku w fasade: klip rusza sam, wiec nie ma juz czego
+    // klikac. `seen` pilnuje, zeby pauza i wznowienie nie liczyly sie drugi raz.
+    const onPlay = () => {
+      if (seen.current) return
+      seen.current = true
+      track('VideoPlay', 'video_start', { source: 'thank_you' }, true)
+    }
     el.addEventListener('timechange', onTime)
-    return () => el.removeEventListener('timechange', onTime)
-  }, [started])
+    el.addEventListener('play', onPlay)
+    return () => {
+      el.removeEventListener('timechange', onTime)
+      el.removeEventListener('play', onPlay)
+    }
+  }, [failed])
 
   if (!WISTIA_TYP_ID) {
     return (
@@ -168,26 +165,20 @@ function TypVideo() {
 
   return (
     <>
-    <div className="mm-typ-video-frame">
-      {!started ? (
-        <button
-          type="button"
-          className="mm-typ-video-facade"
-          onClick={() => {
-            track('VideoPlay', 'video_start', { source: 'thank_you' }, true)
-            setStarted(true)
-          }}
-        >
-          <img src={WISTIA_TYP_POSTER} alt="" width={960} height={540} decoding="async" />
-          <span className="mm-vsl-play" aria-hidden="true" />
-          <span className="mm-typ-video-facade-label">Play video · 1 min</span>
-        </button>
-      ) : failed ? (
+    {/* Plakat jako tlo ramki, zeby przez sekunde bootowania playera nie stala tu
+        czarna dziura. Przy podmianie miniaturki bumpuj numer w nazwie pliku —
+        public/ leci z max-age=86400, patrz komentarz przy WISTIA_TYP_POSTER. */}
+    <div className="mm-typ-video-frame" style={{ backgroundImage: `url(${WISTIA_TYP_POSTER})` }}>
+      {failed ? (
         <div className="mm-vsl-failed">
           <p>The video could not load — an ad blocker or tracking protection is usually the cause.</p>
           <p>You can turn it off for this page, or just message us on Telegram and ask.</p>
         </div>
       ) : (
+        /* Startuje SAM i WYCISZONY — z dzwiekiem zablokowalaby to kazda
+           przegladarka. silent-autoplay wystawia przycisk "Sound On", ktorym
+           widz sam wlacza dzwiek; to jego klikniecie jest gestem, ktorego
+           polityka odtwarzania wymaga. */
         <wistia-player
           ref={playerRef}
           media-id={WISTIA_TYP_ID}
@@ -198,8 +189,11 @@ function TypVideo() {
           resumable="false"
           controls-visible-on-load="true"
           autoplay="true"
+          muted="true"
+          silent-autoplay="true"
         />
       )}
+      {!failed && <SoundGate player={playerRef} />}
     </div>
     {/* Te same klasy co pasek na /meta — .mm-typ-video ma to samo ciemne tlo
         co .mm-vsl, wiec wyglada identycznie i zostaje jedno miejsce do zmiany. */}

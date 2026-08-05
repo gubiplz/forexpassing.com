@@ -590,6 +590,25 @@ html{scroll-behavior:smooth}
   text-shadow:0 2px 10px rgba(0,0,0,.8)}
 .mm-vsl-failed{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;
   gap:8px;padding:20px;text-align:center;color:#fff;font-size:14px;line-height:1.5;background:#0d1a13}
+/* Nakladka "wlacz dzwiek" nad autostartujacym klipem. Wistia ma swoj przycisk
+   pod silent-autoplay, ale renderuje go z rozmiarem 0x0 — zostaje mala ikonka
+   w pasku, ktorej nikt nie szuka. Zakrywa caly kadr: pierwsze klikniecie w film
+   ma wlaczac dzwiek, nie pauzowac. z-index ponad playerem (ten jest inset:0). */
+/* Pigulka na SRODKU kadru, nie u dolu: klipy maja wpalony wlasny pasek
+   z podpisem przy dolnej krawedzi i przycisk siadal dokladnie na nim.
+   Rownomierne, lekkie przyciemnienie zamiast gradientu od dolu — z tego samego
+   powodu: gradient wygaszal ten pasek. */
+.mm-sound-gate{position:absolute;inset:0;z-index:3;display:flex;align-items:center;
+  justify-content:center;padding:0;border:0;cursor:pointer;
+  background:rgba(0,0,0,.12);-webkit-tap-highlight-color:transparent}
+.mm-sound-pill{display:inline-flex;align-items:center;gap:9px;background:rgba(0,0,0,.74);
+  color:#fff;border-radius:99px;padding:11px 20px;font-size:13.5px;font-weight:800;
+  letter-spacing:.06em;text-transform:uppercase;backdrop-filter:blur(3px);
+  box-shadow:0 12px 34px -14px rgba(0,0,0,.9);transition:transform .18s ease,background .18s ease}
+@media (hover:hover) and (pointer:fine){
+  .mm-sound-gate:hover .mm-sound-pill{transform:scale(1.05);background:rgba(0,0,0,.85)}
+}
+
 .mm-vsl-bar{display:flex;align-items:center;gap:12px;padding:10px 16px 12px;color:#fff}
 .mm-vsl-bar-label{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;white-space:nowrap}
 .mm-vsl-bar-track{flex:1;height:6px;border-radius:99px;background:rgba(255,255,255,.3);overflow:hidden}
@@ -1344,7 +1363,9 @@ html{scroll-behavior:smooth}
 .mm-typ-video-eyebrow{display:block;font-size:11px;font-weight:800;letter-spacing:.2em;
   text-transform:uppercase;opacity:.85}
 .mm-typ-video-title{display:block;font-size:clamp(16px,2.4vw,20px);font-weight:800;margin-top:4px}
-.mm-typ-video-frame{position:relative;aspect-ratio:16/9;background:#000}
+/* center/cover: sciezka do plakatu idzie inline z komponentu, zeby nazwa pliku
+   stala w jednym miejscu (bumpuje sie ja przy kazdej zmianie miniaturki). */
+.mm-typ-video-frame{position:relative;aspect-ratio:16/9;background:#000 center/cover no-repeat}
 .mm-typ-video-frame wistia-player:not(:defined){display:block;height:100%;filter:blur(5px)}
 .mm-typ-video-frame wistia-player,.mm-typ-video-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 /* No poster yet, so the facade is a plain plate with the play control. It still
