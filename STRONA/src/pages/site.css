@@ -513,8 +513,12 @@ html{scroll-behavior:smooth}
    działała technicznie, ale obrysowany kafel czyta się jako kanciasty — na
    zaokrąglonej pigułce ten sam pasek wygląda miękko. Odstęp jest tu ciasny
    celowo: pigułka ma być podkładką pod gwiazdki, nie osobnym kafelkiem, więc
-   nie ma marginesu ani mocnego cienia. */
-.mm-rev-badge.is-on-dark .mm-rev-badge-stars{background:#fff;border-radius:7px;padding:4px 8px;
+   nie ma marginesu ani mocnego cienia.
+
+   Promień 9 przy wysokości 28 px, a nie więcej: pigułka jest tak ciasna, że
+   przy większym zaokrągleniu łuk narożnika wchodzi na skrajny kafel i przycina
+   mu róg. Zwiększając promień, zwiększ razem z nim padding boczny. */
+.mm-rev-badge.is-on-dark .mm-rev-badge-stars{background:#fff;border-radius:9px;padding:2px 5px;
   box-shadow:0 3px 10px rgba(0,0,0,.12)}
 .mm-rev-badge.is-empty{height:58px}
 .mm-rev-badge.is-empty span{display:flex;align-items:center;justify-content:center;width:200px;height:72px;
@@ -686,8 +690,16 @@ html{scroll-behavior:smooth}
   color:rgba(255,255,255,.62);font-size:11.5px;font-weight:800;letter-spacing:.1em;
   text-transform:uppercase;text-align:center;padding:0 12px}
 .mm-testi-soon svg{width:30px;height:30px}
+/* flex:1 wyrównuje WYSOKOŚĆ WSZYSTKICH PODPISÓW w rzędzie do najwyższego.
+   Sama siatka już to robiła — grid rozciąga figury do wysokości rzędu — ale
+   rozciągała pudełko figury, a nie podpis w środku, więc krótsza historia
+   zostawiała pustkę POD ramką zamiast w niej. Dotyczy tak samo slotów
+   „Recording pending": one też mają trzymać rząd. */
 .mm-testi-body{display:flex;flex-direction:column;gap:7px;background:#fff;border:1px solid var(--line);
-  border-radius:14px;padding:16px 17px;text-align:left}
+  border-radius:14px;padding:16px 17px;text-align:left;flex:1}
+/* Sam napis w wysokim, pustym pudełku wyglądałby jak urwana karta, więc slot
+   trzyma go na środku zamiast przy górnej krawędzi. */
+.mm-testi-card.is-empty .mm-testi-body{align-items:center;justify-content:center;text-align:center}
 .mm-testi-name{font-weight:800;font-size:16px}
 /* Karta klipu nie ma już gwiazdek — patrz komentarz w TestimonialCard. Klasa
    .mm-testi-stars celowo nie istnieje. */
