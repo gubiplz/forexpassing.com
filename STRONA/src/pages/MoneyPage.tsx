@@ -245,7 +245,17 @@ function HeroVsl() {
       <div className="mm-vsl-frame">
         {!started ? (
           <button type="button" className="mm-vsl-facade" onClick={() => setStarted(true)}>
-            <img src="/vsl-poster.webp" alt="" width={960} height={540} decoding="async" />
+            {/* Plakat jest NASZ, nie miniaturka pobierana z Wistii — fasada z
+                zalozenia nie odpytuje ich przed kliknieciem. Podmiana miniaturki
+                u Wistii nie zmienia wiec tego, co widac na stronie: trzeba
+                przegenerowac ten plik.
+
+                UWAGA NA CACHE: pliki z public/ leca z max-age=86400 i
+                stale-while-revalidate=604800, wiec nadpisanie ich pod ta sama
+                nazwa zostawia starym odwiedzajacym stary obrazek nawet na
+                tydzien. Przy kazdej zmianie plakatu BUMPUJ NUMER w nazwie
+                (vsl-poster-2 → vsl-poster-3) i popraw go tutaj. */}
+            <img src="/vsl-poster-2.webp" alt="" width={960} height={540} decoding="async" />
             <span className="mm-vsl-play" aria-hidden="true" />
             <span className="mm-vsl-facade-label">Play video · 2 min</span>
           </button>
