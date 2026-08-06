@@ -70,7 +70,7 @@ export const TESTIMONIALS: Testimonial[] = [
     payoutUsd: 5240,
     tags: ['Futures & crypto', '$100K evaluation', 'Paid in 24 hours'],
     story:
-      'Dave had been trading futures and crypto for a while, running a small signals group built on market structure and price action. Scaling on his own capital was too slow, and the prop firms he tried felt built for him to fail — trailing drawdowns, hidden consistency rules. So he took a $100K evaluation with Forex Passing and traded the exact setups he already knew. He cleared it, his first payout was processed in under 24 hours, and he scaled from there. Same trader, same setups — the only thing that changed was the firm behind him.',
+      'Dave already traded futures and crypto and ran a small signals group. His own capital scaled too slowly, and the prop firms he tried felt built for him to fail — trailing drawdowns, hidden consistency rules. He took a $100K evaluation, cleared it on his own setups, and the first payout was processed in under 24 hours. Same trader, different firm behind him.',
   },
 
   // Two reserved slots, held back for now: a dashed "being filmed" frame beside
