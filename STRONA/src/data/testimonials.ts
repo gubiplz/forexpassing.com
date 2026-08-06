@@ -63,11 +63,12 @@ export const TESTIMONIALS: Testimonial[] = [
       'Angelina spent years watching Ryan risk their savings on the markets. The stress was never the losses — it was knowing what was on the line every time he opened a position. Then he stopped using their money and took a $400K evaluation instead, cleared it on his own strategy, and the first payout came back at $7,420. Same trader, same strategy, different money behind it.',
   },
 
-  // Two reserved slots, keeping the row at four. Filling one is two values — the
-  // YouTube id and a local poster — plus the name, payout and story from the clip
-  // itself. Until then they render as dashed frames that say a recording is on
-  // the way. Add a published clip and drop a slot, or the grid wraps a fifth card
-  // onto its own line.
-  { videoId: '', poster: '', name: '', payoutUsd: 0, tags: [], story: '' },
-  { videoId: '', poster: '', name: '', payoutUsd: 0, tags: [], story: '' },
+  // Two reserved slots, held back for now: two dashed "being filmed" frames
+  // beside two real clips read as a half-finished page rather than as a promise.
+  // The grid centres whatever it is given, so two cards sit centred and nothing
+  // else moves. Uncomment one when the next clip is shot — that is a YouTube id
+  // and a local poster, plus the name, payout and story from the clip itself.
+  // Four is the most that fit on one row.
+  // { videoId: '', poster: '', name: '', payoutUsd: 0, tags: [], story: '' },
+  // { videoId: '', poster: '', name: '', payoutUsd: 0, tags: [], story: '' },
 ]
