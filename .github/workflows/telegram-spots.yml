@@ -1,0 +1,56 @@
+# Trzyma opis kanału @forexpassingcom zgodny z licznikiem miejsc na /thank-you.
+#
+# Liczba na stronie jest funkcją pory dnia w Nowym Jorku (STRONA/src/lib/spots.ts),
+# więc nie ma zdarzenia, na które dałoby się zareagować — trzeba po prostu
+# regularnie sprawdzać. Skrypt jest bezstanowy i wysyła cokolwiek tylko wtedy,
+# gdy opis faktycznie się różni, więc przebieg co 5 minut kosztuje jedno
+# `getChat`, a realnych zapisów wychodzi ~7 na dobę (tyle, ile progów licznika).
+#
+# Dokładność: liczba zmienia się 7 razy na dobę, co ~3 h 26 min. Opis kanału
+# nadąża za stroną w ciągu jednego przebiegu, czyli do ~5 minut plus opóźnienie,
+# które GitHub czasem dokłada zaplanowanym workflowom (bywa kilka minut, przy
+# pełnej godzinie więcej). Na tle 3-godzinnego kroku to niewidoczne, ale to nie
+# jest zegar co do sekundy i nie warto go tak sprzedawać.
+#
+# Repozytorium jest publiczne, więc minuty Actions są darmowe i bez limitu.
+# Token bota siedzi w sekrecie repozytorium TELEGRAM_BOT_TOKEN — nigdy w kodzie.
+#
+# UWAGA: GitHub usypia zaplanowane workflowy po 60 dniach bez commita w repo.
+# Ręczne odpalenie: zakładka Actions → „Telegram spots sync" → Run workflow.
+
+name: Telegram spots sync
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Dwa przebiegi naraz pisałyby ten sam opis. Kolejkujemy zamiast przerywać —
+# przerwanie w połowie zapisu jest gorsze niż chwila czekania.
+concurrency:
+  group: telegram-spots
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      # Node 24 czyta pliki .ts wprost (type stripping), dlatego skrypt może
+      # importować src/lib/spots.ts i liczyć DOKŁADNIE to samo co przeglądarka,
+      # bez budowania czegokolwiek. Stąd też brak `npm ci`: ani skrypt, ani te
+      # dwa moduły nie mają zależności.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Sync channel description
+        working-directory: STRONA
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        run: node bin/sync-telegram-spots.mjs
