@@ -38,6 +38,7 @@ import {
 } from '../constants'
 import { FAQ } from '../data/faq'
 import { TESTIMONIALS } from '../data/testimonials'
+import { fillSpots, nextEtMidnight, nextSpotsChange, spotsAt, SPOTS_TOKEN } from '../lib/spots'
 import {
   AutoScroller,
   REVIEWS,
@@ -55,14 +56,14 @@ import {
  * Pieces
  * ------------------------------------------------------------------------ */
 
-/* Odliczanie przy pasku „Upgrade offer ends today".
+/* Odliczanie przy pasku „BOGO offer ends in" oraz liczba wolnych miejsc.
  *
- * Termin to PÓŁNOC CZASU NOWOJORSKIEGO, czyli koniec dnia w USA — a zarazem
- * 6:00 rano w Polsce. Ta godzina trzyma się przez cały rok, bo obie strefy
- * przestawiają zegary w tym samym kierunku: latem północ ET = 04:00 UTC =
- * 06:00 CEST, zimą północ ET = 05:00 UTC = 06:00 CET.
+ * Sam rachunek — doba nowojorska i wartość licznika miejsc — siedzi w
+ * lib/spots.ts, bo czyta go jeszcze jedno miejsce poza przeglądarką:
+ * bin/sync-telegram-spots.mjs, które tą samą liczbą opisuje kanał na
+ * Telegramie. Tutaj zostaje tylko oprawa reactowa.
  *
- * Licznik nie potrzebuje przez to ŻADNEJ PAMIĘCI: jest policzony z zegara, więc
+ * Licznik nie potrzebuje ŻADNEJ PAMIĘCI: jest policzony z zegara, więc
  * odświeżenie strony nie cofa go na start, każdy widzi tę samą wartość, a po
  * północy sam przetacza się na kolejną dobę. Pierwsza wersja losowała termin na
  * sesję i trzymała go w sessionStorage — to była wymyślona presja i wymagało
@@ -72,63 +73,6 @@ import {
  * UWAGA: Countdown na /meta liczy do LOKALNEJ północy odwiedzającego, nie do
  * nowojorskiej. Te dwa liczniki nie są ze sobą zsynchronizowane.
  */
-const OFFER_TZ = 'America/New_York'
-// Formatter budowany raz — to jego konstrukcja jest kosztowna, nie samo
-// formatowanie, a wołamy go co sekundę.
-const OFFER_FMT = new Intl.DateTimeFormat('en-US', {
-  timeZone: OFFER_TZ,
-  hourCycle: 'h23', // bez tego północ potrafi sformatować się jako 24
-  hour: '2-digit',
-  minute: '2-digit',
-  second: '2-digit',
-})
-
-/** Ile sekund doby upłynęło już w Nowym Jorku. */
-function etSecondsOfDay(ms: number) {
-  const parts = OFFER_FMT.formatToParts(ms)
-  const get = (t: string) => Number(parts.find((p) => p.type === t)?.value ?? 0)
-  return get('hour') * 3600 + get('minute') * 60 + get('second')
-}
-
-/** Najbliższa północ w Nowym Jorku, w milisekundach epoki. */
-function nextEtMidnight(now: number) {
-  const guess = now + (86_400 - etSecondsOfDay(now)) * 1000
-  // W dniu zmiany czasu doba ma 23 albo 25 godzin, więc przybliżenie „doba ma
-  // 24 h" mija się z północą o godzinę. Dociągamy je do najbliższej: jeśli w
-  // Nowym Jorku jest wtedy późny wieczór, brakuje reszty doby; jeśli wczesny
-  // ranek — przestrzeliliśmy. Jedna korekta wystarcza, bo skok to zawsze godzina.
-  const off = etSecondsOfDay(guess)
-  if (off === 0) return guess
-  return off > 43_200 ? guess + (86_400 - off) * 1000 : guess - off * 1000
-}
-
-/* ⚠ LICZBA WOLNYCH MIEJSC — WYMYŚLONA PRESJA, nie rejestr niczego. Patrz
- * komentarz nad TYP_SPOTS_BANNER w constants.ts.
- *
- * Jedna funkcja dla czerwonego pasa i dla alertu niżej, bo wcześniej stały tam
- * dwie różne liczby wpisane ręcznie — „7" i „2" naraz na jednej stronie.
- *
- * Wartość idzie z pory dnia w Nowym Jorku, tej samej doby, którą odlicza
- * OfferCountdown: tuż po północy SPOTS_START, na koniec doby SPOTS_END, potem
- * reset razem z licznikiem. Liczone z zegara, więc nie ma czego zapisywać ani
- * uzgadniać między kartami.
- */
-const SPOTS_TOKEN = '{n}'
-const SPOTS_START = 7
-const SPOTS_END = 1
-// Siedem wartości (7…1) na dobę, więc siedem przedziałów po ~3 h 26 min.
-const SPOTS_STEP = 86_400 / (SPOTS_START - SPOTS_END + 1)
-
-function spotsAt(now: number) {
-  return Math.max(SPOTS_END, SPOTS_START - Math.floor(etSecondsOfDay(now) / SPOTS_STEP))
-}
-
-/** Najbliższa chwila, w której liczba się zmieni: kolejny próg albo północ. */
-function nextSpotsChange(now: number) {
-  const elapsed = etSecondsOfDay(now)
-  const prog = now + Math.ceil((Math.floor(elapsed / SPOTS_STEP) + 1) * SPOTS_STEP - elapsed) * 1000
-  return Math.min(prog, nextEtMidnight(now))
-}
 
 function useSpotsLeft() {
   const [now, setNow] = useState(() => Date.now())
@@ -153,7 +97,7 @@ function useSpotsLeft() {
 
 function SpotsText({ template }: { template: string }) {
   const n = useSpotsLeft()
-  return <>{template.split(SPOTS_TOKEN).join(String(n))}</>
+  return <>{fillSpots(template, n)}</>
 }
 
 function OfferCountdown() {
