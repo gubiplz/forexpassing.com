@@ -20,15 +20,21 @@
 
 import { appendFileSync } from 'node:fs';
 
-import { TG_CHANNEL_DESCRIPTION } from '../src/constants.ts';
-import { fillSpots, spotsAt, SPOTS_TOKEN } from '../src/lib/spots.ts';
+import {
+  channelDescriptionAt,
+  fillSpots,
+  SPOTS_TOKEN,
+  TG_CHANNEL_CHAT_ID,
+  TG_CHANNEL_DESCRIPTION,
+  TG_DESCRIPTION_MAX,
+} from '../src/lib/spots.js';
 
 const TAG = '[telegram-spots]';
 const TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 // Domyślnie publiczny uchwyt kanału; ID liczbowe też przejdzie.
-const CHAT = process.env.TELEGRAM_CHAT_ID || '@forexpassingcom';
+const CHAT = process.env.TELEGRAM_CHAT_ID || TG_CHANNEL_CHAT_ID;
 // Telegram tnie opis czatu na 255 znakach — po cichu, bez błędu.
-const MAX_LEN = 255;
+const MAX_LEN = TG_DESCRIPTION_MAX;
 
 const args = process.argv.slice(2);
 const dryRun = args.includes('--dry-run');
@@ -76,8 +82,7 @@ if (!TG_CHANNEL_DESCRIPTION.includes(SPOTS_TOKEN)) {
   die(`TG_CHANNEL_DESCRIPTION nie zawiera ${SPOTS_TOKEN} — nie ma czego podstawić.`);
 }
 
-const n = spotsAt(now);
-const want = fillSpots(TG_CHANNEL_DESCRIPTION, n);
+const { n, description: want } = channelDescriptionAt(now);
 
 if (want.length > MAX_LEN) {
   die(`opis ma ${want.length} znaków, Telegram przyjmie ${MAX_LEN}. Skróć TG_CHANNEL_DESCRIPTION.`);

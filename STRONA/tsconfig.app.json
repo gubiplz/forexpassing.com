@@ -9,6 +9,9 @@
 
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
+    // src/lib/spots.js jest celowo zwykłym JS-em: ten sam plik czyta strona,
+    // funkcja serverless w api/ i skrypt w bin/. Typy niesie JSDoc.
+    "allowJs": true,
     "verbatimModuleSyntax": true,
     "moduleDetection": "force",
     "noEmit": true,
