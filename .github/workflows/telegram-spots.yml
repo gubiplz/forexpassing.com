@@ -1,15 +1,15 @@
 # Trzyma opis kanału @forexpassingcom zgodny z licznikiem miejsc na /thank-you.
 #
 # Liczba na stronie jest funkcją pory dnia w Nowym Jorku (STRONA/src/lib/spots.ts),
-# więc nie ma zdarzenia, na które dałoby się zareagować — trzeba po prostu
-# regularnie sprawdzać. Skrypt jest bezstanowy i wysyła cokolwiek tylko wtedy,
-# gdy opis faktycznie się różni, więc przebieg co 5 minut kosztuje jedno
-# `getChat`, a realnych zapisów wychodzi ~7 na dobę (tyle, ile progów licznika).
+# więc nie ma zdarzenia, na które dałoby się zareagować — trzeba sprawdzać samemu.
+# Skrypt jest bezstanowy i wysyła cokolwiek tylko wtedy, gdy opis faktycznie się
+# różni, więc pusty przebieg kosztuje jedno `getChat`, a realnych zapisów wychodzi
+# ~7 na dobę (tyle, ile progów licznika).
 #
-# Dokładność: liczba zmienia się 7 razy na dobę, co ~3 h 26 min. Opis kanału
-# nadąża za stroną w ciągu jednego przebiegu, czyli do ~5 minut plus opóźnienie,
-# które GitHub czasem dokłada zaplanowanym workflowom (bywa kilka minut, przy
-# pełnej godzinie więcej). Na tle 3-godzinnego kroku to niewidoczne, ale to nie
+# Dokładność: przy trafionym przebiegu progowym opis idzie za stroną w ciągu
+# minut. GitHub bez gwarancji dowozi zaplanowane workflowy punktualnie i potrafi
+# je opóźnić albo pominąć — dlatego jest dogrywka co godzinę. Najgorszy przypadek
+# to więc godzina obsuwy na kroku 3 h 26 min, a nie rozjazd do końca doby. To nie
 # jest zegar co do sekundy i nie warto go tak sprzedawać.
 #
 # Repozytorium jest publiczne, więc minuty Actions są darmowe i bez limitu.
@@ -22,7 +22,26 @@ name: Telegram spots sync
 
 on:
   schedule:
-    - cron: '*/5 * * * *'
+    # CELUJEMY W PROGI, nie pukamy co pięć minut. Liczba zmienia się siedem razy
+    # na dobę o wyliczalnych porach, więc zamiast 288 przebiegów dziennie robimy
+    # kilkanaście — a rzadki harmonogram GitHub honoruje znacznie chętniej niż
+    # gęsty (pierwsza wersja stała na `*/5` i przez godzinę nie odpaliła ani razu).
+    #
+    # Każda para godzin to ten sam próg w czasie letnim i zimowym Nowego Jorku
+    # (EDT = UTC-4, EST = UTC-5). Nie wiemy w cronie, który akurat obowiązuje,
+    # więc odpalamy oba — ten „nie ten" trafia na zgodny opis i nic nie wysyła.
+    # Minuty zaokrąglone w górę, żeby nigdy nie wystrzelić przed samą zmianą.
+    - cron: '0 4,5 * * *'      # próg 1/7 — północ w Nowym Jorku, reset na 7
+    - cron: '26 7,8 * * *'     # próg 2/7
+    - cron: '52 10,11 * * *'   # próg 3/7
+    - cron: '18 14,15 * * *'   # próg 4/7
+    - cron: '43 17,18 * * *'   # próg 5/7
+    - cron: '9 21,22 * * *'    # próg 6/7
+    - cron: '35 0,1 * * *'     # próg 7/7
+    # Dogrywka co godzinę: gdyby GitHub zjadł przebieg progowy, opis dociąga się
+    # najdalej po godzinie zamiast czekać do następnego progu. Minuta nietypowa,
+    # bo pełne godziny są u GitHuba najbardziej zatłoczone.
+    - cron: '38 * * * *'
   workflow_dispatch:
 
 permissions:
