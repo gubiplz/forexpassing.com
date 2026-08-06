@@ -192,6 +192,27 @@ export const TYP_ALERTS: { t: string; d?: string; timer?: boolean }[] = [
   { t: 'Only {n} Spots Available', d: 'Real-time tracking' },
 ]
 
+// Opis kanału na Telegramie — TEN PLIK JEST JEGO WŁAŚCICIELEM.
+//
+// bin/sync-telegram-spots.mjs podstawia `{n}` tą samą liczbą, którą pokazuje
+// /thank-you (jedna funkcja dla obu: lib/spots.ts), i co kilka minut dostraja
+// opis kanału. Wniosek praktyczny: RĘCZNA ZMIANA OPISU W APCE NIE ZOSTANIE —
+// sync przywróci ten tekst. Zmiany wpisujemy tutaj, wchodzą po merge'u do main.
+//
+// Tekst jest przepisany 1:1 z tego, co stało na kanale; ruszona jest wyłącznie
+// liczba w nawiasie. Uchwyt idzie ze stałej wyżej, żeby nie mógł się rozjechać
+// ze stroną. Telegram tnie opis na 255 znakach — skrypt sprawdza to przed
+// wysyłką i woli się wywalić, niż wysłać obcięty tekst.
+//
+// ⚠ „10" jest wpisane na sztywno i NIE jest tą samą liczbą co licznik: pula
+// dzienna to 10, a licznik startuje od SPOTS_START = 7 (lib/spots.ts). Czyta
+// się to jako „z 10 miejsc zostało {n}", więc nie jest sprzeczne, ale o północy
+// opis pokaże „(7 remaining)", nie „(10 remaining)". Żeby obie liczby wychodziły
+// z jednego miejsca, wystarczy tu wpisać 7 albo podnieść SPOTS_START do 10.
+export const TG_CHANNEL_DESCRIPTION: string =
+  `If can not open, download telegram. Search ${TELEGRAM_ADMIN_HANDLE} and message.\n\n` +
+  `🚨 Only 10 people can join this group daily ({n} remaining)`
+
 /**
  * Telegram wypełnia okienko wiadomości z ?text=, więc czat otwiera się z już
  * napisanym zagajeniem: piszący nie musi go wymyślać, a zespół po treści widzi,
