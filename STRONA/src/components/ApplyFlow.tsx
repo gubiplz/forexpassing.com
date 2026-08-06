@@ -23,10 +23,15 @@ declare global {
   }
 }
 
+// Addressed at our pixel only: index.html also initialises the media buyer's,
+// and an untargeted fbq('track', …) would raise these events in his account too.
+// Same reasoning as the copy of this helper in ../pages/shared.tsx.
+const OWN_PIXEL = '1566242625059670'
+
 function track(fbEvent: string, gaEvent: string, params?: Record<string, unknown>, custom = false) {
   if (typeof window === 'undefined') return
-  if (custom) window.fbq?.('trackCustom', fbEvent, params)
-  else window.fbq?.('track', fbEvent, params)
+  if (custom) window.fbq?.('trackSingleCustom', OWN_PIXEL, fbEvent, params)
+  else window.fbq?.('trackSingle', OWN_PIXEL, fbEvent, params)
   window.gtag?.('event', gaEvent, params)
 }
 

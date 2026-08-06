@@ -67,7 +67,13 @@
       !function(f,n){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
       n.callMethod.apply(n,arguments):n.queue.push(arguments)};
       if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[]}(window);
+      // Two pixels. 1566… is ours and carries our own events; 1554… is the
+      // media buyer's and must stay on PageView alone — he defines his events
+      // himself in Events Manager. An untargeted fbq('track', …) fires on every
+      // initialised pixel, so every event we raise goes through trackSingle
+      // against 1566… . See the track() helper in src/pages/shared.tsx.
       fbq('init', '1566242625059670');
+      fbq('init', '1554685979728197');
       fbq('track', 'PageView');
 
       window.clarity = window.clarity || function () {
@@ -109,6 +115,11 @@
         width="1"
         style="display: none"
         src="https://www.facebook.com/tr?id=1566242625059670&ev=PageView&noscript=1"
+      /><img
+        height="1"
+        width="1"
+        style="display: none"
+        src="https://www.facebook.com/tr?id=1554685979728197&ev=PageView&noscript=1"
     /></noscript>
     <!-- End Meta Pixel Code (noscript) -->
     <div id="root"></div>
