@@ -63,12 +63,22 @@ export const TESTIMONIALS: Testimonial[] = [
       'Angelina spent years watching Ryan risk their savings on the markets. The stress was never the losses — it was knowing what was on the line every time he opened a position. Then he stopped using their money and took a $400K evaluation instead, cleared it on his own strategy, and the first payout came back at $7,420. Same trader, same strategy, different money behind it.',
   },
 
-  // Two reserved slots, held back for now: two dashed "being filmed" frames
-  // beside two real clips read as a half-finished page rather than as a promise.
-  // The grid centres whatever it is given, so two cards sit centred and nothing
-  // else moves. Uncomment one when the next clip is shot — that is a YouTube id
-  // and a local poster, plus the name, payout and story from the clip itself.
-  // Four is the most that fit on one row.
+  {
+    videoId: 'agau8peNcW4',
+    poster: '/testi-dave.webp',
+    name: 'Dave',
+    payoutUsd: 5240,
+    tags: ['Futures & crypto', '$100K evaluation', 'Paid in 24 hours'],
+    story:
+      'Dave had been trading futures and crypto for a while, running a small signals group built on market structure and price action. Scaling on his own capital was too slow, and the prop firms he tried felt built for him to fail — trailing drawdowns, hidden consistency rules. So he took a $100K evaluation with Forex Passing and traded the exact setups he already knew. He cleared it, his first payout was processed in under 24 hours, and he scaled from there. Same trader, same setups — the only thing that changed was the firm behind him.',
+  },
+
+  // Two reserved slots, held back for now: a dashed "being filmed" frame beside
+  // three real clips reads as a half-finished page rather than as a promise.
+  // The grid centres whatever it is given, so three cards sit centred and
+  // nothing else moves. Uncomment one when the next clip is shot — that is a
+  // YouTube id and a local poster, plus the name, payout and story from the clip
+  // itself. Four is the most that fit on one row.
   // { videoId: '', poster: '', name: '', payoutUsd: 0, tags: [], story: '' },
   // { videoId: '', poster: '', name: '', payoutUsd: 0, tags: [], story: '' },
 ]
