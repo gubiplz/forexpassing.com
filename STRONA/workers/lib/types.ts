@@ -103,6 +103,10 @@ export interface Env {
   // the gate. Separate from EDGE_SECRET so the origin never holds a signing key.
   ORIGIN_KEY?: string;
   LEAD_WEBHOOK?: string;
+  // Sent as X-Lead-Token so the receiver can tell our POSTs from anyone else's.
+  // The webhook URL is not a secret — it ends up in logs and in error reports —
+  // so anything that acts on a lead needs a second factor that does not.
+  LEAD_WEBHOOK_TOKEN?: string;
 }
 
 export interface CfProperties {

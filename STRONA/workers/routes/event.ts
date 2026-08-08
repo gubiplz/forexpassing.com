@@ -132,6 +132,22 @@ export async function handleEvent(request: Request, env: Env): Promise<Response>
   return new Response(JSON.stringify(verdict), { status: 200, headers });
 }
 
+// Forwards a lead to whatever LEAD_WEBHOOK points at. The receiver authenticates
+// this call with LEAD_WEBHOOK_TOKEN in a header rather than a query string,
+// because URLs end up in access logs on both ends and a token in one is a token
+// on disk. Delivery is best-effort everywhere it is used — the lead is already
+// in KV by the time we get here, so a failed POST loses a notification, not data.
+async function forwardLead(env: Env, lead: unknown): Promise<void> {
+  if (!env.LEAD_WEBHOOK) return;
+  const headers: Record<string, string> = { 'content-type': 'application/json' };
+  if (env.LEAD_WEBHOOK_TOKEN) headers['x-lead-token'] = env.LEAD_WEBHOOK_TOKEN;
+  try {
+    await fetch(env.LEAD_WEBHOOK, { method: 'POST', headers, body: JSON.stringify(lead) });
+  } catch {
+    // Swallowed on purpose — see above.
+  }
+}
+
 // POST /api/event/subscribe — lead form on the safe page. Honeypot-gated (not CSRF:
 // the static safe.html/about-us.html are served raw without an injected CSRF token).
 // Stores the lead in KV and, if LEAD_WEBHOOK is set, forwards it (e.g. Make.com → email).
@@ -188,17 +204,7 @@ export async function handleSubscribe(request: Request, env: Env): Promise<Respo
   const key = `lead:${lead.ts}:${crypto.randomUUID().slice(0, 8)}`;
   await env.EDGE_LOG.put(key, JSON.stringify(lead));
 
-  if (env.LEAD_WEBHOOK) {
-    try {
-      await fetch(env.LEAD_WEBHOOK, {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify(lead),
-      });
-    } catch {
-      // Delivery is best-effort — the lead is already persisted in KV.
-    }
-  }
+  await forwardLead(env, lead);
 
   // `hq: false` always. There is no grader on this path — it lives in the Vercel
   // function (api/_lib/lead-quality.js) — and this handler also drops the
@@ -238,22 +244,17 @@ export async function handleOnboard(request: Request, env: Env): Promise<Respons
 
   const ip = request.headers.get('cf-connecting-ip') ?? '0.0.0.0';
   const ua = (request.headers.get('user-agent') ?? '').slice(0, 200);
-  const lead = { kind: 'onboard', ts: Date.now(), name, telegram, email, plan, ip, ua };
+  // `source` duplicates `kind` on purpose: this goes down the same webhook as the
+  // application form, and on the receiving end a row from here is a BUYER, not an
+  // applicant. Without a label in a field the receiver already reads, the two are
+  // indistinguishable and someone ends up cold-calling a paying customer.
+  const lead = { kind: 'onboard', source: 'onboard', ts: Date.now(),
+                 name, telegram, email, plan, ip, ua };
 
   const key = `onboard:${lead.ts}:${crypto.randomUUID().slice(0, 8)}`;
   await env.EDGE_LOG.put(key, JSON.stringify(lead));
 
-  if (env.LEAD_WEBHOOK) {
-    try {
-      await fetch(env.LEAD_WEBHOOK, {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify(lead),
-      });
-    } catch {
-      // Delivery is best-effort — the lead is already persisted in KV.
-    }
-  }
+  await forwardLead(env, lead);
 
   return json({ ok: true });
 }

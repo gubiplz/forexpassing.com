@@ -95,9 +95,16 @@ export default async function handler(req, res) {
 
   if (process.env.LEAD_WEBHOOK) {
     try {
+      // The token goes in a header, not the URL: URLs land in access logs on both
+      // ends, and the webhook address is not secret enough to be the only proof
+      // that a POST came from us.
+      const headers = { 'content-type': 'application/json' };
+      if (process.env.LEAD_WEBHOOK_TOKEN) {
+        headers['x-lead-token'] = process.env.LEAD_WEBHOOK_TOKEN;
+      }
       await fetch(process.env.LEAD_WEBHOOK, {
         method: 'POST',
-        headers: { 'content-type': 'application/json' },
+        headers,
         body: JSON.stringify(lead),
       });
     } catch (err) {
