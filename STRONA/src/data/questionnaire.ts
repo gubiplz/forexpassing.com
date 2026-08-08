@@ -8,9 +8,11 @@
 // they know what one is, and when are they buying.
 //
 // `qualified: false` on an option ends the flow: that person sees the
-// "not a fit" screen with a Telegram link and no lead is submitted. Two answers
-// do that, and they are the two that make the service impossible: not accepting
-// that the evaluation is bought by the client, and having no money for one.
+// "not a fit" screen with a Telegram link and no lead is submitted. ONLY the
+// two opening questions carry such an answer — the owner's rule is that
+// qualification hangs on watching the video and accepting who buys the
+// evaluation, nothing else. Money timing stayed a question because it scores
+// the lead (api/_lib/lead-quality.js), but it no longer turns anyone away.
 //
 // Info steps carry no question; they exist to set expectations before the next
 // answer. `template` picks the layout, `completeOnContinue` marks the final one.
@@ -57,11 +59,12 @@ export const PRE_CONTACT: Step[] = [
     kind: 'question',
     title: 'Before anything else',
     question: 'Did you watch the video the whole way through?',
-    // Both answers pass. Someone who skipped it is still a real applicant, and
-    // the answer tells the desk which conversation they are walking into.
+    // The video is where the offer is explained; someone who has not finished
+    // it is not turned into a lead — they see the Telegram card and can come
+    // back once they have. Owner's call, 2026-08.
     options: [
       { label: 'Yes, all of it', qualified: true },
-      { label: 'Not yet, only part of it', qualified: true },
+      { label: 'Not yet, only part of it', qualified: false },
     ],
   },
   {
@@ -99,10 +102,13 @@ export const QUALIFICATION: Step[] = [
   {
     kind: 'question',
     question: 'When do you want to buy the evaluation?',
+    // No answer here disqualifies any more: someone researching without the
+    // money today is a lead to warm up, not to turn away. The answer still
+    // decides most of the score, so the desk knows who to message first.
     options: [
       { label: 'Now', qualified: true },
       { label: 'Within a few weeks', qualified: true },
-      { label: "I'm researching, I don't have the money right now", qualified: false },
+      { label: "I'm researching, I don't have the money right now", qualified: true },
     ],
   },
   {
