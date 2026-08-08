@@ -68,11 +68,33 @@ export default async function handler(req, res) {
     return;
   }
 
-  // Honeypot — real users never fill the hidden `company` field. Bots do.
-  // Answer as if it worked so the bot has nothing to learn, and drop it.
-  if (str(body.company)) {
+  // Honeypot — real users never see this field. Bots fill it. Answer as if it
+  // worked so the bot has nothing to learn, and drop it.
+  //
+  // Logged, because this is the one branch where an application disappears while
+  // the sender is told it arrived: no alert, no sheet row, no error anywhere. If
+  // the value in there is ever a real company name next to a real address, the
+  // trap caught a person, and that should cost one glance at the log to see.
+  if (str(body.referral_note)) {
+    console.warn('[lead] honeypot filled — dropped', {
+      value: str(body.referral_note).slice(0, 80),
+      email: str(body.email).slice(0, 200),
+    });
     res.status(200).json({ ok: true });
     return;
+  }
+
+  // The trap used to be called `company` — a name Chromium classifies as the
+  // organisation of a saved address and fills on sight, offscreen and
+  // autocomplete="off" notwithstanding. Anyone whose browser had a profile saved
+  // was answered "ok" and dropped. Cached copies of the static pages still post
+  // the field, so it is recorded and then ignored: filled `company` is evidence
+  // of autofill, not of a bot.
+  if (str(body.company)) {
+    console.warn('[lead] legacy honeypot field filled — ignored', {
+      value: str(body.company).slice(0, 80),
+      email: str(body.email).slice(0, 200),
+    });
   }
 
   // Field set matches workers/routes/event.ts. The safe-page form only sends

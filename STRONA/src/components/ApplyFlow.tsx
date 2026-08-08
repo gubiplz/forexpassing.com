@@ -63,7 +63,7 @@ type Contact = {
   phone: string
   phoneIso: string
   telegram: string
-  company: string
+  referralNote: string
 }
 
 const EMPTY_CONTACT: Contact = {
@@ -73,7 +73,7 @@ const EMPTY_CONTACT: Contact = {
   // Blank on purpose: nothing is preselected, the visitor picks.
   phoneIso: '',
   telegram: '',
-  company: '',
+  referralNote: '',
 }
 
 const STEPS: (Step | 'contact')[] = [...PRE_CONTACT, 'contact', ...QUALIFICATION]
@@ -216,7 +216,7 @@ export function ApplyFlow({
           // already lost which one it was.
           phoneIso: contact.phoneIso,
           telegram: contact.telegram.trim(),
-          company: contact.company,
+          referral_note: contact.referralNote,
           answers: finalAnswers,
           outcome: result,
           source,
@@ -551,16 +551,21 @@ function ContactStep({
         Only used to answer this application. Nothing is charged and nothing is shared.
       </p>
 
-      {/* Honeypot — real people never see this. Filled = bot, dropped server-side. */}
+      {/* Honeypot — real people never see this. Filled = bot, dropped server-side.
+          Deliberately NOT called "company": Chromium classifies that name as the
+          organisation of a saved address and fills it, offscreen or not, so a real
+          applicant using autofill was answered "ok" and silently deleted. Nothing
+          in this name matches a profile field, so only something typing into every
+          input reaches the trap. */}
       <input
         className="mm-hp"
         type="text"
-        name="company"
+        name="referral_note"
         tabIndex={-1}
         autoComplete="off"
         aria-hidden="true"
-        value={value.company}
-        onChange={(e) => set('company', e.target.value)}
+        value={value.referralNote}
+        onChange={(e) => set('referralNote', e.target.value)}
       />
 
       <div className="mm-field">

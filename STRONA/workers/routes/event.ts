@@ -170,9 +170,20 @@ export async function handleSubscribe(request: Request, env: Env): Promise<Respo
     return json({ error: 'invalid JSON' }, 400);
   }
 
-  // Honeypot — real users never fill the hidden `company` field. Bots do. Drop silently.
-  const honeypot = str(body.company);
-  if (honeypot) return json({ ok: true });
+  // Honeypot — real users never see this field. Bots fill it. Drop silently.
+  //
+  // Not `company`: Chromium classifies that name as the organisation of a saved
+  // address and fills it however well hidden the input is, so every applicant
+  // with an autofill profile was answered "ok" and dropped. The old field is
+  // still posted by cached pages and is now only logged.
+  const honeypot = str(body.referral_note);
+  if (honeypot) {
+    console.warn('[lead] honeypot filled — dropped', honeypot.slice(0, 80), str(body.email).slice(0, 200));
+    return json({ ok: true });
+  }
+  if (str(body.company)) {
+    console.warn('[lead] legacy honeypot field filled — ignored', str(body.company).slice(0, 80));
+  }
 
   const name = str(body.name).slice(0, 120);
   const email = str(body.email).slice(0, 200);
@@ -238,9 +249,20 @@ export async function handleOnboard(request: Request, env: Env): Promise<Respons
     return json({ error: 'invalid JSON' }, 400);
   }
 
-  // Honeypot — real users never fill the hidden `company` field. Bots do. Drop silently.
-  const honeypot = str(body.company);
-  if (honeypot) return json({ ok: true });
+  // Honeypot — real users never see this field. Bots fill it. Drop silently.
+  //
+  // Not `company`: Chromium classifies that name as the organisation of a saved
+  // address and fills it however well hidden the input is, so every applicant
+  // with an autofill profile was answered "ok" and dropped. The old field is
+  // still posted by cached pages and is now only logged.
+  const honeypot = str(body.referral_note);
+  if (honeypot) {
+    console.warn('[lead] honeypot filled — dropped', honeypot.slice(0, 80), str(body.email).slice(0, 200));
+    return json({ ok: true });
+  }
+  if (str(body.company)) {
+    console.warn('[lead] legacy honeypot field filled — ignored', str(body.company).slice(0, 80));
+  }
 
   const name = str(body.name).slice(0, 120);
   const telegram = str(body.telegram).slice(0, 80);

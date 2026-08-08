@@ -155,7 +155,9 @@ body{
     <p class="card-sub">Leave your details below and we will reply by email with information about our educational material. Nothing is sold through this form.</p>
 
     <form class="form" id="mm-form">
-      <input class="hp" type="text" name="company" tabindex="-1" autocomplete="off" aria-hidden="true" />
+      <!-- Honeypot. Deliberately not named "company": browsers autofill that from
+           a saved address profile, and the server drops whatever fills it. -->
+      <input class="hp" type="text" name="referral_note" tabindex="-1" autocomplete="off" aria-hidden="true" />
       <div class="field">
         <label for="mm-name">Full Name <span>*</span></label>
         <input id="mm-name" class="input" type="text" name="name" autocomplete="name" required placeholder="John Doe" />
