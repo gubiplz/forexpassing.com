@@ -12,10 +12,11 @@
 // _lib/sheets.js — so on a deployment with none of them configured an
 // application is visible in Vercel's runtime logs and nowhere else.
 
-import { qualifiedEmail, sendEmail } from '../_lib/emails.js';
+import { infoEmail, qualifiedEmail, sendEmail } from '../_lib/emails.js';
 import { gradeLead } from '../_lib/lead-quality.js';
 import { appendLeadToSheet } from '../_lib/sheets.js';
 import { sendLeadToTelegram } from '../_lib/telegram.js';
+import { normalizeTelegram } from '../../src/lib/phone-rules.js';
 
 const str = (v) => (typeof v === 'string' ? v.trim() : '');
 
@@ -97,6 +98,15 @@ export default async function handler(req, res) {
     });
   }
 
+  // Kanał trafienia liczony przed leadem, bo od niego zależy i outcome, i mail:
+  // formularze statyczne (about-us/welcome) nie wysyłają `source` wcale.
+  const source = str(body.source).slice(0, 40) || 'safe';
+  // Handle znormalizowany na wejściu (bez @, wyciągnięty z linku t.me,
+  // bez interpunkcji na końcu) — panel dostaje coś klikalnego, a oryginał
+  // zostaje obok, żeby literówka była widoczna, nie zgadywana.
+  const telegramRaw = str(body.telegram).slice(0, 60);
+  const telegram = normalizeTelegram(telegramRaw).slice(0, 60);
+
   // Field set matches workers/routes/event.ts. The safe-page form only sends
   // name/email/experience/goal, so the questionnaire-only fields default to ''.
   const lead = {
@@ -113,7 +123,8 @@ export default async function handler(req, res) {
     stage: str(body.stage).slice(0, 40),
     // Partner slug parked by /r/<slug>. Empty for direct traffic.
     ref: str(body.ref).slice(0, 40),
-    telegram: str(body.telegram).slice(0, 60),
+    telegram,
+    ...(telegram !== telegramRaw ? { telegram_raw: telegramRaw } : {}),
     // Every question/answer pair, so the team reads the whole picture.
     answers:
       body.answers && typeof body.answers === 'object'
@@ -125,10 +136,12 @@ export default async function handler(req, res) {
         : {},
     experience: str(body.experience).slice(0, 40),
     goal: str(body.goal).slice(0, 2000),
-    source: str(body.source).slice(0, 40) || 'safe',
-    // 'qualified' | 'not_qualified'. The questionnaire sends both; the safe-page
-    // form has no qualification step, so it defaults to qualified.
-    outcome: body.outcome === 'not_qualified' ? 'not_qualified' : 'qualified',
+    source,
+    // 'qualified' | 'not_qualified'. The questionnaire sends both. The
+    // safe-page form has no qualification step, so its leads land as
+    // not_qualified BY DEFINITION (owner's rule, 2026-08): nobody answered the
+    // two opening questions, and the desk reads that tab as "warm these up".
+    outcome: body.outcome === 'not_qualified' || source === 'safe' ? 'not_qualified' : 'qualified',
     // Strona stoi za Cloudflarem, więc x-forwarded-for w wersji, którą widzi
     // Vercel, to węzeł brzegowy Cloudflare — kolumna `ip` w arkuszu czytała
     // 162.158.x.x dla każdego zgłoszenia. Prawdziwy adres jest w
@@ -169,12 +182,18 @@ export default async function handler(req, res) {
   // rejection is a row that can be counted, rather than something that happened
   // and left no trace.
   //
-  // The email is the exception: it goes to HQ and nobody else. Writing to every
-  // applicant was the previous behaviour and is now deliberately off — warm and
-  // cold get the confirmation the form itself shows and the Telegram button on
-  // it, no inbox. Reversing that is one line here plus the `notQualifiedEmail`
-  // export that _lib/emails.js still carries for exactly this reason.
-  const mail = hq ? qualifiedEmail({ name: lead.name }) : null;
+  // Two audiences get mail, nobody else. HQ applicants get the acceptance;
+  // information-request leads (no `source`, so no questionnaire) get the light
+  // infoEmail, because the desk wants them warmed even though nobody graded
+  // them. Warm and cold questionnaire leads still get only the confirmation
+  // card and its Telegram button — writing to all of them was the previous
+  // behaviour and stays deliberately off (`notQualifiedEmail` in _lib/emails.js
+  // is the one-line way back).
+  const mail = hq
+    ? qualifiedEmail({ name: lead.name })
+    : lead.source === 'safe'
+      ? infoEmail({ name: lead.name })
+      : null;
 
   const [posted, sent, filed, forwarded] = await Promise.all([
     sendLeadToTelegram(lead),

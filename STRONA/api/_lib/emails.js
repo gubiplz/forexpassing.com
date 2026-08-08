@@ -36,6 +36,10 @@ const TELEGRAM_REJECTED = telegramWith(
   'I applied recently and was not accepted. Can we go through what would change that?',
 );
 
+const TELEGRAM_INFO = telegramWith(
+  'I requested information on your website. Can you walk me through how this works?',
+);
+
 // Where the logo is fetched from. The custom domain does not serve yet (its
 // Vercel CNAME is behind Cloudflare's proxy), so this points at the deployment
 // URL until that is sorted; then set PUBLIC_BASE_URL to https://forexpassing.com.
@@ -228,6 +232,72 @@ export function qualifiedEmail({ name }) {
       eyebrow: 'Application accepted',
       heading: 'You’re in.',
       intro: 'Here is what happens from here.',
+      body,
+    }),
+  };
+}
+
+/**
+ * The light touch for the information-request form (the one without the
+ * questionnaire). These people were not rejected and must not read like they
+ * were — no verdict, no conditions. One thank-you, one sentence on what we do,
+ * and the two ways to talk to a human. Sent from api/event/subscribe.js for
+ * leads that arrive without a `source`.
+ */
+export function infoEmail({ name }) {
+  const body = `
+    <p style="margin:0 0 26px;">Hey ${firstName(name)},</p>
+
+    <p style="margin:0 0 22px;color:${SUBTLE};font-size:17px;line-height:1.55;">
+      Thanks for reaching out — your request landed with the team.
+    </p>
+
+    <p style="margin:0 0 30px;color:${SUBTLE};font-size:17px;line-height:1.55;">
+      In one sentence: our desk passes prop firm evaluations and manages the funded account for
+      traders, and we only earn a share of a payout after it has actually reached you.
+    </p>
+
+    ${hairline(0)}
+
+    <p style="margin:28px 0 24px;color:${SUBTLE};font-size:17px;line-height:1.55;">
+      If you want the details — how the split works, which firms we support, what the guarantee
+      covers — the fastest way is a short conversation. No commitment on either side.
+    </p>
+
+    ${button('Message us on Telegram', TELEGRAM_INFO)}
+
+    <p style="margin:26px 0 0;color:${FAINT};font-size:13px;line-height:1.6;">
+      Nothing has been charged and nothing is owed. You can also just reply to this message and a
+      person will answer.
+    </p>`;
+
+  const text = [
+    `Hey ${firstName(name)},`,
+    '',
+    'Thanks for reaching out — your request landed with the team.',
+    '',
+    'In one sentence: our desk passes prop firm evaluations and manages the',
+    'funded account for traders, and we only earn a share of a payout after it',
+    'has actually reached you.',
+    '',
+    'If you want the details, the fastest way is a short conversation:',
+    TELEGRAM_INFO,
+    '',
+    'Nothing has been charged and nothing is owed. You can also just reply to',
+    'this message and a person will answer.',
+    '',
+    `${BRAND} · https://${SITE} · ${CONTACT}`,
+    'Trading carries risk. A prop firm evaluation can fail and no outcome is',
+    'guaranteed. Nothing here is investment advice.',
+  ].join('\n');
+
+  return {
+    subject: `Your ${BRAND} information request`,
+    text,
+    html: shell({
+      eyebrow: 'Request received',
+      heading: 'Thanks for reaching out.',
+      intro: 'Here is what we do, in a minute of reading.',
       body,
     }),
   };
