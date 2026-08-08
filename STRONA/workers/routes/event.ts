@@ -137,12 +137,21 @@ export async function handleEvent(request: Request, env: Env): Promise<Response>
 // because URLs end up in access logs on both ends and a token in one is a token
 // on disk. Delivery is best-effort everywhere it is used — the lead is already
 // in KV by the time we get here, so a failed POST loses a notification, not data.
+//
+// On a leash, because this is awaited before the form gets its answer: without a
+// deadline a receiver that stops responding holds up the person who just filled
+// the form in, not just the notification.
+const WEBHOOK_TIMEOUT_MS = 6000;
+
 async function forwardLead(env: Env, lead: unknown): Promise<void> {
   if (!env.LEAD_WEBHOOK) return;
   const headers: Record<string, string> = { 'content-type': 'application/json' };
   if (env.LEAD_WEBHOOK_TOKEN) headers['x-lead-token'] = env.LEAD_WEBHOOK_TOKEN;
   try {
-    await fetch(env.LEAD_WEBHOOK, { method: 'POST', headers, body: JSON.stringify(lead) });
+    await fetch(env.LEAD_WEBHOOK, {
+      method: 'POST', headers, body: JSON.stringify(lead),
+      signal: AbortSignal.timeout(WEBHOOK_TIMEOUT_MS),
+    });
   } catch {
     // Swallowed on purpose — see above.
   }

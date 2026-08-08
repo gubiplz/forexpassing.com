@@ -19,6 +19,43 @@ import { sendLeadToTelegram } from '../_lib/telegram.js';
 
 const str = (v) => (typeof v === 'string' ? v.trim() : '');
 
+// Krótko, bo to nie jest czas oczekiwania odbiorcy — to czas, o który stoi
+// człowiek patrzący na formularz. Odbiorca bywa funkcją serverless, więc zimny
+// start po drugiej stronie mieści się w tym oknie, a zawieszenie już nie.
+const WEBHOOK_TIMEOUT_MS = 6000;
+
+// Przekazanie leada dalej (LEAD_WEBHOOK). Zwraca etykietę do logu, nigdy nie
+// rzuca — lead jest już w logu funkcji, zanim to poleci.
+//
+// Wywoływane RÓWNOLEGLE z resztą i na smyczy. Wcześniej stało przed wysyłką na
+// Telegram i było czekane bez limitu: wolny odbiorca zabierał ze sobą alert na
+// kanale, wiersz w arkuszu i przekierowanie na thank-you, bo cała funkcja
+// dobijała do limitu czasu i kończyła się błędem. Cudzy zimny start nie jest
+// powodem, żeby człowiek, który właśnie wypełnił formularz, zobaczył błąd.
+async function forwardLead(lead) {
+  if (!process.env.LEAD_WEBHOOK) return 'skipped';
+  // Token w nagłówku, nie w adresie: adresy lądują w logach dostępowych po obu
+  // stronach, a sam adres webhooka nie jest dowodem, że POST przyszedł od nas.
+  const headers = { 'content-type': 'application/json' };
+  if (process.env.LEAD_WEBHOOK_TOKEN) {
+    headers['x-lead-token'] = process.env.LEAD_WEBHOOK_TOKEN;
+  }
+  try {
+    const res = await fetch(process.env.LEAD_WEBHOOK, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(lead),
+      signal: AbortSignal.timeout(WEBHOOK_TIMEOUT_MS),
+    });
+    // Kod odpowiedzi trafia do logu: cichy 401 z odbiorcy wyglądał dotąd
+    // dokładnie tak samo jak udana wysyłka.
+    return res.ok ? 'ok' : `http ${res.status}`;
+  } catch (err) {
+    console.error('[lead] webhook failed', err);
+    return 'failed';
+  }
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'method' });
@@ -93,26 +130,6 @@ export default async function handler(req, res) {
   // Always log — this is the only record when no webhook is configured.
   console.log('[lead]', JSON.stringify(lead));
 
-  if (process.env.LEAD_WEBHOOK) {
-    try {
-      // The token goes in a header, not the URL: URLs land in access logs on both
-      // ends, and the webhook address is not secret enough to be the only proof
-      // that a POST came from us.
-      const headers = { 'content-type': 'application/json' };
-      if (process.env.LEAD_WEBHOOK_TOKEN) {
-        headers['x-lead-token'] = process.env.LEAD_WEBHOOK_TOKEN;
-      }
-      await fetch(process.env.LEAD_WEBHOOK, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(lead),
-      });
-    } catch (err) {
-      // Delivery is best-effort; the lead is already in the log above.
-      console.error('[lead] webhook failed', err);
-    }
-  }
-
   // The one verdict the browser is allowed to act on. `high` is unreachable
   // without "buying now" and without a single piece of junk in the form (see
   // _lib/lead-quality.js), so this is a narrow gate on purpose: these are the
@@ -120,10 +137,10 @@ export default async function handler(req, res) {
   // so this is false for them too.
   const hq = lead.quality?.tier === 'high';
 
-  // Channel post, sheet row and confirmation email go out together rather than
-  // one after the other: they are independent, and running them in sequence
-  // made the applicant wait for all three. All are best-effort — the lead is
-  // already logged and forwarded above, so none of them may turn a captured
+  // Channel post, sheet row, confirmation email and the webhook go out together
+  // rather than one after the other: they are independent, and running them in
+  // sequence made the applicant wait for all four. All are best-effort — the
+  // lead is already in the log above, so none of them may turn a captured
   // application into a 500 for the person who just filled the form in.
   //
   // Both outcomes are filed. The sheet has an `outcome` column precisely so a
@@ -137,7 +154,7 @@ export default async function handler(req, res) {
   // export that _lib/emails.js still carries for exactly this reason.
   const mail = hq ? qualifiedEmail({ name: lead.name }) : null;
 
-  const [posted, sent, filed] = await Promise.all([
+  const [posted, sent, filed, forwarded] = await Promise.all([
     sendLeadToTelegram(lead),
     // 'skipped' rather than false, so the log below distinguishes "we chose not
     // to write" from "the send failed" — otherwise a broken Resend key looks
@@ -146,6 +163,7 @@ export default async function handler(req, res) {
       ? sendEmail({ to: lead.email, subject: mail.subject, html: mail.html, text: mail.text })
       : Promise.resolve('skipped'),
     appendLeadToSheet(lead),
+    forwardLead(lead),
   ]);
   console.log(
     '[lead]',
@@ -156,7 +174,9 @@ export default async function handler(req, res) {
     'email:',
     sent,
     'sheet:',
-    filed
+    filed,
+    'webhook:',
+    forwarded
   );
 
   // `hq` and nothing else. The browser needs to know whether to send this person

@@ -17,6 +17,13 @@ import { gradeLead } from './lead-quality.js';
 
 const MAX = 3900; // Telegram caps a message at 4096 characters.
 
+// This is awaited before the form answers, so the wait is not the notification's
+// to spend — it belongs to the person watching a spinner. A Telegram that stops
+// answering, rather than refusing, would otherwise hold the response until the
+// platform kills the whole function, taking the sheet row and the thank-you
+// redirect down with it. Six seconds is longer than this call has ever needed.
+const TIMEOUT_MS = 6000;
+
 const esc = (s) =>
   String(s ?? '')
     .replace(/&/g, '&amp;')
@@ -82,9 +89,10 @@ export function formatLead(lead) {
 }
 
 /**
- * Best-effort delivery: the lead is already logged and emailed by the time this
+ * Best-effort delivery: the lead is already in the function log by the time this
  * runs, so a Telegram outage must never fail the request for the person who
- * just applied.
+ * just applied. The sheet row, the email and the PTF forward run alongside this
+ * one rather than after it, so none of them is waiting on the result either.
  */
 export async function sendLeadToTelegram(lead) {
   const token = process.env.TELEGRAM_BOT_TOKEN;
@@ -104,6 +112,7 @@ export async function sendLeadToTelegram(lead) {
         parse_mode: 'HTML',
         disable_web_page_preview: true,
       }),
+      signal: AbortSignal.timeout(TIMEOUT_MS),
     });
     if (!res.ok) {
       console.error('[telegram] rejected', res.status, (await res.text()).slice(0, 300));

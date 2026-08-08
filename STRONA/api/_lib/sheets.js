@@ -32,6 +32,11 @@ const DEFAULT_GID = 687993626;
 // Both calls are made while somebody is waiting on the form's response, and
 // they run alongside the Telegram post rather than after it. Google being slow
 // must not be the reason an applicant sits watching a spinner.
+//
+// This is the budget for the pair, not for each of them. They run back to back,
+// so a deadline each would mean twelve seconds — longer than the function itself
+// is allowed to live, and the applicant would lose the response to a sheet write
+// that was never worth waiting for.
 const TIMEOUT_MS = 6000;
 
 /**
@@ -166,8 +171,11 @@ const pem = (raw) =>
  * exactly the same reasons production does, so it borrows this rather than
  * signing its own JWT — a second implementation could pass while this one is
  * broken, which is the one thing a diagnostic must never do.
+ *
+ * `signal` lets the caller spend one deadline across this call and the write
+ * that follows it. Defaulted, so the diagnostic keeps working with two arguments.
  */
-export async function accessToken(email, key) {
+export async function accessToken(email, key, signal = AbortSignal.timeout(TIMEOUT_MS)) {
   const now = Math.floor(Date.now() / 1000);
   if (cachedToken && cachedToken.exp > now + 60) return cachedToken.token;
 
@@ -186,7 +194,7 @@ export async function accessToken(email, key) {
       grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
       assertion: jwt,
     }),
-    signal: AbortSignal.timeout(TIMEOUT_MS),
+    signal,
   });
   if (!res.ok) throw new Error(`token ${res.status} ${(await res.text()).slice(0, 200)}`);
 
@@ -196,9 +204,10 @@ export async function accessToken(email, key) {
 }
 
 /**
- * Best-effort, like the Telegram post: by the time this runs the lead is
- * already logged, forwarded and on its way to the channel, so a Google outage
- * must never turn a captured application into a 500 for the person who sent it.
+ * Best-effort, like the Telegram post: by the time this runs the lead is already
+ * in the function log, so a Google outage must never turn a captured application
+ * into a 500 for the person who sent it. The channel post and the PTF forward
+ * run alongside this rather than before it, so neither is waiting on the result.
  */
 export async function appendLeadToSheet(lead) {
   const email = process.env.GOOGLE_SA_EMAIL;
@@ -216,7 +225,8 @@ export async function appendLeadToSheet(lead) {
   }
 
   try {
-    const token = await accessToken(email, key);
+    const deadline = AbortSignal.timeout(TIMEOUT_MS);
+    const token = await accessToken(email, key, deadline);
 
     // appendCells addresses the tab by its numeric gid. The alternative, an A1
     // range, needs the tab's name — which here is "Obsługa-leadów", so it would
@@ -238,7 +248,7 @@ export async function appendLeadToSheet(lead) {
             },
           ],
         }),
-        signal: AbortSignal.timeout(TIMEOUT_MS),
+        signal: deadline,
       }
     );
 
