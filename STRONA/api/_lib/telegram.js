@@ -1,8 +1,13 @@
 // Posts each application into the team's Telegram channel.
 //
 // Needs two env vars in the Vercel project:
-//   TELEGRAM_BOT_TOKEN — from @BotFather
-//   TELEGRAM_CHAT_ID   — the channel id, e.g. -1001234567890
+//   TELEGRAM_BOT_TOKEN     — from @BotFather
+//   TELEGRAM_LEADS_CHAT_ID — the desk chat id, e.g. -1001234567890
+//
+// The name says "leads" on purpose. This post carries a name, an e-mail and a
+// phone number, so it may only ever reach the private desk — and a variable
+// called TELEGRAM_CHAT_ID is exactly the one somebody points at a public
+// channel, or deletes to silence something unrelated. Both happened.
 //
 // Getting the chat id: create the bot with @BotFather, add it to the channel as
 // an administrator (it needs "post messages"), send any message in the channel,
@@ -96,9 +101,9 @@ export function formatLead(lead) {
  */
 export async function sendLeadToTelegram(lead) {
   const token = process.env.TELEGRAM_BOT_TOKEN;
-  const chatId = process.env.TELEGRAM_CHAT_ID;
+  const chatId = process.env.TELEGRAM_LEADS_CHAT_ID;
   if (!token || !chatId) {
-    console.warn('[telegram] TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID not set — skipping');
+    console.warn('[telegram] TELEGRAM_BOT_TOKEN / TELEGRAM_LEADS_CHAT_ID not set — skipping');
     return false;
   }
 
