@@ -35,7 +35,11 @@ export type Testimonial = {
    */
   poster: string
   name: string
-  /** Rendered as "$5,100 PAID". */
+  /**
+   * Rendered as "$5,100 PAID". Leave at 0 when the clip names no figure — the
+   * pill then does not render at all. Putting a number here that the speaker
+   * never said turns a quote into a claim nobody made.
+   */
   payoutUsd: number
   /** Short uppercase context line, parts separated by · in the layout. */
   tags: string[]
@@ -73,12 +77,21 @@ export const TESTIMONIALS: Testimonial[] = [
       'Dave already traded futures and crypto and ran a small signals group. His own capital scaled too slowly, and the prop firms he tried felt built for him to fail — trailing drawdowns, hidden consistency rules. He took a $100K evaluation, cleared it on his own setups, and the first payout was processed in under 24 hours. Same trader, different firm behind him.',
   },
 
+  {
+    videoId: '_t5A28DQQaE',
+    poster: '/testi-joe.webp',
+    name: 'Joe',
+    payoutUsd: 0,
+    tags: ['Years in the markets', '$100K evaluation', 'First split paid'],
+    story:
+      'Joe has traded long enough to read the rulebook before the offer, and every firm he checked had the catch buried somewhere in it, usually a drawdown that moved whenever he got ahead. Here he took a $100K evaluation, changed nothing about the way he trades, and passed. The platform behaved, no rule surfaced halfway through, and the first split went out without a single question.',
+  },
+
   // Two reserved slots, held back for now: a dashed "being filmed" frame beside
-  // three real clips reads as a half-finished page rather than as a promise.
-  // The grid centres whatever it is given, so three cards sit centred and
-  // nothing else moves. Uncomment one when the next clip is shot — that is a
-  // YouTube id and a local poster, plus the name, payout and story from the clip
-  // itself. Four is the most that fit on one row.
+  // real clips reads as a half-finished page rather than as a promise. The grid
+  // centres whatever it is given, so nothing else moves. Four clips fill the row
+  // exactly, so the next one starts a second row — uncomment a slot only if you
+  // want the row filled while the clip is shot.
   // { videoId: '', poster: '', name: '', payoutUsd: 0, tags: [], story: '' },
   // { videoId: '', poster: '', name: '', payoutUsd: 0, tags: [], story: '' },
 ]

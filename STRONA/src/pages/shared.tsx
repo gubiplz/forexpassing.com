@@ -844,7 +844,12 @@ export function TestimonialCard({ testimonial: t }: { testimonial: Testimonial }
                 ocena była tu ozdobą, a nie dowodem, i konkurowała z kwotą o
                 uwagę. Gwiazdki zostają tam, gdzie coś znaczą: w opiniach
                 pisanych i w plakietce. */}
-            <span className="mm-testi-paid">${t.payoutUsd.toLocaleString('en-US')} PAID</span>
+            {/* Nie każdy klip podaje kwotę. Plakietka cytuje to, co pada w
+                nagraniu, więc gdy nagranie mówi tylko "zapłacili szybko",
+                zostaje bez niej — dopisanie liczby byłoby wymyśleniem dowodu. */}
+            {t.payoutUsd > 0 && (
+              <span className="mm-testi-paid">${t.payoutUsd.toLocaleString('en-US')} PAID</span>
+            )}
             <span className="mm-testi-tags">{t.tags.join(' · ')}</span>
             <p className="mm-testi-story">{t.story}</p>
           </>
