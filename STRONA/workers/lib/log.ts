@@ -24,7 +24,20 @@ export interface LogEntry {
   };
 }
 
+// Crawlers that named their vendor in the User-Agent. They still get a D1 row, but
+// they arrive in bursts — facebookexternalhit alone took 76 of the 100 KV slots in
+// one afternoon, leaving the recent view unable to show a single hour of real
+// visitors. ua_generic_bot is deliberately absent: it is a keyword match, and it
+// fires on "scan" too, so including it would hide probes — the entries most worth
+// seeing. One stray PipericBot is not what fills the buffer.
+const NAMED_CRAWLER_CODES = new Set(['ua_meta_bot', 'ua_google_bot', 'ua_seo_scraper']);
+
 export async function appendLog(env: Env, entry: LogEntry): Promise<void> {
+  // D1 first and unconditionally: it is the log that has to be complete.
+  await recordHit(env, entry);
+
+  if (entry.reasons.some((r) => NAMED_CRAWLER_CODES.has(r.code))) return;
+
   try {
     const raw = (await env.EDGE_LOG.get(LOG_KEY, 'json')) as LogEntry[] | null;
     const entries = Array.isArray(raw) ? raw : [];
@@ -34,8 +47,6 @@ export async function appendLog(env: Env, entry: LogEntry): Promise<void> {
   } catch {
     /* best-effort */
   }
-
-  await recordHit(env, entry);
 }
 
 // Durable per-hit record in D1 — one row per classification, never rolls off.

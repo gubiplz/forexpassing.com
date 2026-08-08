@@ -47,12 +47,13 @@ binding = "EDGE_LOG"
 id = "local-edge-log"
 
 # Durable per-hit stats - every classification is inserted as one row (never rolls off).
-# OPCJONALNE: kod dziala bez tego bindingu (log.ts robi `if (!env.STATS) return`).
-# Odkomentuj lokalnie i wpisz swoje database_id z `npx wrangler d1 create <nazwa>`.
-# [[d1_databases]]
-# binding = "STATS"
-# database_name = "forexpassing-stats"
-# database_id = "<twoje-d1-database-id>"
+# The KV log is a 100-entry ring on one key, so it covers about two hours and drops
+# writes that land in the same second; this is the log you query for a full day.
+# database_id jest placeholderem z tego samego powodu co KV — bin/deploy.sh podmienia.
+[[d1_databases]]
+binding = "STATS"
+database_name = "forexpassing-stats"
+database_id = "local-stats-db"
 
 [dev]
 port = 8787

@@ -40,19 +40,39 @@ kv_id() {
 KV_USED_CLICKS_ID=$(kv_id USED_CLICKS)
 KV_EDGE_LOG_ID=$(kv_id EDGE_LOG)
 
+# Same idea for D1. The schema is NOT applied here — creating a table is a one-off,
+# and running it on every deploy would hide a rename behind a silent CREATE.
+#   npx wrangler d1 execute forexpassing-stats --remote --file workers/schema.sql
+d1_id() {
+  local name="$1"
+  npx wrangler d1 list --json 2>/dev/null |
+    python3 -c "import json,sys;print(next((d['uuid'] for d in json.load(sys.stdin) if d['name']=='$name'),''))"
+}
+
+D1_STATS_ID=$(d1_id forexpassing-stats)
+
 if [ -z "$KV_USED_CLICKS_ID" ] || [ -z "$KV_EDGE_LOG_ID" ]; then
   echo "  ERROR: could not resolve KV namespace IDs" >&2
   exit 1
 fi
 
+if [ -z "$D1_STATS_ID" ]; then
+  echo "  ERROR: D1 'forexpassing-stats' not found. Create it once, then apply the schema:" >&2
+  echo "    npx wrangler d1 create forexpassing-stats" >&2
+  echo "    npx wrangler d1 execute forexpassing-stats --remote --file workers/schema.sql" >&2
+  exit 1
+fi
+
 echo "  USED_CLICKS id: $KV_USED_CLICKS_ID"
 echo "  EDGE_LOG    id: $KV_EDGE_LOG_ID"
+echo "  STATS (D1)  id: $D1_STATS_ID"
 echo ""
 echo "==> 4. Patching workers/wrangler.toml with real IDs"
 cp workers/wrangler.toml workers/wrangler.toml.deploy-bak
 sed -i.bak \
   -e "s|id = \"local-used-clicks\"|id = \"$KV_USED_CLICKS_ID\"|" \
   -e "s|id = \"local-edge-log\"|id = \"$KV_EDGE_LOG_ID\"|" \
+  -e "s|database_id = \"local-stats-db\"|database_id = \"$D1_STATS_ID\"|" \
   workers/wrangler.toml
 rm -f workers/wrangler.toml.bak
 echo "  wrangler.toml updated (placeholders restored on exit)"
