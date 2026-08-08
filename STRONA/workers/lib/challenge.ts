@@ -46,8 +46,11 @@ export async function verifyChallenge(
   const expectedSig = (await hmac(env.EDGE_SECRET, `${nonce}.${ts}.${requestId}`)).slice(0, 16);
   if (!ctEq(sig, expectedSig)) return false;
 
-  // Recompute proof from nonce; compare with what client sent
-  const expectedProof = await computeProof(nonce, ITERATIONS);
+  // Recompute the chain over the WHOLE string we handed out, not just its first
+  // segment: the client seeds from `challenge.nonce`, which is `nonce.ts.sig`.
+  // Seeding from `nonce` alone made every proof mismatch, so challenge_failed
+  // (-80, a hard bot override) fired on every browser that was ever challenged.
+  const expectedProof = await computeProof(challengeNonce, ITERATIONS);
   return ctEq(expectedProof, proof);
 }
 
