@@ -13,7 +13,8 @@ import { createPortal } from 'react-dom'
 import { APPLY_ENDPOINT, CONTACT_EMAIL, THANK_YOU_HREF, telegramWith } from '../constants'
 import { PRE_CONTACT, QUALIFICATION, TOTAL_STEPS, type Step } from '../data/questionnaire'
 import {
-  DIAL_CODES, detectIso, findDial, flagSrc, nationalDigits, samplePlaceholder,
+  DIAL_CODES, detectIso, findDial, flagSrc, nationalDigits, normalizeTelegram,
+  samplePlaceholder, splitDial, TELEGRAM_RE,
 } from '../data/dial-codes'
 
 declare global {
@@ -42,8 +43,9 @@ const EMAIL_RE = /^[^\s@]+@[^\s@.]+(\.[^\s@.]+)*\.[A-Za-z]{2,}$/
 // A person's name carries no digits. Letters from any alphabet, plus the marks
 // that live inside real names: spaces, hyphens, apostrophes and full stops.
 const NAME_RE = /^[\p{L}\p{M}][\p{L}\p{M}\s'’.-]*$/u
-// The Telegram handle shape moved to api/_lib/lead-quality.js: a malformed
-// handle no longer stops the form, it scores the lead down instead.
+// The Telegram handle shape and the phone length table live in
+// src/lib/phone-rules.js — the same rules the server-side grader reads, so the
+// form and the channel post can never disagree about the same entry.
 
 /** Partner slug parked by the /r/<slug> redirect, if any. */
 function readRef(): string {
@@ -208,8 +210,8 @@ export function ApplyFlow({
           // Sent as one dialable number, not a bare national part the team
           // would have to work out the country of. When no country is set the
           // digits go as typed and the channel post says so.
-          phone: nationalDigits(contact.phone)
-            ? `${findDial(contact.phoneIso)?.dial ?? ''} ${nationalDigits(contact.phone)}`.trim()
+          phone: nationalDigits(contact.phone, contact.phoneIso)
+            ? `${findDial(contact.phoneIso)?.dial ?? ''} ${nationalDigits(contact.phone, contact.phoneIso)}`.trim()
             : '',
           // Sent alongside, because "is this number the right length" can only
           // be answered against a country, and the composed string above has
@@ -515,12 +517,24 @@ function ContactStep({
     else if (!email.includes('@')) next.email = 'An email address needs an @ in it.'
     else if (!EMAIL_RE.test(email)) next.email = 'That address is not complete. Check the part after the @.'
 
-    // Phone and Telegram are never a reason to stop someone. Both are extras,
-    // and an extra that blocks the form costs more applications than it saves
-    // bad records. Whatever arrives in them is judged after the fact instead:
-    // api/_lib/lead-quality.js scores a two-digit number or a malformed handle
-    // down and marks it in the channel post, so the desk sees the problem
-    // without the applicant ever being argued with.
+    // Both contact channels are required now — the desk works leads over the
+    // phone and Telegram, and a lead with neither cannot be worked at all.
+    // The rules come from src/lib/phone-rules.js, the same table the grader
+    // reads, so a number the form accepts never gets marked down in the post.
+    const digits = nationalDigits(value.phone, value.phoneIso)
+    if (!digits) next.phone = 'Please add your phone number.'
+    else if (!chosen) next.phone = 'Pick your country code first.'
+    else if (digits.length < chosen.min || digits.length > chosen.max) {
+      const span = chosen.min === chosen.max ? `${chosen.min}` : `${chosen.min}–${chosen.max}`
+      next.phone = `A ${chosen.name} number has ${span} digits; this one has ${digits.length}.`
+    }
+
+    const tg = normalizeTelegram(value.telegram)
+    if (!tg) next.telegram = 'Please add your Telegram handle — it is where we reply.'
+    else if (!TELEGRAM_RE.test(tg)) {
+      next.telegram = 'That does not look like a Telegram handle. 5–32 letters, digits or _, like @yourhandle.'
+    }
+
     setErrs(next)
     const first = FIELD_ORDER.find((k) => next[k])
     if (first) {
@@ -533,6 +547,26 @@ function ContactStep({
   }
 
   const chosen = findDial(value.phoneIso)
+
+  // A number typed or pasted with its own dialling code ("+48 601…", "0048…")
+  // outranks the selector: the code comes off, the country chip follows it.
+  // When the typed code matches the chip already on show, the chip stays —
+  // a Canadian who picked CA and pasted a +1 number must not become "US".
+  const setPhone = (v: string) => {
+    const split = splitDial(v)
+    if (split && findDial(split.iso)) {
+      const iso = chosen && chosen.dial === split.dial ? value.phoneIso : split.iso
+      onChange({ ...value, phone: split.rest, phoneIso: iso })
+      setErrs((e) => {
+        if (!('phone' in e)) return e
+        const next = { ...e }
+        delete next.phone
+        return next
+      })
+      return
+    }
+    set('phone', v)
+  }
 
   const field = (k: FieldKey) => ({
     id: `af-${k}`,
@@ -624,10 +658,12 @@ function ContactStep({
               ))}
             </select>
           </span>
-          {/* 15 is the most digits any number on earth has, country code
-              included (E.164). Past that it is not a phone number. */}
-          <input {...field('phone')} type="tel" inputMode="tel" autoComplete="tel-national"
-            maxLength={15}
+          {/* Room for a full number typed with its own +code and spaces (E.164
+              tops out at 15 digits; separators come on top). setPhone strips
+              the code back off, so what stays in the field is national only. */}
+          <input {...field('phone')} onChange={(e) => setPhone(e.target.value)}
+            type="tel" inputMode="tel" autoComplete="tel-national"
+            maxLength={25} required
             placeholder={chosen ? samplePlaceholder(chosen.min) : 'Phone number'} />
         </div>
         {errs.phone
@@ -638,8 +674,10 @@ function ContactStep({
         <label htmlFor="af-telegram">Telegram</label>
         <input {...field('telegram')} type="text" autoComplete="username"
           autoCapitalize="none" autoCorrect="off" spellCheck={false}
-          placeholder="@yourhandle" />
-        <span className="mm-field-hint">Onboarding and support run on Telegram. This is where we reply.</span>
+          placeholder="@yourhandle" required />
+        {errs.telegram
+          ? <span className="mm-field-err" id="af-telegram-err" role="alert">{errs.telegram}</span>
+          : <span className="mm-field-hint">Onboarding and support run on Telegram. This is where we reply.</span>}
       </div>
 
       <button type="submit" className="mm-btn mm-btn-lg mm-btn-full">Continue</button>
