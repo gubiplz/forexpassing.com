@@ -15,17 +15,21 @@
 // worth of the rest. Buying now and nothing else lands in warm, which is the
 // honest reading of it.
 //
-// The second half of this file is about the data itself. The form no longer
-// blocks anyone over a phone number or a Telegram handle — an extra field that
-// stops the form costs more applications than it saves bad records — so the
-// junk that used to be argued with at the door now arrives, and gets judged
-// here instead. Every penalty costs a point AND caps the lead at warm, because
-// 🔥 means "message this one first" and nobody messages a two-digit phone
-// number first.
+// The second half of this file is about the data itself. The questionnaire
+// blocks on these same rules before submitting (src/lib/phone-rules.js is the
+// one table both sides read), so junk from that path is rare — but the safe-page
+// form and anything hitting the API directly still arrive unchecked, and get
+// judged here. A penalty costs a point and is named in the channel post; it no
+// longer hard-caps the tier, because the cap kept firing on false positives
+// (a valid GB number against a stale length table) and each hit cost a real
+// lead its /thank-you and its email. Only the two opening questions decide
+// qualified/not — data quality never does.
 //
 // Matching is done on the answer text rather than the question text, because
 // the answers are the distinctive part. Reword a question and this still works;
 // reword an option label and the matching regex below has to move with it.
+
+import { boundsFor, nationalDigits, splitDial, TELEGRAM_RE } from '../../src/lib/phone-rules.js';
 
 const MAX = 9;
 
@@ -49,38 +53,8 @@ const NEVER_DONE = /never done one/;
 const WATCHED_ALL = /^yes, all of it/;
 const WATCHED_PART = /only part of it/;
 
-// Telegram allows 5–32 characters: letters, digits and underscores, and people
-// type the leading @ either way. Moved here from the form, where it used to be
-// a blocking check.
-const TELEGRAM_RE = /^@?[A-Za-z][A-Za-z0-9_]{4,31}$/;
-
-// Digits in the national part, per country. A deliberate mirror of the min/max
-// columns in src/data/dial-codes.ts — the API cannot import that file, which is
-// TypeScript compiled for the browser bundle. If the two ever drift the only
-// consequence is a scoring nudge on an unusual number; nothing here blocks a
-// submission, so it is not worth a shared module and the deployment risk that
-// comes with one. Countries absent from this table fall back to GENERIC.
-const GENERIC = [6, 14];
-const PHONE_DIGITS = {
-  AL: [8, 9], DZ: [8, 9], AR: [10, 11], AU: [9, 9], AT: [7, 13], BH: [8, 8], BY: [9, 9],
-  BE: [8, 9], BA: [8, 8], BR: [10, 11], BG: [8, 9], CA: [10, 10], CL: [9, 9], CN: [11, 11],
-  CO: [10, 10], HR: [8, 9], CY: [8, 8], CZ: [9, 9], DK: [8, 8], EG: [10, 10], EE: [7, 8],
-  FI: [9, 10], FR: [9, 9], GE: [9, 9], DE: [10, 11], GH: [9, 9], GR: [10, 10], HK: [8, 8],
-  HU: [9, 9], IS: [7, 7], IN: [10, 10], ID: [9, 12], IE: [9, 9], IL: [9, 9], IT: [9, 10],
-  JP: [10, 10], JO: [9, 9], KZ: [10, 10], KE: [9, 9], KW: [8, 8], LV: [8, 8], LB: [7, 8],
-  LT: [8, 8], LU: [9, 9], MY: [9, 10], MT: [8, 8], MX: [10, 10], MD: [8, 8], ME: [8, 8],
-  MA: [9, 9], NL: [9, 9], NZ: [8, 10], NG: [10, 10], MK: [8, 8], NO: [8, 8], OM: [8, 8],
-  PK: [10, 10], PE: [9, 9], PH: [10, 10], PL: [9, 9], PT: [9, 9], QA: [8, 8], RO: [9, 9],
-  RU: [10, 10], SA: [9, 9], RS: [8, 9], SG: [8, 8], SK: [9, 9], SI: [8, 8], ZA: [9, 9],
-  KR: [9, 10], ES: [9, 9], SE: [7, 9], CH: [9, 9], TH: [9, 9], TN: [8, 8], TR: [10, 10],
-  UA: [9, 9], AE: [9, 9], GB: [10, 10], US: [10, 10], VN: [9, 10],
-};
-
 // Mailbox providers whose whole product is an address that stops existing.
 const THROWAWAY = /(mailinator|guerrillamail|10minutemail|yopmail|tempmail|temp-mail|trashmail|throwawaymail|sharklasers|maildrop|getnada|dispostable)\./i;
-
-/** Digits only, minus the trunk zero people habitually type in front. */
-const digitsOf = (raw) => String(raw ?? '').replace(/\D/g, '').replace(/^0+/, '');
 
 /**
  * Everything about the submission that suggests it was not filled in honestly.
@@ -94,9 +68,14 @@ function findPenalties(lead) {
   // The composed phone carries its dialling code, or does not. `+` is the tell.
   const rawPhone = String(lead?.phone ?? '').trim();
   if (rawPhone) {
-    const digits = digitsOf(rawPhone.replace(/^\+\d{1,4}/, ''));
+    // The dialling code comes off by longest known match, not by a greedy
+    // `\+\d{1,4}` — that used to eat "+4860…" out of a Polish number typed
+    // without the space, and the remainder failed the length check for it.
+    const split = splitDial(rawPhone);
+    const iso = String(lead?.phoneIso ?? '').toUpperCase() || split?.iso || '';
+    const digits = nationalDigits(split ? split.rest : rawPhone, iso);
     if (!rawPhone.startsWith('+')) out.push('number has no country code');
-    const [min, max] = PHONE_DIGITS[String(lead?.phoneIso ?? '').toUpperCase()] ?? GENERIC;
+    const [min, max] = boundsFor(iso);
     if (digits.length < min || digits.length > max) {
       out.push(`number is ${digits.length} digits, expected ${min === max ? min : `${min}–${max}`}`);
     }
@@ -167,9 +146,10 @@ export function gradeLead(lead) {
 
   const penalties = findPenalties(lead);
 
-  // Ways to reach them, given freely. Neither field is required any more, so
-  // filling one in is a small act of intent — but only a usable one counts,
-  // which is why these read the penalty list rather than mere presence.
+  // Ways to reach them. The questionnaire requires both fields now, but the
+  // safe-page form carries neither and direct API posts send anything at all —
+  // so presence still earns the point, and only a usable entry counts, which
+  // is why these read the penalty list rather than mere presence.
   const phone = String(lead?.phone ?? '').trim();
   const badPhone = penalties.some((p) => p.startsWith('number'));
   if (phone && !badPhone) {
@@ -190,9 +170,10 @@ export function gradeLead(lead) {
 
   score = Math.max(0, score - penalties.length);
 
-  // Junk in the form caps the lead at warm however well it scored otherwise.
-  let tier = score >= 7 ? 'high' : score >= 3 ? 'warm' : 'cold';
-  if (penalties.length && tier === 'high') tier = 'warm';
+  // No hard cap on top of the point: the cap's real-world record was demoting
+  // good leads over table drift, and the penalty is still named in the post,
+  // so the desk sees exactly what is suspect before messaging anyone.
+  const tier = score >= 7 ? 'high' : score >= 3 ? 'warm' : 'cold';
 
   return { tier, score, max: MAX, ...TIERS[tier], reasons, gaps, penalties };
 }

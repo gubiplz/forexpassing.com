@@ -1,5 +1,11 @@
 // Country dialling codes for the application form's phone field.
 //
+// The digit ranges live in src/lib/phone-rules.js — ONE table shared with the
+// server-side grader (api/_lib/lead-quality.js), because the form now BLOCKS on
+// these lengths and a private copy here would mean the form and the grader
+// disagreeing about the same number. This file only adds what the browser
+// needs on top: names, flags, the time-zone guess and the placeholder.
+//
 // `min`/`max` are the number of digits in the NATIONAL part, after the dialling
 // code and after stripping spaces, dashes and a leading trunk zero. They are
 // deliberately a range rather than one figure: most countries run several
@@ -15,6 +21,12 @@
 // renders it as the two letters instead, which is why the country name is always
 // next to it rather than instead of it.
 
+import {
+  GENERIC, PHONE_DIGITS, boundsFor, nationalDigits, normalizeTelegram, splitDial, TELEGRAM_RE,
+} from '../lib/phone-rules.js'
+
+export { boundsFor, nationalDigits, normalizeTelegram, splitDial, TELEGRAM_RE }
+
 export type DialCode = {
   /** ISO 3166-1 alpha-2, also the key used to remember the choice. */
   iso: string
@@ -26,90 +38,95 @@ export type DialCode = {
   max: number
 }
 
-export const DIAL_CODES: DialCode[] = [
-  { iso: 'AL', name: 'Albania', dial: '+355', flag: '🇦🇱', min: 8, max: 9 },
-  { iso: 'DZ', name: 'Algeria', dial: '+213', flag: '🇩🇿', min: 8, max: 9 },
-  { iso: 'AR', name: 'Argentina', dial: '+54', flag: '🇦🇷', min: 10, max: 11 },
-  { iso: 'AU', name: 'Australia', dial: '+61', flag: '🇦🇺', min: 9, max: 9 },
-  { iso: 'AT', name: 'Austria', dial: '+43', flag: '🇦🇹', min: 7, max: 13 },
-  { iso: 'BH', name: 'Bahrain', dial: '+973', flag: '🇧🇭', min: 8, max: 8 },
-  { iso: 'BY', name: 'Belarus', dial: '+375', flag: '🇧🇾', min: 9, max: 9 },
-  { iso: 'BE', name: 'Belgium', dial: '+32', flag: '🇧🇪', min: 8, max: 9 },
-  { iso: 'BA', name: 'Bosnia and Herzegovina', dial: '+387', flag: '🇧🇦', min: 8, max: 8 },
-  { iso: 'BR', name: 'Brazil', dial: '+55', flag: '🇧🇷', min: 10, max: 11 },
-  { iso: 'BG', name: 'Bulgaria', dial: '+359', flag: '🇧🇬', min: 8, max: 9 },
-  { iso: 'CA', name: 'Canada', dial: '+1', flag: '🇨🇦', min: 10, max: 10 },
-  { iso: 'CL', name: 'Chile', dial: '+56', flag: '🇨🇱', min: 9, max: 9 },
-  { iso: 'CN', name: 'China', dial: '+86', flag: '🇨🇳', min: 11, max: 11 },
-  { iso: 'CO', name: 'Colombia', dial: '+57', flag: '🇨🇴', min: 10, max: 10 },
-  { iso: 'HR', name: 'Croatia', dial: '+385', flag: '🇭🇷', min: 8, max: 9 },
-  { iso: 'CY', name: 'Cyprus', dial: '+357', flag: '🇨🇾', min: 8, max: 8 },
-  { iso: 'CZ', name: 'Czechia', dial: '+420', flag: '🇨🇿', min: 9, max: 9 },
-  { iso: 'DK', name: 'Denmark', dial: '+45', flag: '🇩🇰', min: 8, max: 8 },
-  { iso: 'EG', name: 'Egypt', dial: '+20', flag: '🇪🇬', min: 9, max: 10 },
-  { iso: 'EE', name: 'Estonia', dial: '+372', flag: '🇪🇪', min: 7, max: 8 },
-  { iso: 'FI', name: 'Finland', dial: '+358', flag: '🇫🇮', min: 6, max: 12 },
-  { iso: 'FR', name: 'France', dial: '+33', flag: '🇫🇷', min: 9, max: 9 },
-  { iso: 'GE', name: 'Georgia', dial: '+995', flag: '🇬🇪', min: 9, max: 9 },
-  { iso: 'DE', name: 'Germany', dial: '+49', flag: '🇩🇪', min: 6, max: 11 },
-  { iso: 'GH', name: 'Ghana', dial: '+233', flag: '🇬🇭', min: 9, max: 9 },
-  { iso: 'GR', name: 'Greece', dial: '+30', flag: '🇬🇷', min: 10, max: 10 },
-  { iso: 'HK', name: 'Hong Kong', dial: '+852', flag: '🇭🇰', min: 8, max: 8 },
-  { iso: 'HU', name: 'Hungary', dial: '+36', flag: '🇭🇺', min: 8, max: 9 },
-  { iso: 'IS', name: 'Iceland', dial: '+354', flag: '🇮🇸', min: 7, max: 7 },
-  { iso: 'IN', name: 'India', dial: '+91', flag: '🇮🇳', min: 10, max: 10 },
-  { iso: 'ID', name: 'Indonesia', dial: '+62', flag: '🇮🇩', min: 9, max: 12 },
-  { iso: 'IE', name: 'Ireland', dial: '+353', flag: '🇮🇪', min: 7, max: 9 },
-  { iso: 'IL', name: 'Israel', dial: '+972', flag: '🇮🇱', min: 8, max: 9 },
-  { iso: 'IT', name: 'Italy', dial: '+39', flag: '🇮🇹', min: 6, max: 11 },
-  { iso: 'JP', name: 'Japan', dial: '+81', flag: '🇯🇵', min: 9, max: 10 },
-  { iso: 'JO', name: 'Jordan', dial: '+962', flag: '🇯🇴', min: 8, max: 9 },
-  { iso: 'KZ', name: 'Kazakhstan', dial: '+7', flag: '🇰🇿', min: 10, max: 10 },
-  { iso: 'KE', name: 'Kenya', dial: '+254', flag: '🇰🇪', min: 9, max: 9 },
-  { iso: 'KW', name: 'Kuwait', dial: '+965', flag: '🇰🇼', min: 8, max: 8 },
-  { iso: 'LV', name: 'Latvia', dial: '+371', flag: '🇱🇻', min: 8, max: 8 },
-  { iso: 'LB', name: 'Lebanon', dial: '+961', flag: '🇱🇧', min: 7, max: 8 },
-  { iso: 'LT', name: 'Lithuania', dial: '+370', flag: '🇱🇹', min: 8, max: 8 },
-  { iso: 'LU', name: 'Luxembourg', dial: '+352', flag: '🇱🇺', min: 8, max: 9 },
-  { iso: 'MY', name: 'Malaysia', dial: '+60', flag: '🇲🇾', min: 9, max: 10 },
-  { iso: 'MT', name: 'Malta', dial: '+356', flag: '🇲🇹', min: 8, max: 8 },
-  { iso: 'MX', name: 'Mexico', dial: '+52', flag: '🇲🇽', min: 10, max: 10 },
-  { iso: 'MD', name: 'Moldova', dial: '+373', flag: '🇲🇩', min: 8, max: 8 },
-  { iso: 'ME', name: 'Montenegro', dial: '+382', flag: '🇲🇪', min: 8, max: 8 },
-  { iso: 'MA', name: 'Morocco', dial: '+212', flag: '🇲🇦', min: 9, max: 9 },
-  { iso: 'NL', name: 'Netherlands', dial: '+31', flag: '🇳🇱', min: 9, max: 9 },
-  { iso: 'NZ', name: 'New Zealand', dial: '+64', flag: '🇳🇿', min: 8, max: 10 },
-  { iso: 'NG', name: 'Nigeria', dial: '+234', flag: '🇳🇬', min: 10, max: 10 },
-  { iso: 'MK', name: 'North Macedonia', dial: '+389', flag: '🇲🇰', min: 8, max: 8 },
-  { iso: 'NO', name: 'Norway', dial: '+47', flag: '🇳🇴', min: 8, max: 8 },
-  { iso: 'OM', name: 'Oman', dial: '+968', flag: '🇴🇲', min: 8, max: 8 },
-  { iso: 'PK', name: 'Pakistan', dial: '+92', flag: '🇵🇰', min: 10, max: 10 },
-  { iso: 'PE', name: 'Peru', dial: '+51', flag: '🇵🇪', min: 9, max: 9 },
-  { iso: 'PH', name: 'Philippines', dial: '+63', flag: '🇵🇭', min: 10, max: 10 },
-  { iso: 'PL', name: 'Poland', dial: '+48', flag: '🇵🇱', min: 9, max: 9 },
-  { iso: 'PT', name: 'Portugal', dial: '+351', flag: '🇵🇹', min: 9, max: 9 },
-  { iso: 'QA', name: 'Qatar', dial: '+974', flag: '🇶🇦', min: 8, max: 8 },
-  { iso: 'RO', name: 'Romania', dial: '+40', flag: '🇷🇴', min: 9, max: 9 },
-  { iso: 'RU', name: 'Russia', dial: '+7', flag: '🇷🇺', min: 10, max: 10 },
-  { iso: 'SA', name: 'Saudi Arabia', dial: '+966', flag: '🇸🇦', min: 9, max: 9 },
-  { iso: 'RS', name: 'Serbia', dial: '+381', flag: '🇷🇸', min: 8, max: 9 },
-  { iso: 'SG', name: 'Singapore', dial: '+65', flag: '🇸🇬', min: 8, max: 8 },
-  { iso: 'SK', name: 'Slovakia', dial: '+421', flag: '🇸🇰', min: 9, max: 9 },
-  { iso: 'SI', name: 'Slovenia', dial: '+386', flag: '🇸🇮', min: 8, max: 8 },
-  { iso: 'ZA', name: 'South Africa', dial: '+27', flag: '🇿🇦', min: 9, max: 9 },
-  { iso: 'KR', name: 'South Korea', dial: '+82', flag: '🇰🇷', min: 9, max: 10 },
-  { iso: 'ES', name: 'Spain', dial: '+34', flag: '🇪🇸', min: 9, max: 9 },
-  { iso: 'SE', name: 'Sweden', dial: '+46', flag: '🇸🇪', min: 7, max: 13 },
-  { iso: 'CH', name: 'Switzerland', dial: '+41', flag: '🇨🇭', min: 9, max: 9 },
-  { iso: 'TH', name: 'Thailand', dial: '+66', flag: '🇹🇭', min: 9, max: 9 },
-  { iso: 'TN', name: 'Tunisia', dial: '+216', flag: '🇹🇳', min: 8, max: 8 },
-  { iso: 'TR', name: 'Türkiye', dial: '+90', flag: '🇹🇷', min: 10, max: 10 },
-  { iso: 'UA', name: 'Ukraine', dial: '+380', flag: '🇺🇦', min: 9, max: 9 },
-  { iso: 'AE', name: 'United Arab Emirates', dial: '+971', flag: '🇦🇪', min: 8, max: 9 },
-  { iso: 'GB', name: 'United Kingdom', dial: '+44', flag: '🇬🇧', min: 9, max: 10 },
-  { iso: 'US', name: 'United States', dial: '+1', flag: '🇺🇸', min: 10, max: 10 },
-  { iso: 'VN', name: 'Vietnam', dial: '+84', flag: '🇻🇳', min: 9, max: 10 },
+const BASE: Omit<DialCode, 'min' | 'max'>[] = [
+  { iso: 'AL', name: 'Albania', dial: '+355', flag: '🇦🇱' },
+  { iso: 'DZ', name: 'Algeria', dial: '+213', flag: '🇩🇿' },
+  { iso: 'AR', name: 'Argentina', dial: '+54', flag: '🇦🇷' },
+  { iso: 'AU', name: 'Australia', dial: '+61', flag: '🇦🇺' },
+  { iso: 'AT', name: 'Austria', dial: '+43', flag: '🇦🇹' },
+  { iso: 'BH', name: 'Bahrain', dial: '+973', flag: '🇧🇭' },
+  { iso: 'BY', name: 'Belarus', dial: '+375', flag: '🇧🇾' },
+  { iso: 'BE', name: 'Belgium', dial: '+32', flag: '🇧🇪' },
+  { iso: 'BA', name: 'Bosnia and Herzegovina', dial: '+387', flag: '🇧🇦' },
+  { iso: 'BR', name: 'Brazil', dial: '+55', flag: '🇧🇷' },
+  { iso: 'BG', name: 'Bulgaria', dial: '+359', flag: '🇧🇬' },
+  { iso: 'CA', name: 'Canada', dial: '+1', flag: '🇨🇦' },
+  { iso: 'CL', name: 'Chile', dial: '+56', flag: '🇨🇱' },
+  { iso: 'CN', name: 'China', dial: '+86', flag: '🇨🇳' },
+  { iso: 'CO', name: 'Colombia', dial: '+57', flag: '🇨🇴' },
+  { iso: 'HR', name: 'Croatia', dial: '+385', flag: '🇭🇷' },
+  { iso: 'CY', name: 'Cyprus', dial: '+357', flag: '🇨🇾' },
+  { iso: 'CZ', name: 'Czechia', dial: '+420', flag: '🇨🇿' },
+  { iso: 'DK', name: 'Denmark', dial: '+45', flag: '🇩🇰' },
+  { iso: 'EG', name: 'Egypt', dial: '+20', flag: '🇪🇬' },
+  { iso: 'EE', name: 'Estonia', dial: '+372', flag: '🇪🇪' },
+  { iso: 'FI', name: 'Finland', dial: '+358', flag: '🇫🇮' },
+  { iso: 'FR', name: 'France', dial: '+33', flag: '🇫🇷' },
+  { iso: 'GE', name: 'Georgia', dial: '+995', flag: '🇬🇪' },
+  { iso: 'DE', name: 'Germany', dial: '+49', flag: '🇩🇪' },
+  { iso: 'GH', name: 'Ghana', dial: '+233', flag: '🇬🇭' },
+  { iso: 'GR', name: 'Greece', dial: '+30', flag: '🇬🇷' },
+  { iso: 'HK', name: 'Hong Kong', dial: '+852', flag: '🇭🇰' },
+  { iso: 'HU', name: 'Hungary', dial: '+36', flag: '🇭🇺' },
+  { iso: 'IS', name: 'Iceland', dial: '+354', flag: '🇮🇸' },
+  { iso: 'IN', name: 'India', dial: '+91', flag: '🇮🇳' },
+  { iso: 'ID', name: 'Indonesia', dial: '+62', flag: '🇮🇩' },
+  { iso: 'IE', name: 'Ireland', dial: '+353', flag: '🇮🇪' },
+  { iso: 'IL', name: 'Israel', dial: '+972', flag: '🇮🇱' },
+  { iso: 'IT', name: 'Italy', dial: '+39', flag: '🇮🇹' },
+  { iso: 'JP', name: 'Japan', dial: '+81', flag: '🇯🇵' },
+  { iso: 'JO', name: 'Jordan', dial: '+962', flag: '🇯🇴' },
+  { iso: 'KZ', name: 'Kazakhstan', dial: '+7', flag: '🇰🇿' },
+  { iso: 'KE', name: 'Kenya', dial: '+254', flag: '🇰🇪' },
+  { iso: 'KW', name: 'Kuwait', dial: '+965', flag: '🇰🇼' },
+  { iso: 'LV', name: 'Latvia', dial: '+371', flag: '🇱🇻' },
+  { iso: 'LB', name: 'Lebanon', dial: '+961', flag: '🇱🇧' },
+  { iso: 'LT', name: 'Lithuania', dial: '+370', flag: '🇱🇹' },
+  { iso: 'LU', name: 'Luxembourg', dial: '+352', flag: '🇱🇺' },
+  { iso: 'MY', name: 'Malaysia', dial: '+60', flag: '🇲🇾' },
+  { iso: 'MT', name: 'Malta', dial: '+356', flag: '🇲🇹' },
+  { iso: 'MX', name: 'Mexico', dial: '+52', flag: '🇲🇽' },
+  { iso: 'MD', name: 'Moldova', dial: '+373', flag: '🇲🇩' },
+  { iso: 'ME', name: 'Montenegro', dial: '+382', flag: '🇲🇪' },
+  { iso: 'MA', name: 'Morocco', dial: '+212', flag: '🇲🇦' },
+  { iso: 'NL', name: 'Netherlands', dial: '+31', flag: '🇳🇱' },
+  { iso: 'NZ', name: 'New Zealand', dial: '+64', flag: '🇳🇿' },
+  { iso: 'NG', name: 'Nigeria', dial: '+234', flag: '🇳🇬' },
+  { iso: 'MK', name: 'North Macedonia', dial: '+389', flag: '🇲🇰' },
+  { iso: 'NO', name: 'Norway', dial: '+47', flag: '🇳🇴' },
+  { iso: 'OM', name: 'Oman', dial: '+968', flag: '🇴🇲' },
+  { iso: 'PK', name: 'Pakistan', dial: '+92', flag: '🇵🇰' },
+  { iso: 'PE', name: 'Peru', dial: '+51', flag: '🇵🇪' },
+  { iso: 'PH', name: 'Philippines', dial: '+63', flag: '🇵🇭' },
+  { iso: 'PL', name: 'Poland', dial: '+48', flag: '🇵🇱' },
+  { iso: 'PT', name: 'Portugal', dial: '+351', flag: '🇵🇹' },
+  { iso: 'QA', name: 'Qatar', dial: '+974', flag: '🇶🇦' },
+  { iso: 'RO', name: 'Romania', dial: '+40', flag: '🇷🇴' },
+  { iso: 'RU', name: 'Russia', dial: '+7', flag: '🇷🇺' },
+  { iso: 'SA', name: 'Saudi Arabia', dial: '+966', flag: '🇸🇦' },
+  { iso: 'RS', name: 'Serbia', dial: '+381', flag: '🇷🇸' },
+  { iso: 'SG', name: 'Singapore', dial: '+65', flag: '🇸🇬' },
+  { iso: 'SK', name: 'Slovakia', dial: '+421', flag: '🇸🇰' },
+  { iso: 'SI', name: 'Slovenia', dial: '+386', flag: '🇸🇮' },
+  { iso: 'ZA', name: 'South Africa', dial: '+27', flag: '🇿🇦' },
+  { iso: 'KR', name: 'South Korea', dial: '+82', flag: '🇰🇷' },
+  { iso: 'ES', name: 'Spain', dial: '+34', flag: '🇪🇸' },
+  { iso: 'SE', name: 'Sweden', dial: '+46', flag: '🇸🇪' },
+  { iso: 'CH', name: 'Switzerland', dial: '+41', flag: '🇨🇭' },
+  { iso: 'TH', name: 'Thailand', dial: '+66', flag: '🇹🇭' },
+  { iso: 'TN', name: 'Tunisia', dial: '+216', flag: '🇹🇳' },
+  { iso: 'TR', name: 'Türkiye', dial: '+90', flag: '🇹🇷' },
+  { iso: 'UA', name: 'Ukraine', dial: '+380', flag: '🇺🇦' },
+  { iso: 'AE', name: 'United Arab Emirates', dial: '+971', flag: '🇦🇪' },
+  { iso: 'GB', name: 'United Kingdom', dial: '+44', flag: '🇬🇧' },
+  { iso: 'US', name: 'United States', dial: '+1', flag: '🇺🇸' },
+  { iso: 'VN', name: 'Vietnam', dial: '+84', flag: '🇻🇳' },
 ]
+
+export const DIAL_CODES: DialCode[] = BASE.map((c) => {
+  const [min, max] = PHONE_DIGITS[c.iso] ?? GENERIC
+  return { ...c, min, max }
+})
 
 export function findDial(iso: string): DialCode | undefined {
   return DIAL_CODES.find((c) => c.iso === iso)
@@ -209,6 +226,7 @@ export const FALLBACK_ISO = 'US'
  *
  * This only preselects the chip. A traveller or anyone on a VPN gets the wrong
  * flag and changes it with one tap, and nothing downstream assumes it is right.
+ * Typing the number with its own +code outranks all of it — see `splitDial`.
  */
 export function detectIso(): string {
   try {
@@ -232,11 +250,6 @@ export function detectIso(): string {
 /** The flag artwork for a country, served from our own origin. */
 export function flagSrc(iso: string): string {
   return `/flags/${iso.toLowerCase()}.svg`
-}
-
-/** Digits only, minus a trunk zero people habitually type in front. */
-export function nationalDigits(raw: string): string {
-  return raw.replace(/\D/g, '').replace(/^0+/, '')
 }
 
 /**
