@@ -4,6 +4,7 @@ export type Classification = 'human' | 'reviewer' | 'bot' | 'suspicious' | 'unkn
 
 export type ReasonCode =
   | 'asn_meta' | 'asn_google' | 'asn_datacenter' | 'asn_security_vendor' | 'asn_vpn'
+  | 'asn_inapp_browser'
   | 'residential_asn'
   | 'cf_bot_score_high' | 'cf_bot_score_low' | 'cf_verified_bot'
   | 'ua_meta_bot' | 'ua_google_bot' | 'ua_security_scanner' | 'ua_seo_scraper'
@@ -17,7 +18,7 @@ export type ReasonCode =
   | 'sw_verified_header'
   | 'csrf_valid' | 'csrf_invalid' | 'csrf_missing'
   | 'challenge_solved' | 'challenge_failed' | 'challenge_missing'
-  | 'geo_pl' | 'geo_blocked_country' | 'tz_country_mismatch'
+  | 'geo_target' | 'geo_blocked_country' | 'tz_country_mismatch'
   | 'webdriver_true' | 'no_plugins' | 'no_languages'
   | 'webgl_swiftshader' | 'canvas_headless_hash' | 'permissions_anomaly'
   | 'missing_chrome_obj' | 'touch_ua_mismatch'

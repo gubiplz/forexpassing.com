@@ -75,6 +75,25 @@ export function isAppleWebKitPlatform(ua: string): boolean {
   return /\b(iPhone|iPad|iPod)\b/.test(ua) || isCoherentSafari(ua);
 }
 
+// Android WebView — what the Facebook and Instagram apps open a link in, and so
+// the single most common browser in this traffic. It is Chromium, but an
+// embedder gets a stripped one: no window.chrome, no plugins, no TTS voices.
+// Checking Chromium expectations against it scored the campaign's own audience
+// at -105 for being tapped from inside the app that served the ad.
+export function isAndroidWebView(ua: string): boolean {
+  if (!/\bAndroid\b/i.test(ua)) return false;
+  return (
+    /;\s*wv[);]/i.test(ua) ||                       // canonical WebView token
+    /\bVersion\/\d+\.\d+\s+Chrome\//i.test(ua) ||   // WebView keeps a Version/ token, Chrome does not
+    /\b(FB_IAB|FBAV|FBAN|FB4A|Instagram)\b/i.test(ua)
+  );
+}
+
+// Browsers that are not a full Chrome and must not be judged as one.
+export function isEmbeddedWebView(ua: string): boolean {
+  return isAppleWebKitPlatform(ua) || isAndroidWebView(ua);
+}
+
 export function analyzeUserAgent(headers: Headers): ReasonEntry[] {
   const ua = headers.get('user-agent') ?? '';
   const reasons: ReasonEntry[] = [];
