@@ -1,7 +1,13 @@
 // Forex Passing — stałe globalne (warunki usługi, linki, kolory).
 //
 // Model: nic nie jest sprzedawane na stronie. Jedyna konwersja to kwestionariusz
-// (#apply) — zespół odzywa się po jego przesłaniu. Żadnego Stripe ani checkoutu.
+// (#apply) — zespół odzywa się po jego przesłaniu.
+//
+// Jedyny wyjątek to /pay/<token>, i nie jest sklepem: nie ma katalogu, koszyka
+// ani ceny do wybrania. Klient dogadał zakup na Telegramie, dostał JEDEN link
+// z gotową kwotą i płaci nie zmieniając domeny w połowie zakupu. Kasę prowadzi
+// PARTNER_FIRM — to jej nazwa będzie na wyciągu z karty i strona mówi to wprost
+// nad przyciskiem.
 //
 // KAŻDA liczba dotycząca warunków ma pochodzić stąd, nie z literału w JSX.
 // Zmiana splitu czy okna czasowego w jednym miejscu przechodzi na całą stronę.

@@ -59,6 +59,16 @@
     {
       "source": "/thank-you",
       "destination": "/"
+    },
+    {
+      "source": "/pay/:token",
+      "destination": "/"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/pay/:token",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
     }
   ]
 }

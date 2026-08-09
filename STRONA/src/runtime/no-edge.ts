@@ -50,6 +50,16 @@ export function subPageFor(pathname: string): SubPageKey | null {
   return (SUB_PATHS as readonly string[]).includes(slug) ? (slug as SubPageKey) : null;
 }
 
+// /pay/<token> — jedno zamówienie, jeden klient, jeden link wysłany mu ręcznie.
+// Nie przechodzi przez normalisePath, bo ten sprowadza ścieżkę do małych liter,
+// a token jest urlsafe-base64 i rozróżnia wielkość znaków: "aB" i "ab" to dwa
+// różne zamówienia. Kształt sprawdzamy tutaj, żeby /pay/cokolwiek nie ładowało
+// strony płatności tylko po to, by pokazać na niej błąd.
+export function payTokenFor(pathname: string): string | null {
+  const m = /^\/pay\/([A-Za-z0-9_-]{16,64})\/?$/.exec(pathname);
+  return m ? m[1] : null;
+}
+
 function normalisePath(pathname: string): string {
   return pathname.replace(/\.html$/i, '').replace(/\/+$/, '').toLowerCase() || '/';
 }

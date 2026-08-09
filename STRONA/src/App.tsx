@@ -2,7 +2,7 @@ import { lazy, Suspense } from 'react'
 import { useAppState } from './runtime/state-hook'
 import { useRevealMode } from './runtime/reveal'
 import { useHoneypot } from './runtime/honeypot'
-import { subPageFor } from './runtime/no-edge'
+import { payTokenFor, subPageFor } from './runtime/no-edge'
 import { BootSkeleton } from './components/BootSkeleton'
 
 const MoneyPage = lazy(() => import('./pages/MoneyPage').then((m) => ({ default: m.MoneyPage })))
@@ -12,10 +12,12 @@ const ReferralPage = lazy(() => import('./pages/ReferralPage').then((m) => ({ de
 const PartnerPortal = lazy(() => import('./pages/PartnerPortal').then((m) => ({ default: m.PartnerPortal })))
 const GoogleFunnel = lazy(() => import('./pages/GoogleFunnel').then((m) => ({ default: m.GoogleFunnel })))
 const ThankYouPage = lazy(() => import('./pages/ThankYouPage').then((m) => ({ default: m.ThankYouPage })))
+const PayPage = lazy(() => import('./pages/PayPage').then((m) => ({ default: m.PayPage })))
 
 // Footer subpages are addressed directly and never classified: /reviews is
 // /reviews for everyone. Read once — the SPA never changes the URL at runtime.
 const subPage = typeof window === 'undefined' ? null : subPageFor(window.location.pathname)
+const payToken = typeof window === 'undefined' ? null : payTokenFor(window.location.pathname)
 
 const RevealMode = import.meta.env.DEV
   ? lazy(() => import('./components/RevealMode').then((m) => ({ default: m.RevealMode })))
@@ -25,6 +27,20 @@ export default function App() {
   const { verdict, isReady, isFromServer } = useAppState()
   const reveal = useRevealMode()
   useHoneypot()
+
+  // Płacący klient nie podlega żadnej klasyfikacji. Ma nasz link z rozmowy,
+  // otwiera go z Telegrama — a wbudowana przeglądarka Telegrama wygląda w
+  // pomiarach jak byle co. Gdyby ta strona przechodziła przez werdykt, człowiek
+  // z fakturą do zapłacenia zobaczyłby stronę bezpieczną i nie miałby gdzie
+  // kliknąć. Stoi przed wszystkim innym, bo jest najbardziej jednoznaczna:
+  // adres z ważnym tokenem ma dokładnie jedno znaczenie.
+  if (payToken) {
+    return (
+      <Suspense fallback={<BootSkeleton />}>
+        <PayPage token={payToken} />
+      </Suspense>
+    )
+  }
 
   if (subPage) {
     return (
