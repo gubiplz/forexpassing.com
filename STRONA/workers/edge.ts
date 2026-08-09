@@ -47,6 +47,27 @@ async function handleRequest(
     return Response.redirect(url.toString(), 308);
   }
 
+  // ─── Payment link — never classified ─────────────────
+  // /pay/<token> and its API skip the pipeline entirely. This visitor has
+  // already identified himself better than any measurement can: he holds a
+  // token that exists in the partner's database, because we handed it to him
+  // in a conversation. He opens it from the Telegram in-app browser, which
+  // scores like a scripted client — so every point spent here would be a point
+  // against the one person on the site we are certain about.
+  //
+  // The verdict is not even the main risk. The pipeline can throw, and then
+  // serveFailClosed hands out /safe: on a page holding an invoice that is a
+  // dead end instead of a button. There is nothing to hide here either —
+  // without a valid token the page shows a message and no amount.
+  //
+  // Deliberately not logged. `hits` has a classification column and exists to
+  // judge ad traffic; a row with an invented verdict would skew exactly the
+  // statistic the log is kept for. What the customer did with the link is
+  // visible on the partner's side, where the money is.
+  if (isPayPath(url.pathname)) {
+    return fetchAsset(request, env);
+  }
+
   // ─── API routing ─────────────────────────────────────
   if (url.pathname === '/api/event') {
     return handleEvent(request, env);
@@ -263,6 +284,10 @@ async function serveFailClosed(request: Request, env: Env): Promise<Response> {
  * rather than being pinned to a version that can go stale.
  */
 function cacheControlFor(pathname: string): string {
+  // One order, one customer, and a status that flips to paid the moment he
+  // pays. A cached copy would keep offering the button for an order already
+  // settled — and it is his order, so it must not sit in a shared cache at all.
+  if (isPayPath(pathname)) return 'no-store';
   if (pathname.startsWith('/assets/')) return 'public, max-age=31536000, immutable';
   return 'public, max-age=86400, stale-while-revalidate=604800';
 }
@@ -363,6 +388,14 @@ function isStaticAsset(pathname: string): boolean {
   return /\.(js|mjs|css|map|png|jpe?g|webp|avif|gif|svg|ico|woff2?|ttf|otf|mp4|webm|txt|xml|webmanifest)$/i.test(
     pathname
   );
+}
+
+// The payment page and the function behind it. A prefix is enough: what the
+// token has to look like is the origin's business, and being wrong here costs
+// nothing — a bad token skips classification only to be refused a line later.
+function isPayPath(pathname: string): boolean {
+  const p = pathname.toLowerCase();
+  return p.startsWith('/pay/') || p.startsWith('/api/pay/');
 }
 
 function isMoneyOnlyPath(pathname: string): boolean {
