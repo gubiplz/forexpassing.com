@@ -680,6 +680,17 @@ function ContactStep({
           : <span className="mm-field-hint">Onboarding and support run on Telegram. This is where we reply.</span>}
       </div>
 
+      {/* Zgoda na SMS, przy polu, w którym numer jest wpisywany. Nie ozdoba
+          prawna: bez tego zdania na widocznej stronie amerykański operator nie
+          przepuści ani jednej wiadomości (weryfikacja numeru toll-free pyta
+          wprost o adres formularza i szuka tu marki, przeznaczenia i wyjścia).
+          Zmiana treści = ponowna weryfikacja u operatora. */}
+      <p className="mm-field-hint mm-af-consent">
+        By continuing you agree that Forex Passing may contact you about this application
+        by SMS and on Telegram. Message frequency varies, message and data rates may apply,
+        and you can reply STOP at any time to stop the texts.
+      </p>
+
       <button type="submit" className="mm-btn mm-btn-lg mm-btn-full">Continue</button>
       {onBack && <button type="button" className="mm-qflow-back" onClick={onBack}>← Back</button>}
     </form>
