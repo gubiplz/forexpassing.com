@@ -24,6 +24,11 @@ type Zamowienie = {
   currency: string
   reference: string
   status: string
+  // Trzy pola albo żadne — przychodzą wyłącznie dla zamówień ze zniżką
+  // partnerską i tylko wtedy karta pokazuje przekreśloną cenę.
+  listAmount?: number
+  discount?: number
+  discountPct?: number
 }
 
 // Stan strony jest jednym z pięciu, nigdy mieszanką: dopóki nie wiadomo, co to
@@ -41,6 +46,18 @@ const kwota = (v: number, waluta: string) =>
     maximumFractionDigits: 2,
   })}${waluta === 'USD' ? '' : ` ${waluta}`}`
 
+// Kasa odsyła klienta z powrotem tutaj, z ?paid=1 albo ?canceled=1. Czytamy to
+// RAZ, przy wejściu w moduł (a nie w efekcie — StrictMode puszcza efekty
+// dwukrotnie), i od razu czyścimy pasek adresu: po odświeżeniu ma zostać zwykły
+// link do zamówienia, a nie zamrożony komunikat sprzed pięciu minut.
+const POWROT: '' | 'paid' | 'canceled' = (() => {
+  if (typeof window === 'undefined') return ''
+  const q = new URLSearchParams(window.location.search)
+  const stan = q.get('paid') === '1' ? 'paid' : q.get('canceled') === '1' ? 'canceled' : ''
+  if (stan) window.history.replaceState(null, '', window.location.pathname)
+  return stan
+})()
+
 export function PayPage({ token }: { token: string }) {
   const [stan, setStan] = useState<Stan>({ k: 'loading' })
   const [otwieram, setOtwieram] = useState(false)
@@ -57,7 +74,12 @@ export function PayPage({ token }: { token: string }) {
         // Opłacone i wygaszone to nie to samo co „nie ma takiego linku": ktoś
         // wraca do zakładki, którą zostawił otwartą, i ma się dowiedzieć, że
         // zapłacił, a nie że link jest zły.
-        setStan({ k: zam.status === 'paid' ? 'paid' : 'ok', zam })
+        //
+        // Powrót z kasy liczy się na równi ze statusem zamówienia. Stripe odsyła
+        // tu od razu, a nasz status przestawia dopiero webhook sekundę później —
+        // w tej szczelinie klient, który WŁAŚNIE zapłacił, zobaczyłby przycisk
+        // „zapłać" i drugi raz sięgnął po kartę.
+        setStan({ k: zam.status === 'paid' || POWROT === 'paid' ? 'paid' : 'ok', zam })
       })
       .catch(() => zywe && setStan({ k: 'error' }))
     return () => {
@@ -133,10 +155,14 @@ export function PayPage({ token }: { token: string }) {
           {stan.k === 'paid' && (
             <div className="mm-pay-card">
               <div className="mm-pay-done">Paid</div>
-              <h1 className="mm-h2 mm-pay-h">This order is already paid</h1>
+              <h1 className="mm-h2 mm-pay-h">
+                {POWROT === 'paid' ? 'Payment received' : 'This order is already paid'}
+              </h1>
               <p className="mm-lead mm-pay-lead">
-                {stan.zam.item} · {stan.zam.reference}. Nothing more to do here — we are
-                setting your account up and will message you when it is ready.
+                {stan.zam.item} · {stan.zam.reference}. Nothing more to do here. Your
+                platform login is emailed by <b>{PARTNER_FIRM}</b> once the account is
+                live — so watch for a message under their name, not ours, and check spam
+                if it is not in the inbox within the hour.
               </p>
               <a className="mm-btn mm-btn-lg mm-btn-full" href={TELEGRAM_HREF}>
                 Open the chat
@@ -146,19 +172,59 @@ export function PayPage({ token }: { token: string }) {
 
           {stan.k === 'ok' && (
             <div className="mm-pay-card">
-              <span className="mm-eyebrow mm-eyebrow-teal">Your order</span>
+              <div className="mm-pay-top">
+                <span className="mm-eyebrow mm-eyebrow-teal">Your order</span>
+                {stan.zam.listAmount != null && (
+                  <span className="mm-pay-off">−{stan.zam.discountPct}% applied</span>
+                )}
+              </div>
               <h1 className="mm-h2 mm-pay-h">{stan.zam.item}</h1>
+
+              {/* Wrócił z kasy bez płacenia. Nie „coś poszło nie tak" — wyszedł
+                  sam i ma usłyszeć, że nic go to nie kosztowało, a cena stoi. */}
+              {POWROT === 'canceled' && (
+                <p className="mm-pay-back" role="status">
+                  You left the checkout, so <b>nothing was charged</b>. The order below is
+                  untouched — pick it up whenever you are ready.
+                </p>
+              )}
 
               <div className="mm-pay-rows">
                 <div className="mm-pay-row">
                   <span>Amount</span>
-                  <b className="mm-pay-amt">{kwota(stan.zam.amount, stan.zam.currency)}</b>
+                  <span className="mm-pay-price">
+                    {stan.zam.listAmount != null && (
+                      <s className="mm-pay-was">
+                        {kwota(stan.zam.listAmount, stan.zam.currency)}
+                      </s>
+                    )}
+                    <b className="mm-pay-amt">{kwota(stan.zam.amount, stan.zam.currency)}</b>
+                  </span>
                 </div>
+                {stan.zam.listAmount != null && (
+                  <div className="mm-pay-row">
+                    <span>You save</span>
+                    <b className="mm-pay-save">
+                      −{kwota(stan.zam.discount ?? 0, stan.zam.currency)}
+                    </b>
+                  </div>
+                )}
                 <div className="mm-pay-row">
                   <span>Reference</span>
                   <b>{stan.zam.reference}</b>
                 </div>
               </div>
+
+              {/* Zniżka, o której klient słyszał na Telegramie, do tej pory
+                  istniała wyłącznie w tamtej rozmowie. Tu ma zobaczyć, że jest
+                  już w kwocie — i że nie ma nic do wpisania ani odzyskania. */}
+              {stan.zam.listAmount != null && (
+                <p className="mm-pay-deal">
+                  Your {stan.zam.discountPct}% partner rate is{' '}
+                  <b>already off the amount above</b>. No code to enter, nothing to claim
+                  back later — this link is the discount.
+                </p>
+              )}
 
               {/* Nad przyciskiem, nie pod nim. To jedyne zdanie na tej stronie,
                   które klient MUSI przeczytać zanim kliknie. */}
@@ -172,7 +238,9 @@ export function PayPage({ token }: { token: string }) {
                 onClick={doKasy}
                 disabled={otwieram}
               >
-                {otwieram ? 'Opening secure checkout…' : 'Pay by card'}
+                {otwieram
+                  ? 'Opening secure checkout…'
+                  : `Pay ${kwota(stan.zam.amount, stan.zam.currency)} by card`}
               </button>
 
               {blad && (
@@ -209,6 +277,24 @@ const CSS = `
 .mm-pay-row span{color:var(--mut);font-size:14px}
 .mm-pay-row b{font-size:16px;font-variant-numeric:tabular-nums}
 .mm-pay-amt{font-size:26px;font-weight:800;letter-spacing:-.01em}
+.mm-pay-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.mm-pay-off{font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
+  white-space:nowrap;color:var(--teal);background:rgba(21,128,61,.09);
+  border:1px solid rgba(21,128,61,.35);border-radius:999px;padding:5px 11px}
+/* Stara cena i nowa w jednej linii, obie wyrównane do prawej krawędzi wiersza:
+   przekreślenie działa tylko wtedy, gdy oko przechodzi po nim WPROST na kwotę
+   do zapłaty. */
+.mm-pay-price{display:flex;align-items:baseline;justify-content:flex-end;gap:10px;flex-wrap:wrap}
+.mm-pay-was{color:var(--mut);font-size:17px;font-variant-numeric:tabular-nums;
+  text-decoration-thickness:1.5px}
+.mm-pay-save{color:var(--teal)}
+.mm-pay-deal{font-size:14px;line-height:1.55;color:var(--mut);margin:0 0 18px;
+  padding:12px 14px;background:rgba(21,128,61,.06);border-left:2px solid var(--teal);
+  border-radius:0 10px 10px 0}
+.mm-pay-deal b{color:var(--txt)}
+.mm-pay-back{font-size:14px;line-height:1.55;color:var(--mut);margin:18px 0 0;
+  padding:12px 14px;background:var(--bg2);border-radius:10px}
+.mm-pay-back b{color:var(--txt)}
 .mm-pay-who{font-size:14px;color:var(--mut);margin:0 0 18px;line-height:1.55}
 .mm-pay-who b{color:var(--txt)}
 .mm-pay-err{margin-top:14px;font-size:14px;color:var(--red);text-align:center}

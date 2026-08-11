@@ -9,7 +9,8 @@
 // przeglądarka pytała prop firmę bezpośrednio, token integracji musiałby
 // pojechać do klienta razem z bundlem.
 //
-//   GET  → pozycja, kwota, numer, status (bez danych osobowych — tyle oddaje
+//   GET  → pozycja, kwota, numer, status i — gdy zamówienie dostało zniżkę
+//          partnerską — cena sprzed niej (bez danych osobowych: tyle oddaje
 //          tamta strona i tyle nam wystarcza do narysowania kwoty)
 //   POST → adres kasy; przekierowanie robi już przeglądarka
 //
@@ -43,7 +44,7 @@ export default async function handler(req, res) {
   }
 
   if (req.method === 'GET') return read(res, base, secret, token);
-  if (req.method === 'POST') return start(res, base, token);
+  if (req.method === 'POST') return start(res, base, secret, token);
   res.status(405).json({ error: 'method' });
 }
 
@@ -74,23 +75,39 @@ async function read(res, base, secret, token) {
   // Przepisujemy pole po polu, zamiast przepuszczać cudzą odpowiedź w całości:
   // gdyby tamta strona kiedyś dołożyła do niej mail kupującego, trafiłby stąd
   // prosto do przeglądarki.
-  res.status(200).json({
+  const out = {
     item: String(d.item || ''),
     amount: Number(d.amount_usd || 0),
     currency: String(d.currency || 'USD'),
     reference: String(d.reference || ''),
     status: String(d.status || ''),
-  });
+  };
+  // Cena sprzed rabatu przychodzi tylko dla zamówień, które go dostały. Trzy
+  // pola albo żadne: sama przekreślona kwota bez procentu (lub odwrotnie) to
+  // pół komunikatu. Warunek na kwotę jest tu drugi raz — po tamtej stronie
+  // pilnuje tego to samo, ale przekreślona cena NIŻSZA od płaconej byłaby
+  // najgorszą możliwą pomyłką na stronie, na której ktoś wpisuje kartę.
+  if (Number(d.list_amount_usd || 0) > out.amount) {
+    out.listAmount = Number(d.list_amount_usd);
+    out.discount = Number(d.discount_usd || 0);
+    out.discountPct = Number(d.discount_pct || 0);
+  }
+  res.status(200).json(out);
 }
 
-async function start(res, base, token) {
-  // Bez sekretu: `start` jest publiczne po tamtej stronie, bo token JEST
-  // wstępem. Idzie i tak przez nas, żeby klient nie zobaczył cudzej domeny
-  // w zakładce sieci ani sekundę wcześniej, niż zobaczy ją na kasie.
+async function start(res, base, secret, token) {
+  // Sekret NIE otwiera tu niczego — `start` jest publiczne po tamtej stronie,
+  // bo token JEST wstępem. Mówi tylko, kto kliknął, a od tego zależy jedno:
+  // adres powrotu z kasy. Bez nagłówka Stripe odsyła klienta na domenę prop
+  // firmy, do portalu marki, o której nikt mu nie mówił.
+  //
+  // Zapytanie idzie przez nas także po to, żeby klient nie zobaczył cudzej
+  // domeny w zakładce sieci ani sekundę wcześniej, niż zobaczy ją na kasie.
   let odp;
   try {
     odp = await fetch(`${base}/api/pay/${token}/start`, {
       method: 'POST',
+      headers: { 'x-partner-token': secret },
       signal: AbortSignal.timeout(START_TIMEOUT_MS),
     });
   } catch (err) {
