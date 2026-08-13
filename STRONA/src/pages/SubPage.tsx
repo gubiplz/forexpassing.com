@@ -33,7 +33,6 @@ type ProofPageKey = Exclude<
 import {
   AutoScroller,
   CertCard,
-  PerformanceWidget,
   REVIEWS,
   ReviewBadge,
   ReviewCard,
@@ -44,6 +43,7 @@ import {
   track,
   useReveal,
 } from './shared'
+import { PerformanceWidget } from '../components/PerformanceWidget'
 
 // Every CTA on these pages goes to the questionnaire on the money page — there
 // is no second conversion anywhere on the site.

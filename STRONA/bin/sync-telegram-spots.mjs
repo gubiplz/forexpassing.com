@@ -31,8 +31,10 @@ import {
 
 const TAG = '[telegram-spots]';
 const TOKEN = process.env.TELEGRAM_BOT_TOKEN;
-// Domyślnie publiczny uchwyt kanału; ID liczbowe też przejdzie.
-const CHAT = process.env.TELEGRAM_CHAT_ID || TG_CHANNEL_CHAT_ID;
+// Domyślnie publiczny uchwyt kanału; ID liczbowe też przejdzie. Ta sama nazwa
+// zmiennej co w api/spots-sync.js — dwie nazwy na to samo to footgun, przed
+// którym ostrzega komentarz w api/_lib/telegram.js.
+const CHAT = process.env.TELEGRAM_SPOTS_CHAT_ID || TG_CHANNEL_CHAT_ID;
 // Telegram tnie opis czatu na 255 znakach — po cichu, bez błędu.
 const MAX_LEN = TG_DESCRIPTION_MAX;
 

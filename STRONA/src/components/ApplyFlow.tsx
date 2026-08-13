@@ -16,25 +16,7 @@ import {
   DIAL_CODES, detectIso, findDial, flagSrc, nationalDigits, normalizeTelegram,
   samplePlaceholder, splitDial, TELEGRAM_RE,
 } from '../data/dial-codes'
-
-declare global {
-  interface Window {
-    fbq?: (...args: unknown[]) => void
-    gtag?: (...args: unknown[]) => void
-  }
-}
-
-// Addressed at our pixel only: index.html also initialises the media buyer's,
-// and an untargeted fbq('track', …) would raise these events in his account too.
-// Same reasoning as the copy of this helper in ../pages/shared.tsx.
-const OWN_PIXEL = '1566242625059670'
-
-function track(fbEvent: string, gaEvent: string, params?: Record<string, unknown>, custom = false) {
-  if (typeof window === 'undefined') return
-  if (custom) window.fbq?.('trackSingleCustom', OWN_PIXEL, fbEvent, params)
-  else window.fbq?.('trackSingle', OWN_PIXEL, fbEvent, params)
-  window.gtag?.('event', gaEvent, params)
-}
+import { track } from '../lib/track'
 
 // Local part, one @, a dotted domain, and a TLD of at least two letters. Stops
 // the two mistakes that actually arrive: a handle with no @ at all, and
@@ -129,6 +111,9 @@ export function ApplyFlow({
   // A restored draft means ApplyStart already fired in the earlier visit.
   const started = useRef(restored !== null)
   const rootRef = useRef<HTMLDivElement>(null)
+  // For the server's time trap: a human needs seconds to walk the steps, a
+  // script posts instantly. Counted from mount, sent as elapsed_ms.
+  const openedAt = useRef(Date.now())
 
   useEffect(() => {
     if (restored) onDirty?.()
@@ -219,6 +204,7 @@ export function ApplyFlow({
           phoneIso: contact.phoneIso,
           telegram: contact.telegram.trim(),
           referral_note: contact.referralNote,
+          elapsed_ms: Date.now() - openedAt.current,
           answers: finalAnswers,
           outcome: result,
           source,

@@ -1,0 +1,7 @@
+# Funnels are kept out of the index with meta robots / X-Robots-Tag, not with
+# Disallow: a disallowed URL can't be crawled, so Google would never see the
+# noindex on it.
+User-agent: *
+Allow: /
+
+Sitemap: https://forexpassing.com/sitemap.xml

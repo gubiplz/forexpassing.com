@@ -89,21 +89,12 @@ html{scroll-behavior:smooth}
 .mm-terms-slot{display:flex;justify-content:center;margin-top:30px}
 @media(max-width:560px){.mm-hero-solo{padding:36px 0 34px}}
 
-.mm-hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center;text-align:left}
-@media(max-width:900px){.mm-hero-grid{grid-template-columns:1fr;gap:34px;text-align:center}}
-.mm-hero-grid .mm-lead{margin:0;max-width:560px}
-@media(max-width:900px){.mm-hero-grid .mm-lead{margin:0 auto}}
-.mm-hero-copy .mm-h1{margin:16px 0 18px}
 .mm-cta-row{display:flex;gap:14px;flex-wrap:wrap;margin:26px 0 14px}
 .mm-cta-left{justify-content:flex-start}
 @media(max-width:900px){.mm-cta-row{justify-content:center}}
 .mm-microtrust{font-size:13px;color:var(--mut);letter-spacing:.05em;text-transform:uppercase}
-.mm-hero-points{list-style:none;margin:20px 0 6px;display:grid;gap:11px}
-.mm-hero-points li{position:relative;padding-left:28px;font-size:15px;color:var(--txt)}
-.mm-hero-points li:before{content:"";position:absolute;left:0;top:6px;width:14px;height:8px;border-left:2px solid var(--teal);border-bottom:2px solid var(--teal);transform:rotate(-45deg)}
 .mm-hero-glow{position:absolute;top:-180px;left:50%;transform:translateX(-50%);width:760px;height:520px;
   background:radial-gradient(closest-side,rgba(22,163,74,.18),transparent 70%);pointer-events:none;z-index:0}
-.mm-hero-card{display:flex;justify-content:center}
 
 /* TERMS CARD — hero */
 .mm-tcard{width:100%;max-width:390px;background:#0c1512;color:#e8f0ec;border:1px solid rgba(255,255,255,.08);
@@ -142,9 +133,7 @@ html{scroll-behavior:smooth}
 .mm-pain-note{font-size:clamp(16px,2.2vw,20px);font-weight:700;line-height:1.5;max-width:700px;
   margin:32px auto 0;text-align:center}
 
-/* PAIN SPIRAL */
-.mm-spiral{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:34px 0 26px}
-@media(max-width:760px){.mm-spiral{grid-template-columns:repeat(2,1fr)}}
+/* STEP CARDS (mm-steps) */
 .mm-step{border:1px solid var(--line);border-radius:12px;padding:18px 16px;background:rgba(0,0,0,.02)}
 .mm-step-n{display:block;font-family:'Anton','Anton Fallback',sans-serif;font-size:22px;color:var(--mut);opacity:.5}
 .mm-step-t{display:block;font-weight:700;font-size:15px;margin-top:6px}
@@ -153,17 +142,6 @@ html{scroll-behavior:smooth}
 .mm-pain-out{font-size:clamp(18px,2.6vw,24px);font-weight:700;max-width:760px;line-height:1.4}
 
 /* MECHANISM */
-.mm-states{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:0 0 24px}
-@media(max-width:760px){.mm-states{grid-template-columns:1fr}}
-.mm-state{border-radius:14px;padding:26px 22px;border:1px solid var(--line);background:rgba(0,0,0,.02)}
-.mm-state-label{font-family:'Anton','Anton Fallback',sans-serif;font-size:30px;letter-spacing:.02em}
-.mm-state-sub{display:block;color:var(--mut);font-size:14px;margin-top:8px}
-.mm-state-go{border-color:rgba(22,163,74,.4)}
-.mm-state-go .mm-state-label{color:var(--teal)}
-.mm-state-wait{border-color:rgba(217,119,6,.4)}
-.mm-state-wait .mm-state-label{color:#d97706}
-.mm-state-no{border-color:rgba(255,90,77,.4)}
-.mm-state-no .mm-state-label{color:var(--red)}
 .mm-mech-note{font-size:18px;margin:6px 0 0}
 
 /* BAND */
@@ -172,15 +150,6 @@ html{scroll-behavior:smooth}
 .mm-band-sub{font-weight:700;font-size:clamp(15px,2vw,18px);margin-top:12px;opacity:.85}
 
 /* SYSTEM / VALUE STACK */
-.mm-sys-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:34px 0 22px}
-@media(max-width:760px){.mm-sys-grid{grid-template-columns:1fr}}
-.mm-sys-card{position:relative;border:1px solid var(--line);border-radius:14px;padding:20px 22px;background:rgba(0,0,0,.02)}
-.mm-sys-card-core{border-color:rgba(22,163,74,.4);background:rgba(22,163,74,.05)}
-.mm-sys-tag{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.12em;color:#fff;background:var(--teal);border-radius:6px;padding:3px 8px;margin-bottom:10px}
-.mm-sys-t{display:block;font-weight:800;font-size:17px;margin-bottom:6px}
-.mm-sys-d{display:block;color:var(--mut);font-size:14px;line-height:1.55}
-.mm-sys-total{display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;border:1px dashed rgba(22,163,74,.4);border-radius:14px;padding:18px 24px;font-weight:700;text-align:center}
-.mm-sys-total-now{font-family:'Anton','Anton Fallback',sans-serif;font-size:20px;color:var(--teal);line-height:1.3}
 .mm-guarantee-fine{font-size:13px;color:var(--mut);line-height:1.6;max-width:720px;margin:14px auto 0;text-align:center}
 
 /* WHO IT'S FOR */
@@ -300,22 +269,7 @@ html{scroll-behavior:smooth}
 .mm-price-proof-item strong{color:var(--txt);font-weight:800}
 .mm-price-proof-sep{width:5px;height:5px;border-radius:50%;background:var(--teal);flex:0 0 auto}
 @media(max-width:520px){.mm-price-proof{border-radius:16px}.mm-price-proof-sep{display:none}}
-.mm-price-wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:36px;align-items:center}
-@media(max-width:820px){.mm-price-wrap{grid-template-columns:1fr}}
-.mm-price-card{border:1px solid rgba(22,163,74,.35);border-radius:18px;padding:34px;background:rgba(22,163,74,.04)}
-.mm-price-urgency{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:#b91c1c;
-  background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:999px;padding:7px 14px;margin-bottom:16px}
-.mm-price-urgency-dot{width:8px;height:8px;border-radius:50%;background:#ef4444;animation:mm-blink 1.4s infinite}
-@keyframes mm-blink{0%,100%{opacity:1}50%{opacity:.25}}
 .mm-count{font-variant-numeric:tabular-nums;font-weight:800;letter-spacing:.04em}
-.mm-price-tag{display:block;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--teal);margin-bottom:16px}
-.mm-price-list{list-style:none;margin:0 0 26px}
-.mm-price-list li{position:relative;padding:9px 0 9px 28px;border-bottom:1px solid var(--line);font-size:15px}
-.mm-price-list li:before{content:"";position:absolute;left:0;top:14px;width:14px;height:8px;border-left:2px solid var(--teal);border-bottom:2px solid var(--teal);transform:rotate(-45deg)}
-.mm-price-fine{font-size:12px;color:var(--mut);margin-top:14px;text-align:center}
-.mm-price-side h3{color:var(--txt)}
-.mm-price-side p{color:var(--mut);font-size:16px;margin-bottom:14px}
-.mm-price-side-strong{color:var(--txt)!important;font-weight:700}
 
 /* APPLICATION QUESTIONNAIRE */
 .mm-form{display:grid;gap:18px;text-align:left}
@@ -373,11 +327,6 @@ html{scroll-behavior:smooth}
 .mm-form-ok-d a{color:var(--teal)}
 
 /* FAQ */
-.mm-faq-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:30px}
-@media(max-width:760px){.mm-faq-grid{grid-template-columns:1fr}}
-.mm-faq-item{border:1px solid var(--line);border-radius:12px;padding:22px;background:rgba(0,0,0,.02)}
-.mm-faq-q{display:block;font-weight:700;font-size:16px;margin-bottom:8px}
-.mm-faq-a{display:block;color:var(--mut);font-size:14px;line-height:1.6}
 
 /* FOOTER — dark band. Two variants: "wide" (three columns, every page) and
    "meta" (logo + one row of proof links, offer page only). */
@@ -578,7 +527,6 @@ html{scroll-behavior:smooth}
 @media (prefers-reduced-motion: reduce){
   html{scroll-behavior:auto}
   .mm-ticker-track{animation:none}
-  .mm-price-urgency-dot{animation:none}
   .mm-reveal{opacity:1;transform:none;transition:none}
   .mm-btn{transition:none}
 }
@@ -603,24 +551,6 @@ html{scroll-behavior:smooth}
    collapse; once defined it covers the frame. Same trick as /watch. */
 .mm-vsl-frame wistia-player:not(:defined){display:block;height:100%;filter:blur(5px)}
 .mm-vsl-frame iframe,.mm-vsl-frame wistia-player{position:absolute;inset:0;width:100%;height:100%;border:0}
-/* Facade: a local poster stands in for the player until someone means to watch.
-   The player itself is ~350 KB from a third party, which is far too much to
-   spend on visitors who never press play. */
-.mm-vsl-facade{position:absolute;inset:0;width:100%;height:100%;padding:0;border:0;
-  display:block;cursor:pointer;background:#000;overflow:hidden}
-.mm-vsl-facade img{width:100%;height:100%;object-fit:cover;display:block}
-.mm-vsl-play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
-  width:74px;height:74px;border-radius:50%;background:rgba(0,0,0,.55);
-  border:3px solid #fff;transition:transform .18s ease,background .18s ease}
-.mm-vsl-play::after{content:'';position:absolute;left:calc(50% + 4px);top:50%;
-  transform:translate(-50%,-50%);border-style:solid;border-width:15px 0 15px 25px;
-  border-color:transparent transparent transparent #fff}
-.mm-vsl-facade:hover .mm-vsl-play{transform:translate(-50%,-50%) scale(1.08);background:rgba(0,0,0,.7)}
-/* Lewy gorny rog z tego samego powodu co na /thank-you: plakat ma na dole
-   wlasny pasek z podpisem z klipu, a wysrodkowana etykieta na nim siadala. */
-.mm-vsl-facade-label{position:absolute;left:14px;top:12px;
-  color:#fff;font-size:13px;font-weight:800;letter-spacing:.04em;
-  text-shadow:0 2px 10px rgba(0,0,0,.8)}
 .mm-vsl-failed{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;
   gap:8px;padding:20px;text-align:center;color:#fff;font-size:14px;line-height:1.5;background:#0d1a13}
 /* Nakladka "wlacz dzwiek" nad autostartujacym klipem. Wistia ma swoj przycisk
@@ -761,8 +691,7 @@ html{scroll-behavior:smooth}
    dwie. `min-height` na nagłówku dawałby to samo tylko do chwili, w której któryś
    zawinie się na trzy; subgrid nie ma tego ograniczenia.
    row-gap:0, bo subgrid dziedziczy odstęp rodzica (18 px) i bez tego wchodziłby
-   między numer, nagłówek i opis WEWNĄTRZ karty.
-   Selektor przez .mm-steps, bo .mm-step nosi też sekcja .mm-spiral wyżej. */
+   między numer, nagłówek i opis WEWNĄTRZ karty. */
 .mm-steps .mm-step{display:grid;grid-template-rows:subgrid;grid-row:span 3;row-gap:0}
 .mm-steps .mm-step-n{justify-self:center}
 
@@ -1428,26 +1357,9 @@ html{scroll-behavior:smooth}
 .mm-typ-video-frame{position:relative;aspect-ratio:16/9;background:#000 center/cover no-repeat}
 .mm-typ-video-frame wistia-player:not(:defined){display:block;height:100%;filter:blur(5px)}
 .mm-typ-video-frame wistia-player,.mm-typ-video-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
-/* No poster yet, so the facade is a plain plate with the play control. It still
-   exists for the reason the one on /meta does: the player is ~350 KB from a
-   third party and must not load for someone who never presses play. */
-.mm-typ-video-facade{position:absolute;inset:0;width:100%;height:100%;padding:0;border:0;cursor:pointer;
-  display:block;overflow:hidden;background:#fff}
-.mm-typ-video-facade img{width:100%;height:100%;object-fit:cover;display:block}
-/* Etykieta stoi w LEWYM GORNYM rogu, nie na dole. Plakat ma na dole wlasny
-   pasek z podpisem z klipu — bialy napis ladowal dokladnie na nim i dwa biale
-   teksty zlewaly sie w jedno. Gora-lewa jest wolna, bo logo siedzi po prawej.
-   Cien zamiast gradientu pod spodem: dziala niezaleznie od tego, jak jasna
-   klatka trafi tu nastepnym razem, i nie przyciemnia samego plakatu. */
-.mm-typ-video-facade-label{position:absolute;left:14px;top:12px;color:#fff;
-  font-size:13px;font-weight:800;letter-spacing:.04em;z-index:1;
-  text-shadow:0 2px 10px rgba(0,0,0,.85)}
 .mm-typ-video-frame.is-empty{display:flex;align-items:center;justify-content:center;
   background:repeating-linear-gradient(135deg,rgba(255,255,255,.035) 0 10px,transparent 10px 20px),#0d1a13;
   border-top:1px dashed rgba(255,255,255,.22);color:rgba(255,255,255,.62)}
-@media (hover:hover) and (pointer:fine){
-  .mm-typ-video-facade:hover .mm-vsl-play{transform:translate(-50%,-50%) scale(1.08);background:rgba(0,0,0,.7)}
-}
 
 /* ---- reserved artwork --------------------------------------------------- */
 .mm-typ-slot{display:flex;align-items:center;justify-content:center;width:100%;

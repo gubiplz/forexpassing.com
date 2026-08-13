@@ -13,54 +13,6 @@
       "destination": "/api/r/:slug"
     },
     {
-      "source": "/meta",
-      "destination": "/"
-    },
-    {
-      "source": "/meta-funnel",
-      "destination": "/"
-    },
-    {
-      "source": "/insta-funnel",
-      "destination": "/"
-    },
-    {
-      "source": "/google-funnel",
-      "destination": "/"
-    },
-    {
-      "source": "/tiktok-funnel",
-      "destination": "/"
-    },
-    {
-      "source": "/payouts",
-      "destination": "/"
-    },
-    {
-      "source": "/past-performance",
-      "destination": "/"
-    },
-    {
-      "source": "/reviews",
-      "destination": "/"
-    },
-    {
-      "source": "/contract",
-      "destination": "/"
-    },
-    {
-      "source": "/referral-program",
-      "destination": "/"
-    },
-    {
-      "source": "/partner-portal",
-      "destination": "/"
-    },
-    {
-      "source": "/thank-you",
-      "destination": "/"
-    },
-    {
       "source": "/pay/:token",
       "destination": "/"
     }

@@ -184,14 +184,6 @@ body::before {
 
 #root { position: relative; z-index: 1; }
 
-/* Carousel: responsive slide basis via CSS variable */
-@media (max-width: 720px) {
-  .embla__slide {
-    flex-basis: var(--slide-basis-mobile, 80%) !important;
-  }
-  .embla__arrow { display: none !important; }
-}
-
 /* Line clamp helper */
 .line-clamp-4 {
   display: -webkit-box;

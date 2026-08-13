@@ -33,7 +33,6 @@ import { TESTIMONIALS } from '../data/testimonials'
 import {
   AutoScroller,
   CertCard,
-  PerformanceWidget,
   REVIEWS,
   ReviewBadge,
   ReviewCard,
@@ -45,6 +44,7 @@ import {
   track,
   useReveal,
 } from './shared'
+import { PerformanceWidget } from '../components/PerformanceWidget'
 
 const PAIN_STEPS = [
   'You buy the evaluation',

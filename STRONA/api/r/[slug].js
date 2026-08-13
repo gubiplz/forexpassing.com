@@ -38,6 +38,9 @@ export default async function handler(req, res) {
           ua: String(req.headers['user-agent'] ?? '').slice(0, 400),
           referrer: String(req.headers.referer ?? '').slice(0, 400),
         }),
+        // Krótszy niż gdziekolwiek indziej w repo: klient czeka na redirect,
+        // więc wisząca baza nie może go trzymać dłużej niż mrugnięcie.
+        signal: AbortSignal.timeout(1500),
       });
     } catch (err) {
       console.error('[r] click not recorded', err);

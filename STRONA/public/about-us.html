@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>About Us · Forex Passing</title>
+<title>About Us — Forex Passing | Forex Trading Education</title>
 
 <!-- Meta Pixel Code -->
 <script>
@@ -35,7 +35,19 @@ src="https://www.facebook.com/tr?id=1554685979728197&ev=PageView&noscript=1"
   content="Forex Passing is a trading-education company. We explain market structure, risk management and how prop firm evaluations work. We do not promise income or trading results."
 />
 <meta name="robots" content="index, follow" />
-<link rel="canonical" href="https://forexpassing.com/about-us.html" />
+<!-- Bez .html: cleanUrls serwuje /about-us, a dwa adresy na jedna strone
+     rozdwoilyby jej sygnaly w indeksie. -->
+<link rel="canonical" href="https://forexpassing.com/about-us" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Forex Passing" />
+<meta property="og:title" content="About Us — Forex Passing | Forex Trading Education" />
+<meta property="og:description" content="Forex Passing is a trading-education company. We explain market structure, risk management and how prop firm evaluations work." />
+<meta property="og:url" content="https://forexpassing.com/about-us" />
+<meta property="og:image" content="https://forexpassing.com/og-image.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://forexpassing.com/og-image.png" />
 <link rel="icon" type="image/png" href="/favicon-32x32.png" />
   <!-- Type served from our own origin. Metric-matched stand-ins keep the first
        paint the same size as the real face, so the swap does not move the page. -->
@@ -195,6 +207,8 @@ body{
 
 <script>
   var f = document.getElementById('mm-form');
+  // For the server's time trap: milliseconds from page load to submit.
+  var t0 = Date.now();
   if (f) f.addEventListener('submit', function (e) {
     e.preventDefault();
     var err = document.getElementById('mm-form-err');
@@ -205,7 +219,7 @@ body{
     fetch('/api/event/subscribe', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify(Object.fromEntries(new FormData(f))),
+      body: JSON.stringify(Object.assign(Object.fromEntries(new FormData(f)), { elapsed_ms: Date.now() - t0 })),
     }).then(function (r) {
       if (!r.ok) throw new Error('failed');
       f.style.display = 'none';

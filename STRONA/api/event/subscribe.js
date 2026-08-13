@@ -20,6 +20,56 @@ import { normalizeTelegram } from '../../src/lib/phone-rules.js';
 
 const str = (v) => (typeof v === 'string' ? v.trim() : '');
 
+// Endpoint jest publiczny i rozsyła maile przez Resend — bez żadnej zapory
+// każdy POST-em może spamować cudzą skrzynkę na nasz koszt i naszą reputację
+// domeny. Trzy smycze poniżej (Origin, limit per-IP, pułapka czasowa) nie
+// zatrzymają zdeterminowanego botnetu, ale odcinają cały prosty spam bez
+// dokładania infrastruktury i bez tarcia dla człowieka z formularzem.
+
+// Przeglądarka wysyłająca formularz z naszej strony zawsze niesie któryś z tych
+// hostów. Brak nagłówka Origin przepuszczamy: starsze przeglądarki i nie-CORS-owe
+// POST-y go nie mają, a odcinanie ich karałoby ludzi, nie boty.
+function originAllowed(origin) {
+  let host;
+  try {
+    host = new URL(origin).hostname;
+  } catch {
+    return false;
+  }
+  return (
+    host === 'forexpassing.com' ||
+    host === 'www.forexpassing.com' ||
+    host.endsWith('.vercel.app') ||
+    host === 'localhost' ||
+    host === '127.0.0.1'
+  );
+}
+
+// Limit per-IP w pamięci modułu. To smycz, nie kłódka: każda instancja funkcji
+// liczy osobno i zapomina wszystko przy zimnym starcie. Wystarcza, bo człowiek
+// nie składa pięciu zgłoszeń w minutę, a skrypt lecący z jednego adresu tak.
+const RATE_WINDOW_MS = 60_000;
+const RATE_MAX = 5;
+const rateHits = new Map();
+function rateLimited(ip) {
+  if (!ip) return false;
+  const now = Date.now();
+  const recent = (rateHits.get(ip) || []).filter((t) => now - t < RATE_WINDOW_MS);
+  if (recent.length >= RATE_MAX) {
+    rateHits.set(ip, recent);
+    return true;
+  }
+  recent.push(now);
+  rateHits.set(ip, recent);
+  // Mapa nie może rosnąć bez końca w ciepłej instancji.
+  if (rateHits.size > 1000) {
+    for (const [k, v] of rateHits) {
+      if (v.every((t) => now - t >= RATE_WINDOW_MS)) rateHits.delete(k);
+    }
+  }
+  return false;
+}
+
 // Krótko, bo to nie jest czas oczekiwania odbiorcy — to czas, o który stoi
 // człowiek patrzący na formularz. Odbiorca bywa funkcją serverless, więc zimny
 // start po drugiej stronie mieści się w tym oknie, a zawieszenie już nie.
@@ -63,6 +113,21 @@ export default async function handler(req, res) {
     return;
   }
 
+  const origin = str(req.headers.origin);
+  if (origin && !originAllowed(origin)) {
+    console.warn('[lead] foreign origin — rejected', { origin: origin.slice(0, 120) });
+    res.status(403).json({ error: 'origin' });
+    return;
+  }
+
+  // Ten sam odczyt IP co niżej w leadzie — patrz komentarz przy polu `ip`.
+  const ip = str(req.headers['cf-connecting-ip']) || str(req.headers['x-forwarded-for']).split(',')[0].trim();
+  if (rateLimited(ip)) {
+    console.warn('[lead] rate limited', { ip });
+    res.status(429).json({ error: 'rate' });
+    return;
+  }
+
   const body = typeof req.body === 'string' ? safeParse(req.body) : req.body || {};
   if (!body) {
     res.status(400).json({ error: 'invalid JSON' });
@@ -96,6 +161,21 @@ export default async function handler(req, res) {
       value: str(body.company).slice(0, 80),
       email: str(body.email).slice(0, 200),
     });
+  }
+
+  // Pułapka czasowa: formularz wysyła, ile milisekund minęło od otwarcia.
+  // Człowiek potrzebuje ich tysięcy, skrypt setek. Brak pola przepuszcza —
+  // cache'owane kopie stron statycznych go nie wysyłają (ten sam powód, dla
+  // którego `company` wyżej jest tylko odnotowywane). Odpowiadamy "ok" jak
+  // honeypot, żeby skrypt nie miał czego się nauczyć.
+  const elapsedMs = Number(body.elapsed_ms);
+  if (Number.isFinite(elapsedMs) && elapsedMs >= 0 && elapsedMs < 3000) {
+    console.warn('[lead] time trap — dropped', {
+      elapsed_ms: elapsedMs,
+      email: str(body.email).slice(0, 200),
+    });
+    res.status(200).json({ ok: true });
+    return;
   }
 
   // Kanał trafienia liczony przed leadem, bo od niego zależy i outcome, i mail:
@@ -147,8 +227,9 @@ export default async function handler(req, res) {
     // 162.158.x.x dla każdego zgłoszenia. Prawdziwy adres jest w
     // cf-connecting-ip; to samo pole czyta workerowa wersja tego endpointu w
     // workers/routes/event.ts. Jeśli kiedyś Cloudflare zniknie z drogi,
-    // zostaje pierwszy skok z x-forwarded-for, czyli klient.
-    ip: str(req.headers['cf-connecting-ip']) || str(req.headers['x-forwarded-for']).split(',')[0].trim(),
+    // zostaje pierwszy skok z x-forwarded-for, czyli klient. Odczyt siedzi na
+    // początku handlera, bo ten sam adres karmi limit per-IP.
+    ip,
     ua: (req.headers['user-agent'] || '').slice(0, 200),
   };
 
