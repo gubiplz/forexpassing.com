@@ -14,6 +14,7 @@ import { useEffect, useRef, useState } from 'react'
 import { ApplyModal } from '../components/ApplyFlow'
 import { CLIENT_SPLIT, CTA_LABEL, OUR_SPLIT, PARTNER_FIRM } from '../constants'
 import { PAYOUT_CERTS } from '../data/payouts'
+import { TESTIMONIALS } from '../data/testimonials'
 import {
   AutoScroller,
   CertCard,
@@ -22,6 +23,7 @@ import {
   ReviewBadge,
   ReviewCard,
   SiteFooter,
+  TestimonialCard,
   TopBar,
   track,
   useReveal,
@@ -269,6 +271,34 @@ export function FreeAccountPage() {
               guaranteed.
             </p>
             <CtaRow onOpen={openApply} source="payouts" />
+          </div>
+        </section>
+      )}
+
+      {/* CLIENT TESTIMONIALS — filmed clips, same grid as the /meta offer page.
+          A slot with no videoId renders as a "being filmed" frame. */}
+      {TESTIMONIALS.length > 0 && (
+        <section className="mm-section mm-testi mm-reveal" id="testimonials">
+          <div className="mm-wrap">
+            <h2 className="mm-h2 mm-center">CLIENT TESTIMONIALS</h2>
+            <p className="mm-lead mm-center mm-lead-mid">
+              {TESTIMONIALS.some((t) => t.videoId)
+                ? 'The short version is written under each video.'
+                : 'The recordings are being filmed. The short version of each one is written underneath.'}
+            </p>
+
+            <div className="mm-testi-grid">
+              {TESTIMONIALS.map((t, i) => (
+                <TestimonialCard testimonial={t} key={t.videoId || `slot-${i}`} />
+              ))}
+            </div>
+
+            <p className="mm-disclaimer" style={{ marginTop: 26 }}>
+              Individual results. Past performance is not indicative of future results, an
+              evaluation can fail, and no outcome is guaranteed.
+            </p>
+
+            <CtaRow onOpen={openApply} source="testimonials" />
           </div>
         </section>
       )}
