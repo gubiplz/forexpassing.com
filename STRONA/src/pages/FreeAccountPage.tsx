@@ -162,6 +162,7 @@ function CtaRow({ onOpen, source, tight }: { onOpen: () => void; source: string;
 
 const FAQ: [string, string][] = [
   ['Is it really free?', `Yes. We get your ${CHALLENGE_SIZE} prop firm challenge for you and manage it at zero cost. There is no challenge purchase, no upfront fee and no monthly charge from you.`],
+  ['Does everyone get the free account?', `No. Every applicant answers the same short qualifying questionnaire, and the free ${CHALLENGE_SIZE} challenge goes only to those whose answers pass it. If you are a fit, the team reaches out on Telegram and we get your free challenge going. If not, the form says so on the spot and nothing is submitted.`],
   ['So how do you make money?', `Only after a payout is released. You keep ${CLIENT_SPLIT} of it, we take ${OUR_SPLIT}. If nothing is ever paid out, there is nothing to split and you owe us nothing.`],
   ['Who actually trades the account?', "Our trading desk, under a written agreement, inside the firm's risk rules. You are not expected to watch charts or place a single order."],
   ['Whose account is it?', 'Yours. It is registered in your name at the prop firm. We get trading access under the agreement, never ownership, and payouts land with you.'],
@@ -341,6 +342,13 @@ export function FreeAccountPage() {
             <span className="mm-price-proof-item" role="listitem"><strong>{CLIENT_SPLIT}/{OUR_SPLIT}</strong> split, paid after payout</span>
           </div>
 
+          <h2 className="mm-h2 mm-center">EVERY FREE ACCOUNT IS <span className="mm-teal">EARNED, NOT GIVEN</span></h2>
+          <p className="mm-lead mm-lead-mid mm-center">
+            The free account is not automatic. Everyone answers the same short qualifying
+            questionnaire, and the free {CHALLENGE_SIZE} challenge goes only to applicants whose
+            answers pass it. It takes about a minute — and there is nothing to pay either way.
+          </p>
+
           {/* ⚠ Invented scarcity, kept by an explicit owner decision. */}
           <p className="mm-warn mm-warn-mb">
             Limited free spots left. Today's applications close in <Countdown />
@@ -349,8 +357,9 @@ export function FreeAccountPage() {
           <CtaRow onOpen={openApply} source="apply" tight />
 
           <p className="mm-disclaimer" style={{ marginTop: 22 }}>
-            A few questions and your contact details, about a minute. Nothing to pay. The rule check
-            comes first, then a call, then the agreement.
+            A few questions and your contact details, about a minute. Only a passing questionnaire
+            qualifies for a free account. Nothing to pay. The rule check comes first, then a call,
+            then the agreement.
           </p>
         </div>
       </section>

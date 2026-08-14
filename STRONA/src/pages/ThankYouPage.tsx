@@ -416,6 +416,19 @@ export function ThankYouPage() {
   const rootRef = useRef<HTMLDivElement>(null)
   useReveal(rootRef)
 
+  // ApplyFlow tags the free-account handoff with ?src=free. When it is set, the
+  // Telegram opener names the free $25K account, so the desk can tell a
+  // free-account applicant apart from an offer-page one without opening the CRM.
+  const fromFree =
+    typeof window !== 'undefined' &&
+    new URLSearchParams(window.location.search).get('src') === 'free'
+  const acceptedMessage = fromFree
+    ? 'My FREE $25K account application was accepted. I have read the page — what do you need from me to get started?'
+    : 'My application was accepted. I have read the page — what do you need from me to get started?'
+  const objectionMessage = fromFree
+    ? 'My FREE $25K account application was accepted and I have a couple of questions before we start.'
+    : 'My application was accepted and I have a couple of questions before we start.'
+
   // Only clips that exist. The "being filmed" slots earn their place on
   // /reviews, where they say more is coming; directly under "you are qualified"
   // they read as a page that ran out of proof.
@@ -646,7 +659,7 @@ export function ThankYouPage() {
             to="admin"
             source="typ_message_team"
             note="Double-check the handle above before you send your first message."
-            message="My application was accepted. I have read the page — what do you need from me to get started?"
+            message={acceptedMessage}
           />
         </div>
       </section>
@@ -679,7 +692,7 @@ export function ThankYouPage() {
             label="MESSAGE US ON TELEGRAM"
             to="admin"
             source="typ_message_objection"
-            message="My application was accepted and I have a couple of questions before we start."
+            message={objectionMessage}
           />
         </div>
       </section>

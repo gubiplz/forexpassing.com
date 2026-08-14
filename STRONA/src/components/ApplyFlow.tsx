@@ -115,6 +115,18 @@ export function ApplyFlow({
   // script posts instantly. Counted from mount, sent as elapsed_ms.
   const openedAt = useRef(Date.now())
 
+  // The /freeaccount lander opens this flow with source "free". Marking the
+  // Telegram opener — and the /thank-you handoff — lets the desk tell a
+  // free-account lead apart from an offer-page one the moment it lands, without
+  // opening the CRM.
+  const fromFree = source === 'free'
+  const sentMessage = fromFree
+    ? 'Hi — I just applied for the FREE $25K funded account from your free-account page. I am ready to get started, what happens next?'
+    : 'I have just sent my application. I am ready to get funded and start earning payouts. What happens next?'
+  const rejectedMessage = fromFree
+    ? 'Hi — I filled in the application for your FREE $25K account offer and it came back as not a fit. Can you take another look?'
+    : 'I filled in the application and it came back as not a fit. Can you take another look?'
+
   useEffect(() => {
     if (restored) onDirty?.()
   }, [restored, onDirty])
@@ -228,7 +240,9 @@ export function ApplyFlow({
       if (data.hq) {
         setOutcome('leaving')
         track('Lead', 'generate_lead', { source })
-        window.location.assign(THANK_YOU_HREF)
+        // Carry the free-account origin across the handoff so /thank-you can
+        // mark its Telegram opener the same way the in-modal cards do.
+        window.location.assign(fromFree ? `${THANK_YOU_HREF}?src=free` : THANK_YOU_HREF)
         // If the browser refuses the jump — some in-app webviews do — fall back
         // to the normal confirmation rather than leaving them on a spinner.
         window.setTimeout(() => setOutcome('sent'), 2500)
@@ -272,9 +286,7 @@ export function ApplyFlow({
           <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
         </span>
         <a
-          href={telegramWith(
-            'I have just sent my application. I am ready to get funded and start earning payouts. What happens next?',
-          )}
+          href={telegramWith(sentMessage)}
           target="_blank"
           rel="noopener noreferrer"
           className="mm-btn mm-btn-lg"
@@ -300,9 +312,7 @@ export function ApplyFlow({
           and we will look again.
         </span>
         <a
-          href={telegramWith(
-            'I filled in the application and it came back as not a fit. Can you take another look?',
-          )}
+          href={telegramWith(rejectedMessage)}
           target="_blank"
           rel="noopener noreferrer"
           className="mm-btn mm-btn-lg"
