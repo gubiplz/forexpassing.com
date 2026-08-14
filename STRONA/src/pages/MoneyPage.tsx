@@ -354,6 +354,7 @@ export function MoneyPage() {
       <TopTicker />
       <TopBar />
 
+      <main>
       {/* HERO — message-matched to the ad: we trade it, you own it */}
       {/* One column, centred, laid out like the reference funnel: the headline
           says what we do, the warning kills the two objections that stop people
@@ -852,6 +853,7 @@ export function MoneyPage() {
           </div>
         </div>
       </section>
+      </main>
 
       <SiteFooter variant="meta" />
 

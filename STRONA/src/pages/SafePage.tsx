@@ -72,6 +72,7 @@ export function SafePage() {
         </div>
       </header>
 
+      <main>
       {/* HERO */}
       <section className="mm-hero" id="top">
         <div className="mm-wrap">
@@ -132,6 +133,7 @@ export function SafePage() {
           </div>
         </div>
       </section>
+      </main>
 
       {/* FOOTER — dark */}
       <footer className="mm-footer">
@@ -232,7 +234,7 @@ const CSS = `
 @media(max-width:680px){.mm-stats-grid{grid-template-columns:repeat(2,1fr);gap:28px 8px}}
 .mm-stat{text-align:center}
 .mm-stat-v{display:block;font-family:'Anton','Anton Fallback',sans-serif;font-size:clamp(34px,6vw,50px);line-height:1}
-.mm-stat-k{display:block;font-size:13px;font-weight:600;letter-spacing:.04em;margin-top:6px;opacity:.92}
+.mm-stat-k{display:block;font-size:13px;font-weight:600;letter-spacing:.04em;margin-top:6px}
 
 /* SECTIONS */
 .mm-section{padding:80px 0}
