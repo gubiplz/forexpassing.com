@@ -77,8 +77,18 @@ async function handleRequest(
     // sends the qualified/rejected emails and pushes the lead to Telegram.
     // The Worker fallback only writes the lead to KV, so intercepting here
     // would silently drop every application email.
-    if (env.ORIGIN_URL) return proxyToOrigin(request, env.ORIGIN_URL, env.ORIGIN_KEY);
-    return handleSubscribe(request, env);
+    const res = env.ORIGIN_URL
+      ? await proxyToOrigin(request, env.ORIGIN_URL, env.ORIGIN_KEY)
+      : await handleSubscribe(request, env);
+    // A high-tier application hands off to /thank-you through a top-level
+    // redirect that carries no click id. /thank-you is a money-only path, so
+    // without a trusted cookie that request scores as a -50 "direct visit",
+    // classifies as reviewer, and gets the safe page — the accepted applicant
+    // is cloaked from their own thank-you page. Mint the trusted cookie the
+    // moment the lead is accepted, so the follow-up navigation arrives already
+    // verified. A reviewer never submits a passing form, so it never lands here
+    // and the gate still holds.
+    return grantTrustCookieOnAccept(res, env);
   }
   if (url.pathname === '/api/lead') {
     return handleOnboard(request, env);
@@ -381,6 +391,27 @@ async function proxyToOrigin(
     statusText: originResponse.statusText,
     headers: responseHeaders,
   });
+}
+
+// Turns an accepted high-tier subscribe into a trusted-cookie grant, so the
+// click-id-less /thank-you handoff is not read as a direct visit and cloaked.
+// A clone is inspected so the original body still streams to the client; only
+// a { ok: true, hq: true } JSON response qualifies, and any other shape (a
+// rejected lead, an error, a non-JSON body) passes through untouched.
+async function grantTrustCookieOnAccept(res: Response, env: Env): Promise<Response> {
+  const ct = res.headers.get('content-type') ?? '';
+  if (!res.ok || !ct.includes('application/json')) return res;
+  let accepted = false;
+  try {
+    const data = (await res.clone().json()) as { ok?: unknown; hq?: unknown };
+    accepted = data?.ok === true && data?.hq === true;
+  } catch {
+    return res;
+  }
+  if (!accepted) return res;
+  const headers = new Headers(res.headers);
+  for (const c of await buildCookieHeaders(env.EDGE_SECRET)) headers.append('set-cookie', c);
+  return new Response(res.body, { status: res.status, statusText: res.statusText, headers });
 }
 
 function isStaticAsset(pathname: string): boolean {
