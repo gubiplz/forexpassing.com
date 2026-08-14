@@ -81,6 +81,10 @@ async function read(res, base, secret, token) {
     currency: String(d.currency || 'USD'),
     reference: String(d.reference || ''),
     status: String(d.status || ''),
+    // Buy 1 Get 1 Free: zamówienie ze stemplem dostaje po opłaceniu drugie
+    // konto tego samego rozmiaru. Obietnica padła na Telegramie — strona
+    // płatności musi ją powtórzyć przy kwocie.
+    bogo: d.bogo === true,
   };
   // Cena sprzed rabatu przychodzi tylko dla zamówień, które go dostały. Trzy
   // pola albo żadne: sama przekreślona kwota bez procentu (lub odwrotnie) to

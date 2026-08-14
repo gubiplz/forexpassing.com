@@ -24,6 +24,8 @@ type Zamowienie = {
   currency: string
   reference: string
   status: string
+  // Buy 1 Get 1 Free — po opłaceniu powstaje drugie konto tego samego rozmiaru.
+  bogo?: boolean
   // Trzy pola albo żadne — przychodzą wyłącznie dla zamówień ze zniżką
   // partnerską i tylko wtedy karta pokazuje przekreśloną cenę.
   listAmount?: number
@@ -159,10 +161,17 @@ export function PayPage({ token }: { token: string }) {
                 {POWROT === 'paid' ? 'Payment received' : 'This order is already paid'}
               </h1>
               <p className="mm-lead mm-pay-lead">
-                {stan.zam.item} · {stan.zam.reference}. Nothing more to do here. Your
-                platform login is emailed by <b>{PARTNER_FIRM}</b> once the account is
-                live — so watch for a message under their name, not ours, and check spam
-                if it is not in the inbox within the hour.
+                {stan.zam.item} · {stan.zam.reference}. Nothing more to do here.{' '}
+                {stan.zam.bogo && (
+                  <>
+                    This order included a <b>free second account of the same size</b>, so
+                    expect two sets of credentials.{' '}
+                  </>
+                )}
+                Your platform login{stan.zam.bogo ? 's are' : ' is'} emailed by{' '}
+                <b>{PARTNER_FIRM}</b> once the account is live — so watch for a message
+                under their name, not ours, and check spam if it is not in the inbox within
+                the hour.
               </p>
               <a className="mm-btn mm-btn-lg mm-btn-full" href={TELEGRAM_HREF}>
                 Open the chat
@@ -209,11 +218,28 @@ export function PayPage({ token }: { token: string }) {
                     </b>
                   </div>
                 )}
+                {stan.zam.bogo && (
+                  <div className="mm-pay-row">
+                    <span>Included</span>
+                    <b className="mm-pay-save">+ second account, same size — free</b>
+                  </div>
+                )}
                 <div className="mm-pay-row">
                   <span>Reference</span>
                   <b>{stan.zam.reference}</b>
                 </div>
               </div>
+
+              {/* Obietnica z Telegramu („kup jedno, drugie gratis") musi stać
+                  przy kwocie — inaczej klient płaci, patrząc na podsumowanie,
+                  w którym jej nie ma. */}
+              {stan.zam.bogo && (
+                <p className="mm-pay-deal">
+                  <b>Buy 1 Get 1 Free</b> — this order comes with a second account of the
+                  same size at no extra cost. Both accounts are created automatically once
+                  the payment clears.
+                </p>
+              )}
 
               {/* Zniżka, o której klient słyszał na Telegramie, do tej pory
                   istniała wyłącznie w tamtej rozmowie. Tu ma zobaczyć, że jest
