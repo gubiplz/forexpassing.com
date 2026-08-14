@@ -48,6 +48,14 @@ export function formatLead(lead) {
   const rejected = lead.outcome === 'not_qualified';
   const q = rejected ? null : lead.quality ?? gradeLead(lead);
 
+  // The free-account lander (/freeaccount) opens the questionnaire with
+  // source "free". That offer is run and costed differently from the paid
+  // funnel, so its leads are called out — on the first line, so it shows in the
+  // channel preview without opening, in the Source row, and as a searchable tag.
+  const fromFree = String(lead.source ?? '').startsWith('free');
+  const freeBadge = fromFree ? ' · 🆓 FREE CHALLENGE' : '';
+  const sourceLabel = fromFree ? 'FREE CHALLENGE (/freeaccount)' : lead.source;
+
   // A number with no dialling code in front of it is not dialable, and the one
   // thing worse than not having it is thinking you do. Say so on the row.
   const phone = lead.phone
@@ -62,12 +70,12 @@ export function formatLead(lead) {
     ['Telegram', lead.telegram],
     ['Phone', phone],
     ['Referred by', lead.ref],
-    ['Source', lead.source],
+    ['Source', sourceLabel],
   ].filter(([, v]) => v);
 
   const lines = rejected
-    ? ['🔴 <b>Not qualified</b>']
-    : [`${q.emoji} <b>${q.label}</b> · ${q.score}/${q.max}`, '🟢 Qualified'];
+    ? [`🔴 <b>Not qualified</b>${freeBadge}`]
+    : [`${q.emoji} <b>${q.label}</b> · ${q.score}/${q.max}${freeBadge}`, '🟢 Qualified'];
 
   lines.push('', ...rows.map(([k, v]) => `<b>${k}:</b> ${esc(v)}`));
 
@@ -86,8 +94,12 @@ export function formatLead(lead) {
   }
 
   // Tapping the tag in Telegram searches the channel for it, which is the
-  // cheapest way to pull up every hot lead without a CRM.
-  lines.push('', rejected ? '#lead_out' : q.tag);
+  // cheapest way to pull up every hot lead without a CRM. The free-challenge tag
+  // rides on the same line so one search pulls every free-account applicant.
+  lines.push(
+    '',
+    [rejected ? '#lead_out' : q.tag, fromFree ? '#free_challenge' : ''].filter(Boolean).join(' '),
+  );
 
   const text = lines.join('\n');
   return text.length > MAX ? `${text.slice(0, MAX)}\n…` : text;
