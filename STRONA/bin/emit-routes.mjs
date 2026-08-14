@@ -55,6 +55,13 @@ const SUB_ROUTES = {
     description:
       'We run your prop firm evaluation and manage the funded account under the firm rules. Apply to see whether you qualify.',
   },
+  // Free-account offer lander. Linked from paid traffic, not meant to be found in
+  // search — noindex is added to every route shell by this script.
+  freeaccount: {
+    title: 'Free $25K prop firm challenge · Forex Passing',
+    description:
+      'Claim your free $25K prop firm challenge. Forex Passing gets the challenge for you and manages it at zero cost — you pay nothing until your first payout lands.',
+  },
   // Nie jest w stopce: trafia tu tylko przyjęty aplikant, przerzucony z
   // formularza. noindex dokłada ten skrypt wszystkim trasom, a middleware.ts
   // dodatkowo bramkuje ścieżkę na brzegu.

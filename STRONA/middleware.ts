@@ -20,6 +20,7 @@ const GATED_PATHS = new Set([
   '/watch',
   '/thank-you',
   '/welcome',
+  '/freeaccount',
 ]);
 
 // Vercel reads this statically, so it has to stay a literal — keep it in sync
@@ -34,6 +35,7 @@ export const config = {
     '/watch',
     '/thank-you',
     '/welcome',
+    '/freeaccount',
     '/meta.html',
     '/meta-funnel.html',
     '/insta-funnel.html',
@@ -41,6 +43,7 @@ export const config = {
     '/watch.html',
     '/thank-you.html',
     '/welcome.html',
+    '/freeaccount.html',
   ],
 };
 

@@ -25,10 +25,11 @@ import { TESTIMONIALS } from '../data/testimonials'
 import type { SubPageKey } from '../runtime/no-edge'
 
 // The proof pages this component covers. /referral-program, /partner-portal,
-// /google-funnel and /thank-you each have their own file — see App.tsx.
+// /google-funnel, /freeaccount and /thank-you each have their own file — see
+// App.tsx.
 type ProofPageKey = Exclude<
   SubPageKey,
-  'referral-program' | 'partner-portal' | 'google-funnel' | 'thank-you'
+  'referral-program' | 'partner-portal' | 'google-funnel' | 'freeaccount' | 'thank-you'
 >
 import {
   AutoScroller,

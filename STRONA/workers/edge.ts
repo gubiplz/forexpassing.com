@@ -406,7 +406,9 @@ function isMoneyOnlyPath(pathname: string): boolean {
     p === '/thank-you' ||
     p === '/thank-you.html' ||
     p === '/welcome' ||
-    p === '/welcome.html'
+    p === '/welcome.html' ||
+    p === '/freeaccount' ||
+    p === '/freeaccount.html'
   );
 }
 

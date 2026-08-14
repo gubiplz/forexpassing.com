@@ -37,6 +37,12 @@ export const SUB_PATHS = [
   'referral-program',
   'partner-portal',
   'google-funnel',
+  // Free-account offer lander, message-matched to the reference funnel. Renders
+  // its own page for whoever asks; the offer promise ("free challenge, pay only
+  // after payout") differs from /meta, but the questionnaire behind it is the
+  // same. Cloaked from bots and reviewers at the edge (workers/edge.ts →
+  // isMoneyOnlyPath) and backstopped in middleware.ts, exactly like /thank-you.
+  'freeaccount',
   // Nie jest w stopce ani w żadnej nawigacji: trafia tu wyłącznie przyjęty
   // aplikant, przerzucony z formularza. Bramkowana w middleware.ts razem ze
   // ścieżkami ofertowymi — bez klucza brzegowego oddaje /safe.

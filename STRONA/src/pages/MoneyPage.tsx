@@ -23,8 +23,6 @@ import {
   FORM_PREVIEW_PLACEHOLDER,
   PASS_WINDOW,
   REFUND_WINDOW,
-  WISTIA_META_ID,
-  BRAND_GREEN,
   APPLY_ANCHOR,
 } from '../constants'
 import { FAQ } from '../data/faq'
@@ -33,11 +31,11 @@ import { TESTIMONIALS } from '../data/testimonials'
 import {
   AutoScroller,
   CertCard,
+  HeroVsl,
   REVIEWS,
   ReviewBadge,
   ReviewCard,
   SiteFooter,
-  SoundGate,
   TermsCard,
   TestimonialCard,
   TopBar,
@@ -181,128 +179,6 @@ function CheckRow({ title, detail }: { title: string; detail?: string }) {
     </div>
   )
 }
-
-// Hero video. Renders only once WISTIA_META_ID is set in constants.ts — we would
-// rather show no video than the old clip, which advertises a retired $49 product
-// on screen. The progress bar reflects real playback time reported by the
-// player, never a padded number.
-function HeroVsl() {
-  const [pct, setPct] = useState(0)
-  const [failed, setFailed] = useState(false)
-  const playerRef = useRef<HTMLElement | null>(null)
-  const seen = useRef(false)
-
-  useEffect(() => {
-    // The player runtime plus the one-file module for this specific media. Both
-    // are needed before <wistia-player> upgrades from an inert custom element.
-    // Together they pull roughly 350 KB — the price of a VSL that starts on its
-    // own. Do NOT put this behind a click again without dropping the autoplay:
-    // a clip cannot start by itself if its player only loads once someone taps.
-    for (const [src, module] of [
-      ['https://fast.wistia.com/player.js', false],
-      [`https://fast.wistia.com/embed/${WISTIA_META_ID}.js`, true],
-    ] as const) {
-      if (document.querySelector(`script[src="${src}"]`)) continue
-      const s = document.createElement('script')
-      s.src = src
-      s.async = true
-      if (module) s.type = 'module'
-      document.head.appendChild(s)
-    }
-
-    // If Wistia is blocked — ad blockers and tracking protection do this often
-    // on mobile — the element never upgrades and the reader is left staring at
-    // a dead rectangle. Offer the way forward instead.
-    const timer = window.setTimeout(() => {
-      if (!customElements.get('wistia-player')) setFailed(true)
-    }, 6000)
-    return () => window.clearTimeout(timer)
-  }, [])
-
-  useEffect(() => {
-    // Progress comes off the element itself. The _wq queue and its `secondchange`
-    // event belong to the old E-v1 embeds: <wistia-player> never registers there,
-    // so onReady never ran and the bar sat at 0%. This player emits `timechange`
-    // and carries percentWatched as a property.
-    const el = playerRef.current
-    if (!el) return
-    const onTime = () => {
-      const p = (el as unknown as { percentWatched?: number }).percentWatched
-      if (typeof p === 'number') setPct(Math.min(100, Math.round(p * 100)))
-    }
-    // Zdarzenie zamiast kliku w fasade: klip rusza sam, wiec nie ma juz czego
-    // klikac. `seen` pilnuje, zeby pauza i wznowienie nie liczyly sie drugi raz.
-    const onPlay = () => {
-      if (seen.current) return
-      seen.current = true
-      track('VideoPlay', 'video_start', { source: 'meta_hero' }, true)
-    }
-    el.addEventListener('timechange', onTime)
-    el.addEventListener('play', onPlay)
-    return () => {
-      el.removeEventListener('timechange', onTime)
-      el.removeEventListener('play', onPlay)
-    }
-  }, [failed])
-
-  if (!WISTIA_META_ID) return null
-
-  return (
-    <div className="mm-vsl">
-      <div className="mm-vsl-head">
-        <span className="mm-vsl-badge">Start here</span>
-        <span className="mm-vsl-title">Watch this 120 second video</span>
-      </div>
-      {/* Plakat jako tlo ramki, zeby przez sekunde bootowania playera nie stala
-          tu czarna dziura. Jest NASZ, nie miniaturka ciagnieta z Wistii — ich
-          podmiana nie zmienia tego, co widac, trzeba przegenerowac plik.
-
-          UWAGA NA CACHE: public/ leci z max-age=86400 i
-          stale-while-revalidate=604800, wiec nadpisanie pod ta sama nazwa
-          zostawia wracajacym stary obrazek nawet na tydzien. Przy kazdej
-          zmianie plakatu BUMPUJ NUMER (vsl-poster-2 → vsl-poster-3). */}
-      <div className="mm-vsl-frame" style={{ backgroundImage: 'url(/vsl-poster-2.webp)' }}>
-        {failed ? (
-          <div className="mm-vsl-failed">
-            <p>The video could not load — an ad blocker or tracking protection is usually the cause.</p>
-            <p>You can turn it off for this page, or simply apply below.</p>
-          </div>
-        ) : (
-          /* Startuje SAM i WYCISZONY — z dzwiekiem zablokowalaby to kazda
-             przegladarka. silent-autoplay wystawia przycisk "Sound On", ktorym
-             widz sam wlacza dzwiek; to jego klikniecie jest gestem, ktorego
-             polityka odtwarzania wymaga.
-
-             Controls locked down the same way the reference funnel locks theirs:
-             no scrub bar, so the video cannot be skipped to the end. */
-          <wistia-player
-            ref={playerRef}
-            media-id={WISTIA_META_ID}
-            aspect="1.7777777777777777"
-            player-color={BRAND_GREEN}
-            playbar="false"
-            playback-rate-control="false"
-            settings-control="false"
-            resumable="false"
-            controls-visible-on-load="true"
-            autoplay="true"
-            muted="true"
-            silent-autoplay="true"
-          />
-        )}
-        {!failed && <SoundGate player={playerRef} />}
-      </div>
-      <div className="mm-vsl-bar">
-        <span className="mm-vsl-bar-label">Complete video</span>
-        <span className="mm-vsl-bar-track">
-          <span className="mm-vsl-bar-fill" style={{ width: `${pct}%` }} />
-        </span>
-        <span className="mm-vsl-bar-pct">{pct}%</span>
-      </div>
-    </div>
-  )
-}
-
 
 // The one button on the page. Every instance opens the same questionnaire.
 function Cta({
@@ -493,7 +369,7 @@ export function MoneyPage() {
             firm evaluation{EVAL_DISCOUNT ? `, ${EVAL_DISCOUNT} cheaper through our partner link,` : ','} and
             that is the account we manage for you. The video below walks through it.
           </p>
-          <HeroVsl />
+          <HeroVsl badge="Start here" title="Watch this 120 second video" source="meta_hero" />
           <div className="mm-cta-row mm-cta-center-row">
             <Cta onOpen={openApply} source="hero" />
             <a href="#fix" className="mm-btn mm-btn-ghost mm-btn-lg">See how it works</a>

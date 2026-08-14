@@ -11,6 +11,7 @@ const SubPage = lazy(() => import('./pages/SubPage').then((m) => ({ default: m.S
 const ReferralPage = lazy(() => import('./pages/ReferralPage').then((m) => ({ default: m.ReferralPage })))
 const PartnerPortal = lazy(() => import('./pages/PartnerPortal').then((m) => ({ default: m.PartnerPortal })))
 const GoogleFunnel = lazy(() => import('./pages/GoogleFunnel').then((m) => ({ default: m.GoogleFunnel })))
+const FreeAccountPage = lazy(() => import('./pages/FreeAccountPage').then((m) => ({ default: m.FreeAccountPage })))
 const ThankYouPage = lazy(() => import('./pages/ThankYouPage').then((m) => ({ default: m.ThankYouPage })))
 const PayPage = lazy(() => import('./pages/PayPage').then((m) => ({ default: m.PayPage })))
 
@@ -51,6 +52,8 @@ export default function App() {
           <PartnerPortal />
         ) : subPage === 'google-funnel' ? (
           <GoogleFunnel />
+        ) : subPage === 'freeaccount' ? (
+          <FreeAccountPage />
         ) : subPage === 'thank-you' ? (
           <ThankYouPage />
         ) : (
