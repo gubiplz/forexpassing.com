@@ -4,6 +4,13 @@
 //   TELEGRAM_BOT_TOKEN     — from @BotFather
 //   TELEGRAM_LEADS_CHAT_ID — the desk chat id, e.g. -1001234567890
 //
+// A third is optional:
+//   TELEGRAM_FREE_LEADS_CHAT_ID — where /freeaccount leads go instead
+//
+// The two offers are costed differently and worked by different people, so the
+// owner wanted them in separate chats. Unset, free leads land in the desk chat
+// alongside the paid ones, which is what happened before this split existed.
+//
 // The name says "leads" on purpose. This post carries a name, an e-mail and a
 // phone number, so it may only ever reach the private desk — and a variable
 // called TELEGRAM_CHAT_ID is exactly the one somebody points at a public
@@ -29,6 +36,9 @@ const MAX = 3900; // Telegram caps a message at 4096 characters.
 // redirect down with it. Six seconds is longer than this call has ever needed.
 const TIMEOUT_MS = 6000;
 
+/** The /freeaccount funnel opens the questionnaire with source "free". */
+const isFreeLead = (lead) => String(lead.source ?? '').startsWith('free');
+
 const esc = (s) =>
   String(s ?? '')
     .replace(/&/g, '&amp;')
@@ -48,11 +58,12 @@ export function formatLead(lead) {
   const rejected = lead.outcome === 'not_qualified';
   const q = rejected ? null : lead.quality ?? gradeLead(lead);
 
-  // The free-account lander (/freeaccount) opens the questionnaire with
-  // source "free". That offer is run and costed differently from the paid
-  // funnel, so its leads are called out — on the first line, so it shows in the
-  // channel preview without opening, in the Source row, and as a searchable tag.
-  const fromFree = String(lead.source ?? '').startsWith('free');
+  // That offer is run and costed differently from the paid funnel, so its leads
+  // are called out — on the first line, so it shows in the channel preview
+  // without opening, in the Source row, and as a searchable tag. The badge stays
+  // useful even with a chat of their own: nothing stops a paid lead landing
+  // there once TELEGRAM_FREE_LEADS_CHAT_ID is unset or points at the same chat.
+  const fromFree = isFreeLead(lead);
   const freeBadge = fromFree ? ' · 🆓 FREE CHALLENGE' : '';
   const sourceLabel = fromFree ? 'FREE CHALLENGE (/freeaccount)' : lead.source;
 
@@ -113,7 +124,9 @@ export function formatLead(lead) {
  */
 export async function sendLeadToTelegram(lead) {
   const token = process.env.TELEGRAM_BOT_TOKEN;
-  const chatId = process.env.TELEGRAM_LEADS_CHAT_ID;
+  const chatId = isFreeLead(lead)
+    ? process.env.TELEGRAM_FREE_LEADS_CHAT_ID || process.env.TELEGRAM_LEADS_CHAT_ID
+    : process.env.TELEGRAM_LEADS_CHAT_ID;
   if (!token || !chatId) {
     console.warn('[telegram] TELEGRAM_BOT_TOKEN / TELEGRAM_LEADS_CHAT_ID not set — skipping');
     return false;
