@@ -18,6 +18,11 @@ export const BRAND = 'Forex Passing'
 export const CLIENT_SPLIT = '70%'
 export const OUR_SPLIT = '30%'
 export const PASS_WINDOW = '7–14 days'
+
+// Rozmiar challenge'u, który fundujemy na /freeaccount. Stoi tutaj, a nie na
+// stronie, bo tę samą liczbę cytuje ostatni krok kwestionariusza — a lander i
+// ankieta nie mogą obiecywać dwóch różnych kwot.
+export const FREE_CHALLENGE_SIZE = '$25K'
 export const GUARANTEE_CREDIT = '$500'
 export const REFUND_WINDOW = '120 days'
 
@@ -135,17 +140,23 @@ export const RATING_STARS_4_SRC = '/rating-stars-40.png'
 // Kontakt do zespołu. Statyczne strony w public/ i szablony maili nie mogą
 // importować tego pliku, więc mają adres wpisany wprost — przy zmianie uchwytu
 // trzeba je podmienić razem z tą stałą (grep po "t.me/").
-export const TELEGRAM_HREF = 'https://t.me/forexpassingadmin'
+export const TELEGRAM_HREF = 'https://t.me/fxpassingadmin'
 export const CONTACT_EMAIL = 'contact@forexpassing.com'
 
 // Dwa różne byty na Telegramie, i strona nie może ich mylić: KANAŁ się
 // subskrybuje ("Join"), do ADMINA się pisze ("Message us"). /thank-you pokazuje
 // oba obok siebie jako listę oficjalnych kanałów, bo to jedyna obrona przed
 // kimś, kto założy @forexpassing_support i napisze pierwszy.
-export const TELEGRAM_CHANNEL_HREF = 'https://t.me/forexpassingcom'
-export const TELEGRAM_CHANNEL_HANDLE = '@forexpassingcom'
-export const TELEGRAM_ADMIN_HANDLE = '@forexpassingadmin'
+export const TELEGRAM_CHANNEL_HREF = 'https://t.me/fx_passing'
+export const TELEGRAM_CHANNEL_HANDLE = '@fx_passing'
+export const TELEGRAM_ADMIN_HANDLE = '@fxpassingadmin'
 export const SITE_DOMAIN = 'forexpassing.com'
+
+// Darmowy challenge obsługuje OSOBNE konto. Wszystko, co widzi aplikant z
+// /freeaccount — formularz, ekran po wysłaniu, /thank-you?src=free — kieruje
+// tutaj, żeby ruch z darmowej oferty nie mieszał się z płatną na jednym czacie.
+export const FREE_TELEGRAM_HREF = 'https://t.me/FX_Passing_free'
+export const FREE_TELEGRAM_HANDLE = '@FX_Passing_free'
 
 // Materiały na /thank-you. Pusty string = ramka przerywana o DOCELOWYM
 // rozmiarze, ta sama konwencja co REVIEW_BADGE_SRC i videoId: '' w
@@ -212,9 +223,11 @@ export const TYP_ALERTS: { t: string; d?: string; timer?: boolean }[] = [
  *
  * TELEGRAM_HREF zostaje goły: questionnaire.ts wyprowadza z niego @uchwyt
  * przez split('/').pop(), więc doklejony query string by go zepsuł.
+ *
+ * `base` przełącza konto — lejek /freeaccount pisze na FREE_TELEGRAM_HREF.
  */
-export const telegramWith = (message: string) =>
-  `${TELEGRAM_HREF}?text=${encodeURIComponent(message)}`
+export const telegramWith = (message: string, base: string = TELEGRAM_HREF) =>
+  `${base}?text=${encodeURIComponent(message)}`
 
 // Prop firma, z którą pracujemy. Certyfikaty w pasie na /meta pochodzą z jej
 // publicznego API (zob. bin/sync-payouts.mjs i src/data/payouts.ts).

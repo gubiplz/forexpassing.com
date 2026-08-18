@@ -20,6 +20,9 @@ import { useEffect, useRef, useState } from 'react'
 import {
   BRAND_GREEN,
   CONTACT_EMAIL,
+  FREE_CHALLENGE_SIZE,
+  FREE_TELEGRAM_HANDLE,
+  FREE_TELEGRAM_HREF,
   PARTNER_FIRM,
   SITE_DOMAIN,
   TEAM_PHOTO_SRC,
@@ -282,6 +285,20 @@ function TypVideo() {
 }
 
 /**
+ * ApplyFlow tags the free-account handoff with `?src=free`, and that decides
+ * which Telegram account this whole page points at. Read from the URL on every
+ * call rather than threaded through props: the query string cannot change while
+ * the page is mounted, and six call sites would otherwise have to pass a flag
+ * that none of them care about.
+ */
+function isFromFree() {
+  return (
+    typeof window !== 'undefined' &&
+    new URLSearchParams(window.location.search).get('src') === 'free'
+  )
+}
+
+/**
  * The repeated call to action. `channel` is the one people join, `admin` the one
  * they write to — and only the latter can carry a prefilled opener, because
  * `?text=` fills a composer and a channel has none.
@@ -306,24 +323,37 @@ function TelegramCta({
   message?: string
   white?: boolean
 }) {
+  // On the free-account handoff both destinations collapse into the free
+  // account: the free challenge is run from there, and sending someone to the
+  // paid channel would hand them the offer they did not apply for.
+  const free = isFromFree()
+  const href = free
+    ? message
+      ? telegramWith(message, FREE_TELEGRAM_HREF)
+      : FREE_TELEGRAM_HREF
+    : to === 'channel'
+      ? TELEGRAM_CHANNEL_HREF
+      : message
+        ? telegramWith(message)
+        : TELEGRAM_HREF
+
+  // @FX_Passing_free is a person, not a channel — there is nothing to join. A
+  // button still reading "JOIN" would open a one-to-one chat and look like the
+  // wrong link was pasted.
+  const text = free && to === 'channel' ? 'MESSAGE US ON TELEGRAM' : label
+
   // Wlasny kontener, nie .mm-cta-center: tamten jest flex-row, wiec podpis
   // ladowal OBOK przycisku zamiast pod nim.
   return (
     <div className="mm-typ-cta">
       <a
-        href={
-          to === 'channel'
-            ? TELEGRAM_CHANNEL_HREF
-            : message
-              ? telegramWith(message)
-              : TELEGRAM_HREF
-        }
+        href={href}
         target="_blank"
         rel="noopener noreferrer"
         className={`mm-btn mm-btn-lg${white ? ' mm-btn-white' : ''}`}
         onClick={() => track('CTAClick', 'cta_click', { source }, true)}
       >
-        {label}
+        {text}
       </a>
       {note && <p className="mm-typ-cta-note">{note}</p>}
     </div>
@@ -416,17 +446,14 @@ export function ThankYouPage() {
   const rootRef = useRef<HTMLDivElement>(null)
   useReveal(rootRef)
 
-  // ApplyFlow tags the free-account handoff with ?src=free. When it is set, the
-  // Telegram opener names the free $25K account, so the desk can tell a
-  // free-account applicant apart from an offer-page one without opening the CRM.
-  const fromFree =
-    typeof window !== 'undefined' &&
-    new URLSearchParams(window.location.search).get('src') === 'free'
+  // The opener names the free account, so the desk can tell a free-account
+  // applicant apart from an offer-page one without opening the CRM.
+  const fromFree = isFromFree()
   const acceptedMessage = fromFree
-    ? 'My FREE $25K account application was accepted. I have read the page — what do you need from me to get started?'
+    ? `My FREE ${FREE_CHALLENGE_SIZE} account application was accepted. I have read the page — what do you need from me to get started?`
     : 'My application was accepted. I have read the page — what do you need from me to get started?'
   const objectionMessage = fromFree
-    ? 'My FREE $25K account application was accepted and I have a couple of questions before we start.'
+    ? `My FREE ${FREE_CHALLENGE_SIZE} account application was accepted and I have a couple of questions before we start.`
     : 'My application was accepted and I have a couple of questions before we start.'
 
   // Only clips that exist. The "being filmed" slots earn their place on
@@ -572,10 +599,15 @@ export function ThankYouPage() {
                 <span className="mm-typ-channel-k">Official email</span>
                 <span className="mm-typ-channel-v">{CONTACT_EMAIL}</span>
               </div>
+              {/* The handle this applicant will actually be written to. Listing
+                  the paid pair to a free-account applicant would teach them to
+                  trust the wrong account and distrust the right one. */}
               <div className="mm-typ-channel">
                 <span className="mm-typ-channel-k">Official Telegram</span>
-                <span className="mm-typ-channel-v">{TELEGRAM_CHANNEL_HANDLE}</span>
-                <span className="mm-typ-channel-sub">and {TELEGRAM_ADMIN_HANDLE}</span>
+                <span className="mm-typ-channel-v">
+                  {fromFree ? FREE_TELEGRAM_HANDLE : TELEGRAM_CHANNEL_HANDLE}
+                </span>
+                {!fromFree && <span className="mm-typ-channel-sub">and {TELEGRAM_ADMIN_HANDLE}</span>}
               </div>
             </div>
 

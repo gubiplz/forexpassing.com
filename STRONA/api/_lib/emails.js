@@ -17,7 +17,11 @@
 
 const BRAND = 'Forex Passing';
 const SITE = 'forexpassing.com';
-const TELEGRAM = 'https://t.me/forexpassingadmin';
+const TELEGRAM = 'https://t.me/fxpassingadmin';
+// The free challenge (/freeaccount) is answered from its own account. Kept in
+// step with FREE_TELEGRAM_HREF in src/constants.ts — this file cannot import it,
+// because api/ and src/ are built by different toolchains.
+const FREE_TELEGRAM = 'https://t.me/FX_Passing_free';
 const CONTACT = 'contact@forexpassing.com';
 
 /**
@@ -26,10 +30,15 @@ const CONTACT = 'contact@forexpassing.com';
  * have to work out how to open, and the desk can tell at a glance which email
  * the conversation came from.
  */
-const telegramWith = (message) => `${TELEGRAM}?text=${encodeURIComponent(message)}`;
+const telegramWith = (message, base = TELEGRAM) => `${base}?text=${encodeURIComponent(message)}`;
 
 const TELEGRAM_ACCEPTED = telegramWith(
   'My application was accepted. I am ready to get funded and start earning payouts. What happens next?',
+);
+
+const TELEGRAM_ACCEPTED_FREE = telegramWith(
+  'My free challenge application was accepted. I am ready to get started, what happens next?',
+  FREE_TELEGRAM,
 );
 
 const TELEGRAM_REJECTED = telegramWith(
@@ -171,13 +180,24 @@ function step(n, title, desc, last = false) {
 
 /* -------------------------------------------------------------------------- */
 
-export function qualifiedEmail({ name }) {
+/**
+ * `free` switches the mail to the /freeaccount offer. Two things have to change
+ * together: the sentence about the evaluation, because on that offer WE pay for
+ * it and telling the applicant to run their own contradicts the page they just
+ * applied from, and the Telegram address, because the free challenge is worked
+ * from a different account.
+ */
+export function qualifiedEmail({ name, free = false }) {
+  const opener = free
+    ? 'Your application has been accepted. We are covering your prop firm challenge and our desk will pass it and manage the funded account on your behalf.'
+    : 'Your application has been accepted. Our desk is ready to run your prop firm evaluation and manage the funded account on your behalf.'
+  const telegram = free ? TELEGRAM_ACCEPTED_FREE : TELEGRAM_ACCEPTED
+
   const body = `
     <p style="margin:0 0 26px;">Hey ${firstName(name)},</p>
 
     <p style="margin:0 0 30px;color:${SUBTLE};font-size:17px;line-height:1.55;">
-      Your application has been accepted. Our desk is ready to run your prop firm evaluation and
-      manage the funded account on your behalf.
+      ${opener}
     </p>
 
     ${hairline(0)}
@@ -192,7 +212,7 @@ export function qualifiedEmail({ name }) {
 
     ${hairline(30)}
 
-    ${button('Open Telegram', TELEGRAM_ACCEPTED)}
+    ${button('Open Telegram', telegram)}
 
     <p style="margin:18px 0 0;color:${FAINT};font-size:14px;line-height:1.5;text-align:center;">
       Someone from the team will reach out within one business day.
@@ -206,8 +226,7 @@ export function qualifiedEmail({ name }) {
   const text = [
     `Hey ${firstName(name)},`,
     '',
-    'Your application has been accepted. Our desk is ready to run your prop firm',
-    'evaluation and manage the funded account on your behalf.',
+    opener,
     '',
     'WHAT HAPPENS NEXT',
     '1. Message us on Telegram. Onboarding happens there.',
@@ -215,7 +234,7 @@ export function qualifiedEmail({ name }) {
     '3. Agreement in writing, then we trade. You keep 70% of every payout;',
     '   we invoice 30% only once the money has reached you.',
     '',
-    `Open Telegram: ${TELEGRAM_ACCEPTED}`,
+    `Open Telegram: ${telegram}`,
     '',
     'Someone from the team will reach out within one business day.',
     'Nothing has been charged and nothing is owed.',

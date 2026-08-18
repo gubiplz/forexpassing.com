@@ -12,7 +12,13 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { ApplyModal } from '../components/ApplyFlow'
-import { CLIENT_SPLIT, CTA_LABEL, OUR_SPLIT, PARTNER_FIRM } from '../constants'
+import {
+  CLIENT_SPLIT,
+  CTA_LABEL,
+  FREE_CHALLENGE_SIZE as CHALLENGE_SIZE,
+  OUR_SPLIT,
+  PARTNER_FIRM,
+} from '../constants'
 import { PAYOUT_CERTS } from '../data/payouts'
 import { TESTIMONIALS } from '../data/testimonials'
 import {
@@ -28,10 +34,6 @@ import {
   track,
   useReveal,
 } from './shared'
-
-// The challenge size we promise to cover, single-sourced so the hero, the steps
-// and the guarantees can never quote three different numbers.
-const CHALLENGE_SIZE = '$25K'
 
 // The marquee items — the deal in one line each. Doubled at render so the strip
 // wraps seamlessly.

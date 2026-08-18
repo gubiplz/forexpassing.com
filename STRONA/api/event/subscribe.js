@@ -251,7 +251,17 @@ export default async function handler(req, res) {
   // _lib/lead-quality.js), so this is a narrow gate on purpose: these are the
   // applicants worth a page of their own. A rejected applicant is never scored,
   // so this is false for them too.
-  const hq = lead.quality?.tier === 'high';
+  //
+  // The free funnel (/freeaccount) is the exception, and it has to be: it does
+  // not ask when you intend to buy, because on that offer we are the ones
+  // paying. That question carries 4 of the 9 points, which puts the threshold of
+  // 7 out of reach there — grading by score would send every free applicant to
+  // the plain confirmation card instead of /thank-you. Owner's call: everyone
+  // who clears the free questionnaire is treated as HQ. The score is still
+  // computed and still posted to the channel, because the desk reads it to
+  // decide who to message first.
+  const fromFree = String(lead.source ?? '').startsWith('free');
+  const hq = lead.outcome === 'qualified' && (fromFree || lead.quality?.tier === 'high');
 
   // Channel post, sheet row, confirmation email and the webhook go out together
   // rather than one after the other: they are independent, and running them in
@@ -271,7 +281,7 @@ export default async function handler(req, res) {
   // behaviour and stays deliberately off (`notQualifiedEmail` in _lib/emails.js
   // is the one-line way back).
   const mail = hq
-    ? qualifiedEmail({ name: lead.name })
+    ? qualifiedEmail({ name: lead.name, free: fromFree })
     : lead.source === 'safe'
       ? infoEmail({ name: lead.name })
       : null;

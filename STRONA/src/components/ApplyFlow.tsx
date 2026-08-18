@@ -10,8 +10,22 @@
 
 import { useCallback, useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
-import { APPLY_ENDPOINT, CONTACT_EMAIL, THANK_YOU_HREF, telegramWith } from '../constants'
-import { PRE_CONTACT, QUALIFICATION, TOTAL_STEPS, type Step } from '../data/questionnaire'
+import {
+  APPLY_ENDPOINT,
+  CONTACT_EMAIL,
+  FREE_CHALLENGE_SIZE,
+  FREE_TELEGRAM_HREF,
+  TELEGRAM_HREF,
+  THANK_YOU_HREF,
+  telegramWith,
+} from '../constants'
+import {
+  FREE_PRE_CONTACT,
+  FREE_QUALIFICATION,
+  PRE_CONTACT,
+  QUALIFICATION,
+  type Step,
+} from '../data/questionnaire'
 import {
   DIAL_CODES, detectIso, findDial, flagSrc, nationalDigits, normalizeTelegram,
   samplePlaceholder, splitDial, TELEGRAM_RE,
@@ -60,25 +74,30 @@ const EMPTY_CONTACT: Contact = {
   referralNote: '',
 }
 
-const STEPS: (Step | 'contact')[] = [...PRE_CONTACT, 'contact', ...QUALIFICATION]
+const PAID_STEPS: (Step | 'contact')[] = [...PRE_CONTACT, 'contact', ...QUALIFICATION]
+const FREE_STEPS: (Step | 'contact')[] = [...FREE_PRE_CONTACT, 'contact', ...FREE_QUALIFICATION]
 
-// Closing the panel unmounts the flow, and a fourteen-step questionnaire that
-// forgets a typed-in email because someone tapped outside the window is a lead
-// lost for no reason. sessionStorage keeps it for the tab only, and it is
-// cleared the moment the application is sent or turned down.
-const DRAFT_KEY = 'fp_apply_draft'
+// Closing the panel unmounts the flow, and a questionnaire that forgets a
+// typed-in email because someone tapped outside the window is a lead lost for
+// no reason. sessionStorage keeps it for the tab only, and it is cleared the
+// moment the application is sent or turned down.
+//
+// One key per funnel: the two ask different questions in different orders, so a
+// paid-funnel draft restored into the shorter free one would reopen at a step
+// that is not there, carrying answers to questions it never asks.
+const draftKey = (fromFree: boolean) => (fromFree ? 'fp_apply_draft_free' : 'fp_apply_draft')
 
 type Draft = { index: number; contact: Contact; answers: Record<string, string> }
 
-function readDraft(): Draft | null {
+function readDraft(key: string, stepCount: number): Draft | null {
   try {
-    const raw = window.sessionStorage.getItem(DRAFT_KEY)
+    const raw = window.sessionStorage.getItem(key)
     if (!raw) return null
     const d = JSON.parse(raw) as Draft
     if (typeof d?.index !== 'number' || !d.contact || !d.answers) return null
     // A stored index from an older question set would land past the end and
     // render an empty panel.
-    return { ...d, index: Math.max(0, Math.min(d.index, STEPS.length - 1)) }
+    return { ...d, index: Math.max(0, Math.min(d.index, stepCount - 1)) }
   } catch {
     return null
   }
@@ -93,7 +112,13 @@ export function ApplyFlow({
   source: string
   onDirty?: () => void
 }) {
-  const [restored] = useState(readDraft)
+  // The /freeaccount lander opens this flow with source "free". It gets its own
+  // shorter question set, its own draft, and its own Telegram address.
+  const fromFree = source === 'free'
+  const steps = fromFree ? FREE_STEPS : PAID_STEPS
+  const totalSteps = steps.length
+
+  const [restored] = useState(() => readDraft(draftKey(fromFree), totalSteps))
   const [index, setIndex] = useState(() => restored?.index ?? 0)
   const [contact, setContact] = useState<Contact>(() =>
     // The dialling code starts on the visitor's own country, worked out from the
@@ -115,16 +140,15 @@ export function ApplyFlow({
   // script posts instantly. Counted from mount, sent as elapsed_ms.
   const openedAt = useRef(Date.now())
 
-  // The /freeaccount lander opens this flow with source "free". Marking the
-  // Telegram opener — and the /thank-you handoff — lets the desk tell a
-  // free-account lead apart from an offer-page one the moment it lands, without
-  // opening the CRM.
-  const fromFree = source === 'free'
+  // Free-account applicants are answered from a different Telegram account, and
+  // the opener they arrive with tells the desk which offer they came for
+  // without anyone opening the CRM.
+  const telegramHref = fromFree ? FREE_TELEGRAM_HREF : TELEGRAM_HREF
   const sentMessage = fromFree
-    ? 'Hi — I just applied for the FREE $25K funded account from your free-account page. I am ready to get started, what happens next?'
+    ? `Hi — I just applied for the FREE ${FREE_CHALLENGE_SIZE} funded account from your free-account page. I am ready to get started, what happens next?`
     : 'I have just sent my application. I am ready to get funded and start earning payouts. What happens next?'
   const rejectedMessage = fromFree
-    ? 'Hi — I filled in the application for your FREE $25K account offer and it came back as not a fit. Can you take another look?'
+    ? `Hi — I filled in the application for your FREE ${FREE_CHALLENGE_SIZE} account offer and it came back as not a fit. Can you take another look?`
     : 'I filled in the application and it came back as not a fit. Can you take another look?'
 
   useEffect(() => {
@@ -134,15 +158,15 @@ export function ApplyFlow({
   useEffect(() => {
     try {
       if (outcome === 'open') {
-        window.sessionStorage.setItem(DRAFT_KEY, JSON.stringify({ index, contact, answers }))
+        window.sessionStorage.setItem(draftKey(fromFree), JSON.stringify({ index, contact, answers }))
       } else {
-        window.sessionStorage.removeItem(DRAFT_KEY)
+        window.sessionStorage.removeItem(draftKey(fromFree))
       }
     } catch {
       // Private mode and quota errors: the draft is a convenience, not a
       // requirement, so losing it must not break the form.
     }
-  }, [index, contact, answers, outcome])
+  }, [index, contact, answers, outcome, fromFree])
 
   // The panel is what scrolls, not the page. Leaving its scrollTop alone means
   // a step reached from a long one opens halfway down its own question.
@@ -157,12 +181,12 @@ export function ApplyFlow({
     track('ApplyStart', 'form_start', { source }, true)
   }
 
-  const step = STEPS[index]
-  const pct = Math.round(((index + 1) / TOTAL_STEPS) * 100)
+  const step = steps[index]
+  const pct = Math.round(((index + 1) / totalSteps) * 100)
 
   const advance = () => {
     setError('')
-    setIndex((i) => Math.min(i + 1, STEPS.length - 1))
+    setIndex((i) => Math.min(i + 1, totalSteps - 1))
   }
 
   const back = () => {
@@ -186,7 +210,7 @@ export function ApplyFlow({
       setOutcome('rejected')
       return
     }
-    if (index === STEPS.length - 1) void submit({ ...answers, [question]: option.label })
+    if (index === totalSteps - 1) void submit({ ...answers, [question]: option.label })
     else advance()
   }
 
@@ -286,7 +310,7 @@ export function ApplyFlow({
           <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
         </span>
         <a
-          href={telegramWith(sentMessage)}
+          href={telegramWith(sentMessage, telegramHref)}
           target="_blank"
           rel="noopener noreferrer"
           className="mm-btn mm-btn-lg"
@@ -312,7 +336,7 @@ export function ApplyFlow({
           and we will look again.
         </span>
         <a
-          href={telegramWith(rejectedMessage)}
+          href={telegramWith(rejectedMessage, telegramHref)}
           target="_blank"
           rel="noopener noreferrer"
           className="mm-btn mm-btn-lg"
@@ -327,7 +351,7 @@ export function ApplyFlow({
   return (
     <div className="mm-qflow" ref={rootRef}>
       <div className="mm-qflow-head">
-        <span>Step {index + 1} of {TOTAL_STEPS}</span>
+        <span>Step {index + 1} of {totalSteps}</span>
         <span>{pct}%</span>
       </div>
       <div className="mm-qflow-track"><div className="mm-qflow-fill" style={{ width: `${pct}%` }} /></div>
