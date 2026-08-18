@@ -137,10 +137,10 @@ export function fillSpots(template, n) {
  * ------------------------------------------------------------------------ */
 
 /** Uchwyt zespołu — ten sam co TELEGRAM_ADMIN_HANDLE w constants.ts. */
-export const TG_ADMIN_HANDLE = '@forexpassingadmin';
+export const TG_ADMIN_HANDLE = '@fxpassingadmin';
 
 /** Publiczny kanał, którego opis synchronizujemy. Jawny, nie jest sekretem. */
-export const TG_CHANNEL_CHAT_ID = '@forexpassingcom';
+export const TG_CHANNEL_CHAT_ID = '@fx_passing';
 
 export const TG_CHANNEL_DESCRIPTION =
   `If can not open, download telegram. Search ${TG_ADMIN_HANDLE} and message.\n\n` +
