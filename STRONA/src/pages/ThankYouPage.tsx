@@ -300,13 +300,14 @@ function isFromFree() {
 
 /**
  * The repeated call to action. `channel` is the one people join, `admin` the one
- * they write to — and only the latter can carry a prefilled opener, because
- * `?text=` fills a composer and a channel has none.
+ * they write to.
  *
- * Every admin CTA here passes its own `message`, the same way the questionnaire
- * and the acceptance email do: the person does not have to work out what to
- * write, and the desk can tell from the wording which part of the page they
- * pressed.
+ * Every CTA here passes a `message`, the same way the questionnaire and the
+ * acceptance email do: the person does not have to work out what to write, and
+ * the desk can tell from the wording which part of the page they pressed. The
+ * channel ones carry it too even though a channel has no composer to fill — on
+ * the free handoff that same button opens a one-to-one chat, and without it the
+ * applicant lands on an empty message box.
  */
 function TelegramCta({
   label,
@@ -570,6 +571,7 @@ export function ThankYouPage() {
             to="channel"
             source="typ_join_top"
             note="Tap above to message the team and lock in your spot."
+            message={acceptedMessage}
           />
         </div>
       </section>
@@ -746,7 +748,12 @@ export function ThankYouPage() {
               Individual results. Past performance is not indicative of future results, an evaluation
               can fail, and no outcome is guaranteed.
             </p>
-            <TelegramCta label="JOIN TELEGRAM &amp; GET STARTED" to="channel" source="typ_join_clips" />
+            <TelegramCta
+              label="JOIN TELEGRAM &amp; GET STARTED"
+              to="channel"
+              source="typ_join_clips"
+              message={acceptedMessage}
+            />
           </div>
         </section>
       )}
@@ -766,7 +773,12 @@ export function ThankYouPage() {
               </details>
             ))}
           </div>
-          <TelegramCta label="READY? JOIN TELEGRAM" to="channel" source="typ_join_faq" />
+          <TelegramCta
+            label="READY? JOIN TELEGRAM"
+            to="channel"
+            source="typ_join_faq"
+            message={acceptedMessage}
+          />
         </div>
       </section>
 
@@ -787,7 +799,13 @@ export function ThankYouPage() {
           </AutoScroller>
         ))}
         <div className="mm-wrap">
-          <TelegramCta label="JOIN TELEGRAM NOW" to="channel" source="typ_join_bottom" white />
+          <TelegramCta
+            label="JOIN TELEGRAM NOW"
+            to="channel"
+            source="typ_join_bottom"
+            message={acceptedMessage}
+            white
+          />
         </div>
       </section>
 
