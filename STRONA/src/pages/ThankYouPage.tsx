@@ -285,29 +285,29 @@ function TypVideo() {
 }
 
 /**
- * ApplyFlow tags the free-account handoff with `?src=free`, and that decides
- * which Telegram account this whole page points at. Read from the URL on every
- * call rather than threaded through props: the query string cannot change while
- * the page is mounted, and six call sites would otherwise have to pass a flag
- * that none of them care about.
+ * How the visitor got here. ApplyFlow tags its redirect with `?src=free` or
+ * `?src=apply`; anything else — a typed address, a shared link, a bookmark —
+ * reads as `null`, because nobody who was accepted arrives without the tag.
+ *
+ * This decides which Telegram destination the whole page points at. Read from
+ * the URL on every call rather than threaded through props: the query string
+ * cannot change while the page is mounted, and six call sites would otherwise
+ * have to pass a flag that none of them care about.
  */
-function isFromFree() {
-  return (
-    typeof window !== 'undefined' &&
-    new URLSearchParams(window.location.search).get('src') === 'free'
-  )
+function readHandoff(): 'free' | 'apply' | null {
+  if (typeof window === 'undefined') return null
+  const src = new URLSearchParams(window.location.search).get('src')
+  return src === 'free' || src === 'apply' ? src : null
 }
 
 /**
- * The repeated call to action. `channel` is the one people join, `admin` the one
- * they write to.
+ * The repeated call to action. `to` says what the call site's wording assumes —
+ * `channel` is the one people join, `admin` the one they write to — and is used
+ * only to correct that wording when the rule below sends the button elsewhere.
  *
- * Every CTA here passes a `message`, the same way the questionnaire and the
+ * Every CTA passes a `message`, the same way the questionnaire and the
  * acceptance email do: the person does not have to work out what to write, and
- * the desk can tell from the wording which part of the page they pressed. The
- * channel ones carry it too even though a channel has no composer to fill — on
- * the free handoff that same button opens a one-to-one chat, and without it the
- * applicant lands on an empty message box.
+ * the desk can tell from the wording which part of the page they pressed.
  */
 function TelegramCta({
   label,
@@ -321,27 +321,31 @@ function TelegramCta({
   to: 'channel' | 'admin'
   source: string
   note?: string
-  message?: string
+  message: string
   white?: boolean
 }) {
-  // On the free-account handoff both destinations collapse into the free
-  // account: the free challenge is run from there, and sending someone to the
-  // paid channel would hand them the offer they did not apply for.
-  const free = isFromFree()
-  const href = free
-    ? message
-      ? telegramWith(message, FREE_TELEGRAM_HREF)
-      : FREE_TELEGRAM_HREF
-    : to === 'channel'
-      ? TELEGRAM_CHANNEL_HREF
-      : message
-        ? telegramWith(message)
-        : TELEGRAM_HREF
+  // One rule for the whole page, and it follows how the visitor got here rather
+  // than which section the button sits in:
+  //   free handoff — the free account, which runs that offer end to end. Sending
+  //     them to the paid channel would hand them the offer they did not apply for.
+  //   paid handoff — the admin account, the only one that can act on the
+  //     acceptance the opener is about to claim.
+  //   no handoff — the channel. /thank-you is a public URL; someone who did not
+  //     apply must not open a chat whose first line says they were accepted.
+  const handoff = readHandoff()
+  const dm = handoff === 'free' ? FREE_TELEGRAM_HREF : handoff === 'apply' ? TELEGRAM_HREF : null
+  const href = dm ? telegramWith(message, dm) : TELEGRAM_CHANNEL_HREF
 
-  // @FX_Passing_free is a person, not a channel — there is nothing to join. A
-  // button still reading "JOIN" would open a one-to-one chat and look like the
-  // wrong link was pasted.
-  const text = free && to === 'channel' ? 'MESSAGE US ON TELEGRAM' : label
+  // Labels are written per section and assume a destination. "JOIN" on a
+  // one-to-one chat, or "MESSAGE US" on a channel, both read as a pasted-wrong
+  // link, so the wording follows wherever the rule above actually points.
+  const text = dm
+    ? to === 'channel'
+      ? 'MESSAGE US ON TELEGRAM'
+      : label
+    : to === 'admin'
+      ? 'JOIN OUR TELEGRAM CHANNEL'
+      : label
 
   // Wlasny kontener, nie .mm-cta-center: tamten jest flex-row, wiec podpis
   // ladowal OBOK przycisku zamiast pod nim.
@@ -449,7 +453,7 @@ export function ThankYouPage() {
 
   // The opener names the free account, so the desk can tell a free-account
   // applicant apart from an offer-page one without opening the CRM.
-  const fromFree = isFromFree()
+  const fromFree = readHandoff() === 'free'
   const acceptedMessage = fromFree
     ? `My FREE ${FREE_CHALLENGE_SIZE} account application was accepted. I have read the page — what do you need from me to get started?`
     : 'My application was accepted. I have read the page — what do you need from me to get started?'

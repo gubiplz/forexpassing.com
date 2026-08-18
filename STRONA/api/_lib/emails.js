@@ -150,13 +150,24 @@ function shell({ eyebrow, heading, intro, body }) {
 </html>`;
 }
 
-/** Apple's pill button: solid accent, generous padding, no border. */
+/**
+ * Apple's pill button: solid accent, generous padding, no border.
+ *
+ * The colour is declared three times on purpose, and the repetition is the
+ * whole point. A white label on a cell whose fill got stripped is an invisible
+ * button — the reader sees a gap where the call to action was, not an ugly one.
+ * So: `bgcolor` for the clients that only read attributes, `background-color`
+ * rather than the `background` shorthand because sanitizers drop the shorthand
+ * on sight (it can carry a URL), and the same fill on the anchor so the button
+ * still paints even if the cell loses it.
+ *
+ * `align="center"` sits alongside `margin:auto` for the same reason: Outlook's
+ * Word engine ignores auto margins and would shunt the button to the left.
+ */
 function button(label, href, color = ACCENT) {
-  return `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:6px auto 0;">
-    <tr><td align="center" style="background:${color};border-radius:980px;">
-      <a href="${href}" style="display:inline-block;padding:13px 30px;color:#ffffff;font-size:16px;font-weight:600;letter-spacing:-.01em;text-decoration:none;">
-        ${label}
-      </a>
+  return `<table role="presentation" align="center" cellpadding="0" cellspacing="0" style="margin:6px auto 0;">
+    <tr><td align="center" bgcolor="${color}" style="background-color:${color};border-radius:980px;">
+      <a href="${href}" style="display:inline-block;background-color:${color};border-radius:980px;padding:13px 30px;color:#ffffff;font-size:16px;font-weight:600;letter-spacing:-.01em;text-decoration:none;">${label}</a>
     </td></tr>
   </table>`;
 }

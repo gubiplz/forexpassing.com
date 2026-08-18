@@ -264,9 +264,13 @@ export function ApplyFlow({
       if (data.hq) {
         setOutcome('leaving')
         track('Lead', 'generate_lead', { source })
-        // Carry the free-account origin across the handoff so /thank-you can
-        // mark its Telegram opener the same way the in-modal cards do.
-        window.location.assign(fromFree ? `${THANK_YOU_HREF}?src=free` : THANK_YOU_HREF)
+        // Carry the origin across the handoff so /thank-you can mark its Telegram
+        // opener the same way the in-modal cards do. The paid funnel tags itself
+        // too, even though there is nothing to choose between: /thank-you is a
+        // public URL, and this parameter is the only thing telling an accepted
+        // applicant apart from someone who typed the address. The two get sent to
+        // different places.
+        window.location.assign(`${THANK_YOU_HREF}?src=${fromFree ? 'free' : 'apply'}`)
         // If the browser refuses the jump — some in-app webviews do — fall back
         // to the normal confirmation rather than leaving them on a spinner.
         window.setTimeout(() => setOutcome('sent'), 2500)
