@@ -5,17 +5,21 @@
 // contract (honeypot + validation + {ok:true}) and forwards the lead to the
 // LEAD_WEBHOOK env var.
 //
-// From here the lead goes four ways, each configured on its own and each
-// independent of the others: the function log (always), LEAD_WEBHOOK, the
-// Telegram channel, and the team's Google Sheet. Every one of them past the log
-// is a no-op until its env vars are set — see _lib/telegram.js and
-// _lib/sheets.js — so on a deployment with none of them configured an
-// application is visible in Vercel's runtime logs and nowhere else.
+// From here the lead goes three ways, each configured on its own and each
+// independent of the others: the function log (always), LEAD_WEBHOOK, and the
+// team's Google Sheet. Every one of them past the log is a no-op until its env
+// vars are set — see _lib/sheets.js — so on a deployment with none of them
+// configured an application is visible in Vercel's runtime logs and nowhere else.
+//
+// Telegram is deliberately NOT on that list. The desk works off the CRM's lead
+// card (buttons, notes, an owner), which the CRM posts itself once LEAD_WEBHOOK
+// delivers the lead. Posting from here as well put every applicant in the
+// channel twice — which is exactly what came back the day this endpoint was
+// given a working bot token again.
 
 import { infoEmail, qualifiedEmail, sendEmail } from '../_lib/emails.js';
 import { gradeLead } from '../_lib/lead-quality.js';
 import { appendLeadToSheet } from '../_lib/sheets.js';
-import { sendLeadToTelegram } from '../_lib/telegram.js';
 import { normalizeTelegram } from '../../src/lib/phone-rules.js';
 
 const str = (v) => (typeof v === 'string' ? v.trim() : '');
@@ -286,8 +290,7 @@ export default async function handler(req, res) {
       ? infoEmail({ name: lead.name })
       : null;
 
-  const [posted, sent, filed, forwarded] = await Promise.all([
-    sendLeadToTelegram(lead),
+  const [sent, filed, forwarded] = await Promise.all([
     // 'skipped' rather than false, so the log below distinguishes "we chose not
     // to write" from "the send failed" — otherwise a broken Resend key looks
     // exactly like a warm lead.
@@ -301,8 +304,6 @@ export default async function handler(req, res) {
     '[lead]',
     lead.outcome,
     lead.quality?.tier ?? 'unscored',
-    'telegram:',
-    posted,
     'email:',
     sent,
     'sheet:',
