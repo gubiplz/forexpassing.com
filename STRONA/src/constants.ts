@@ -168,8 +168,17 @@ export const FREE_TELEGRAM_HANDLE = '@FX_Passing_free'
 // wymaga poprawienia tam `ratio` — .mm-typ-shot ma object-fit:cover, więc
 // inaczej obcięłoby boki (na zdjęciu zespołu zjadłoby skrajne osoby).
 //
+// Proporcję trzyma się DOPEŁNIENIEM BIELĄ wokół treści, nie docinaniem: tło
+// strony to czyste #ffffff, więc biały margines jest niewidoczny, a każdy
+// piksel ucięty z kadru to realnie zjedzony fragment zrzutu. typ-telegram.webp
+// ma 1000×740 (= 50:37 co do cyfry) na treści 849×660, bez przeskalowania
+// źródła. Ramka jest generowana z czystej bieli — kadr NIE może kończyć się na
+// krawędzi oryginalnej karty, bo tamten wiersz to antyaliasing i webp robi z
+// niego szarą kreskę przez całą szerokość.
+//
 // TYP_TELEGRAM_SHOT_SRC: zrzut z Telegrama ze strzałką na "Message us" i na
 // przycisk "Join". Bez niego część ludzi nie wie, w co kliknąć po wejściu.
+// To PRAWDZIWY zrzut z kanału, nie makieta — nie retuszować treści wiadomości.
 export const TYP_TELEGRAM_SHOT_SRC: string = '/typ-telegram.webp'
 export const TEAM_PHOTO_SRC: string = '/typ-team.webp'
 
