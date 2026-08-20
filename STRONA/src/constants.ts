@@ -164,7 +164,7 @@ export const FREE_TELEGRAM_HANDLE = '@FX_Passing_free'
 //
 // Oba pliki są przycięte do krawędzi karty (strona ma białe tło, więc
 // margines dookoła byłby martwym miejscem) i mają PROPORCJE WPISANE NA SZTYWNO
-// w ThankYouPage.tsx: 1200/888 i 1200/679. Podmiana pliku o innym kształcie
+// w ThankYouPage.tsx: 1024/757 i 1200/679. Podmiana pliku o innym kształcie
 // wymaga poprawienia tam `ratio` — .mm-typ-shot ma object-fit:cover, więc
 // inaczej obcięłoby boki (na zdjęciu zespołu zjadłoby skrajne osoby).
 //
