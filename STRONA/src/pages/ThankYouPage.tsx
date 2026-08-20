@@ -580,7 +580,7 @@ export function ThankYouPage() {
             <ImageSlot
               src={TYP_TELEGRAM_SHOT_SRC}
               alt="Where to tap in Telegram: message the admin, then press Join"
-              ratio="1024 / 757"
+              ratio="1200 / 888"
               label="Telegram screenshot going here"
             />
           </div>

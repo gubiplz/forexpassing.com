@@ -164,12 +164,24 @@ export const FREE_TELEGRAM_HANDLE = '@FX_Passing_free'
 //
 // Oba pliki są przycięte do krawędzi karty (strona ma białe tło, więc
 // margines dookoła byłby martwym miejscem) i mają PROPORCJE WPISANE NA SZTYWNO
-// w ThankYouPage.tsx: 1024/757 i 1200/679. Podmiana pliku o innym kształcie
+// w ThankYouPage.tsx: 1200/888 i 1200/679. Podmiana pliku o innym kształcie
 // wymaga poprawienia tam `ratio` — .mm-typ-shot ma object-fit:cover, więc
 // inaczej obcięłoby boki (na zdjęciu zespołu zjadłoby skrajne osoby).
 //
+// Plik jest CELOWO 2× większy niż slot: .mm-typ-shot-wrap ma 778 px, więc na
+// ekranie 2× przeglądarka potrzebuje 1556 px. typ-telegram.webp ma 2400×1776,
+// czyli 50:37 co do cyfry. Schodząc z rozmiaru, najpierw sprawdź na retinie,
+// czy da się przeczytać nick admina — po to ta grafika w ogóle tu jest.
+//
 // TYP_TELEGRAM_SHOT_SRC: zrzut z Telegrama ze strzałką na "Message us" i na
 // przycisk "Join". Bez niego część ludzi nie wie, w co kliknąć po wejściu.
+//
+// ⚠ NICK ADMINA JEST W TYM PLIKU RETUSZOWANY. Makieta przyszła z
+// „@forexpassingadmin" w obu miejscach, a nasz uchwyt to „@fxpassingadmin"
+// (TELEGRAM_ADMIN_HANDLE wyżej, on też jest właścicielem kanału). Zdanie
+// „our only admin is …" jest zakreślone na czerwono, więc zły nick wskazywałby
+// tam uchwyt, którego nie kontrolujemy. Podmieniając plik SPRAWDŹ OBA
+// WYSTĄPIENIA — to przy „Message …" i to w kółku.
 export const TYP_TELEGRAM_SHOT_SRC: string = '/typ-telegram.webp'
 export const TEAM_PHOTO_SRC: string = '/typ-team.webp'
 
