@@ -171,10 +171,15 @@ export const FREE_TELEGRAM_HANDLE = '@FX_Passing_free'
 // Proporcję trzyma się DOPEŁNIENIEM BIELĄ wokół treści, nie docinaniem: tło
 // strony to czyste #ffffff, więc biały margines jest niewidoczny, a każdy
 // piksel ucięty z kadru to realnie zjedzony fragment zrzutu. typ-telegram.webp
-// ma 1000×740 (= 50:37 co do cyfry) na treści 849×660, bez przeskalowania
-// źródła. Ramka jest generowana z czystej bieli — kadr NIE może kończyć się na
-// krawędzi oryginalnej karty, bo tamten wiersz to antyaliasing i webp robi z
-// niego szarą kreskę przez całą szerokość.
+// ma 2000×1480 (= 50:37 co do cyfry) na treści 1698×1320. Ramka jest
+// generowana z czystej bieli — kadr NIE może kończyć się na krawędzi
+// oryginalnej karty, bo tamten wiersz to antyaliasing i webp robi z niego
+// szarą kreskę przez całą szerokość.
+//
+// Plik jest CELOWO 2× większy niż slot: .mm-typ-shot-wrap ma 778 px, więc na
+// ekranie 2× przeglądarka potrzebuje 1556 px. Wersja 1000 px była przez nią
+// rozciągana i tekst w telefonie robił się papkowaty. Schodząc z rozmiaru,
+// najpierw sprawdź na retinie, czy da się przeczytać nick admina.
 //
 // TYP_TELEGRAM_SHOT_SRC: zrzut z Telegrama ze strzałką na "Message us" i na
 // przycisk "Join". Bez niego część ludzi nie wie, w co kliknąć po wejściu.
