@@ -122,12 +122,14 @@ export function fillSpots(template, n) {
  * skrypt CLI — a constants.ts jest modułem przeglądarki. Zdanie jest
  * nierozłączne z licznikiem: to jego jedyne zastosowanie.
  *
- * REPO JEST WŁAŚCICIELEM TEGO TEKSTU. Ręczna zmiana opisu w apce nie zostanie —
- * sync przywróci to, co stoi poniżej. Zmiany wpisujemy tutaj.
+ * WŁAŚCICIELEM TEKSTU JEST KANAŁ, nie repo. Sync podmienia w żywym opisie
+ * wyłącznie liczbę przed „remaining" (swapSpotsNumber) — admin może dowolnie
+ * redagować resztę opisu w apce i sync jej nie ruszy. Szablon poniżej to
+ * FALLBACK: wchodzi dopiero, gdy w opisie nie ma licznika (np. ktoś wyczyścił
+ * opis do zera) — bez niego pusty kanał zostałby pusty na zawsze.
  *
- * Tekst przepisany 1:1 z tego, co stało na kanale; ruszona jest wyłącznie
- * liczba w nawiasie. Telegram tnie opis na 255 znakach — konsumenci sprawdzają
- * to przed wysyłką i wolą się wywalić, niż wysłać obcięty tekst.
+ * Telegram tnie opis na 255 znakach — konsumenci sprawdzają to przed wysyłką
+ * i wolą się wywalić, niż wysłać obcięty tekst.
  *
  * ⚠ „10" jest wpisane na sztywno i NIE jest tą samą liczbą co licznik: pula
  * dzienna to 10, a licznik startuje od SPOTS_START = 7. Czyta się to jako „z 10
@@ -158,4 +160,21 @@ export const TG_DESCRIPTION_MAX = 255;
 export function channelDescriptionAt(now) {
   const n = spotsAt(now);
   return { n, description: fillSpots(TG_CHANNEL_DESCRIPTION, n) };
+}
+
+/**
+ * Podmienia w ŻYWYM opisie kanału samą liczbę przed „remaining", zostawiając
+ * resztę tekstu nietkniętą — to pozwala adminowi redagować opis w apce bez
+ * walki z syncem. Dopasowanie jest celowo luźne (dowolna liczba, dowolne
+ * odstępy, wielkość liter bez znaczenia), żeby przeredagowane zdanie wciąż
+ * łapało licznik.
+ * @param {string} text żywy opis z getChat
+ * @param {number} n docelowa liczba miejsc
+ * @returns {string | null} opis z podmienioną liczbą albo null, gdy w tekście
+ *   nie ma licznika „N remaining" i trzeba sięgnąć po szablon
+ */
+export function swapSpotsNumber(text, n) {
+  const re = /\d+(?=\s*remaining)/i;
+  if (!re.test(text || '')) return null;
+  return text.replace(re, String(n));
 }

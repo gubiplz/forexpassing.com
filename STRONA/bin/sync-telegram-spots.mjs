@@ -10,10 +10,11 @@
 // sztuki: nie ma tu przepisanego wzoru, który mógłby się rozjechać.
 //
 // Skrypt jest BEZSTANOWY i samonaprawiający: czyta, co faktycznie stoi na
-// kanale, składa docelowy tekst i wysyła tylko wtedy, gdy się różnią. Nie
-// pamięta poprzedniego uruchomienia, więc nie ma czego zgubić ani rozjechać —
-// pominięty przebieg nadrabia następny. Wysyłek wychodzi ~7 na dobę, tyle ile
-// progów licznika.
+// kanale, podmienia w tym tekście SAMĄ liczbę przed „remaining" i wysyła tylko
+// przy różnicy. Reszta opisu należy do admina — szablon z spots.js wchodzi
+// dopiero, gdy w opisie nie ma licznika. Nie pamięta poprzedniego uruchomienia,
+// więc nie ma czego zgubić ani rozjechać — pominięty przebieg nadrabia
+// następny. Wysyłek wychodzi ~7 na dobę, tyle ile progów licznika.
 //
 // TELEGRAM_BOT_TOKEN idzie WYŁĄCZNIE ze zmiennej środowiskowej (w CI: sekret
 // repozytorium). Repo jest publiczne — token nie ma prawa się w nim znaleźć.
@@ -22,8 +23,8 @@ import { appendFileSync } from 'node:fs';
 
 import {
   channelDescriptionAt,
-  fillSpots,
   SPOTS_TOKEN,
+  swapSpotsNumber,
   TG_CHANNEL_CHAT_ID,
   TG_CHANNEL_DESCRIPTION,
   TG_DESCRIPTION_MAX,
@@ -79,20 +80,24 @@ async function tg(method, params) {
   return body.result;
 }
 
-// ── docelowy tekst ─────────────────────────────────────────────────────────
+// ── fallback z szablonu ──────────────────────────────────────────────────────
 if (!TG_CHANNEL_DESCRIPTION.includes(SPOTS_TOKEN)) {
   die(`TG_CHANNEL_DESCRIPTION nie zawiera ${SPOTS_TOKEN} — nie ma czego podstawić.`);
 }
 
-const { n, description: want } = channelDescriptionAt(now);
-
-if (want.length > MAX_LEN) {
-  die(`opis ma ${want.length} znaków, Telegram przyjmie ${MAX_LEN}. Skróć TG_CHANNEL_DESCRIPTION.`);
-}
+const { n, description: fallback } = channelDescriptionAt(now);
 
 // ── co faktycznie stoi na kanale ───────────────────────────────────────────
 const chat = await tg('getChat', { chat_id: CHAT });
 const have = chat.description ?? '';
+
+// Tekst opisu należy do admina — podmieniamy w nim samą liczbę. Szablon
+// wchodzi dopiero, gdy w opisie nie ma licznika „N remaining".
+const want = swapSpotsNumber(have, n) ?? fallback;
+
+if (want.length > MAX_LEN) {
+  die(`opis ma ${want.length} znaków, Telegram przyjmie ${MAX_LEN}.`);
+}
 
 console.log(`${TAG} kanał: ${chat.title} (${chat.id})`);
 console.log(`${TAG} miejsc teraz: ${n}`);
@@ -103,11 +108,7 @@ if (have === want) {
   process.exit(0);
 }
 
-// Rozjazd bierze się albo ze zmiany progu (normalne, ~7 razy na dobę), albo z
-// ręcznej edycji opisu w apce. Drugi przypadek wołamy po imieniu, żeby nie
-// wyglądał w logu jak zwykły przeskok licznika.
-const onlyNumberDiffers = fillSpots(TG_CHANNEL_DESCRIPTION, extractSpots(have) ?? -1) === have;
-console.log(`${TAG} rozjazd: ${onlyNumberDiffers ? 'sama liczba' : 'TEKST OPISU ZMIENIONY RĘCZNIE — przywracam szablon z constants.ts'}`);
+console.log(`${TAG} rozjazd: ${swapSpotsNumber(have, n) ? 'sama liczba' : 'BRAK LICZNIKA W OPISIE — wstawiam szablon z spots.js'}`);
 console.log(`${TAG} było:  ${JSON.stringify(have)}`);
 console.log(`${TAG} będzie: ${JSON.stringify(want)}`);
 
@@ -125,14 +126,6 @@ if (after !== want) {
 }
 console.log(`${TAG} zapisane i potwierdzone.`);
 summary(`✍️ zaktualizowane · ${n} miejsc`, want);
-
-/** Wyciąga liczbę ze stojącego opisu, dopasowując go do szablonu. */
-function extractSpots(text) {
-  const [head, tail] = TG_CHANNEL_DESCRIPTION.split(SPOTS_TOKEN);
-  if (!text.startsWith(head) || !text.endsWith(tail)) return null;
-  const mid = text.slice(head.length, text.length - tail.length);
-  return /^\d+$/.test(mid) ? Number(mid) : null;
-}
 
 /** Jedna linijka do podsumowania joba, żeby stan było widać bez wchodzenia w log. */
 function summary(status, text) {

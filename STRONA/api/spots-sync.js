@@ -11,8 +11,11 @@
 // ani razu przez ponad dwie godziny — ani przy `*/5 * * * *`, ani przy rzadkim
 // harmonogramie celującym w progi. Stąd budzik z zewnątrz.
 //
-// Bezstanowe i idempotentne: czyta żywy opis, składa docelowy i wysyła tylko
-// przy różnicy. Pominięte wywołanie niczego nie psuje — nadrabia następne.
+// Bezstanowe i idempotentne: czyta żywy opis, podmienia w nim SAMĄ liczbę
+// przed „remaining" i wysyła tylko przy różnicy. Reszta opisu należy do
+// admina — może ją redagować w apce, a sync jej nie nadpisze. Szablon z
+// spots.js wchodzi dopiero, gdy w opisie nie ma licznika (np. opis wyczyszczony
+// do zera). Pominięte wywołanie niczego nie psuje — nadrabia następne.
 //
 // Wstęp tylko z nagłówkiem `x-sync-key` zgodnym ze zmienną SPOTS_SYNC_KEY.
 // Wcześniej endpoint był otwarty i przyjmował token bota z nagłówka — obcy nie
@@ -24,6 +27,7 @@
 import {
   channelDescriptionAt,
   nextSpotsChange,
+  swapSpotsNumber,
   TG_CHANNEL_CHAT_ID,
   TG_DESCRIPTION_MAX,
 } from '../src/lib/spots.js';
@@ -71,30 +75,9 @@ export default async function handler(req, res) {
     return;
   }
 
-  const { n, description } = channelDescriptionAt(now);
+  const { n, description: fallback } = channelDescriptionAt(now);
   const chatId = process.env.TELEGRAM_SPOTS_CHAT_ID || TG_CHANNEL_CHAT_ID;
-
-  if (description.length > TG_DESCRIPTION_MAX) {
-    res.status(500).json({ ok: false, error: `opis ma ${description.length} znaków, limit ${TG_DESCRIPTION_MAX}` });
-    return;
-  }
-
   const token = process.env.TELEGRAM_BOT_TOKEN;
-
-  // Podgląd: co byłoby wysłane i czy w ogóle jest czym. `hasEnvToken` mówi
-  // tylko tak/nie — sam token nigdy nie wychodzi z serwera.
-  if (req.query?.dry) {
-    res.status(200).json({
-      ok: true,
-      dry: true,
-      n,
-      description,
-      chatId,
-      hasEnvToken: Boolean(process.env.TELEGRAM_BOT_TOKEN),
-      nextChangeAt: new Date(nextSpotsChange(now)).toISOString(),
-    });
-    return;
-  }
 
   if (!token) {
     res.status(500).json({ ok: false, error: 'brak TELEGRAM_BOT_TOKEN w środowisku' });
@@ -102,8 +85,31 @@ export default async function handler(req, res) {
   }
 
   try {
+    // Żywy opis czytamy PRZED złożeniem docelowego (także w ?dry=1): tekst
+    // należy do admina, my podmieniamy w nim tylko liczbę przed „remaining".
     const chat = await tg(token, 'getChat', { chat_id: chatId });
     const have = chat.description ?? '';
+    const description = swapSpotsNumber(have, n) ?? fallback;
+
+    if (description.length > TG_DESCRIPTION_MAX) {
+      res.status(500).json({ ok: false, error: `opis ma ${description.length} znaków, limit ${TG_DESCRIPTION_MAX}` });
+      return;
+    }
+
+    // Podgląd: co stoi, co byłoby wysłane i czy w ogóle jest różnica.
+    if (req.query?.dry) {
+      res.status(200).json({
+        ok: true,
+        dry: true,
+        n,
+        was: have,
+        description,
+        wouldChange: have !== description,
+        chatId,
+        nextChangeAt: new Date(nextSpotsChange(now)).toISOString(),
+      });
+      return;
+    }
 
     if (have === description) {
       res.status(200).json({ ok: true, n, changed: false, description });
