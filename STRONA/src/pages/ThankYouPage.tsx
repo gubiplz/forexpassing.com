@@ -77,9 +77,22 @@ import {
  * nowojorskiej. Te dwa liczniki nie są ze sobą zsynchronizowane.
  */
 
+/** Fire-and-forget: dostraja opis kanału TG do bieżącego licznika miejsc. */
+function pingSpotsSync() {
+  try {
+    void fetch('/api/spots-ping', { method: 'GET', keepalive: true, cache: 'no-store' })
+  } catch {
+    // Sync jest best-effort — brak sieci nie może wywalić thank-you.
+  }
+}
+
 function useSpotsLeft() {
   const [now, setNow] = useState(() => Date.now())
   useEffect(() => {
+    // Przy wejściu na stronę — i przy każdym przeskoku liczby — pingujemy
+    // sync opisu kanału. Endpoint jest publiczny i throttlowany (~60 s),
+    // więc flood z odświeżeń nic nie psuje.
+    pingSpotsSync()
     let id = 0
     // Budzik ustawiany DOKŁADNIE na próg zmiany, nie co kilkanaście sekund.
     // Dzięki temu pas i alert przeskakują w tej samej chwili i nigdy — nawet
@@ -89,6 +102,7 @@ function useSpotsLeft() {
       const t = Date.now()
       id = window.setTimeout(() => {
         setNow(Date.now())
+        pingSpotsSync()
         schedule()
       }, Math.max(1000, nextSpotsChange(t) - t))
     }
