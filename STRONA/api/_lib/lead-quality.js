@@ -144,6 +144,14 @@ export function gradeLead(lead) {
     gaps.push('only watched part of the video');
   }
 
+  // Did any of our own questions land at all? A lead arriving from outside the
+  // questionnaire — Meta Lead Ads, a CRM — carries its own field labels, none of
+  // the options above match, and the score stays at 0. That reads as "cold" but
+  // means "never asked", and the two are not the same thing to whoever works the
+  // queue. Reported rather than acted on: this file scores, callers decide.
+  const graded = [BUYING_NOW, BUYING_WEEKS, FAILED_BEFORE, DONE_BEFORE, NEVER_DONE, WATCHED_ALL, WATCHED_PART]
+    .some((re) => has(answers, re));
+
   const penalties = findPenalties(lead);
 
   // Ways to reach them. The questionnaire requires both fields now, but the
@@ -175,5 +183,5 @@ export function gradeLead(lead) {
   // so the desk sees exactly what is suspect before messaging anyone.
   const tier = score >= 7 ? 'high' : score >= 3 ? 'warm' : 'cold';
 
-  return { tier, score, max: MAX, ...TIERS[tier], reasons, gaps, penalties };
+  return { tier, score, max: MAX, ...TIERS[tier], graded, reasons, gaps, penalties };
 }
