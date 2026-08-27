@@ -15,19 +15,11 @@
     {
       "source": "/pay/:token",
       "destination": "/"
-    },
-    {
-      "source": "/desk",
-      "destination": "/api/desk"
     }
   ],
   "headers": [
     {
       "source": "/pay/:token",
-      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
-    },
-    {
-      "source": "/desk",
       "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
     }
   ],

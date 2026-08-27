@@ -52,95 +52,6 @@ function readRef(): string {
   }
 }
 
-// Jeden identyfikator na WYPEŁNIENIE formularza, nie na kliknięcie „wyślij".
-// Ponowna wysyłka po zerwanej sieci niesie ten sam, więc serwer rozpozna to samo
-// zgłoszenie zamiast założyć drugiego leada — bez tego automatyczne ponowienie
-// niżej byłoby fabryką dubli, a nie zabezpieczeniem.
-//
-// crypto.randomUUID() wymaga bezpiecznego kontekstu i nie ma go w Safari
-// starszym niż 15.4. Formularz nie może paść przez klucz idempotencji, więc przy
-// jego braku idą losowe znaki: to nie musi być UUID, musi być niepowtarzalne.
-function newSubmissionId(): string {
-  try {
-    if (typeof crypto?.randomUUID === 'function') return crypto.randomUUID()
-  } catch {
-    // Poniżej.
-  }
-  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 12)}`
-}
-
-const ATTRIBUTION_KEYS = [
-  'utm_source',
-  'utm_medium',
-  'utm_campaign',
-  'utm_content',
-  'utm_term',
-  'fbclid',
-  'ttclid',
-  'gclid',
-]
-const ATTRIBUTION_STORE = 'fp_attr'
-
-/**
- * Z której reklamy przyszedł ten człowiek.
- *
- * Zapamiętywane przy pierwszym kontakcie z parametrami, bo do formularza
- * dochodzi się kilkoma kliknięciami i do wysyłki zdążą zniknąć z adresu. Bez
- * tego raport odpowiada „ilu ich było", a nie „która kampania je przyniosła".
- *
- * Pierwsze wejście wygrywa nad późniejszym: klik w reklamę przyniósł parametry,
- * a przeładowanie strony bez nich nie ma prawa ich skasować.
- */
-function readAttribution(): Record<string, string> {
-  let zapisane: Record<string, string> = {}
-  try {
-    const raw = JSON.parse(window.sessionStorage.getItem(ATTRIBUTION_STORE) ?? '{}')
-    if (raw && typeof raw === 'object') zapisane = raw as Record<string, string>
-  } catch {
-    // Prywatne okno albo śmieci w magazynie — atrybucja jest miła, nie wymagana.
-  }
-  const q = new URLSearchParams(window.location.search)
-  const zAdresu = Object.fromEntries(
-    ATTRIBUTION_KEYS.map((k) => [k, (q.get(k) ?? '').trim().slice(0, 200)]).filter(([, v]) => v)
-  )
-  const all = { ...zAdresu, ...zapisane }
-  try {
-    if (Object.keys(all).length) window.sessionStorage.setItem(ATTRIBUTION_STORE, JSON.stringify(all))
-  } catch {
-    // Jak wyżej.
-  }
-  return all
-}
-
-// Zerwana sieć i zimny start funkcji to jedyne dwie awarie, które ta wysyłka
-// realnie widzi, i obie mijają w sekundę.
-const RETRY_MS = 1500
-
-/**
- * Wysyłka z jedną automatyczną próbą więcej.
- *
- * Dotąd jedyną obroną przed chwilową awarią było to, że człowiekowi będzie się
- * chciało kliknąć drugi raz — czyli lead ginął wtedy, kiedy nie chciało się
- * nikomu. Ponowienie jest bezpieczne, bo `submission_id` w treści jest ten sam.
- * Kod 4xx nie jest ponawiany: literówka w mailu nie naprawi się sama.
- */
-async function postLead(body: string): Promise<Response> {
-  const raz = () =>
-    fetch(APPLY_ENDPOINT, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body,
-    })
-  try {
-    const res = await raz()
-    if (res.ok || res.status < 500) return res
-  } catch {
-    // Sieć padła w locie — dokładnie ten przypadek, dla którego to tu jest.
-  }
-  await new Promise((r) => window.setTimeout(r, RETRY_MS))
-  return raz()
-}
-
 // `phone` holds the national part only; `phoneIso` picks the dialling code in
 // front of it. They are joined into one +.. number at submit time, so the team
 // never has to guess which country a bare nine-digit number belongs to.
@@ -228,8 +139,6 @@ export function ApplyFlow({
   // For the server's time trap: a human needs seconds to walk the steps, a
   // script posts instantly. Counted from mount, sent as elapsed_ms.
   const openedAt = useRef(Date.now())
-  // Stały przez całe życie tego formularza — patrz newSubmissionId().
-  const submissionId = useRef(newSubmissionId())
 
   // Free-account applicants are answered from a different Telegram account, and
   // the opener they arrive with tells the desk which offer they came for
@@ -245,13 +154,6 @@ export function ApplyFlow({
   useEffect(() => {
     if (restored) onDirty?.()
   }, [restored, onDirty])
-
-  // Parametry kampanii chwytane przy otwarciu formularza, a nie dopiero przy
-  // wysyłce: między jednym a drugim mieści się przeładowanie strony, po którym
-  // adres jest już czysty.
-  useEffect(() => {
-    readAttribution()
-  }, [])
 
   useEffect(() => {
     try {
@@ -320,9 +222,10 @@ export function ApplyFlow({
     setSending(true)
     setError('')
     try {
-      const res = await postLead(
-        JSON.stringify({
-          submission_id: submissionId.current,
+      const res = await fetch(APPLY_ENDPOINT, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
           name: contact.name.trim(),
           email: contact.email.trim(),
           // Sent as one dialable number, not a bare national part the team
@@ -342,9 +245,8 @@ export function ApplyFlow({
           outcome: result,
           source,
           ref: readRef(),
-          attribution: readAttribution(),
-        })
-      )
+        }),
+      })
       if (!res.ok) throw new Error('request failed')
       // The grade is worked out server-side and comes back as a single flag.
       // An older deploy, or the Worker fallback, answers without it — then this
