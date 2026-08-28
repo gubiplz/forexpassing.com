@@ -24,6 +24,29 @@ import { normalizeTelegram } from '../../src/lib/phone-rules.js';
 
 const str = (v) => (typeof v === 'string' ? v.trim() : '');
 
+// Kampania sparkowana przez przeglądarkę (src/lib/attribution.ts). Przepisywana
+// po zamkniętej liście, nie hurtem: to jest wejście publiczne, a wszystko, co
+// wejdzie do `lead`, jedzie dalej do CRM-u i do logu funkcji. Bez tej listy
+// dowolny POST dopisałby leadowi dowolny słownik dowolnej wielkości.
+const ATTRIBUTION_KEYS = [
+  'utm_source',
+  'utm_medium',
+  'utm_campaign',
+  'utm_content',
+  'fbclid',
+  'gclid',
+  'ttclid',
+];
+function pickAttribution(raw) {
+  if (!raw || typeof raw !== 'object') return {};
+  const out = {};
+  for (const k of ATTRIBUTION_KEYS) {
+    const v = str(raw[k]).slice(0, 120);
+    if (v) out[k] = v;
+  }
+  return out;
+}
+
 // Endpoint jest publiczny i rozsyła maile przez Resend — bez żadnej zapory
 // każdy POST-em może spamować cudzą skrzynkę na nasz koszt i naszą reputację
 // domeny. Trzy smycze poniżej (Origin, limit per-IP, pułapka czasowa) nie
@@ -207,6 +230,10 @@ export default async function handler(req, res) {
     stage: str(body.stage).slice(0, 40),
     // Partner slug parked by /r/<slug>. Empty for direct traffic.
     ref: str(body.ref).slice(0, 40),
+    // utm_* plus the click id of whichever ad network sent them. Empty for
+    // traffic that arrived without a tag — which is itself an answer the
+    // report needs, so the key goes out either way.
+    attribution: pickAttribution(body.attribution),
     telegram,
     ...(telegram !== telegramRaw ? { telegram_raw: telegramRaw } : {}),
     // Every question/answer pair, so the team reads the whole picture.

@@ -31,6 +31,7 @@ import {
   samplePlaceholder, splitDial, TELEGRAM_RE,
 } from '../data/dial-codes'
 import { track } from '../lib/track'
+import { readAttribution } from '../lib/attribution'
 
 // Local part, one @, a dotted domain, and a TLD of at least two letters. Stops
 // the two mistakes that actually arrive: a handle with no @ at all, and
@@ -245,6 +246,9 @@ export function ApplyFlow({
           outcome: result,
           source,
           ref: readRef(),
+          // The campaign parked when they first landed. Empty for traffic that
+          // arrived untagged — which is an answer the report needs as well.
+          attribution: readAttribution(),
         }),
       })
       if (!res.ok) throw new Error('request failed')
