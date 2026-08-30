@@ -1,12 +1,16 @@
 // GET|POST /api/spots-sync — dostraja opis kanału na Telegramie do licznika
 // miejsc z /thank-you.
 //
-// Wariant ZA SEKRETEM dla wywołań z zewnątrz. Budzikiem jest dziś cron Vercela
-// bijący w publiczny api/spots-ping.js, więc ten endpoint nie jest już do niczego
-// niezbędny — zostaje dla zewnętrznego narzędzia (np. scenariusza w Make), które
-// wolimy trzymać za kluczem, niż wpuszczać na otwarty ping. Cała logika
-// siedzi w api/_lib/spots-sync-core.js — ten endpoint tylko pilnuje sekretu
-// `x-sync-key` i deleguje.
+// Wariant ZA SEKRETEM dla wywołań z zewnątrz i JEDYNA regularna droga tego
+// syncu: harmonogram stoi w zewnętrznym scenariuszu (Make), który uderza tutaj
+// nagłówkiem `x-sync-key`. Publiczny api/spots-ping.js łapie tylko ruch
+// z thank-you, więc bez tego endpointu opis stałby w godzinach bez odwiedzin.
+//
+// Za klucz, nie na otwarty ping, bo wywołanie z harmonogramu przychodzi zawsze
+// z tego samego miejsca i nie ma powodu, żeby dobijało się nim cokolwiek innego.
+//
+// Cała logika siedzi w api/_lib/spots-sync-core.js — ten endpoint tylko pilnuje
+// sekretu i deleguje.
 //
 // Wstęp tylko z nagłówkiem `x-sync-key` zgodnym ze zmienną SPOTS_SYNC_KEY.
 // Token bota pochodzi WYŁĄCZNIE z TELEGRAM_BOT_TOKEN. Gate obejmuje też

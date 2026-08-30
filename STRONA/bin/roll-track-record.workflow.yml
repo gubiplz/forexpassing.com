@@ -1,10 +1,15 @@
 # Weekly roll for the track record — SUPERSEDED, KEPT FOR THE RECORD. DO NOT INSTALL.
 #
-# The job this file was written for is done by the Vercel cron on
-# /api/site-rebuild (see vercel.json): Mondays 06:15 UTC it asks for a build,
-# the build runs bin/roll-track-record.mjs as its first step, and the resulting
+# The job this file was written for is done from outside the repo: a weekly Make
+# scenario POSTs to a Vercel Deploy Hook, the build that follows runs
+# bin/roll-track-record.mjs as its first step, and the resulting
 # deployment_status fires .github/workflows/track-record-refresh.yml, so the
 # Telegram posters move in the same pass. Nothing here to switch on.
+#
+# There is deliberately no endpoint of ours in that chain. A Deploy Hook is a
+# plain URL that only ever asks for a build of one branch, so the scenario can
+# hold it directly — wrapping it in an API route would have bought nothing and
+# cost two more environment variables to keep alive.
 #
 # Installing it would in fact do nothing at all: `schedule:` does not fire in
 # this repo. Two variants were tried, zero runs, while workflow_dispatch worked

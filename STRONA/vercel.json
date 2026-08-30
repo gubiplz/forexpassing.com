@@ -22,15 +22,5 @@
       "source": "/pay/:token",
       "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
     }
-  ],
-  "crons": [
-    {
-      "path": "/api/spots-ping",
-      "schedule": "*/30 * * * *"
-    },
-    {
-      "path": "/api/site-rebuild",
-      "schedule": "15 6 * * 1"
-    }
   ]
 }

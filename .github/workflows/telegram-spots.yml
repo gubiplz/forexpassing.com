@@ -28,9 +28,17 @@ on:
   # `active` — czyli konfiguracja była poprawna, a event `schedule` po prostu
   # nie przychodził. Nie wracamy do tego bez nowego dowodu.
   #
-  # Budzikiem jest cron Vercela (STRONA/vercel.json), który co 30 minut bije w
-  # publiczny /api/spots-ping. Ten workflow zostaje jako RĘCZNE narzędzie:
-  # wymusza sync po zmianie tekstu opisu albo gdy trzeba sprawdzić, co skrypt widzi.
+  # Budzikiem jest scenariusz w Make („Forex Passing — spots → Telegram"),
+  # uderzający POST-em w STRONA/api/spots-sync.js z nagłówkiem `x-sync-key`.
+  # Interwał ustawia się TAM, nie w repo — progi licznika wypadają co ~3 h 26 min
+  # (86400 / 7 z SPOTS_STEP), więc interwał wyznacza, o ile opis może się spóźnić
+  # za stroną: pół godziny to ≤30 min poślizgu, dwie godziny to ≤2 h.
+  #
+  # W vercel.json był na to cron przez pół dnia i został zdjęty — harmonogram
+  # miał być w jednym miejscu, a nie w dwóch, które trzeba uzgadniać.
+  #
+  # Ten workflow zostaje jako RĘCZNE narzędzie: wymusza sync po zmianie tekstu
+  # opisu albo gdy trzeba sprawdzić, co skrypt widzi.
   workflow_dispatch:
 
 permissions:

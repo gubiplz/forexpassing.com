@@ -69,6 +69,11 @@ Efekt uboczny: kilka deployów tego samego dnia da kilka przebiegów, ale
 Telegram odpowiada `message is not modified` i `edit.js` liczy je jako pominięte.
 Kanał się nie rusza, a repo jest publiczne, więc minuty Actions są darmowe.
 
+Żeby w cichym tygodniu deploy w ogóle się zdarzył, cotygodniowy scenariusz
+w Make uderza POST-em w Deploy Hook Vercela. Build roluje serię
+(`STRONA/bin/roll-track-record.mjs`), a jego `deployment_status` wraca tutaj —
+więc „X weeks" na stronie i liczby w podpisach ruszają się jednym ruchem.
+
 Harmonogram Actions (`schedule:`) na tym repo nie działa — patrz nagłówek
 `telegram-spots.yml`. Nie ma go też po co wracać: deploy jest lepszym sygnałem.
 

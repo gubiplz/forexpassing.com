@@ -1,16 +1,16 @@
 // GET /api/spots-ping — publiczny, throttlowany trigger syncu opisu kanału.
 //
-// Wołany z /thank-you (fire-and-forget przy wejściu i przy każdym przeskoku
-// licznika) oraz z crona Vercela co 30 minut. Bez sekretu: idempotentny
-// (zapis tylko gdy liczba się różni) i ograniczony in-memory do ~1 wywołania
-// Telegrama na minutę na instancję funkcji — flood z botów nie pali API.
+// JEDYNY konsument to /thank-you: fire-and-forget przy wejściu i przy każdym
+// przeskoku licznika. Bez sekretu, bo bez sekretu być musi — strzela w niego
+// przeglądarka człowieka z ulicy. Bezpieczne, bo idempotentny (zapis tylko gdy
+// liczba się różni) i ograniczony in-memory do ~1 wywołania Telegrama na minutę
+// na instancję funkcji: flood z botów nie pali API.
 //
-// Dlaczego co 30 minut, a nie punktualnie na siedmiu progach licznika: te progi
-// wynikają z SPOTS_START/SPOTS_END/SPOTS_STEP w src/lib/spots.js, a cron zna
-// tylko UTC. Wpisanie ich do vercel.json wymagałoby czternastu linii (siedem na
-// czas letni, siedem na zimowy) i przeniosłoby wzór w miejsce, którego nic nie
-// testuje — po zmianie SPOTS_START crony po cichu wskazywałyby nie te godziny.
-// Ślepe pytanie co pół godziny kosztuje jedno getChat i nie ma czego rozjechać.
+// UWAGA, TO NIE JEST HARMONOGRAM. Ten endpoint dostraja opis tylko wtedy, gdy
+// ktoś jest na thank-you. Za regularne pilnowanie odpowiada zewnętrzny
+// scenariusz bijący w api/spots-sync.js (wariant za sekretem) — patrz nagłówek
+// telegram-spots.yml. W vercel.json NIE MA już crona na ten adres; był, przez
+// pół dnia, i został zdjęty razem z przeniesieniem harmonogramu na zewnątrz.
 //
 // Zapisana logika: api/_lib/spots-sync-core.js (ta sama co w spots-sync).
 
