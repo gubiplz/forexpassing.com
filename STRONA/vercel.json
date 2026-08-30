@@ -27,10 +27,6 @@
     {
       "path": "/api/spots-ping",
       "schedule": "*/30 * * * *"
-    },
-    {
-      "path": "/api/track-refresh",
-      "schedule": "20 6 * * 1"
     }
   ]
 }

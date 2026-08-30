@@ -54,11 +54,23 @@ takiemu bez uprawnień. Status sprawdzaj przez `getChatMember`.
 
 ## Harmonogram
 
-Cron Vercela (`20 6 * * 1` w `STRONA/vercel.json`) → `STRONA/api/track-refresh.js`
-→ `workflow_dispatch` → `.github/workflows/track-record-refresh.yml`.
+Odświeżenie odpala **udany deploy produkcyjny**: integracja Vercel↔GitHub wysyła
+`deployment_status`, a `.github/workflows/track-record-refresh.yml` łapie z niego
+tylko `Production` + `success`.
 
-Okrężnie, bo harmonogram GitHub Actions na tym repo nie działa (patrz nagłówek
-`telegram-spots.yml`), a cron Vercela i `workflow_dispatch` działają oba.
+Nie tydzień, bo tydzień był tu złą jednostką. Seria rośnie w `npm run build`
+(pierwszy krok to `STRONA/bin/roll-track-record.mjs`), więc **dane na stronie
+zmieniają się wyłącznie przy deployu**. Cotygodniowy cron trafiałby w tygodnie
+bez deploya i przesypiał deploye w środku tygodnia — posty rozjeżdżałyby się ze
+stroną nawet na sześć dni. Teraz plakat nie ma jak się od niej oderwać.
+
+Efekt uboczny: kilka deployów tego samego dnia da kilka przebiegów, ale
+`roll-track-record` dokłada sesje „do dziś", więc liczby wychodzą identyczne,
+Telegram odpowiada `message is not modified` i `edit.js` liczy je jako pominięte.
+Kanał się nie rusza, a repo jest publiczne, więc minuty Actions są darmowe.
+
+Harmonogram Actions (`schedule:`) na tym repo nie działa — patrz nagłówek
+`telegram-spots.yml`. Nie ma go też po co wracać: deploy jest lepszym sygnałem.
 
 Ręcznie: zakładka **Actions → Track record refresh → Run workflow**.
 

@@ -6,17 +6,34 @@
 # wysyłać nowe — post zachowuje ID, a więc wyświetlenia i reakcje, których nie
 # da się przenieść.
 #
-# ŻADNEGO `schedule:` — z tego samego powodu co w telegram-spots.yml:
-# harmonogram Actions na tym repo nie działa (sprawdzone dwoma wariantami,
-# zero przebiegów, przy działającym workflow_dispatch). Budzikiem jest cron
-# Vercela, który raz w tygodniu woła STRONA/api/track-refresh.js, a ten robi
-# workflow_dispatch na ten plik.
+# ŻADNEGO `schedule:` — harmonogram Actions na tym repo nie działa (sprawdzone
+# dwoma wariantami, zero przebiegów, przy działającym workflow_dispatch; patrz
+# nagłówek telegram-spots.yml).
+#
+# Budzikiem jest UDANY DEPLOY PRODUKCYJNY, i to nie obejście, a właściwy moment.
+# Seria track record rośnie w `npm run build`, którego pierwszym krokiem jest
+# STRONA/bin/roll-track-record.mjs — czyli dane na stronie ruszają się WYŁĄCZNIE
+# przy deployu i między deployami stoją. Skoro plakaty są zrzutem tej strony, to
+# tydzień jako jednostka był tylko przybliżeniem: cotygodniowy cron trafiałby w
+# tygodnie bez deploya (nic do odświeżenia) i przesypiał deploye w środku
+# tygodnia (posty rozjechane ze stroną nawet na sześć dni). Deploy trafia zawsze.
+#
+# Dlatego ten plik nie potrzebuje żadnego sekretu do odpalania siebie: zdarzenie
+# przychodzi od integracji Vercel↔GitHub, która już tu jest. Wcześniejsza wersja
+# szła przez cron Vercela → STRONA/api/track-refresh.js → workflow_dispatch i
+# wymagała fine-grained PAT-a w zmiennych Vercela; ten PAT wygasa i jest kolejną
+# rzeczą do pilnowania. Endpoint został usunięty, historia w gicie.
+#
+# Deploye podglądowe też wysyłają to zdarzenie, dlatego `if` na całym jobie
+# przepuszcza tylko Production i stan `success`. Odrzucone przebiegi widać w
+# Actions jako pominięte — to koszt tego, że `on:` nie umie filtrować środowiska.
 #
 # Ręcznie: zakładka Actions → „Track record refresh" → Run workflow.
 
 name: Track record refresh
 
 on:
+  deployment_status:
   workflow_dispatch:
     inputs:
       dry:
@@ -35,6 +52,12 @@ concurrency:
 
 jobs:
   refresh:
+    # Bez tego każdy deploy podglądowy i każdy stan pośredni („queued",
+    # „in_progress", „error") ciągnąłby pełny przebieg przeglądarki.
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.deployment_status.state == 'success' &&
+       github.event.deployment_status.environment == 'Production')
     runs-on: ubuntu-latest
     timeout-minutes: 15
     defaults:
@@ -83,6 +106,14 @@ jobs:
       # (sync opisu kanału), ale nie kanału track record. Jeden token do obu
       # ról wymagałby dodania tego samego bota jako admina wszędzie — a to
       # szersze uprawnienia niż którakolwiek z tych robót potrzebuje.
+      #
+      # Pipeline czyta forexpassing.com, nie adres z `environment_url` — ten
+      # ostatni prowadzi na deployment URL, który ochrona deploymentów zasłania
+      # przekierowaniem na logowanie Vercela (sprawdzone: 302 zamiast 200).
+      # Czekanie na przepięcie aliasu nie jest potrzebne: kroki powyżej
+      # (checkout, Node, npm ci, chromium) dają około minuty zapasu, a nawet
+      # gdyby scrape trafił jeszcze poprzedni build, roll-track-record dokłada
+      # sesje „do dziś" — dwa buildy tego samego dnia dają te same liczby.
       - name: Odśwież posty
         env:
           TG_TOKEN: ${{ secrets.TELEGRAM_TRACK_BOT_TOKEN }}
