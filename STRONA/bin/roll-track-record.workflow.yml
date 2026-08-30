@@ -1,12 +1,19 @@
-# Weekly roll for the track record — NOT ACTIVE UNTIL YOU MOVE IT.
+# Weekly roll for the track record — SUPERSEDED, KEPT FOR THE RECORD. DO NOT INSTALL.
 #
-# Copy this file to .github/workflows/roll-track-record.yml to switch it on.
-# It could not be committed there from here: creating files under
-# .github/workflows/ needs a token with the `workflow` scope.
+# The job this file was written for is done by the Vercel cron on
+# /api/site-rebuild (see vercel.json): Mondays 06:15 UTC it asks for a build,
+# the build runs bin/roll-track-record.mjs as its first step, and the resulting
+# deployment_status fires .github/workflows/track-record-refresh.yml, so the
+# Telegram posters move in the same pass. Nothing here to switch on.
 #
-# Without it the series still refreshes on every deploy, because
-# `npm run build` runs bin/roll-track-record.mjs first. This workflow only
-# matters for weeks where nothing else triggers a deploy.
+# Installing it would in fact do nothing at all: `schedule:` does not fire in
+# this repo. Two variants were tried, zero runs, while workflow_dispatch worked
+# the whole time — see the header of .github/workflows/telegram-spots.yml.
+#
+# Worth knowing if you ever revive the idea: this variant COMMITS the rolled
+# JSON, the build-time roll does not. That difference does not matter, because
+# the generator is deterministic — the build reproduces the committed baseline
+# byte for byte and only tops it up to today. The commit would buy nothing.
 
 name: Roll track record
 
