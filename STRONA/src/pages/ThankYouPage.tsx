@@ -32,7 +32,9 @@ import {
   TELEGRAM_CHANNEL_HANDLE,
   TELEGRAM_CHANNEL_HREF,
   TELEGRAM_HREF,
+  TELEGRAM_PAYOUTS_HREF,
   telegramWith,
+  TRUSTPILOT_HREF,
   WISTIA_TYP_POSTER,
   TYP_ALERTS,
   TYP_SPOTS_BANNER,
@@ -432,10 +434,21 @@ const REASSURANCE: { t: string; d: string; href?: string; hrefLabel?: string }[]
     href: '/contract',
     hrefLabel: 'Read the agreement',
   },
+  // Link idzie na KANAŁ, nie na /payouts, bo cała ta strona prowadzi rozmowę na
+  // Telegrama i nie ma powodu zawracać z niej człowieka na podstronę.
+  //
+  // Ale zdanie musiało się przy tym zmienić. Poprzednie brzmiało „the
+  // certificates come from PARTNER_FIRM's own public record, not from a
+  // screenshot we made" — prawdziwe o /payouts, gdzie dane generuje
+  // bin/sync-payouts.mjs z publicznego API prop firmy, i FAŁSZYWE o naszym
+  // własnym kanale, na którym posty stawiamy my. Sprawdzalność niesie tu więc
+  // to, co da się obronić: certyfikat wystawia firma, a post idzie w dniu
+  // wypłaty. Pełny rejestr policzony z API dalej stoi na /payouts, linkowanym
+  // ze stopki (shared.tsx).
   {
     t: 'You can check the payouts yourself',
-    d: `The certificates come from ${PARTNER_FIRM}'s own public record, not from a screenshot we made.`,
-    href: '/payouts',
+    d: `Every payout gets its own post the day it lands, with the certificate ${PARTNER_FIRM} issued attached.`,
+    href: TELEGRAM_PAYOUTS_HREF,
     hrefLabel: 'See the certificates',
   },
 ]
@@ -694,14 +707,21 @@ export function ThankYouPage() {
                   </div>
                 ))}
               </div>
-              {/* Bez kwoty i bez liczby kont. Twarde dane stoja na /payouts,
-                  obok certyfikatow, z ktorych sa policzone — tutaj, dwa ekrany
-                  po "jesteś zakwalifikowany", licza sie nie cyfry, tylko to, ze
-                  wyplaty juz sie wydarzyly i mozna je sprawdzic samemu. */}
+              {/* Bez oceny i bez liczby opinii — patrz komentarz nad
+                  TRUSTPILOT_HREF w constants.ts. To jedyne miejsce, w ktorym
+                  strona wypuszcza czytelnika na zewnetrzny serwis opinii, wiec
+                  zdanie niesie to, czego tam NIE kontrolujemy: opinie sa
+                  publiczne, pod cudzymi nazwiskami i nie da sie ich u nas
+                  edytowac. Kazda liczba wpisana tutaj zestarzalaby sie sama, a
+                  czytelnik zobaczylby rozbieznosc dokladnie w chwili kliknięcia. */}
               <p className="mm-typ-col-d">
-                Payouts here are not a promise — they are already on the record, certificate after
-                certificate, in other traders' names. Yours is the next one we go after.{' '}
-                <a href="/payouts">Check them yourself</a>.
+                What working with us is actually like is not ours to tell — traders who have already
+                been through it write it up in public, under their own names, on a platform where we
+                cannot edit a word. Read it before you write to us, not after.{' '}
+                <a href={TRUSTPILOT_HREF} target="_blank" rel="noopener noreferrer">
+                  Check them yourself
+                </a>
+                .
               </p>
             </div>
           </div>
@@ -733,7 +753,18 @@ export function ThankYouPage() {
                 <span className="mm-typ-tile-t">{r.t}</span>
                 <span className="mm-typ-tile-d">{r.d}</span>
                 {r.href && (
-                  <a className="mm-typ-tile-a" href={r.href}>
+                  // Kafle mieszają teraz cele wewnętrzne (/contract) z zewnętrznym
+                  // (kanał na Telegramie), a nowa karta dla podstrony tej samej
+                  // witryny gubi kontekst czytania. Rozpoznajemy to po schemacie
+                  // adresu, żeby dodanie kolejnego linku nie wymagało pamiętania
+                  // o osobnej fladze.
+                  <a
+                    className="mm-typ-tile-a"
+                    href={r.href}
+                    {...(/^https?:/.test(r.href)
+                      ? { target: '_blank', rel: 'noopener noreferrer' }
+                      : {})}
+                  >
                     {r.hrefLabel} →
                   </a>
                 )}

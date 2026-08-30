@@ -114,6 +114,17 @@ export const REVIEW_BADGE_SRC = '/rating-badge.png'
 export const REVIEW_BADGE_ON_DARK_SRC = '/rating-badge-on-dark.png'
 export const REVIEW_BADGE_ALT = 'Our rating'
 
+// Nasz profil na Trustpilocie. Linkujemy go z /thank-you, i to jedyne miejsce,
+// gdzie strona wypuszcza czytelnika na zewnętrzny serwis opinii.
+//
+// NIE PISZ ŻADNEJ OCENY W ZDANIU, KTÓRE PROWADZI POD TEN ADRES. TrustScore
+// zmienia się bez naszego udziału, przy tej liczbie opinii nawet o kilka
+// dziesiątych po jednej nowej, więc każda liczba wpisana obok linku zestarzeje
+// się sama — a czytelnik zobaczy rozbieżność w chwili, w której kliknie. Tekst
+// obok linku ma mówić o tym, CZEGO tam nie kontrolujemy (opinie są publiczne i
+// nie da się ich u nas edytować), nie o tym, jak wysoko wypadają.
+export const TRUSTPILOT_HREF = 'https://www.trustpilot.com/review/forexpassing.com'
+
 // Pasek gwiazdek: pod plakietką i w każdej karcie opinii. Trzy warianty, bo
 // oceny mają się między opiniami różnić, a różni je WYŁĄCZNIE skrajny prawy
 // kafel — pełny, w połowie albo szary. Cztery pierwsze są zawsze zielone.
@@ -151,6 +162,11 @@ export const TELEGRAM_CHANNEL_HREF = 'https://t.me/fx_passing'
 export const TELEGRAM_CHANNEL_HANDLE = '@fx_passing'
 export const TELEGRAM_ADMIN_HANDLE = '@fxpassingadmin'
 export const SITE_DOMAIN = 'forexpassing.com'
+
+// TRZECI kanał, osobny od dwóch powyższych: tu leci jeden post na wypłatę,
+// z certyfikatem w załączniku. Nie mieszać z TELEGRAM_CHANNEL_HREF — tam idzie
+// zarządzanie kontem, tutaj wyłącznie dowód, że wypłaty się dzieją.
+export const TELEGRAM_PAYOUTS_HREF = 'https://t.me/fx_passingpayouts'
 
 // Darmowy challenge obsługuje OSOBNE konto. Wszystko, co widzi aplikant z
 // /freeaccount — formularz, ekran po wysłaniu, /thank-you?src=free — kieruje
