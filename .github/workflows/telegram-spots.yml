@@ -28,9 +28,9 @@ on:
   # `active` — czyli konfiguracja była poprawna, a event `schedule` po prostu
   # nie przychodził. Nie wracamy do tego bez nowego dowodu.
   #
-  # Budzikiem jest scenariusz w Make, który woła /api/spots-sync na stronie.
-  # Ten workflow zostaje jako RĘCZNE narzędzie: wymusza sync po zmianie tekstu
-  # opisu albo gdy trzeba sprawdzić, co skrypt widzi.
+  # Budzikiem jest cron Vercela (STRONA/vercel.json), który co 30 minut bije w
+  # publiczny /api/spots-ping. Ten workflow zostaje jako RĘCZNE narzędzie:
+  # wymusza sync po zmianie tekstu opisu albo gdy trzeba sprawdzić, co skrypt widzi.
   workflow_dispatch:
 
 permissions:

@@ -1,8 +1,10 @@
 // GET|POST /api/spots-sync — dostraja opis kanału na Telegramie do licznika
 // miejsc z /thank-you.
 //
-// Wołane z zewnętrznego budzika (scenariusz Make), bo liczba wynika z pory dnia
-// w Nowym Jorku i nie ma zdarzenia, na które dałoby się zareagować. Cała logika
+// Wariant ZA SEKRETEM dla wywołań z zewnątrz. Budzikiem jest dziś cron Vercela
+// bijący w publiczny api/spots-ping.js, więc ten endpoint nie jest już do niczego
+// niezbędny — zostaje dla zewnętrznego narzędzia (np. scenariusza w Make), które
+// wolimy trzymać za kluczem, niż wpuszczać na otwarty ping. Cała logika
 // siedzi w api/_lib/spots-sync-core.js — ten endpoint tylko pilnuje sekretu
 // `x-sync-key` i deleguje.
 //
