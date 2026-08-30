@@ -1,0 +1,68 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  .poster {
+    width: 1080px; height: 1080px; position: relative; overflow: hidden;
+    background:
+      radial-gradient(1100px 520px at 88% -6%, #d9ede1 0%, transparent 60%),
+      radial-gradient(850px 480px at -4% 104%, #ddefe5 0%, transparent 55%),
+      linear-gradient(158deg, #f6fbf8 0%, #ecf5ef 55%, #e2f0e8 100%);
+    display: flex; flex-direction: column; align-items: center;
+  }
+  .poster > * { flex-shrink: 0; }
+  .noise {
+    position: absolute; inset: 0; opacity: .45; pointer-events: none;
+    background-image: radial-gradient(#274, transparent 0.6px);
+    background-size: 9px 9px; mix-blend-mode: soft-light;
+  }
+  .logo { margin-top: 26px; height: 116px; }
+  .logo img { height: 100%; }
+  .title {
+    font-family: 'Anton', sans-serif; color: #131f18; text-align: center;
+    font-size: 80px; line-height: .95; letter-spacing: 1px; margin-top: 6px;
+    text-transform: uppercase;
+  }
+  .title .accent { color: __ACCENT__; }
+  .perf {
+    font-family: 'Anton', sans-serif; text-transform: uppercase; text-align: center;
+    font-size: 126px; line-height: .92; letter-spacing: 2px;
+    background: linear-gradient(180deg, #2fd186 0%, #0e8f52 88%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    filter: drop-shadow(0 5px 0 rgba(16, 68, 43, .16));
+    margin-top: 2px;
+  }
+  .shot {
+    margin-top: 22px; width: 810px; border-radius: 12px; overflow: hidden;
+    border: 3px solid #17a866; background: #fff;
+    box-shadow: 0 22px 55px rgba(18, 48, 36, .20);
+  }
+  .shot img { width: 100%; display: block; }
+  .cta {
+    margin-top: 24px; font-family: 'Anton', sans-serif; text-transform: uppercase;
+    font-size: 35px; letter-spacing: 2px; color: #fff; padding: 15px 54px;
+    background: linear-gradient(180deg, #23c47b 0%, #0e8f52 100%);
+    border-radius: 14px; box-shadow: 0 10px 26px rgba(14, 143, 82, .42);
+  }
+  .domain {
+    margin-top: 11px; font-family: 'Archivo', sans-serif; font-weight: 800;
+    font-size: 22px; letter-spacing: 3px; color: #33584466;
+    text-transform: uppercase;
+  }
+</style>
+</head>
+<body>
+<div class="poster">
+  <div class="noise"></div>
+  <div class="logo"><img src="logo.png"></div>
+  <div class="title">__TITLE__</div>
+  <div class="perf">Performance</div>
+  <div class="shot"><img src="__SHOT__"></div>
+  <div class="cta">Check it yourself</div>
+  <div class="domain">forexpassing.com</div>
+</div>
+</body>
+</html>

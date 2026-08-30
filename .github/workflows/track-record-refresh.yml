@@ -1,0 +1,89 @@
+# Odświeża cztery posty na @fx_passingtrackrecord — grafikę i podpis naraz.
+#
+# Dane track record rolują się dalej (STRONA/bin/roll-track-record.mjs dokłada
+# sesje), więc opublikowane posty starzeją się same. Pipeline w tg-graphics/
+# czyta żywy panel, przerysowuje plakaty i EDYTUJE istniejące posty zamiast
+# wysyłać nowe — post zachowuje ID, a więc wyświetlenia i reakcje, których nie
+# da się przenieść.
+#
+# ŻADNEGO `schedule:` — z tego samego powodu co w telegram-spots.yml:
+# harmonogram Actions na tym repo nie działa (sprawdzone dwoma wariantami,
+# zero przebiegów, przy działającym workflow_dispatch). Budzikiem jest cron
+# Vercela, który raz w tygodniu woła STRONA/api/track-refresh.js, a ten robi
+# workflow_dispatch na ten plik.
+#
+# Ręcznie: zakładka Actions → „Track record refresh" → Run workflow.
+
+name: Track record refresh
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry:
+        description: 'Przeliczyć i wyrenderować, ale NIE pisać do Telegrama'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+# Dwa przebiegi naraz edytowałyby te same cztery posty. Kolejkujemy zamiast
+# przerywać — przerwanie w połowie zostawia część postów odświeżonych.
+concurrency:
+  group: track-record-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: tg-graphics
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # Zły albo cofnięty token widać dopiero przy ostatnim kroku, po trzech
+      # przebiegach przeglądarki. Sprawdzamy go na wejściu, żeby nie palić
+      # pięciu minut na przebieg, który i tak nie ma prawa nic zapisać.
+      - name: Sprawdź dostęp bota do kanału
+        if: ${{ !inputs.dry }}
+        env:
+          TG_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TG_CHAT: '@fx_passingtrackrecord'
+        run: |
+          if [ -z "$TG_TOKEN" ]; then
+            echo "::error::brak sekretu TELEGRAM_BOT_TOKEN w repozytorium"
+            exit 1
+          fi
+          odp=$(curl -sS "https://api.telegram.org/bot${TG_TOKEN}/getChat?chat_id=${TG_CHAT}")
+          if ! echo "$odp" | grep -q '"ok":true'; then
+            echo "::error::bot nie widzi ${TG_CHAT}: $(echo "$odp" | head -c 300)"
+            exit 1
+          fi
+          echo "bot widzi ${TG_CHAT}"
+
+      - run: npm ci
+
+      - run: npx playwright install --with-deps chromium
+
+      - name: Odśwież posty
+        env:
+          TG_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        run: node refresh.js ${{ inputs.dry && '--dry' || '' }}
+
+      # Plakat ciąga Anton i Archivo z Google Fonts, a rendery w CI potrafią
+      # wyjść inaczej niż lokalnie. Artefakt pozwala obejrzeć, co poszło na
+      # kanał, bez odtwarzania całego przebiegu u siebie.
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: plakaty
+          path: |
+            tg-graphics/poster2-*.png
+            tg-graphics/track-data.json
+          retention-days: 14
