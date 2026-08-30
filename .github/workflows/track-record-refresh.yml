@@ -50,30 +50,42 @@ jobs:
       # Zły albo cofnięty token widać dopiero przy ostatnim kroku, po trzech
       # przebiegach przeglądarki. Sprawdzamy go na wejściu, żeby nie palić
       # pięciu minut na przebieg, który i tak nie ma prawa nic zapisać.
-      - name: Sprawdź dostęp bota do kanału
+      #
+      # NIE przez getChat: na publicznym kanale udaje się ono KAŻDEMU botowi,
+      # także takiemu, który nie jest tam adminem — pierwsza wersja tej kontroli
+      # przepuściła dokładnie taki token i przebieg padł dopiero na zapisie.
+      # Pytamy więc o status samego bota; jego numeryczne id to przedrostek
+      # tokena przed dwukropkiem.
+      - name: Sprawdź, czy bot jest adminem kanału
         if: ${{ !inputs.dry }}
         env:
-          TG_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TG_TOKEN: ${{ secrets.TELEGRAM_TRACK_BOT_TOKEN }}
           TG_CHAT: '@fx_passingtrackrecord'
         run: |
           if [ -z "$TG_TOKEN" ]; then
-            echo "::error::brak sekretu TELEGRAM_BOT_TOKEN w repozytorium"
+            echo "::error::brak sekretu TELEGRAM_TRACK_BOT_TOKEN w repozytorium"
             exit 1
           fi
-          odp=$(curl -sS "https://api.telegram.org/bot${TG_TOKEN}/getChat?chat_id=${TG_CHAT}")
-          if ! echo "$odp" | grep -q '"ok":true'; then
-            echo "::error::bot nie widzi ${TG_CHAT}: $(echo "$odp" | head -c 300)"
+          bot_id="${TG_TOKEN%%:*}"
+          odp=$(curl -sS "https://api.telegram.org/bot${TG_TOKEN}/getChatMember?chat_id=${TG_CHAT}&user_id=${bot_id}")
+          status=$(echo "$odp" | sed -n 's/.*"status":"\([a-z]*\)".*/\1/p')
+          if [ "$status" != "administrator" ] && [ "$status" != "creator" ]; then
+            echo "::error::bot $bot_id nie jest adminem ${TG_CHAT} (status: ${status:-brak}) — $(echo "$odp" | head -c 200)"
             exit 1
           fi
-          echo "bot widzi ${TG_CHAT}"
+          echo "bot $bot_id jest adminem ${TG_CHAT}"
 
       - run: npm ci
 
       - run: npx playwright install --with-deps chromium
 
+      # Osobny sekret od TELEGRAM_BOT_TOKEN: tamten bot jest adminem @fx_passing
+      # (sync opisu kanału), ale nie kanału track record. Jeden token do obu
+      # ról wymagałby dodania tego samego bota jako admina wszędzie — a to
+      # szersze uprawnienia niż którakolwiek z tych robót potrzebuje.
       - name: Odśwież posty
         env:
-          TG_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TG_TOKEN: ${{ secrets.TELEGRAM_TRACK_BOT_TOKEN }}
         run: node refresh.js ${{ inputs.dry && '--dry' || '' }}
 
       # Plakat ciąga Anton i Archivo z Google Fonts, a rendery w CI potrafią
