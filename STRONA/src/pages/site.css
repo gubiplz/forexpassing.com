@@ -435,24 +435,10 @@ html{scroll-behavior:smooth}
 .mm-reviews-sub{text-align:center;font-size:clamp(15px,2vw,18px);opacity:.9}
 .mm-reviews-sub strong{font-weight:800}
 
-/* Rating badge. Both states are 72px tall, so publishing the artwork cannot
-   push the rest of the section down. Width is deliberately left to the file:
-   it costs nothing vertically, and pinning it would letterboard a badge whose
-   proportions we do not know yet. Border and label take currentColor, because
-   this sits on dark teal on /meta and on white on /reviews. */
-/* The outer element always spans the column and centres its contents — the
-   reserved box sizes the inner span, never this one, or the badge lands against
-   the left edge instead of under the heading. */
-/* Plakietka to teraz LOCKUP: napis, pod nim pasek gwiazdek. Wysokość nie jest
-   już rezerwowana na sztywno, bo oba obrazki mają wpisane własne wymiary i
-   narzuconą wysokość — przeglądarka zna miejsce, zanim pliki dojdą. */
+/* Rating badge — a centred star bar above the reviews. Wyśrodkowane w kolumnie,
+   żeby siadło pod nagłówkiem, a nie przy lewej krawędzi. */
 .mm-rev-badge{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:0;margin:16px 0 14px}
-.mm-rev-badge-mark{display:block;height:58px;width:auto;max-width:min(300px,78vw);object-fit:contain}
-/* Ujemny margines, bo sam plik logotypu niesie 21% pustej wysokosci pod napisem
-   — przy renderze 58 px to 12,3 px, ktorych zadne `gap` nie zdejmie. Odstep w
-   CSS-ie 6 px dawal wiec 18 px widocznej przerwy. Zmierzone na kanale alfa obu
-   plikow; podmieniajac logotyp, przemierz to ponownie. */
-.mm-rev-badge-stars{display:block;line-height:0;margin-top:-7px}
+.mm-rev-badge-stars{display:block;line-height:0}
 .mm-rev-badge-stars .mm-stars{height:24px}
 /* Jedyne miejsce, w którym plakietka różni się między tłami. Kafle #00b67a mają
    wobec tła sekcji #15803d kontrast ~1,9:1 — bez tego pasek rozpływa się w
@@ -469,10 +455,6 @@ html{scroll-behavior:smooth}
    Zwiększając promień, zwiększ razem z nim padding boczny. */
 .mm-rev-badge.is-on-dark .mm-rev-badge-stars{background:#fff;border-radius:8px;padding:2px 5px;
   box-shadow:0 3px 10px rgba(0,0,0,.12)}
-.mm-rev-badge.is-empty{height:58px}
-.mm-rev-badge.is-empty span{display:flex;align-items:center;justify-content:center;width:200px;height:72px;
-  border:1px dashed currentColor;border-radius:12px;opacity:.42;
-  font-size:10.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase}
 .mm-reviews .mm-scroller-rev{margin:34px 0 0}
 .mm-reviews .mm-scroller-rev+.mm-scroller-rev{margin-top:20px}
 .mm-scroller-rev .mm-scroller-track{gap:20px}

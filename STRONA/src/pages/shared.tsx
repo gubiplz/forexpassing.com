@@ -24,9 +24,6 @@ import {
   RATING_STARS_45_SRC,
   RATING_STARS_4_SRC,
   RATING_STARS_5_SRC,
-  REVIEW_BADGE_ALT,
-  REVIEW_BADGE_ON_DARK_SRC,
-  REVIEW_BADGE_SRC,
   WISTIA_META_ID,
 } from '../constants'
 import { type PayoutCert } from '../data/payouts'
@@ -511,29 +508,14 @@ export function ReviewCard({ review }: { review: Review }) {
 /**
  * The rating badge above the reviews, on both /meta and /reviews.
  *
- * Until REVIEW_BADGE_SRC points at a file the box renders empty but at its final
- * height, so dropping the artwork in later cannot push the rest of the section
- * down — the same reason the country flag in the application carries an explicit
- * 20×15 box. Width is left to the artwork: it changes nothing vertically, and
- * pinning it would letterbox a badge whose proportions we do not know yet.
- *
- * Pasek gwiazdek stoi POD napisem i pokazuje PIĘĆ PEŁNYCH, a nie 4,5 z grafiki
- * źródłowej: pod spodem leci „Rated 4.9 out of 5", a 4,9 zaokrągla się do
- * pięciu. Ocena jest tu na sztywno, bo to jedna, deklarowana ocena firmy —
- * stopniowanie dotyczy pojedynczych opinii, nie plakietki.
+ * Pasek gwiazdek pokazuje PIĘĆ PEŁNYCH, a nie 4,5 z grafiki źródłowej: pod
+ * spodem leci „Rated 4.9 out of 5", a 4,9 zaokrągla się do pięciu. Ocena jest tu
+ * na sztywno, bo to jedna, deklarowana ocena firmy — stopniowanie dotyczy
+ * pojedynczych opinii, nie plakietki.
  */
 export function ReviewBadge({ onDark = false }: { onDark?: boolean } = {}) {
-  if (!REVIEW_BADGE_SRC) {
-    return (
-      <div className="mm-rev-badge is-empty">
-        <span>Rating badge</span>
-      </div>
-    )
-  }
-  const src = onDark ? REVIEW_BADGE_ON_DARK_SRC : REVIEW_BADGE_SRC
   return (
     <div className={onDark ? 'mm-rev-badge is-on-dark' : 'mm-rev-badge'}>
-      <img className="mm-rev-badge-mark" src={src} alt={REVIEW_BADGE_ALT} height="58" decoding="async" />
       <span className="mm-rev-badge-stars">
         <RatingStars rating={5} alt="" />
       </span>

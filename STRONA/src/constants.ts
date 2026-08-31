@@ -100,20 +100,6 @@ export const WISTIA_TYP_ID: string = 'efyfqeekwt'
  */
 export const WISTIA_TYP_POSTER = '/typ-poster-2.webp'
 
-// Plakietka oceny nad opiniami na /meta i /reviews. Pusty string renderuje
-// zarezerwowane miejsce o docelowym rozmiarze — dokładnie jak EVAL_DISCOUNT
-// wygasza claim o zniżce, a videoId: '' w data/testimonials.ts zamienia kartę
-// klienta w slot. Żeby ją opublikować: wrzuć plik do public/ i wpisz tu ścieżkę.
-// Nic poza tą jedną linijką nie wymaga zmiany.
-//
-// Plakietka musi opisywać ocenę, którą da się sprawdzić u jej wystawcy. Znak
-// niezależnego serwisu opinii (Trustpilot, Google) wolno tu wstawić tylko wtedy,
-// gdy pod tym adresem faktycznie stoi nasz profil z tymi opiniami — inaczej
-// plakietka twierdzi, że ktoś nas zweryfikował, a nikt tego nie zrobił.
-export const REVIEW_BADGE_SRC = '/rating-badge.png'
-export const REVIEW_BADGE_ON_DARK_SRC = '/rating-badge-on-dark.png'
-export const REVIEW_BADGE_ALT = 'Our rating'
-
 // Nasz profil na Trustpilocie. Linkujemy go z /thank-you, i to jedyne miejsce,
 // gdzie strona wypuszcza czytelnika na zewnętrzny serwis opinii.
 //
@@ -125,14 +111,13 @@ export const REVIEW_BADGE_ALT = 'Our rating'
 // nie da się ich u nas edytować), nie o tym, jak wysoko wypadają.
 export const TRUSTPILOT_HREF = 'https://www.trustpilot.com/review/forexpassing.com'
 
-// Pasek gwiazdek: pod plakietką i w każdej karcie opinii. Trzy warianty, bo
+// Pasek gwiazdek: nad opiniami i w każdej karcie opinii. Trzy warianty, bo
 // oceny mają się między opiniami różnić, a różni je WYŁĄCZNIE skrajny prawy
 // kafel — pełny, w połowie albo szary. Cztery pierwsze są zawsze zielone.
 //
 // Pliki są wycięte z grafiki źródłowej po kaflach (5 × 150 px, skok 162,5 px),
 // a przerwy między kaflami zostały PRZEZROCZYSTE. Dzięki temu jeden plik siada
-// i na białej karcie, i na zielonej sekcji — nie ma osobnej wersji „na ciemnym"
-// tak jak przy napisie Trustpilota wyżej.
+// i na białej karcie, i na zielonej sekcji — nie ma osobnej wersji „na ciemnym".
 //
 // UWAGA NA ZIELEŃ: kafle mają #00b67a, a sekcja .mm-reviews tło var(--teal)
 // #15803d. To kontrast ~1,9:1 i pasek rozpływa się w tle — niosą go wtedy same
@@ -175,8 +160,8 @@ export const FREE_TELEGRAM_HREF = 'https://t.me/FX_Passing_free'
 export const FREE_TELEGRAM_HANDLE = '@FX_Passing_free'
 
 // Materiały na /thank-you. Pusty string = ramka przerywana o DOCELOWYM
-// rozmiarze, ta sama konwencja co REVIEW_BADGE_SRC i videoId: '' w
-// data/testimonials.ts — wgranie pliku nie przesuwa układu.
+// rozmiarze, ta sama konwencja co videoId: '' w data/testimonials.ts — wgranie
+// pliku nie przesuwa układu.
 //
 // Oba pliki są przycięte do krawędzi karty (strona ma białe tło, więc
 // margines dookoła byłby martwym miejscem) i mają PROPORCJE WPISANE NA SZTYWNO
