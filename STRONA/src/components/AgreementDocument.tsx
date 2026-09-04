@@ -64,6 +64,16 @@ function Blocks({ blocks }: { blocks: Block[] }) {
 export function AgreementDocument() {
   const print = () => {
     track('ContractPrint', 'contract_print', { source: 'contract' })
+    // Modal locks body scroll with an inline style. Print CSS fights it with
+    // !important, but some engines still measure from the locked viewport —
+    // drop the lock for the print dialog and put it back when it closes.
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'visible'
+    const restore = () => {
+      document.body.style.overflow = prev
+      window.removeEventListener('afterprint', restore)
+    }
+    window.addEventListener('afterprint', restore)
     window.print()
   }
 

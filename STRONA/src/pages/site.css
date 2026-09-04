@@ -1243,18 +1243,42 @@ html{scroll-behavior:smooth}
   .mm-agr-page{font-size:14.5px}
   .mm-agr-tools{width:100%;justify-content:space-between}
 }
-/* Printing hands over the whole sheet, not the slice that happens to be
-   scrolled into view — otherwise "save as PDF" produces one page of clause 4. */
+/* Printing hands over the whole sheet, not the scrolled slice of the viewer.
+   The old visibility:hidden + position:absolute trick painted the agreement
+   from top:0 on EVERY page while the (invisible) marketing page still took
+   vertical space — so page 2 and 3 got the title and preamble stamped over
+   clauses 4–10. Keep the document in normal flow; hide everything else. */
 @media print{
-  body{background:#fff}
-  body *{visibility:hidden}
-  .mm-agr,.mm-agr *{visibility:visible}
-  .mm-agr-bar,.mm-agr-note{display:none!important}
-  .mm-agr{position:absolute;left:0;top:0;width:100%;max-width:none}
-  .mm-agr-sheet{max-height:none;overflow:visible;border:0;border-radius:0;box-shadow:none;
-    background:#fff;padding:0}
-  .mm-agr-page{max-width:none;font-size:11.5pt;line-height:1.6}
-  .mm-agr-sec{break-inside:avoid}
+  html,body{background:#fff!important;color:#000;overflow:visible!important;
+    height:auto!important;max-height:none!important}
+  .mm-ticker,.mm-topbar,.mm-sticky-bar,.mm-sticky-cta,.mm-footer,
+  .mm-agr-bar,.mm-agr-note,.mm-modal-close{display:none!important}
+
+  /* Modal is portaled onto <body> next to #root. #root keeps min-height:100vh
+     even when its children are hidden — that alone prints a blank first page
+     before the agreement. Hide the whole tree when the modal is open. */
+  body:has(.mm-modal) #root{display:none!important;min-height:0!important}
+  .mm-modal{position:static!important;inset:auto!important;display:block!important;
+    padding:0!important;background:transparent!important;backdrop-filter:none!important;
+    -webkit-backdrop-filter:none!important;min-height:0!important;height:auto!important}
+  .mm-modal-card,.mm-modal-card.is-wide{position:static!important;max-width:none!important;
+    max-height:none!important;width:100%!important;overflow:visible!important;
+    border:0!important;border-radius:0!important;box-shadow:none!important;background:#fff!important}
+  .mm-modal-card.is-wide .mm-modal-body{padding:0!important}
+  .mm-modal-card.is-wide .mm-agr-sheet{max-height:none!important}
+
+  .mm-agr{max-width:none;margin:0;position:static}
+  .mm-agr-sheet{max-height:none!important;overflow:visible!important;border:0!important;
+    border-radius:0!important;box-shadow:none!important;background:#fff!important;
+    padding:0!important}
+  .mm-agr-page{max-width:none;font-size:11.5pt;line-height:1.7}
+  /* Auto hyphens look like a broken layout in a saved PDF ("ac-count", "de-scription"). */
+  .mm-agr-page,.mm-agr-page p,.mm-agr-lettered li,.mm-agr-list li{
+    hyphens:none!important;-webkit-hyphens:none!important;-ms-hyphens:none!important}
+  /* Avoid orphaned headings; do NOT lock whole sections — long clauses must
+     be allowed to split or the engine clips them across page edges. */
+  .mm-agr-head{break-after:avoid;page-break-after:avoid}
+  .mm-agr-sign{break-inside:avoid;page-break-inside:avoid}
 }
 @media (max-width:640px){
   .mm-sub-hero{padding:52px 0 44px}
