@@ -85,14 +85,28 @@ async function read(res, base, secret, token) {
     // konto tego samego rozmiaru. Obietnica padła na Telegramie — strona
     // płatności musi ją powtórzyć przy kwocie.
     bogo: d.bogo === true,
+    // Weekend Trading: add-on istnieje na zamówieniu, a „free" mówi, czy jego
+    // cena siedzi w kwocie. Stawka przychodzi stamtąd — nie trzymamy u siebie
+    // cudzego cennika.
+    weekend: d.weekend_trading === true,
+    weekendFree: d.weekend_free === true,
+    weekendFee: Number(d.weekend_fee_usd || 0),
   };
+  // Własny nagłówek linku (np. „Weekend Flash Sale") — czysto marketingowy
+  // tekst wpisany ręcznie przy wystawianiu, więc idzie dalej tylko jako string.
+  if (typeof d.headline === 'string' && d.headline) out.headline = d.headline;
   // Cena sprzed rabatu przychodzi tylko dla zamówień, które go dostały. Trzy
   // pola albo żadne: sama przekreślona kwota bez procentu (lub odwrotnie) to
   // pół komunikatu. Warunek na kwotę jest tu drugi raz — po tamtej stronie
   // pilnuje tego to samo, ale przekreślona cena NIŻSZA od płaconej byłaby
   // najgorszą możliwą pomyłką na stronie, na której ktoś wpisuje kartę.
-  if (Number(d.list_amount_usd || 0) > out.amount) {
-    out.listAmount = Number(d.list_amount_usd);
+  //
+  // PŁATNY weekend siedzi w kwocie POZA rabatem — do przekreślenia wchodzi
+  // więc pełna suma „cennik planu + add-on", inaczej dopłata zjada rabat
+  // i przekreślona cena wychodzi niższa od płaconej.
+  const doplata = out.weekend && !out.weekendFree ? out.weekendFee : 0;
+  if (Number(d.list_amount_usd || 0) > 0 && Number(d.list_amount_usd) + doplata > out.amount) {
+    out.listAmount = Number(d.list_amount_usd) + doplata;
     out.discount = Number(d.discount_usd || 0);
     out.discountPct = Number(d.discount_pct || 0);
   }

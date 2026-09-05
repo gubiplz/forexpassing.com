@@ -31,6 +31,13 @@ type Zamowienie = {
   listAmount?: number
   discount?: number
   discountPct?: number
+  // Weekend Trading — add-on z zamówienia. „Free" znaczy, że stawka NIE siedzi
+  // w kwocie: wiersz pokazuje ją przekreśloną, nie jako dopłatę.
+  weekend?: boolean
+  weekendFree?: boolean
+  weekendFee?: number
+  // Własny nagłówek linku (np. „Weekend Flash Sale") — zastępuje „Your order".
+  headline?: string
 }
 
 // Stan strony jest jednym z pięciu, nigdy mieszanką: dopóki nie wiadomo, co to
@@ -182,7 +189,9 @@ export function PayPage({ token }: { token: string }) {
           {stan.k === 'ok' && (
             <div className="mm-pay-card">
               <div className="mm-pay-top">
-                <span className="mm-eyebrow mm-eyebrow-teal">Your order</span>
+                <span className="mm-eyebrow mm-eyebrow-teal">
+                  {stan.zam.headline || 'Your order'}
+                </span>
                 {stan.zam.listAmount != null && (
                   <span className="mm-pay-off">−{stan.zam.discountPct}% applied</span>
                 )}
@@ -216,6 +225,24 @@ export function PayPage({ token }: { token: string }) {
                     <b className="mm-pay-save">
                       −{kwota(stan.zam.discount ?? 0, stan.zam.currency)}
                     </b>
+                  </div>
+                )}
+                {stan.zam.weekend && (
+                  <div className="mm-pay-row">
+                    <span>Weekend Trading</span>
+                    {stan.zam.weekendFree ? (
+                      <b className="mm-pay-save">
+                        <s className="mm-pay-was">
+                          {kwota(stan.zam.weekendFee || 0, stan.zam.currency)}
+                        </s>{' '}
+                        FREE — 2 extra trading days/week
+                      </b>
+                    ) : (
+                      <b>
+                        +{kwota(stan.zam.weekendFee || 0, stan.zam.currency)} — 2 extra
+                        trading days/week
+                      </b>
+                    )}
                   </div>
                 )}
                 {stan.zam.bogo && (
