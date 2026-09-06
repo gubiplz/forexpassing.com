@@ -14,13 +14,10 @@ declare global {
 }
 
 /**
- * Our own pixel. index.html initialises a second one (1554685979728197) for the
- * media buyer, and that one is to carry PageView and nothing else — he defines
- * his own events in Events Manager. `fbq('track', …)` with no pixel named fires
- * on *every* initialised pixel, so each event below has to be addressed
- * explicitly or it lands in his account too.
+ * FX_09 — the only Meta Pixel on the site. Events still go through trackSingle
+ * (named pixel) so adding another pixel later cannot accidentally receive Lead.
  */
-const OWN_PIXEL = '1566242625059670'
+const OWN_PIXEL = '2246463729528869'
 
 export function track(fbEvent: string, gaEvent: string, params?: Record<string, unknown>, custom = false) {
   if (typeof window === 'undefined') return
