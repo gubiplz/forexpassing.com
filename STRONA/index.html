@@ -83,11 +83,9 @@
       !function(f,n){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
       n.callMethod.apply(n,arguments):n.queue.push(arguments)};
       if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[]}(window);
-      // Two pixels. 1566… (Makromentor) is the working one and gets our
-      // conversion events via trackSingle. 2246… (FX_09) stays on PageView
-      // only — new Meta ad account. See src/lib/track.ts.
+      // Makromentor pixel only — FX_09 account got banned. Conversions go
+      // through trackSingle in src/lib/track.ts.
       fbq('init', '1566242625059670');
-      fbq('init', '2246463729528869');
       fbq('track', 'PageView');
 
       window.clarity = window.clarity || function () {
@@ -129,11 +127,6 @@
         width="1"
         style="display: none"
         src="https://www.facebook.com/tr?id=1566242625059670&ev=PageView&noscript=1"
-      /><img
-        height="1"
-        width="1"
-        style="display: none"
-        src="https://www.facebook.com/tr?id=2246463729528869&ev=PageView&noscript=1"
     /></noscript>
     <!-- End Meta Pixel Code (noscript) -->
     <div id="root"></div>

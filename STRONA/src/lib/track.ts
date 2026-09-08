@@ -14,10 +14,8 @@ declare global {
 }
 
 /**
- * Makromentor pixel (1566…). FX_09 (2246…) is also initialised in index.html
- * for PageView on the new Meta ad account, but Lead/etc. must stay on 1566 —
- * that is the pixel that actually receives events. Untargeted fbq('track')
- * would hit both, so we address 1566 explicitly.
+ * Makromentor pixel — sole Meta Pixel (FX_09 account banned). Events still
+ * go through trackSingle so a future second pixel cannot steal Lead.
  */
 const OWN_PIXEL = '1566242625059670'
 
