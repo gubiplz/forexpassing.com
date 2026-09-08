@@ -14,10 +14,12 @@ declare global {
 }
 
 /**
- * FX_09 — the only Meta Pixel on the site. Events still go through trackSingle
- * (named pixel) so adding another pixel later cannot accidentally receive Lead.
+ * Makromentor pixel (1566…). FX_09 (2246…) is also initialised in index.html
+ * for PageView on the new Meta ad account, but Lead/etc. must stay on 1566 —
+ * that is the pixel that actually receives events. Untargeted fbq('track')
+ * would hit both, so we address 1566 explicitly.
  */
-const OWN_PIXEL = '2246463729528869'
+const OWN_PIXEL = '1566242625059670'
 
 export function track(fbEvent: string, gaEvent: string, params?: Record<string, unknown>, custom = false) {
   if (typeof window === 'undefined') return
