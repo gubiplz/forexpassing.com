@@ -11,6 +11,10 @@ const CHATS = [
   '@fx_passingpayouts',
   '@fx_passingtrackrecord',
   '@FX_Passing_free',
+  // historyczne id z logów CI / send.js — czy stare czaty jeszcze istnieją
+  '-1004330892796', // @fx_passing z 6 sierpnia
+  '-1004435320621', // payouts z tg-graphics/send.js
+  '-1004452710375', // track record z dzisiejszego getChat
 ];
 
 const BOTS = [
@@ -104,6 +108,13 @@ for (const [name, token] of BOTS) {
       const m = member.result;
       console.log(`bot status: ${m.status}`);
       console.log('bot rights:', JSON.stringify(prawa(m)));
+    }
+
+    const count = await tg(token, 'getChatMemberCount', { chat_id: chat });
+    if (!count.ok) {
+      console.log(`getChatMemberCount: FAIL ${scrubAll(count.description, tokens)}`);
+    } else {
+      console.log(`getChatMemberCount: ${count.result}`);
     }
 
     const admins = await tg(token, 'getChatAdministrators', { chat_id: chat });
