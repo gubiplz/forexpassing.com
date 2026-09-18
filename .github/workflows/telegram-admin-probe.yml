@@ -1,0 +1,30 @@
+# Jednorazowa diagnostyka: czy sekrety TELEGRAM_*_BOT_TOKEN nadal działają
+# i czy którykolwiek bot ma prawo mianować admina na starych kanałach.
+# Nic nie publikuje. Tokenów nie wypisuje.
+
+name: Telegram admin probe
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Probe stored bot tokens
+        working-directory: STRONA
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_TRACK_BOT_TOKEN: ${{ secrets.TELEGRAM_TRACK_BOT_TOKEN }}
+        run: node bin/probe-telegram-admin.mjs
