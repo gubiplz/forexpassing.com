@@ -12,7 +12,7 @@ const CHATS = [
   '@fx_passingtrackrecord',
   '@FX_Passing_free',
   // historyczne id z logów CI / send.js — czy stare czaty jeszcze istnieją
-  '-1004330892796', // @fx_passing z 6 sierpnia
+  '-1004330892796', // historycznie sync miejsc; dziś to @forexpassingcom
   '-1004435320621', // payouts z tg-graphics/send.js
   '-1004452710375', // track record z dzisiejszego getChat
 ];
