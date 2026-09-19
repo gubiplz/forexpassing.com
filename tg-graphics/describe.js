@@ -15,7 +15,10 @@
 const { readFileSync } = require('node:fs');
 
 const TOKEN = process.env.TG_TOKEN;
-const CHAT = process.env.TG_CHAT || '@fx_passingtrackrecord';
+// Ten sam domyślny kanał co w edit.js i w track-record-refresh.yml. Stała była
+// jeszcze ze starego kanału @fx_passingtrackrecord, więc CI (podaje TG_CHAT)
+// opisywał właściwy kanał, a lokalne `node refresh.js` — stary.
+const CHAT = process.env.TG_CHAT || '@forex_passing_track_record';
 const LIMIT = 255;
 
 // Profil, z którego bierzemy liczby do opisu. `balanced` jest ustawieniem

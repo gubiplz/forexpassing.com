@@ -1,4 +1,6 @@
-# Trzyma opis kanału @forexpassingcom zgodny z licznikiem miejsc na /thank-you.
+# Trzyma opis kanału @forex_passing zgodny z licznikiem miejsc na /thank-you.
+# (uchwyt z TG_CHANNEL_CHAT_ID w STRONA/src/lib/spots.js — @forexpassingcom,
+#  które stało tu wcześniej, nie jest zajęte na Telegramie)
 #
 # Liczba na stronie jest funkcją pory dnia w Nowym Jorku (STRONA/src/lib/spots.ts),
 # więc nie ma zdarzenia, na które dałoby się zareagować — trzeba sprawdzać samemu.
