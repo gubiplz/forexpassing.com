@@ -142,7 +142,7 @@ export function fillSpots(template, n) {
 export const TG_ADMIN_HANDLE = '@fxpassingadmin';
 
 /** Publiczny kanał, którego opis synchronizujemy. Jawny, nie jest sekretem. */
-export const TG_CHANNEL_CHAT_ID = '@fx_passing';
+export const TG_CHANNEL_CHAT_ID = '@forex_passing';
 
 export const TG_CHANNEL_DESCRIPTION =
   `If can not open, download telegram. Search ${TG_ADMIN_HANDLE} and message.\n\n` +

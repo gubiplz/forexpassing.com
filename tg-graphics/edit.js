@@ -8,7 +8,7 @@ const { readFileSync } = require('node:fs');
 const { buildCaptions } = require('./captions');
 
 const TOKEN = process.env.TG_TOKEN;
-const CHAT = process.env.TG_CHAT || '@fx_passingtrackrecord';
+const CHAT = process.env.TG_CHAT || '@forex_passing_track_record';
 
 const MESSAGES = { low: 7, balanced: 8, scaling: 9, high: 10 };
 
