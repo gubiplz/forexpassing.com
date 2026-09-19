@@ -2,7 +2,7 @@
 
 Plakaty track record na Telegram: czyta żywy panel z `forexpassing.com/past-performance`,
 przerysowuje kwadratowe grafiki i **edytuje** cztery istniejące posty na
-[@fx_passingtrackrecord](https://t.me/fx_passingtrackrecord).
+[@forex_passing_track_record](https://t.me/forex_passing_track_record).
 
 Edycja, a nie nowa publikacja — post zachowuje wtedy swoje ID, a więc wyświetlenia
 i reakcje. Zbierały się tygodniami i nie ma ich jak przenieść.
@@ -19,7 +19,7 @@ node refresh.js --dry    # wszystko poza zapisem do Telegrama
 | scrape | `scrape.js` | czyta liczby z panelu → `track-data.json` |
 | shoot | `shoot2.js` | zrzut widgetu per profil → `shot2-*.png` |
 | render | `render2.js` | plakat 1:1 z `template2.html` → `poster2-*.png` |
-| edit | `edit.js` | `editMessageMedia` na postach 7–10 |
+| edit | `edit.js` | `editMessageMedia` na postach 3–6 |
 
 Do Telegrama pisze wyłącznie ostatni krok, więc wywrotka po drodze zostawia kanał
 nietknięty.
@@ -44,7 +44,7 @@ Limit podpisu w Telegramie to 1024 znaki; najdłuższy (high risk) ma ~820.
 | nazwa | gdzie | po co |
 |---|---|---|
 | `TG_TOKEN` | sekret repo `TELEGRAM_TRACK_BOT_TOKEN` | bot musi być **adminem** kanału |
-| `TG_CHAT` | opcjonalna | domyślnie `@fx_passingtrackrecord` |
+| `TG_CHAT` | opcjonalna | domyślnie `@forex_passing_track_record` |
 
 To celowo **inny** sekret niż `TELEGRAM_BOT_TOKEN` używany przez `telegram-spots.yml`:
 tamten bot jest adminem `@fx_passing`, ale nie kanału track record.
@@ -81,6 +81,10 @@ Ręcznie: zakładka **Actions → Track record refresh → Run workflow**.
 
 ## Mapowanie postów
 
-`MESSAGES` w `edit.js`: `low → 7`, `balanced → 8`, `scaling → 9`, `high → 10`.
-Kolejność z publikacji 2026-08-20. Nie zgadywać — złe ID podmienia treść nie tego
-posta, co trzeba.
+`MESSAGES` w `edit.js`: `low → 3`, `balanced → 4`, `scaling → 5`, `high → 6`.
+Kolejność z pierwszej publikacji na NOWYM kanale (2026-09-19). Nie zgadywać —
+złe ID podmienia treść nie tego posta, co trzeba.
+
+Stary kanał miał te same cztery posty pod numerami 7–10. Po przenosinach
+numeracja zaczyna się od nowa, bo kanał jest nowy; kopia tamtych postów razem
+z licznikami reakcji leży w `rollback-2026-09-08/`.
