@@ -84,3 +84,29 @@ Ręcznie: zakładka **Actions → Track record refresh → Run workflow**.
 `MESSAGES` w `edit.js`: `low → 7`, `balanced → 8`, `scaling → 9`, `high → 10`.
 Kolejność z publikacji 2026-08-20. Nie zgadywać — złe ID podmienia treść nie tego
 posta, co trzeba.
+
+## Kopie zapasowe kanału
+
+Konto Telegrama potrafi zniknąć razem z botem-adminem. Kanały to przeżywają, ale
+na dysku nie było kopii **ani jednego** posta. Stąd dwa narzędzia.
+
+```
+node archive-channels.mjs              # trzy kanały: fx_passing, payouts, track record
+node archive-channels.mjs fx_passing   # wybrany
+node archive-channels.mjs --no-media   # sam tekst
+```
+
+Czyta publiczny podgląd `t.me/s/<handle>` — bez tokenu, bez konta, bez uprawnień
+admina. Zapisuje `archive/<handle>/messages.json` (id, data, pełny tekst,
+wyświetlenia, adresy mediów) i pobrane pliki do `archive/<handle>/media/`.
+
+Czego nie zdejmie: kanałów **prywatnych** (podgląd istnieje tylko dla publicznych),
+reakcji i oryginałów wideo w pełnej jakości.
+
+Luki w numeracji są normalne: skasowany post zostawia dziurę, a album renderuje się
+jako jeden wpis z ID pierwszego zdjęcia. `@fx_passingtrackrecord` ma realnie pięć
+widocznych postów (1 oraz 7–10), nie dziesięć.
+
+`rollback-2026-09-08/` to osobna, starsza kopia czterech postów track record zdjęta
+Bot API — niesie to, czego podgląd nie pokazuje: `message_id`, liczniki reakcji per
+emoji i podpisy sprzed edycji. `restore-from-rollback.js` wgrywa je z powrotem.
