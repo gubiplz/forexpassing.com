@@ -1,0 +1,358 @@
+<!doctype html>
+<meta charset="utf-8">
+<!--
+  Szablon postow na kanal ACCOUNT MANAGEMENT.
+
+  Uklad nie jest wymyslony — jest PRZENIESIONY z grafik, ktore juz wisza na
+  kanale. Wszystkie polozenia zmierzylem na archiwalnym pliku 800x800
+  (tg-graphics/archive/fx_passing/media/18.jpg) i pomnozylem przez 1.35,
+  bo renderujemy w 1080. Kolory tak samo: kazda stala ponizej ma przy sobie
+  wartosc odczytana z pikseli archiwum.
+
+  Jeden plik obsluguje szesc wariantow bloku tresci. Wariant wybiera klasa
+  na <body> (np. `v-compare`), a nie osobny szablon — pas gorny, naglowek
+  i pigulka CTA maja istniec w JEDNEJ kopii, inaczej po trzeciej poprawce
+  kazda grafika wyglada troche inaczej.
+-->
+<style>
+  @font-face {
+    font-family: 'Anton';
+    src: url('__FONTY__/anton-latin.woff2') format('woff2');
+    font-weight: 400;
+    font-display: block;
+  }
+  @font-face {
+    font-family: 'Inter';
+    src: url('__FONTY__/inter-latin.woff2') format('woff2');
+    font-weight: 100 900;
+    font-display: block;
+  }
+
+  :root {
+    /* Tlo — zmierzone: rog TL #ffffff, TR/BL #e9f9ef, BR #d6f3e1. */
+    --tlo-jasne: #f5fdf9;
+    --tlo-srodek: #e7f8ee;
+    --tlo-ciemne: #d4f2e0;
+
+    /* Naglowek — linia 1 zmierzona #003018/#06301e, linia 2 to gradient
+       pionowy od #38b868 (gora glifu) do #189060 (dol glifu). */
+    --atrament: #072d18;
+    --zielen-gora: #3cba69;
+    --zielen-dol: #159060;
+
+    /* Wstazki — jasna #30ba60, ciemna #063024. */
+    --wstazka-jasna: #34b962;
+    --wstazka-ciemna: #0a3123;
+
+    /* Pigulka CTA — #36ba66 -> #189060, ten sam gradient co naglowek. */
+    --cta-gora: #36ba66;
+    --cta-dol: #17915f;
+
+    --karta: #ffffff;
+    --karta-obwodka: rgba(12, 60, 38, .10);
+    --tekst: #10231a;
+    --tekst-cichy: #5b675f;
+    --szary: #9aa7a0;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #222; }
+
+  .poster {
+    width: 1080px;
+    height: 1080px;
+    position: relative;
+    overflow: hidden;
+    padding: 50px 50px 36px;
+    display: flex;
+    flex-direction: column;
+    font-family: 'Inter', sans-serif;
+    color: var(--tekst);
+    /* Biala poswiata lekko powyzej srodka, mieta w rogach — dokladnie taki
+       rozklad daly pomiary rogow i krawedzi. */
+    background:
+      radial-gradient(760px 640px at 36% 38%, #ffffff 0%, rgba(255,255,255,0) 70%),
+      linear-gradient(150deg, var(--tlo-jasne) 0%, var(--tlo-srodek) 52%, var(--tlo-ciemne) 100%);
+  }
+
+  /* Zielona poswiata za obiektem — jest na kazdej grafice z archiwum,
+     najmocniej widoczna pod portretem i pod mockupem telefonu. */
+  .poswiata {
+    position: absolute;
+    left: 50%;
+    top: 46%;
+    width: 900px;
+    height: 640px;
+    transform: translateX(-50%);
+    background: radial-gradient(closest-side, rgba(52,185,98,.20), transparent 72%);
+    pointer-events: none;
+  }
+
+  /* ----------------------------- pas gorny ----------------------------- */
+  /* Zmierzone w 800: logo 37..140 x, 37..98 y; plakietka 159..332 x;
+     przycisk play ~350..440 x; wstazki 512..800 x, 21..112 y. */
+  .pas {
+    display: flex;
+    align-items: center;
+    gap: 26px;
+    height: 120px;
+    flex: none;
+    position: relative;
+    z-index: 2;
+  }
+  .pas .logo { height: 84px; }
+  /* Plakietka jest wycieta z archiwum na przezroczystosc — cien musi
+     dolozyc CSS, inaczej skaluje sie osobno od samej karty. */
+  .pas .plakietka { height: 112px; filter: drop-shadow(0 7px 14px rgba(16,52,36,.16)); }
+
+  .play {
+    width: 124px;
+    height: 88px;
+    border-radius: 24px;
+    background: linear-gradient(150deg, #56d17f 0%, #2bab63 62%, #17914f 100%);
+    box-shadow: 0 10px 26px rgba(23,145,79,.34);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+  }
+  .play i {
+    width: 0;
+    height: 0;
+    border-left: 30px solid #fff;
+    border-top: 19px solid transparent;
+    border-bottom: 19px solid transparent;
+    margin-left: 7px;
+  }
+
+  .wstazki {
+    margin-left: auto;
+    margin-right: -50px;   /* wstazki dochodza do samej krawedzi plakatu */
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    align-items: flex-end;
+  }
+  .wstazka {
+    font-family: 'Anton', sans-serif;
+    color: #fff;
+    font-size: 30px;
+    letter-spacing: .4px;
+    padding: 11px 28px 11px 46px;
+    /* Lewy koniec jest sciety w szpic — to ten sam ksztalt co w archiwum. */
+    clip-path: polygon(26px 0, 100% 0, 100% 100%, 0 100%);
+    filter: drop-shadow(0 6px 12px rgba(10,49,35,.22));
+    white-space: nowrap;
+  }
+  .wstazka.jasna { background: var(--wstazka-jasna); }
+  .wstazka.ciemna { background: var(--wstazka-ciemna); }
+  .wstazka small { font-size: 26px; }
+
+  /* ------------------------------ naglowek ----------------------------- */
+  /* Zmierzone w 800: linia 1 wysokosc wersalika 37 px, linia 2 — 60 px. */
+  .naglowek {
+    text-align: center;
+    margin-top: 26px;
+    flex: none;
+    position: relative;
+    z-index: 2;
+  }
+  .naglowek .l1 {
+    font-family: 'Anton', sans-serif;
+    font-size: 68px;
+    line-height: .98;
+    letter-spacing: .5px;
+    color: var(--atrament);
+    text-transform: uppercase;
+  }
+  .naglowek .l2 {
+    font-family: 'Anton', sans-serif;
+    font-size: 112px;
+    line-height: .96;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    background: linear-gradient(180deg, var(--zielen-gora) 0%, var(--zielen-dol) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    /* Wytloczenie 3D: cien tuz pod glifem, nie rozmyty aureolą. */
+    filter: drop-shadow(0 7px 0 rgba(13,105,64,.34)) drop-shadow(0 18px 30px rgba(24,132,82,.22));
+  }
+  /* Naglowek jednoliniowy: cala linia w zieleni, rozmiar posredni. */
+  .naglowek.solo .l2 { font-size: 96px; }
+
+  /* -------------------------------- tresc ------------------------------ */
+  .tresc {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 2;
+    padding: 18px 0 6px;
+  }
+
+  .karta {
+    background: var(--karta);
+    border: 1px solid var(--karta-obwodka);
+    border-radius: 26px;
+    box-shadow: 0 16px 34px rgba(16,52,36,.09);
+  }
+  .karta.akcent {
+    border: 2px solid #2fae6a;
+    box-shadow: 0 0 0 5px rgba(47,174,106,.11), 0 16px 34px rgba(16,52,36,.10);
+  }
+
+  /* --- wariant: compare ------------------------------------------------ */
+  .v-compare .tresc { flex-direction: column; gap: 22px; justify-content: center; }
+  .grupa { width: 100%; position: relative; }
+  .grupa > .etykieta {
+    position: absolute;
+    top: -11px;
+    left: 34px;
+    background: linear-gradient(180deg, #fbfefc, #f2fbf6);
+    padding: 0 12px;
+    font-size: 21px;
+    font-weight: 800;
+    letter-spacing: 1.6px;
+    text-transform: uppercase;
+  }
+  .grupa.zla > .etykieta { color: var(--szary); }
+  .grupa.dobra > .etykieta { color: #1d8a54; }
+  .grupa .karta { padding: 30px 38px; display: flex; flex-direction: column; gap: 17px; }
+  .grupa li { list-style: none; display: flex; align-items: center; gap: 16px; font-size: 35px; }
+  .grupa.zla li { color: var(--szary); text-decoration: line-through; text-decoration-thickness: 2px; }
+  .grupa.dobra li { color: var(--tekst); font-weight: 700; }
+  .znak { width: 34px; height: 34px; flex: none; }
+
+  /* --- wariant: steps -------------------------------------------------- */
+  .v-steps .tresc { flex-direction: column; gap: 11px; }
+  .krok { width: 100%; display: flex; align-items: center; gap: 20px; padding: 15px 28px; }
+  .krok .nr {
+    width: 50px; height: 50px; border-radius: 50%; flex: none;
+    background: linear-gradient(180deg, #34b962, #17915f);
+    color: #fff; font-family: 'Anton', sans-serif; font-size: 29px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .krok .tyt { font-size: 30px; font-weight: 800; line-height: 1.15; }
+  .krok .opis { font-size: 23px; color: var(--tekst-cichy); line-height: 1.24; margin-top: 2px; }
+
+  /* --- wariant: portrait ----------------------------------------------- */
+  .v-portrait .tresc { align-items: center; gap: 34px; }
+  .portret {
+    width: 320px; height: 320px; border-radius: 50%; flex: none;
+    object-fit: cover; background: #d7e4dc;
+    box-shadow: 0 18px 40px rgba(16,52,36,.22);
+    border: 6px solid rgba(255,255,255,.9);
+  }
+  .portret.pusty { display: flex; align-items: center; justify-content: center;
+    color: #8c9c94; font-size: 24px; font-weight: 700; text-align: center; }
+  .opowiesc { flex: 1; display: flex; flex-direction: column; gap: 17px; }
+  .opowiesc p { font-size: 28px; line-height: 1.34; font-style: italic; }
+  .opowiesc b { font-style: normal; font-weight: 800; color: #14804a; }
+
+  /* --- wariant: phone -------------------------------------------------- */
+  .v-phone .tresc { align-items: flex-start; }
+  .telefon {
+    width: 330px; height: 470px; border-radius: 42px; background: #12171c;
+    padding: 12px; position: relative; box-shadow: 0 22px 46px rgba(16,52,36,.26);
+  }
+  /* Ekran blokady jest ciemny — na jasnym bialy zegar znikal, a to on ma
+     mowic, ze to telefon, a nie biala karta. */
+  .telefon .ekran {
+    width: 100%; height: 100%; border-radius: 32px; overflow: hidden;
+    background: linear-gradient(170deg, #2c4a3c 0%, #16302a 55%, #0d1f1c 100%);
+    display: flex; flex-direction: column; align-items: center; padding-top: 58px;
+  }
+  .telefon .zegar { font-size: 76px; font-weight: 300; color: #fff; opacity: .92; letter-spacing: -2px; }
+  .telefon .wciecie {
+    position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
+    width: 124px; height: 26px; background: #12171c; border-radius: 0 0 16px 16px; z-index: 3;
+  }
+  .powiadomienia { position: absolute; left: -46px; top: 190px; width: 470px;
+    display: flex; flex-direction: column; gap: 13px; z-index: 4; }
+  .pow {
+    background: rgba(255,255,255,.94); border-radius: 20px; padding: 15px 19px;
+    box-shadow: 0 10px 24px rgba(16,52,36,.16); display: flex; gap: 14px; align-items: flex-start;
+  }
+  .pow img { width: 40px; height: 40px; border-radius: 10px; flex: none; object-fit: contain;
+    background: #fff; padding: 3px; }
+  .pow .tytul { font-size: 21px; font-weight: 800; }
+  .pow .tekst { font-size: 21px; line-height: 1.22; margin-top: 2px; }
+  .pow .kiedy { margin-left: auto; font-size: 17px; color: #8c968f; flex: none; }
+
+  /* --- wariant: stat --------------------------------------------------- */
+  .v-stat .tresc { flex-direction: column; gap: 22px; }
+  .liczba { width: 100%; padding: 44px 40px 40px; text-align: center; }
+  .liczba .duza {
+    font-family: 'Anton', sans-serif; font-size: 152px; line-height: .94;
+    background: linear-gradient(180deg, var(--zielen-gora) 0%, var(--zielen-dol) 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .liczba .pod { font-size: 29px; color: var(--tekst-cichy); margin-top: 14px; line-height: 1.3; }
+  .paski { width: 100%; display: flex; gap: 14px; }
+  .paski .pole { flex: 1; padding: 22px 18px; text-align: center; }
+  .paski .w { font-family: 'Anton', sans-serif; font-size: 46px; color: var(--atrament); }
+  .paski .e { font-size: 20px; color: var(--tekst-cichy); margin-top: 5px;
+    text-transform: uppercase; letter-spacing: 1.2px; font-weight: 700; }
+
+  /* --- wariant: cert --------------------------------------------------- */
+  .v-cert .tresc { gap: 30px; align-items: center; }
+  .cert-obraz { width: 470px; border-radius: 18px; transform: rotate(-4deg);
+    box-shadow: 0 24px 48px rgba(16,52,36,.30); }
+  .cert-obraz.pusty { height: 340px; background: #0b142c; display: flex;
+    align-items: center; justify-content: center; color: #7f93c4; font-size: 22px; }
+  .wyplata {
+    width: 268px; border-radius: 26px; background: #0e1116; color: #fff;
+    padding: 26px 22px; text-align: center; transform: rotate(3deg);
+    box-shadow: 0 22px 44px rgba(16,52,36,.28);
+  }
+  .wyplata .ikona { font-size: 34px; }
+  .wyplata .tyt { font-size: 22px; margin-top: 10px; opacity: .9; }
+  .wyplata .kwota { font-size: 34px; font-weight: 800; margin-top: 8px; }
+  .wyplata .nota { font-size: 16px; opacity: .6; margin-top: 10px; line-height: 1.3; }
+  .wyplata .przycisk { margin-top: 16px; background: #2fae6a; border-radius: 999px;
+    padding: 11px 0; font-size: 19px; font-weight: 700; }
+
+  /* ------------------------------ pigulka ------------------------------ */
+  /* Zmierzone w 800: 299..500 x, 715..773 y — czyli 201x58 i 27 px od dolu. */
+  .cta {
+    flex: none;
+    align-self: center;
+    font-family: 'Anton', sans-serif;
+    font-size: 38px;
+    letter-spacing: 1.6px;
+    color: #fff;
+    text-transform: uppercase;
+    padding: 19px 56px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, var(--cta-gora) 0%, var(--cta-dol) 100%);
+    box-shadow: 0 12px 28px rgba(23,145,95,.40);
+    position: relative;
+    z-index: 2;
+  }
+</style>
+
+<div class="poster">
+  <div class="poswiata"></div>
+
+  <div class="pas">
+    <img class="logo" src="__ASSETY__/logo.png" alt="">
+    <img class="plakietka" src="__ASSETY__/trustpilot.png" alt="">
+    <div class="play"><i></i></div>
+    <div class="wstazki">
+      <div class="wstazka jasna">BUY 1 GET 1 FREE <small>ends soon</small></div>
+      <div class="wstazka ciemna">WE COVER 20% OF THE COST</div>
+    </div>
+  </div>
+
+  <div class="naglowek __KLASA_NAGLOWKA__">
+    __LINIA1__
+    <div class="l2">__LINIA2__</div>
+  </div>
+
+  <div class="tresc">__TRESC__</div>
+
+  <div class="cta">__CTA__</div>
+</div>

@@ -1,0 +1,170 @@
+{
+  "_": [
+    "Dziesiec postow na kanal ACCOUNT MANAGEMENT.",
+    "",
+    "`body` to podpis, ktory pojdzie na Telegrama — musi zmiescic sie w 1024",
+    "znakach PO zamianie na HTML, bo tyle przepuszcza walidator kolejki.",
+    "Skrypt renderujacy liczy to sam i odmawia, zanim post trafi do panelu.",
+    "",
+    "`proof` trafia 1:1 do pola ChannelPost.proof. Kazda kwota w tresci musi",
+    "zgadzac sie z wyplata spod wskazanego certyfikatu — persona jest",
+    "wymyslona, liczba nie."
+  ],
+
+  "cta_domyslne": "MESSAGE US",
+
+  "posty": [
+    {
+      "id": "am-01",
+      "wariant": "steps",
+      "l1": "The money moves",
+      "l2": "before we do",
+      "cta": "MESSAGE US",
+      "proof": "",
+      "kroki": [
+        { "tyt": "Nothing upfront", "opis": "You pay us zero to start.", "akcent": false },
+        { "tyt": "Your name on it", "opis": "The evaluation is bought in your own name.", "akcent": false },
+        { "tyt": "We trade it", "opis": "No charts, no drawdown watching, no 3am calls.", "akcent": true },
+        { "tyt": "You get paid", "opis": "The payout lands in your account first.", "akcent": false },
+        { "tyt": "Then we invoice", "opis": "Our share comes after yours. Always.", "akcent": false }
+      ],
+      "body": "🔁 THE MONEY MOVES BEFORE WE DO\n\nMost people ask the same question first, and it isn't about strategy. It's who carries the risk.\n\nHere's the order, and it never changes:\n\n✔️ Nothing paid to us upfront\n✔️ You buy the evaluation in your own name\n✔️ The desk trades it — you don't touch the terminal\n✔️ The payout lands in your account\n✔️ Then we invoice our share\n\n🫡 If the evaluation fails, you're out the evaluation fee and we've worked for free.\n\n🪙 That's the deal. It's the only version of it we'd take ourselves. 🪙"
+    },
+
+    {
+      "id": "am-02",
+      "wariant": "portrait",
+      "l1": "Meet",
+      "l2": "Brandon",
+      "cta": "MESSAGE US",
+      "proof": "payout:cW9yXXKAlIBbQDQiMsloOA",
+      "twarz": "brandon.png",
+      "akapity": [
+        "Brandon cooks in a pub kitchen six days a week. He had been reading charts on his phone between shifts for three years — never with real size behind it.",
+        "He took an evaluation instead. Passed it on the second attempt, then scaled up. First payout came back at <b>$7,981</b>.",
+        "He still works the kitchen. The account runs on rules he did not have to invent himself."
+      ],
+      "body": "💰 MEET BRANDON — $7,981. Verified.\n\nBrandon cooks in a pub kitchen six days a week. He'd been reading charts on his phone between shifts for three years — never with real size behind it.\n\n🫡 Two hundred quid in a retail account doesn't move anything, no matter how right you are.\n\nHe took an evaluation instead. Passed it on the second attempt, then scaled up.\n\n🪙 $7,981 paid out. Certificate issued. 🪙\n\nHe still works the kitchen. The account runs on rules he didn't have to invent."
+    },
+
+    {
+      "id": "am-03",
+      "wariant": "compare",
+      "l1": "Static,",
+      "l2": "not trailing",
+      "cta": "READ THE TERMS",
+      "proof": "",
+      "zla_etykieta": "MOST FIRMS",
+      "zle": ["Floor rises with your equity", "Profitable and still breached", "Clause found after you pay"],
+      "dobra_etykieta": "FOREXPASSING",
+      "dobre": ["Floor set on day one", "Profit never moves the limit", "Clause shown before you pay"],
+      "body": "📄 STATIC, NOT TRAILING\n\nThe drawdown rule is where most evaluations are quietly lost. Not on a bad trade — on a clause.\n\nMost firms trail the limit behind your equity. Make money, and the floor rises with you. Give a little back and you breach an account that's still in profit.\n\n🫡 Ours doesn't move. The floor is set on day one and stays there.\n\n🪙 Read the drawdown clause before you read the profit target. It decides more of your outcome. 🪙"
+    },
+
+    {
+      "id": "am-04",
+      "wariant": "compare",
+      "l1": "What we never",
+      "l2": "ask you for",
+      "cta": "MESSAGE US",
+      "proof": "",
+      "zla_etykieta": "NEVER REQUIRED",
+      "zle": ["Your strategy", "Your screen time", "A deposit you can't see"],
+      "dobra_etykieta": "ALL WE NEED",
+      "dobre": ["The account size", "A signed contract", "The evaluation fee"],
+      "body": "🚫 WHAT WE NEVER ASK YOU FOR\n\nNot your strategy. Not your screen time. Not a deposit into an account you can't see.\n\nHere's the whole list of what we actually need from you:\n\n✔️ Which account size you want\n✔️ A contract read and signed — before you pay\n✔️ The evaluation fee, covered through our link\n\n🫡 That's it. No calls to sit through, no coaching upsell, no course.\n\n🪙 If someone in this space needs more from you than that, ask why. 🪙"
+    },
+
+    {
+      "id": "am-05",
+      "wariant": "portrait",
+      "l1": "Meet",
+      "l2": "Imogen",
+      "cta": "MESSAGE US",
+      "proof": "payout:3hYeLOAlRJ2cUZHNg5EXSQ",
+      "twarz": "imogen.png",
+      "akapity": [
+        "Imogen did not change a thing about how she trades. That is the part she keeps repeating.",
+        "She had been profitable on her own money for two years — just never on enough of it to matter. Rent does not care about percentages.",
+        "So she stopped risking savings and took an evaluation instead. First payout: <b>$11,293</b>.",
+        "Same trader. Same strategy. Different money behind it."
+      ],
+      "body": "💰 MEET IMOGEN — $11,293. Verified.\n\nImogen didn't change a thing about how she trades. That's the part she keeps repeating.\n\nShe'd been profitable on her own money for two years — just never on enough of it to matter. Rent doesn't care about percentages.\n\n🫡 So she stopped risking savings and took an evaluation instead.\n\n🪙 Same trader. Same strategy. Different money behind it. $11,293. 🪙\n\nWhat changed wasn't her edge. It was the size it finally got to run at."
+    },
+
+    {
+      "id": "am-06",
+      "wariant": "stat",
+      "l1": "The number",
+      "l2": "nobody posts",
+      "cta": "CLAIM YOUR SPOT",
+      "proof": "stat:payouts_total_usd:gte:330000",
+      "duza": "$330,000+",
+      "pod": "Paid out to the people whose accounts we manage.<br>Not one account — the total across everyone paid.",
+      "pola": [
+        { "w": "Every payout", "e": "gets a certificate" },
+        { "w": "Verifiable", "e": "name · amount · date" },
+        { "w": "Published here", "e": "as they happen" }
+      ],
+      "body": "📊 THE NUMBER NOBODY POSTS\n\n$330,000+ paid out to the people we manage accounts for. Not one lucky account — the total across everyone who's been paid.\n\nSome of it was four figures. Some of it was five. A few were first payouts from traders who'd been trying to get funded for years.\n\n🫡 We publish the individual certificates as they happen. This is what they add up to.\n\n🪙 The number moves every month. That's the only claim we make about it. 🪙"
+    },
+
+    {
+      "id": "am-07",
+      "wariant": "phone",
+      "l1": "Three notifications,",
+      "l2": "six weeks apart",
+      "cta": "MESSAGE US",
+      "proof": "",
+      "powiadomienia": [
+        { "tytul": "ForexPassing", "tekst": "Your payout has been sent.", "kiedy": "now" },
+        { "tytul": "ForexPassing", "tekst": "Your funded account is now being managed.", "kiedy": "3w ago" },
+        { "tytul": "ForexPassing", "tekst": "Your challenge has been passed.", "kiedy": "6w ago" }
+      ],
+      "body": "📱 THREE NOTIFICATIONS, SIX WEEKS APART\n\nThat's the whole product, told honestly. Three messages, a few weeks between them, and the account you've been thinking about for months is already paying.\n\nChallenge passed. Account funded. Payout received.\n\n🫡 The difference is that you're not the one who has to make them arrive.\n\nNo sessions at 3am. No watching a drawdown limit creep toward you.\n\n🪙 Most traders don't fail because they can't read a chart. They fail because they're the one holding the mouse. 🪙"
+    },
+
+    {
+      "id": "am-08",
+      "wariant": "portrait",
+      "l1": "Meet",
+      "l2": "Grace",
+      "cta": "MESSAGE US",
+      "proof": "payout:pVbs6zr1GByuFN99NIZ5hw",
+      "twarz": "grace.png",
+      "akapity": [
+        "Grace runs a payroll desk. She is very good at watching other people's money arrive on time, and spent years unable to make her own do the same.",
+        "She did not want to learn to trade. She wanted the outcome without the screen.",
+        "So she picked a size, read the contract, covered the fee, and handed the terminal to us. First payout back: <b>$8,377</b>.",
+        "She has never opened a position. That is the entire point of the service."
+      ],
+      "body": "💰 MEET GRACE — $8,377. Verified.\n\nGrace runs a payroll desk. She's very good at watching other people's money arrive on time, and spent years unable to make her own do the same.\n\n🫡 She didn't want to learn to trade. She wanted the outcome without the screen.\n\nSo she picked a size, read the contract, covered the fee, and handed the terminal to us.\n\n🪙 First payout back: $8,377. She has never opened a position. 🪙\n\nThat's allowed. It's the entire point of the service."
+    },
+
+    {
+      "id": "am-09",
+      "wariant": "compare",
+      "l1": "Four months",
+      "l2": "to change your mind",
+      "cta": "READ THE TERMS",
+      "proof": "",
+      "zla_etykieta": "WHAT BURNED YOU BEFORE",
+      "zle": ["Terms arrive after payment", "Refund buried in a clause", "A call before you can leave"],
+      "dobra_etykieta": "WHAT YOU GET HERE",
+      "dobre": ["Contract before payment", "Full refund if we fail it", "Want out, you're out"],
+      "body": "✅ FOUR MONTHS TO CHANGE YOUR MIND\n\nWe'll say the quiet part out loud: most people reading this have been burned before. Paid for something in this space, got nothing back, and had no way to argue.\n\nSo here's how we handle it:\n\n✔️ We manage the account for you\n✔️ If we fail your challenge, you get a full refund\n✔️ Written contract provided — before you pay, not after\n\n🫡 Four months to decide whether it was worth it. Want out, you're out. No retention script.\n\n🪙 We're not asking you to trust us. We're giving you the paperwork that means you don't have to. 🪙"
+    },
+
+    {
+      "id": "am-10",
+      "wariant": "cert",
+      "l1": "Meet James —",
+      "l2": "and his receipt",
+      "cta": "JOIN NOW",
+      "proof": "payout:gQTB4VOJq_TnyUM3PjRFJw",
+      "cert": "cert-james.png",
+      "wyplata": { "kwota": "17,477.00 USD", "tyt": "Withdrawal Processing" },
+      "body": "💰 MEET JAMES — $17,477. Verified.\n\nJames has been trading since before most prop firms existed. He didn't need teaching. He needed capital that wasn't his pension.\n\n🫡 The certificate was the part he asked about first. Every payout gets one — name, amount, date, and a link anyone can check.\n\n🪙 $17,477, issued and paid. 🪙\n\nHe'd tell you the strategy is the easy part. Finding someone who pays on time is not."
+    }
+  ]
+}
