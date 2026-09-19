@@ -11,7 +11,7 @@
 // asercjami: automat ma się wywalić i nie ruszyć kanału, a nie po cichu
 // opublikować kłamstwo pod logo firmy.
 const LINK = 'https://forexpassing.com/past-performance';
-const TAIL = `Check it yourself 👇\n${LINK}\n\n➡️ Message @fxpassingadmin if you have any questions`;
+const TAIL = `Check it yourself 👇\n${LINK}\n\n➡️ Message @forex_passing_admin if you have any questions`;
 
 const ORDER = ['low', 'balanced', 'scaling', 'high'];
 const LIMIT = 1024;
@@ -120,7 +120,7 @@ Yes, there are red weeks. That's the trade-off for +${Math.round(num(p.high.tota
 
 ${TAIL}
 
-❕ This is the OFFICIAL Forex Passing channel. Our only admin is @fxpassingadmin; anyone else is a scam. Stay safe.`,
+❕ This is the OFFICIAL Forex Passing channel. Our only admin is @forex_passing_admin; anyone else is a scam. Stay safe.`,
   };
 
   for (const id of ORDER) {
