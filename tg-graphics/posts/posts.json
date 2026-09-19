@@ -1,0 +1,280 @@
+{
+  "_": [
+    "Dziesiec postow na kanal ACCOUNT MANAGEMENT.",
+    "",
+    "`body` to podpis, ktory pojdzie na Telegrama — musi zmiescic sie w 1024",
+    "znakach PO zamianie na HTML, bo tyle przepuszcza walidator kolejki.",
+    "Skrypt renderujacy liczy to sam i odmawia, zanim post trafi do panelu.",
+    "",
+    "`proof` trafia 1:1 do pola ChannelPost.proof. Kazda kwota w tresci musi",
+    "zgadzac sie z wyplata spod wskazanego certyfikatu — persona jest",
+    "wymyslona, liczba nie."
+  ],
+  "cta_domyslne": "MESSAGE US",
+  "posty": [
+    {
+      "id": "am-01",
+      "wariant": "steps",
+      "l1": "The money moves",
+      "l2": "before we do",
+      "cta": "MESSAGE US",
+      "proof": "",
+      "kroki": [
+        {
+          "tyt": "Nothing upfront",
+          "opis": "You pay us zero to start.",
+          "akcent": false
+        },
+        {
+          "tyt": "Your name on it",
+          "opis": "The evaluation is bought in your own name.",
+          "akcent": false
+        },
+        {
+          "tyt": "We trade it",
+          "opis": "No charts, no drawdown watching, no 3am calls.",
+          "akcent": true
+        },
+        {
+          "tyt": "You get paid",
+          "opis": "The payout lands in your account first.",
+          "akcent": false
+        },
+        {
+          "tyt": "Then we invoice",
+          "opis": "Our share comes after yours. Always.",
+          "akcent": false
+        }
+      ],
+      "body": "🔁 THE MONEY MOVES BEFORE WE DO\n\nMost people ask the same question first, and it isn't about strategy. It's who carries the risk.\n\nHere's the order, and it never changes:\n\n✔️ Nothing paid to us upfront\n✔️ You buy the evaluation in your own name\n✔️ The desk trades it — you don't touch the terminal\n✔️ The payout lands in your account\n✔️ Then we invoice our share\n\n🫡 If the evaluation fails, you're out the evaluation fee and we've worked for free.\n\n🪙 That's the deal. It's the only version of it we'd take ourselves. 🪙"
+    },
+    {
+      "id": "am-02",
+      "wariant": "portrait",
+      "l1": "Meet",
+      "l2": "Brandon",
+      "cta": "MESSAGE US",
+      "proof": "payout:cW9yXXKAlIBbQDQiMsloOA",
+      "twarz": "brandon.png",
+      "akapity": [
+        "Brandon cooks in a pub kitchen six days a week. He had been reading charts on his phone between shifts for three years — never with real size behind it.",
+        "He took an evaluation instead. Passed it on the second attempt, then scaled up. First payout came back at <b>$7,981</b>.",
+        "He still works the kitchen. The account runs on rules he did not have to invent himself."
+      ],
+      "body": "💰 MEET BRANDON — $7,981. Verified.\n\nBrandon cooks in a pub kitchen six days a week. He'd been reading charts on his phone between shifts for three years — never with real size behind it.\n\n🫡 Two hundred quid in a retail account doesn't move anything, no matter how right you are.\n\nHe took an evaluation instead. Passed it on the second attempt, then scaled up.\n\n🪙 $7,981 paid out. Certificate issued. 🪙\n\nHe still works the kitchen. The account runs on rules he didn't have to invent."
+    },
+    {
+      "id": "am-03",
+      "wariant": "compare",
+      "l1": "Static,",
+      "l2": "not trailing",
+      "cta": "READ THE TERMS",
+      "proof": "",
+      "zla_etykieta": "MOST FIRMS",
+      "zle": [
+        "Floor rises with your equity",
+        "Profitable and still breached",
+        "Clause found after you pay"
+      ],
+      "dobra_etykieta": "FOREXPASSING",
+      "dobre": [
+        "Floor set on day one",
+        "Profit never moves the limit",
+        "Clause shown before you pay"
+      ],
+      "body": "📄 STATIC, NOT TRAILING\n\nThe drawdown rule is where most evaluations are quietly lost. Not on a bad trade — on a clause.\n\nMost firms trail the limit behind your equity. Make money, and the floor rises with you. Give a little back and you breach an account that's still in profit.\n\n🫡 Ours doesn't move. The floor is set on day one and stays there.\n\n🪙 Read the drawdown clause before you read the profit target. It decides more of your outcome. 🪙"
+    },
+    {
+      "id": "am-04",
+      "wariant": "chat",
+      "l1": "What the first",
+      "l2": "message looks like",
+      "cta": "MESSAGE US",
+      "proof": "",
+      "rozmowca": "@forex_passing_admin",
+      "status": "online",
+      "rozmowa": [
+        {
+          "od": "on",
+          "tekst": "Hi. Is this real? I've been burned before."
+        },
+        {
+          "od": "my",
+          "tekst": "Fair question. Read the contract first, then decide."
+        },
+        {
+          "od": "on",
+          "tekst": "You send it before I pay?"
+        },
+        {
+          "od": "my",
+          "tekst": "Always. If the terms don't suit you, nothing happens."
+        }
+      ],
+      "body": "💬 WHAT THE FIRST MESSAGE LOOKS LIKE\n\nMost people open with some version of the same sentence: is this real, and what's the catch.\n\n🫡 That's the right question, and it has a boring answer. You get the contract before you pay anything. Read it, ask about the parts you don't like, walk away if it doesn't suit you.\n\nNo call to book. No pitch to sit through. No one chasing you after.\n\n🪙 If a firm needs you excited before you've read the terms, the terms are the problem. 🪙"
+    },
+    {
+      "id": "am-05",
+      "wariant": "portrait",
+      "l1": "Meet",
+      "l2": "Imogen",
+      "cta": "MESSAGE US",
+      "proof": "payout:3hYeLOAlRJ2cUZHNg5EXSQ",
+      "twarz": "imogen.png",
+      "akapity": [
+        "Imogen did not change a thing about how she trades. That is the part she keeps repeating.",
+        "She had been profitable on her own money for two years — just never on enough of it to matter. Rent does not care about percentages.",
+        "So she stopped risking savings and took an evaluation instead. First payout: <b>$11,293</b>.",
+        "Same trader. Same strategy. Different money behind it."
+      ],
+      "body": "💰 MEET IMOGEN — $11,293. Verified.\n\nImogen didn't change a thing about how she trades. That's the part she keeps repeating.\n\nShe'd been profitable on her own money for two years — just never on enough of it to matter. Rent doesn't care about percentages.\n\n🫡 So she stopped risking savings and took an evaluation instead.\n\n🪙 Same trader. Same strategy. Different money behind it. $11,293. 🪙\n\nWhat changed wasn't her edge. It was the size it finally got to run at."
+    },
+    {
+      "id": "am-06",
+      "wariant": "stat",
+      "l1": "The number",
+      "l2": "nobody posts",
+      "cta": "CLAIM YOUR SPOT",
+      "proof": "stat:payouts_total_usd:gte:330000",
+      "duza": "$330,000+",
+      "pod": "Paid out to the people whose accounts we manage.<br>Not one account — the total across everyone paid.",
+      "pola": [
+        {
+          "w": "Every payout",
+          "e": "gets a certificate"
+        },
+        {
+          "w": "Verifiable",
+          "e": "name · amount · date"
+        },
+        {
+          "w": "Published here",
+          "e": "as they happen"
+        }
+      ],
+      "body": "📊 THE NUMBER NOBODY POSTS\n\n$330,000+ paid out to the people we manage accounts for. Not one lucky account — the total across everyone who's been paid.\n\nSome of it was four figures. Some of it was five. A few were first payouts from traders who'd been trying to get funded for years.\n\n🫡 We publish the individual certificates as they happen. This is what they add up to.\n\n🪙 The number moves every month. That's the only claim we make about it. 🪙"
+    },
+    {
+      "id": "am-07",
+      "wariant": "phone",
+      "przyciecie": true,
+      "l1": "Three notifications,",
+      "l2": "six weeks apart",
+      "cta": "MESSAGE US",
+      "proof": "",
+      "powiadomienia": [
+        {
+          "tytul": "ForexPassing",
+          "tekst": "Your payout has been sent.",
+          "kiedy": "now"
+        },
+        {
+          "tytul": "ForexPassing",
+          "tekst": "Your funded account is now being managed.",
+          "kiedy": "3w ago"
+        },
+        {
+          "tytul": "ForexPassing",
+          "tekst": "Your challenge has been passed.",
+          "kiedy": "6w ago"
+        }
+      ],
+      "body": "📱 THREE NOTIFICATIONS, SIX WEEKS APART\n\nThat's the whole product, told honestly. Three messages, a few weeks between them, and the account you've been thinking about for months is already paying.\n\nChallenge passed. Account funded. Payout received.\n\n🫡 The difference is that you're not the one who has to make them arrive.\n\nNo sessions at 3am. No watching a drawdown limit creep toward you.\n\n🪙 Most traders don't fail because they can't read a chart. They fail because they're the one holding the mouse. 🪙"
+    },
+    {
+      "id": "am-08",
+      "wariant": "portrait",
+      "l1": "Meet",
+      "l2": "Grace",
+      "cta": "MESSAGE US",
+      "proof": "payout:pVbs6zr1GByuFN99NIZ5hw",
+      "twarz": "grace.png",
+      "akapity": [
+        "Grace runs a payroll desk. She is very good at watching other people's money arrive on time, and spent years unable to make her own do the same.",
+        "She did not want to learn to trade. She wanted the outcome without the screen.",
+        "So she picked a size, read the contract, covered the fee, and handed the terminal to us. First payout back: <b>$8,377</b>.",
+        "She has never opened a position. That is the entire point of the service."
+      ],
+      "body": "💰 MEET GRACE — $8,377. Verified.\n\nGrace runs a payroll desk. She's very good at watching other people's money arrive on time, and spent years unable to make her own do the same.\n\n🫡 She didn't want to learn to trade. She wanted the outcome without the screen.\n\nSo she picked a size, read the contract, covered the fee, and handed the terminal to us.\n\n🪙 First payout back: $8,377. She has never opened a position. 🪙\n\nThat's allowed. It's the entire point of the service."
+    },
+    {
+      "id": "am-09",
+      "wariant": "ledger",
+      "l1": "Receipts,",
+      "l2": "not screenshots",
+      "cta": "CLAIM YOUR SPOT",
+      "proof": "",
+      "wiersze": [
+        {
+          "data": "19 Sep",
+          "osoba": "Brandon K.",
+          "kwota": "$7,981"
+        },
+        {
+          "data": "16 Sep",
+          "osoba": "Imogen R.",
+          "kwota": "$11,293"
+        },
+        {
+          "data": "14 Sep",
+          "osoba": "Charlotte V.",
+          "kwota": "$2,733"
+        },
+        {
+          "data": "13 Sep",
+          "osoba": "Hannah Q.",
+          "kwota": "$4,589"
+        },
+        {
+          "data": "12 Sep",
+          "osoba": "James S.",
+          "kwota": "$17,477"
+        }
+      ],
+      "stopka_lewa": "Every row has a certificate behind it",
+      "stopka_prawa": "Name · Amount · Date",
+      "body": "🧾 RECEIPTS, NOT SCREENSHOTS\n\nAnyone can post a dashboard. A dashboard proves that software can draw a number.\n\n🫡 What we post instead is the paperwork:every payout that goes out gets a certificate with a name, an amount, a date and a link anyone can open and check.\n\nWe don't publish the good weeks and quietly skip the rest. They go up as they happen, in order.\n\n🪙 A number you can't click is just a number. 🪙"
+    },
+    {
+      "id": "am-10",
+      "wariant": "cert",
+      "l1": "Meet James —",
+      "l2": "and his receipt",
+      "cta": "JOIN NOW",
+      "proof": "payout:gQTB4VOJq_TnyUM3PjRFJw",
+      "cert": "cert-james.png",
+      "wyplata": {
+        "kwota": "17,477.00 USD",
+        "tyt": "Withdrawal Processing"
+      },
+      "body": "💰 MEET JAMES — $17,477. Verified.\n\nJames has been trading since before most prop firms existed. He didn't need teaching. He needed capital that wasn't his pension.\n\n🫡 The certificate was the part he asked about first. Every payout gets one — name, amount, date, and a link anyone can check.\n\n🪙 $17,477, issued and paid. 🪙\n\nHe'd tell you the strategy is the easy part. Finding someone who pays on time is not."
+    },
+    {
+      "id": "am-11",
+      "wariant": "video",
+      "klip": "am-11-mike.mp4",
+      "okladka": "am-11-mike.jpg",
+      "proof": "",
+      "body": "🎥 HE HAD NEVER OPENED A PROP ACCOUNT\n\nSix months ago Mike couldn't have told you what a pip was. He says so himself in the first ten seconds — which is why we're posting the clip instead of writing the story.\n\n🫡 What he brought wasn't a strategy. It was a willingness to read the contract and ask what happens if it goes wrong.\n\n✔️ No trading background\n✔️ Evaluation bought in his own name\n✔️ The desk traded it — he never touched the terminal\n✔️ He scaled into a larger account after the first payout\n\n🪙 He spent the whole time waiting for a catch. He talks about that longer than he talks about the money. 🪙\n\nThe figure on screen is his, not ours. Watch him say it.",
+      "media_url": "https://forexpassing.com/tg/am-11-mike.mp4"
+    },
+    {
+      "id": "am-12",
+      "wariant": "video",
+      "klip": "am-12-couple.mp4",
+      "okladka": "am-12-couple.jpg",
+      "proof": "",
+      "body": "🎥 SHE TELLS IT, NOT HIM\n\nThis one comes from Ryan's wife, and that's the part worth your minute.\n\nAngelina spent years watching him trade their savings. She says the losses were never the hard part — it was sitting in the same room knowing what was on the line every time he opened a position.\n\n🫡 Then he stopped using their money and cleared an evaluation instead, on the same strategy he'd been running for years.\n\n✔️ Same trader\n✔️ Same strategy\n✔️ Different money behind it\n\n🪙 What changed at home wasn't the income. It was that a bad week stopped being a household problem. 🪙\n\nShe names the figure in the clip. We'd rather she said it than us.",
+      "media_url": "https://forexpassing.com/tg/am-12-couple.mp4"
+    },
+    {
+      "id": "am-13",
+      "wariant": "video",
+      "klip": "am-13-dave.mp4",
+      "okladka": "am-13-dave.jpg",
+      "proof": "",
+      "body": "🎥 HE COUNTED THE HOURS\n\nDave already traded futures and crypto and ran a small signals group. He didn't need teaching. His own capital just scaled too slowly to matter.\n\n🫡 The firms he'd tried before felt built for him to fail — trailing drawdowns, consistency rules nobody mentions until you break one.\n\n✔️ Cleared the evaluation on his own setups\n✔️ Nothing about how he trades changed\n✔️ The first payout was processed inside a day\n\n🪙 He counts the hours out loud in the clip. That is the entire review. 🪙\n\nWatch it before you compare us to anyone on a marketing page.",
+      "media_url": "https://forexpassing.com/tg/am-13-dave.mp4"
+    }
+  ]
+}

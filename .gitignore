@@ -5,3 +5,6 @@ node_modules/
 .env.local
 .vercel
 *.log
+
+# Powstaje przy kazdym buildzie (bin/stamp-build.mjs).
+STRONA/public/.build-stamp

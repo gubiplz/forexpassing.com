@@ -1,0 +1,485 @@
+<!doctype html>
+<meta charset="utf-8">
+<!--
+  Szablon postow na kanal ACCOUNT MANAGEMENT.
+
+  Uklad nie jest wymyslony — jest PRZENIESIONY z grafik, ktore juz wisza na
+  kanale. Wszystkie polozenia zmierzylem na archiwalnym pliku 800x800
+  (tg-graphics/archive/fx_passing/media/18.jpg) i pomnozylem przez 1.35,
+  bo renderujemy w 1080. Kolory tak samo: kazda stala ponizej ma przy sobie
+  wartosc odczytana z pikseli archiwum.
+
+  Jeden plik obsluguje szesc wariantow bloku tresci. Wariant wybiera klasa
+  na <body> (np. `v-compare`), a nie osobny szablon — pas gorny, naglowek
+  i pigulka CTA maja istniec w JEDNEJ kopii, inaczej po trzeciej poprawce
+  kazda grafika wyglada troche inaczej.
+-->
+<style>
+  @font-face {
+    font-family: 'Anton';
+    src: url('__FONTY__/anton-latin.woff2') format('woff2');
+    font-weight: 400;
+    font-display: block;
+  }
+  @font-face {
+    font-family: 'Inter';
+    src: url('__FONTY__/inter-latin.woff2') format('woff2');
+    font-weight: 100 900;
+    font-display: block;
+  }
+
+  :root {
+    /* Tlo — zmierzone: rog TL #ffffff, TR/BL #e9f9ef, BR #d6f3e1. */
+    --tlo-jasne: #f5fdf9;
+    --tlo-srodek: #e7f8ee;
+    --tlo-ciemne: #d4f2e0;
+
+    /* Naglowek — linia 1 zmierzona #003018/#06301e, linia 2 to gradient
+       pionowy od #38b868 (gora glifu) do #189060 (dol glifu). */
+    --atrament: #072d18;
+    --zielen-gora: #3cba69;
+    --zielen-dol: #159060;
+
+    /* Wstazki — jasna #30ba60, ciemna #063024. */
+    --wstazka-jasna: #34b962;
+    --wstazka-ciemna: #0a3123;
+
+    /* Pigulka CTA — #36ba66 -> #189060, ten sam gradient co naglowek. */
+    --cta-gora: #36ba66;
+    --cta-dol: #17915f;
+
+    --karta: #ffffff;
+    --karta-obwodka: rgba(12, 60, 38, .10);
+    --tekst: #10231a;
+    --tekst-cichy: #5b675f;
+    --szary: #9aa7a0;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #222; }
+
+  .poster {
+    width: 1080px;
+    height: 1080px;
+    position: relative;
+    overflow: hidden;
+    padding: 50px 50px 36px;
+    display: flex;
+    flex-direction: column;
+    font-family: 'Inter', sans-serif;
+    color: var(--tekst);
+    /* Biala poswiata lekko powyzej srodka, mieta w rogach — dokladnie taki
+       rozklad daly pomiary rogow i krawedzi. */
+    background:
+      radial-gradient(760px 640px at 36% 38%, #ffffff 0%, rgba(255,255,255,0) 70%),
+      linear-gradient(150deg, var(--tlo-jasne) 0%, var(--tlo-srodek) 52%, var(--tlo-ciemne) 100%);
+  }
+
+  /* Zielona poswiata za obiektem — jest na kazdej grafice z archiwum,
+     najmocniej widoczna pod portretem i pod mockupem telefonu. */
+  .poswiata {
+    position: absolute;
+    left: 50%;
+    top: 46%;
+    width: 900px;
+    height: 640px;
+    transform: translateX(-50%);
+    background: radial-gradient(closest-side, rgba(52,185,98,.20), transparent 72%);
+    pointer-events: none;
+  }
+
+  /* ----------------------------- pas gorny ----------------------------- */
+  /* Zmierzone w 800: logo 37..140 x, 37..98 y; plakietka 159..332 x;
+     przycisk play ~350..440 x; wstazki 512..800 x, 21..112 y. */
+  .pas {
+    display: flex;
+    align-items: center;
+    gap: 26px;
+    height: 120px;
+    flex: none;
+    position: relative;
+    z-index: 2;
+  }
+  .pas .logo { height: 84px; }
+  /* Plakietka: oficjalny znak Trustpilota na bialej karcie. Karta jest
+     rysowana CSS-em, bo w przeslanym pliku jej nie ma — sam znak siedzial
+     na wtopionej szachownicy, ktora trzeba bylo wyciac. */
+  .pas .plakietka {
+    height: 112px; display: flex; align-items: center; justify-content: center;
+    padding: 0 17px; background: #fff; border-radius: 19px;
+    box-shadow: 0 7px 16px rgba(16,52,36,.17);
+  }
+  .pas .plakietka img { height: 74px; display: block; }
+
+  .play {
+    width: 124px;
+    height: 88px;
+    border-radius: 24px;
+    background: linear-gradient(150deg, #56d17f 0%, #2bab63 62%, #17914f 100%);
+    box-shadow: 0 10px 26px rgba(23,145,79,.34);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+  }
+  .play i {
+    width: 0;
+    height: 0;
+    border-left: 30px solid #fff;
+    border-top: 19px solid transparent;
+    border-bottom: 19px solid transparent;
+    margin-left: 7px;
+  }
+
+  .wstazki {
+    margin-left: auto;
+    margin-right: -50px;   /* wstazki dochodza do samej krawedzi plakatu */
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    align-items: flex-end;
+  }
+  .wstazka {
+    font-family: 'Anton', sans-serif;
+    color: #fff;
+    font-size: 30px;
+    letter-spacing: .4px;
+    padding: 11px 28px 11px 46px;
+    /* Lewy koniec jest sciety w szpic — to ten sam ksztalt co w archiwum. */
+    clip-path: polygon(26px 0, 100% 0, 100% 100%, 0 100%);
+    filter: drop-shadow(0 6px 12px rgba(10,49,35,.22));
+    white-space: nowrap;
+  }
+  .wstazka.jasna { background: var(--wstazka-jasna); }
+  .wstazka.ciemna { background: var(--wstazka-ciemna); }
+  .wstazka small { font-size: 26px; }
+
+  /* ------------------------------ naglowek ----------------------------- */
+  /* Zmierzone w 800: linia 1 wysokosc wersalika 37 px, linia 2 — 60 px. */
+  .naglowek {
+    text-align: center;
+    margin-top: 26px;
+    flex: none;
+    position: relative;
+    z-index: 2;
+  }
+  .naglowek .l1 {
+    font-family: 'Anton', sans-serif;
+    font-size: 68px;
+    line-height: .98;
+    letter-spacing: .5px;
+    color: var(--atrament);
+    text-transform: uppercase;
+  }
+  .naglowek .l2 {
+    font-family: 'Anton', sans-serif;
+    font-size: 112px;
+    line-height: .96;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    background: linear-gradient(180deg, var(--zielen-gora) 0%, var(--zielen-dol) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    /* Wytloczenie 3D: cien tuz pod glifem, nie rozmyty aureolą. */
+    filter: drop-shadow(0 7px 0 rgba(13,105,64,.34)) drop-shadow(0 18px 30px rgba(24,132,82,.22));
+  }
+  /* Naglowek jednoliniowy: cala linia w zieleni, rozmiar posredni. */
+  .naglowek.solo .l2 { font-size: 96px; }
+
+  /* -------------------------------- tresc ------------------------------ */
+  .tresc {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 2;
+    padding: 18px 0 6px;
+  }
+
+  .karta {
+    background: var(--karta);
+    border: 1px solid var(--karta-obwodka);
+    border-radius: 26px;
+    box-shadow: 0 16px 34px rgba(16,52,36,.09);
+  }
+  .karta.akcent {
+    border: 2px solid #2fae6a;
+    box-shadow: 0 0 0 5px rgba(47,174,106,.11), 0 16px 34px rgba(16,52,36,.10);
+  }
+
+  /* --- wariant: compare ------------------------------------------------ */
+  .v-compare .tresc { flex-direction: column; gap: 22px; justify-content: center; }
+  .grupa { width: 100%; position: relative; }
+  .grupa > .etykieta {
+    position: absolute;
+    top: -11px;
+    left: 34px;
+    background: linear-gradient(180deg, #fbfefc, #f2fbf6);
+    padding: 0 12px;
+    font-size: 21px;
+    font-weight: 800;
+    letter-spacing: 1.6px;
+    text-transform: uppercase;
+  }
+  .grupa.zla > .etykieta { color: var(--szary); }
+  .grupa.dobra > .etykieta { color: #1d8a54; }
+  .grupa .karta { padding: 30px 38px; display: flex; flex-direction: column; gap: 17px; }
+  .grupa li { list-style: none; display: flex; align-items: center; gap: 16px; font-size: 35px; }
+  .grupa.zla li { color: var(--szary); text-decoration: line-through; text-decoration-thickness: 2px; }
+  .grupa.dobra li { color: var(--tekst); font-weight: 700; }
+  .znak { width: 34px; height: 34px; flex: none; }
+
+  /* --- wariant: steps -------------------------------------------------- */
+  .v-steps .tresc { flex-direction: column; gap: 11px; }
+  .krok { width: 100%; display: flex; align-items: center; gap: 20px; padding: 15px 28px; }
+  .krok .nr {
+    width: 50px; height: 50px; border-radius: 50%; flex: none;
+    background: linear-gradient(180deg, #34b962, #17915f);
+    color: #fff; font-family: 'Anton', sans-serif; font-size: 29px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .krok .tyt { font-size: 30px; font-weight: 800; line-height: 1.15; }
+  .krok .opis { font-size: 23px; color: var(--tekst-cichy); line-height: 1.24; margin-top: 2px; }
+
+  /* --- wariant: portrait ----------------------------------------------- */
+  .v-portrait .tresc { align-items: center; gap: 34px; }
+  .portret {
+    width: 320px; height: 320px; border-radius: 50%; flex: none;
+    object-fit: cover; background: #d7e4dc;
+    box-shadow: 0 18px 40px rgba(16,52,36,.22);
+    border: 6px solid rgba(255,255,255,.9);
+  }
+  .portret.pusty { display: flex; align-items: center; justify-content: center;
+    color: #8c9c94; font-size: 24px; font-weight: 700; text-align: center; }
+  .opowiesc { flex: 1; display: flex; flex-direction: column; gap: 17px; }
+  .opowiesc p { font-size: 28px; line-height: 1.34; font-style: italic; }
+  .opowiesc b { font-style: normal; font-weight: 800; color: #14804a; }
+
+  /* --- wariant: phone -------------------------------------------------- */
+  /* Odwzorowanie kadru z archiwum: telefon jest DUZY i uciety dolna krawedzia,
+     ekran blokady ma pasek stanu, klodke i wielki cienki zegar, a powiadomienia
+     wychodza poza obudowe po obu stronach i przykrywaja dol zegara. */
+  .v-phone .tresc { overflow: hidden; position: relative; padding: 0; }
+  .telefon {
+    position: absolute; top: 4px; left: 50%; transform: translateX(-50%);
+    width: 396px; height: 620px; border-radius: 54px; background: #26262a;
+    padding: 13px; box-shadow: 0 26px 52px rgba(16,52,36,.30);
+  }
+  /* Przycisk boczny — drobiazg, ale bez niego obudowa wyglada jak ramka. */
+  .telefon::before {
+    content: ''; position: absolute; left: -3px; top: 150px;
+    width: 4px; height: 76px; border-radius: 3px; background: #1b1b1e;
+  }
+  .telefon .ekran {
+    width: 100%; height: 100%; border-radius: 42px; overflow: hidden;
+    background: linear-gradient(180deg, #e2e3e4 0%, #d6d8d8 100%);
+    position: relative;
+  }
+  .telefon .wciecie {
+    position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+    width: 186px; height: 33px; background: #26262a;
+    border-radius: 0 0 20px 20px; z-index: 3;
+    display: flex; align-items: center; justify-content: center; gap: 12px;
+  }
+  .telefon .wciecie .glosnik {
+    width: 52px; height: 5px; border-radius: 3px; background: #3c3c40;
+  }
+  .telefon .wciecie .oko {
+    width: 11px; height: 11px; border-radius: 50%; background: #14203a;
+    box-shadow: inset 0 0 0 2px #2a3550;
+  }
+  .telefon .stan {
+    position: absolute; top: 9px; left: 0; right: 0; padding: 0 26px;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 19px; font-weight: 700; color: #1d1f1e; z-index: 2;
+  }
+  .telefon .stan .ikony { display: flex; align-items: flex-end; gap: 6px; }
+  .telefon .stan .zasieg { display: flex; align-items: flex-end; gap: 2px; }
+  .telefon .stan .zasieg i {
+    width: 4px; border-radius: 1px; background: #1d1f1e; display: block;
+  }
+  .telefon .stan .zasieg i:nth-child(1) { height: 5px; }
+  .telefon .stan .zasieg i:nth-child(2) { height: 8px; }
+  .telefon .stan .zasieg i:nth-child(3) { height: 11px; }
+  .telefon .stan .zasieg i:nth-child(4) { height: 14px; }
+  .telefon .stan .bateria {
+    width: 26px; height: 13px; border: 2px solid #1d1f1e; border-radius: 4px;
+    padding: 1.5px; position: relative;
+  }
+  .telefon .stan .bateria span {
+    display: block; height: 100%; width: 62%; background: #1d1f1e; border-radius: 1px;
+  }
+  .telefon .klodka {
+    position: absolute; top: 74px; left: 50%; transform: translateX(-50%);
+    width: 26px; height: 30px; z-index: 2;
+  }
+  .telefon .zegar {
+    position: absolute; top: 118px; left: 0; right: 0; text-align: center;
+    font-size: 116px; font-weight: 300; letter-spacing: -3px;
+    color: rgba(255,255,255,.96); z-index: 2;
+  }
+
+  .powiadomienia {
+    position: absolute; top: 196px; left: 50%; transform: translateX(-50%);
+    width: 660px; display: flex; flex-direction: column; gap: 20px; z-index: 4;
+  }
+  .pow {
+    border-radius: 26px; padding: 19px 26px; display: flex; gap: 18px;
+    align-items: flex-start;
+    /* Mleczne szklo: mocniejsze po lewej, przezroczystsze po prawej —
+       dokladnie tak zachowuja sie karty na oryginale. */
+    background: linear-gradient(95deg, rgba(255,255,255,.97) 0%,
+                rgba(255,255,255,.90) 58%, rgba(255,255,255,.74) 100%);
+    backdrop-filter: blur(7px);
+    box-shadow: 0 14px 30px rgba(16,52,36,.16);
+  }
+  .pow img {
+    width: 62px; height: 62px; border-radius: 15px; flex: none; object-fit: contain;
+    background: #fff; padding: 7px; box-shadow: 0 2px 8px rgba(16,52,36,.14);
+  }
+  .pow .tytul { font-size: 26px; font-weight: 700; letter-spacing: -.2px; }
+  .pow .tekst { font-size: 26px; line-height: 1.24; margin-top: 3px; color: #1a201d; }
+  .pow .kiedy { margin-left: auto; font-size: 22px; color: #8b948e; flex: none; }
+
+  /* --- wariant: stat --------------------------------------------------- */
+  .v-stat .tresc { flex-direction: column; gap: 22px; }
+  .liczba { width: 100%; padding: 44px 40px 40px; text-align: center; }
+  .liczba .duza {
+    font-family: 'Anton', sans-serif; font-size: 152px; line-height: .94;
+    background: linear-gradient(180deg, var(--zielen-gora) 0%, var(--zielen-dol) 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .liczba .pod { font-size: 29px; color: var(--tekst-cichy); margin-top: 14px; line-height: 1.3; }
+  .paski { width: 100%; display: flex; gap: 14px; }
+  .paski .pole { flex: 1; padding: 22px 18px; text-align: center; }
+  .paski .w { font-family: 'Anton', sans-serif; font-size: 46px; color: var(--atrament); }
+  .paski .e { font-size: 20px; color: var(--tekst-cichy); margin-top: 5px;
+    text-transform: uppercase; letter-spacing: 1.2px; font-weight: 700; }
+
+  /* --- wariant: chat --------------------------------------------------- */
+  /* Rozmowa z adminem. Kanal jest na Telegramie, wiec okno czatu jest tu
+     formatem rodzimym — czytelnik widzi dokladnie to, co sam za chwile zrobi. */
+  .v-chat .tresc { flex-direction: column; justify-content: center; }
+  .czat {
+    width: 100%; background: #fff; border-radius: 28px; overflow: hidden;
+    border: 1px solid var(--karta-obwodka); box-shadow: 0 18px 38px rgba(16,52,36,.12);
+  }
+  .czat .belka {
+    display: flex; align-items: center; gap: 15px; padding: 17px 26px;
+    background: #f1f7f3; border-bottom: 1px solid rgba(12,60,38,.08);
+  }
+  .czat .belka img {
+    width: 54px; height: 54px; border-radius: 50%; background: #fff; padding: 6px;
+    object-fit: contain; box-shadow: 0 2px 8px rgba(16,52,36,.12);
+  }
+  .czat .kto { font-size: 27px; font-weight: 800; letter-spacing: -.2px; }
+  .czat .kiedy { font-size: 20px; color: #6d7a72; margin-top: 2px; }
+  .czat .zielona-kropka {
+    margin-left: auto; width: 13px; height: 13px; border-radius: 50%;
+    background: #2fae6a; box-shadow: 0 0 0 5px rgba(47,174,106,.16);
+  }
+  .rozmowa { padding: 24px 26px; display: flex; flex-direction: column; gap: 15px; }
+  .bombka {
+    max-width: 76%; padding: 16px 22px; font-size: 27px; line-height: 1.27;
+  }
+  .bombka.od-niego {
+    align-self: flex-start; background: #eef2ef; color: var(--tekst);
+    border-radius: 24px 24px 24px 8px;
+  }
+  .bombka.od-nas {
+    align-self: flex-end; color: #fff; border-radius: 24px 24px 8px 24px;
+    background: linear-gradient(180deg, #34b962 0%, #17915f 100%);
+  }
+
+  /* --- wariant: ledger ------------------------------------------------- */
+  /* Lista wyplat jak wiersze wyciagu. Kwoty sa prawdziwe — pochodza z
+     oplaconych wyplat, kazda ma wystawiony certyfikat. */
+  .v-ledger .tresc { flex-direction: column; gap: 14px; }
+  .ksiega { width: 100%; padding: 6px 0; }
+  .ksiega .wiersz {
+    display: flex; align-items: center; gap: 20px; padding: 15px 30px;
+    border-bottom: 1px solid rgba(12,60,38,.07);
+  }
+  .ksiega .wiersz:last-child { border-bottom: none; }
+  .ksiega .data {
+    width: 96px; flex: none; font-size: 22px; font-weight: 700; color: #6d7a72;
+    text-transform: uppercase; letter-spacing: .4px;
+  }
+  .ksiega .osoba { flex: 1; font-size: 29px; font-weight: 700; }
+  .ksiega .cert {
+    font-size: 19px; color: #1d8a54; font-weight: 700; letter-spacing: .6px;
+    display: flex; align-items: center; gap: 7px;
+  }
+  .ksiega .cert svg { width: 21px; height: 21px; }
+  .ksiega .kwota {
+    width: 176px; text-align: right; flex: none;
+    font-family: 'Anton', sans-serif; font-size: 38px; color: #14804a;
+  }
+  .stopka-ksiegi {
+    width: 100%; padding: 17px 30px; display: flex; justify-content: space-between;
+    align-items: center; font-size: 23px; color: var(--tekst-cichy);
+  }
+  .stopka-ksiegi b { font-size: 27px; color: var(--tekst); }
+
+  /* --- wariant: cert --------------------------------------------------- */
+  .v-cert .tresc { gap: 30px; align-items: center; }
+  .cert-obraz { width: 470px; border-radius: 18px; transform: rotate(-4deg);
+    box-shadow: 0 24px 48px rgba(16,52,36,.30); }
+  .cert-obraz.pusty { height: 340px; background: #0b142c; display: flex;
+    align-items: center; justify-content: center; color: #7f93c4; font-size: 22px; }
+  .wyplata {
+    width: 268px; border-radius: 26px; background: #0e1116; color: #fff;
+    padding: 26px 22px; text-align: center; transform: rotate(3deg);
+    box-shadow: 0 22px 44px rgba(16,52,36,.28);
+  }
+  .wyplata .ikona { font-size: 34px; }
+  .wyplata .tyt { font-size: 22px; margin-top: 10px; opacity: .9; }
+  .wyplata .kwota { font-size: 34px; font-weight: 800; margin-top: 8px; }
+  .wyplata .nota { font-size: 16px; opacity: .6; margin-top: 10px; line-height: 1.3; }
+  .wyplata .przycisk { margin-top: 16px; background: #2fae6a; border-radius: 999px;
+    padding: 11px 0; font-size: 19px; font-weight: 700; }
+
+  /* ------------------------------ pigulka ------------------------------ */
+  /* Zmierzone w 800: 299..500 x, 715..773 y — czyli 201x58 i 27 px od dolu. */
+  .cta {
+    flex: none;
+    align-self: center;
+    font-family: 'Anton', sans-serif;
+    font-size: 38px;
+    letter-spacing: 1.6px;
+    color: #fff;
+    text-transform: uppercase;
+    padding: 19px 56px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, var(--cta-gora) 0%, var(--cta-dol) 100%);
+    box-shadow: 0 12px 28px rgba(23,145,95,.40);
+    position: relative;
+    z-index: 2;
+  }
+</style>
+
+<div class="poster">
+  <div class="poswiata"></div>
+
+  <div class="pas">
+    <img class="logo" src="__ASSETY__/logo.png" alt="">
+    <div class="plakietka"><img src="__ASSETY__/trustpilot-znak.png" alt=""></div>
+    <div class="play"><i></i></div>
+    <div class="wstazki">
+      <div class="wstazka jasna">BUY 1 GET 1 FREE <small>ends soon</small></div>
+      <div class="wstazka ciemna">WE COVER 20% OF THE COST</div>
+    </div>
+  </div>
+
+  <div class="naglowek __KLASA_NAGLOWKA__">
+    __LINIA1__
+    <div class="l2">__LINIA2__</div>
+  </div>
+
+  <div class="tresc">__TRESC__</div>
+
+  <div class="cta">__CTA__</div>
+</div>

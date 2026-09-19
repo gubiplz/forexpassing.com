@@ -47,7 +47,42 @@ export const config = {
   ],
 };
 
-export default function middleware(request: Request): Response {
+// Budziki automatyzacji odpalane RUCHEM, nie zegarem.
+//
+// Konto jest na planie Hobby, gdzie sa dwa sloty crona na cale konto i oba
+// zajmuje panel (`/api/tick`, `/api/cron/streak-reminder`). Zamiast dokladac
+// zewnetrzny scenariusz, korzystamy z tego, ze middleware widzi kazde wejscie
+// na lejek — ten sam wzorzec, ktorym panel odpala payout bota z ruchu strony.
+//
+// Oba adresy sa idempotentne i maja wlasny throttle po stronie funkcji; to
+// ponizej jest tylko zgruba sitem, zeby nie robic fetcha przy kazdym zadaniu.
+const BUDZIKI = ['/api/spots-ping', '/api/trackrecord-beat'];
+const ODSTEP_MS = 60_000;
+let ostatniPuls = 0;
+
+function puls(request: Request, context?: { waitUntil?: (p: Promise<unknown>) => void }): void {
+  const teraz = Date.now();
+  if (teraz - ostatniPuls < ODSTEP_MS) return;
+  ostatniPuls = teraz;
+
+  for (const sciezka of BUDZIKI) {
+    // Bez await: odpowiedz dla czlowieka nie moze czekac na Telegrama.
+    // `waitUntil` pilnuje, zeby edge nie ucial zadania po zwroceniu odpowiedzi.
+    const zadanie = fetch(new URL(sciezka, request.url), {
+      headers: { 'x-puls': '1' },
+    }).catch(() => {});
+    context?.waitUntil?.(zadanie);
+  }
+}
+
+export default function middleware(
+  request: Request,
+  context?: { waitUntil?: (p: Promise<unknown>) => void },
+): Response {
+  // Puls idzie PRZED bramka i niezaleznie od jej wyniku: interesuje nas sam
+  // fakt ruchu, a nie to, czy odwiedzajacy zobaczy oferte czy strone bezpieczna.
+  puls(request, context);
+
   const key = process.env.ORIGIN_KEY;
   if (!key) return proceed();
 

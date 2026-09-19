@@ -1,0 +1,3 @@
+# Render jest odtwarzalny ze szablonu i posts.json — trzymamy zrodla,
+# nie wyniki. Zatwierdzone grafiki lada w STRONA/public/tg/.
+out/
