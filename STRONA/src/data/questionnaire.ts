@@ -54,7 +54,7 @@ export type Step =
       completeOnContinue?: boolean
     }
 
-/** @fxpassingadmin, without the https://t.me/ in front of it. */
+/** @forex_passing_admin, without the https://t.me/ in front of it. */
 const TELEGRAM_HANDLE = `@${TELEGRAM_HREF.split('/').pop()}`
 
 /**

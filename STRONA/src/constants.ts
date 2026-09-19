@@ -136,7 +136,7 @@ export const RATING_STARS_4_SRC = '/rating-stars-40.png'
 // Kontakt do zespołu. Statyczne strony w public/ i szablony maili nie mogą
 // importować tego pliku, więc mają adres wpisany wprost — przy zmianie uchwytu
 // trzeba je podmienić razem z tą stałą (grep po "t.me/").
-export const TELEGRAM_HREF = 'https://t.me/fxpassingadmin'
+export const TELEGRAM_HREF = 'https://t.me/forex_passing_admin'
 export const CONTACT_EMAIL = 'contact@forexpassing.com'
 
 // Dwa różne byty na Telegramie, i strona nie może ich mylić: KANAŁ się
@@ -145,7 +145,7 @@ export const CONTACT_EMAIL = 'contact@forexpassing.com'
 // kimś, kto założy @forexpassing_support i napisze pierwszy.
 export const TELEGRAM_CHANNEL_HREF = 'https://t.me/forex_passing'
 export const TELEGRAM_CHANNEL_HANDLE = '@forex_passing'
-export const TELEGRAM_ADMIN_HANDLE = '@fxpassingadmin'
+export const TELEGRAM_ADMIN_HANDLE = '@forex_passing_admin'
 export const SITE_DOMAIN = 'forexpassing.com'
 
 // TRZECI kanał, osobny od dwóch powyższych: tu leci jeden post na wypłatę,
@@ -178,7 +178,7 @@ export const FREE_TELEGRAM_HANDLE = '@FXPassing_free'
 // przycisk "Join". Bez niego część ludzi nie wie, w co kliknąć po wejściu.
 //
 // ⚠ NICK ADMINA JEST W TYM PLIKU RETUSZOWANY. Makieta przyszła z
-// „@forexpassingadmin" w obu miejscach, a nasz uchwyt to „@fxpassingadmin"
+// „@forexpassingadmin" w obu miejscach, a nasz uchwyt to „@forex_passing_admin"
 // (TELEGRAM_ADMIN_HANDLE wyżej, on też jest właścicielem kanału). Zdanie
 // „our only admin is …" jest zakreślone na czerwono, więc zły nick wskazywałby
 // tam uchwyt, którego nie kontrolujemy. Podmieniając plik SPRAWDŹ OBA
