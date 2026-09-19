@@ -21,7 +21,7 @@ const TELEGRAM = 'https://t.me/fxpassingadmin';
 // The free challenge (/freeaccount) is answered from its own account. Kept in
 // step with FREE_TELEGRAM_HREF in src/constants.ts — this file cannot import it,
 // because api/ and src/ are built by different toolchains.
-const FREE_TELEGRAM = 'https://t.me/FX_Passing_free';
+const FREE_TELEGRAM = 'https://t.me/FXPassing_free';
 const CONTACT = 'contact@forexpassing.com';
 
 /**

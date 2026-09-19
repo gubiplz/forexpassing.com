@@ -156,8 +156,8 @@ export const TELEGRAM_PAYOUTS_HREF = 'https://t.me/fx_passingpayouts'
 // Darmowy challenge obsługuje OSOBNE konto. Wszystko, co widzi aplikant z
 // /freeaccount — formularz, ekran po wysłaniu, /thank-you?src=free — kieruje
 // tutaj, żeby ruch z darmowej oferty nie mieszał się z płatną na jednym czacie.
-export const FREE_TELEGRAM_HREF = 'https://t.me/FX_Passing_free'
-export const FREE_TELEGRAM_HANDLE = '@FX_Passing_free'
+export const FREE_TELEGRAM_HREF = 'https://t.me/FXPassing_free'
+export const FREE_TELEGRAM_HANDLE = '@FXPassing_free'
 
 // Materiały na /thank-you. Pusty string = ramka przerywana o DOCELOWYM
 // rozmiarze, ta sama konwencja co videoId: '' w data/testimonials.ts — wgranie
