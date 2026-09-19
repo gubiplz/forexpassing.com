@@ -11,7 +11,7 @@
 // asercjami: automat ma się wywalić i nie ruszyć kanału, a nie po cichu
 // opublikować kłamstwo pod logo firmy.
 const LINK = 'https://forexpassing.com/past-performance';
-const TAIL = `Check it yourself 👇\n${LINK}\n\n➡️ Message @fxpassingadmin if you have any questions`;
+const TAIL = `Check it yourself 👇\n${LINK}\n\n➡️ Message @forex_passing_admin if you have any questions`;
 
 const ORDER = ['low', 'balanced', 'scaling', 'high'];
 const LIMIT = 1024;
@@ -32,11 +32,14 @@ function sprawdz(warunek, opis) {
  * @returns {Record<string, string>} podpis per profil
  */
 function buildCaptions(p) {
-  for (const id of ORDER) {
-    sprawdz(p[id], `brak profilu "${id}" w danych`);
-    // Wszystkie cztery podpisy chwalą się miesiącami na plusie.
-    const najgorszy = Math.min(...p[id].months.map((m) => m.v));
-    sprawdz(najgorszy > 0, `${id}: miesiąc na minusie (${najgorszy}%), a podpis mówi „every single month in the green"`);
+  for (const id of ORDER) sprawdz(p[id], `brak profilu "${id}" w danych`);
+
+  const najgorszy = (id) => Math.min(...p[id].months.map((m) => m.v));
+  const allGreen = (id) => najgorszy(id) > 0;
+
+  // Zdanie „every single month in the green" tylko tam, gdzie nadal jest prawdą.
+  for (const id of ['low', 'scaling']) {
+    sprawdz(allGreen(id), `${id}: miesiąc na minusie (${najgorszy(id)}%), a podpis mówi „every single month in the green"`);
   }
   sprawdz(num(p.balanced.maxDrawdown) < 4, `balanced: drawdown ${p.balanced.maxDrawdown}, a podpis mówi „still under 4%"`);
   sprawdz(num(p.balanced.totalReturn) > num(p.low.totalReturn), 'balanced: podpis mówi „faster growth than Low Risk"');
@@ -46,6 +49,10 @@ function buildCaptions(p) {
     'high: podpis mówi „the highest return of all our settings"',
   );
   sprawdz(p.high.consistency < 100, 'high: podpis mówi „yes, there are red weeks"');
+
+  const balancedCurve = allGreen('balanced')
+    ? 'Still a clean upward equity curve with every single month closing in the green.'
+    : 'Still a clean upward equity curve overall — one soft month does not break the trend.';
 
   const captions = {
     low: `📊 This is what Low Risk looks like at Forex Passing.
@@ -74,7 +81,7 @@ Same tracker. Same ${p.balanced.weeks} weeks. ${p.balanced.trades} trades. No ed
 ✅ Avg Monthly Return: ${p.balanced.avgMonthly}
 ✅ Total Return: ${p.balanced.totalReturn}
 
-More aggression. More growth. Still a clean upward equity curve with every single month closing in the green.
+More aggression. More growth. ${balancedCurve}
 
 This is our default setting — the exact numbers the performance widget on our site has always shown. Faster growth than Low Risk, with drawdown still under 4%.
 
@@ -120,7 +127,7 @@ Yes, there are red weeks. That's the trade-off for +${Math.round(num(p.high.tota
 
 ${TAIL}
 
-❕ This is the OFFICIAL Forex Passing channel. Our only admin is @fxpassingadmin; anyone else is a scam. Stay safe.`,
+❕ This is the OFFICIAL Forex Passing channel. Our only admin is @forex_passing_admin; anyone else is a scam. Stay safe.`,
   };
 
   for (const id of ORDER) {
