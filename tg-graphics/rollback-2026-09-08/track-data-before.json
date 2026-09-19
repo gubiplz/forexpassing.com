@@ -1,0 +1,193 @@
+{
+  "scrapedAt": "2026-08-30T13:25:13.274Z",
+  "profiles": {
+    "low": {
+      "weeks": 34,
+      "trades": 247,
+      "winRate": "70.9%",
+      "profitFactor": "2.51",
+      "maxDrawdown": "0.85%",
+      "avgMonthly": "+5.36%",
+      "totalReturn": "+51.87%",
+      "consistency": 97,
+      "riskReward": 1.03,
+      "bestTrade": "$1,524",
+      "worstTrade": "-$1,279",
+      "months": [
+        {
+          "k": "Jan",
+          "v": 5.7
+        },
+        {
+          "k": "Feb",
+          "v": 4
+        },
+        {
+          "k": "Mar",
+          "v": 3.6
+        },
+        {
+          "k": "Apr",
+          "v": 4.6
+        },
+        {
+          "k": "May",
+          "v": 5.8
+        },
+        {
+          "k": "Jun",
+          "v": 8.3
+        },
+        {
+          "k": "Jul",
+          "v": 5.6
+        },
+        {
+          "k": "Aug",
+          "v": 5.3
+        }
+      ]
+    },
+    "balanced": {
+      "weeks": 34,
+      "trades": 335,
+      "winRate": "63.9%",
+      "profitFactor": "1.73",
+      "maxDrawdown": "3.76%",
+      "avgMonthly": "+6.68%",
+      "totalReturn": "+67.70%",
+      "consistency": 79,
+      "riskReward": 0.98,
+      "bestTrade": "$2,531",
+      "worstTrade": "-$2,108",
+      "months": [
+        {
+          "k": "Jan",
+          "v": 4.4
+        },
+        {
+          "k": "Feb",
+          "v": 8.4
+        },
+        {
+          "k": "Mar",
+          "v": 0.9
+        },
+        {
+          "k": "Apr",
+          "v": 13.9
+        },
+        {
+          "k": "May",
+          "v": 8.9
+        },
+        {
+          "k": "Jun",
+          "v": 5.9
+        },
+        {
+          "k": "Jul",
+          "v": 5.9
+        },
+        {
+          "k": "Aug",
+          "v": 5.5
+        }
+      ]
+    },
+    "scaling": {
+      "weeks": 34,
+      "trades": 260,
+      "winRate": "66.9%",
+      "profitFactor": "1.97",
+      "maxDrawdown": "2.48%",
+      "avgMonthly": "+5.82%",
+      "totalReturn": "+57.26%",
+      "consistency": 82,
+      "riskReward": 0.97,
+      "bestTrade": "$1,832",
+      "worstTrade": "-$1,952",
+      "months": [
+        {
+          "k": "Jan",
+          "v": 2.9
+        },
+        {
+          "k": "Feb",
+          "v": 7.5
+        },
+        {
+          "k": "Mar",
+          "v": 6.1
+        },
+        {
+          "k": "Apr",
+          "v": 10.7
+        },
+        {
+          "k": "May",
+          "v": 6.2
+        },
+        {
+          "k": "Jun",
+          "v": 2.8
+        },
+        {
+          "k": "Jul",
+          "v": 4.4
+        },
+        {
+          "k": "Aug",
+          "v": 6.3
+        }
+      ]
+    },
+    "high": {
+      "weeks": 34,
+      "trades": 388,
+      "winRate": "58.8%",
+      "profitFactor": "1.72",
+      "maxDrawdown": "7.08%",
+      "avgMonthly": "+10.18%",
+      "totalReturn": "+117.17%",
+      "consistency": 68,
+      "riskReward": 1.21,
+      "bestTrade": "$3,531",
+      "worstTrade": "-$2,699",
+      "months": [
+        {
+          "k": "Jan",
+          "v": 11.1
+        },
+        {
+          "k": "Feb",
+          "v": 4
+        },
+        {
+          "k": "Mar",
+          "v": 16.5
+        },
+        {
+          "k": "Apr",
+          "v": 13.4
+        },
+        {
+          "k": "May",
+          "v": 2.6
+        },
+        {
+          "k": "Jun",
+          "v": 9.1
+        },
+        {
+          "k": "Jul",
+          "v": 10.3
+        },
+        {
+          "k": "Aug",
+          "v": 15.2
+        }
+      ]
+    }
+  }
+}

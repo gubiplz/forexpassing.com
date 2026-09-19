@@ -14,6 +14,7 @@ const { scrape } = require('./scrape');
 const { shoot } = require('./shoot2');
 const { render } = require('./render2');
 const { edit } = require('./edit');
+const { describe } = require('./describe');
 
 const DRY = process.argv.includes('--dry');
 
@@ -33,6 +34,20 @@ const DRY = process.argv.includes('--dry');
   console.log('== edit ==');
   const { zmienione, pominiete } = await edit({ dry: DRY });
 
+  // Opis kanału na końcu i osobno: plakat widzi ten, kto przewinie do posta,
+  // opis czyta każdy, kto wchodzi pierwszy raz. Nieudany opis (np. brak prawa
+  // „zmiana informacji") nie ma cofać udanej podmiany grafik, więc leci
+  // best-effort — z wypisanym powodem, nie po cichu.
+  console.log('== describe ==');
+  let opis = 'pominięty';
+  try {
+    const wynik = await describe({ dry: DRY });
+    opis = wynik.zmieniony ? 'zaktualizowany' : 'bez zmian';
+  } catch (e) {
+    opis = `BŁĄD: ${e.message}`;
+    process.exitCode = 1;
+  }
+
   const sek = Math.round((Date.now() - start) / 1000);
-  console.log(`\ngotowe w ${sek}s — zmienionych ${zmienione}, bez zmian ${pominiete}${DRY ? ' (dry)' : ''}`);
+  console.log(`\ngotowe w ${sek}s — zmienionych ${zmienione}, bez zmian ${pominiete}, opis ${opis}${DRY ? ' (dry)' : ''}`);
 })().catch((e) => { console.error('BŁĄD:', e.message); process.exit(1); });

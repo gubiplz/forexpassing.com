@@ -20,6 +20,7 @@ node refresh.js --dry    # wszystko poza zapisem do Telegrama
 | shoot | `shoot2.js` | zrzut widgetu per profil → `shot2-*.png` |
 | render | `render2.js` | plakat 1:1 z `template2.html` → `poster2-*.png` |
 | edit | `edit.js` | `editMessageMedia` na postach 3–6 |
+| describe | `describe.js` | opis kanału z tych samych liczb (limit 255 zn.) |
 
 Do Telegrama pisze wyłącznie ostatni krok, więc wywrotka po drodze zostawia kanał
 nietknięty.
@@ -49,8 +50,16 @@ Limit podpisu w Telegramie to 1024 znaki; najdłuższy (high risk) ma ~820.
 To celowo **inny** sekret niż `TELEGRAM_BOT_TOKEN` używany przez `telegram-spots.yml`:
 tamten bot jest adminem `@fx_passing`, ale nie kanału track record.
 
+Bot potrzebuje DWÓCH uprawnień na tym kanale: **edycji wiadomości** (plakaty) i
+**zmiany informacji** (opis). Samo prawo publikowania nie wystarczy do żadnego
+z tych kroków.
+
 Uwaga na pułapkę: `getChat` na publicznym kanale udaje się każdemu botowi, także
 takiemu bez uprawnień. Status sprawdzaj przez `getChatMember`.
+
+`describe.js` czyta opis po zapisie i porównuje. `setChatDescription` potrafi
+zwrócić `ok:true` i nie zmienić nic, gdy brakuje prawa zmiany informacji —
+bez odczytu weryfikacyjnego wyglądałoby to na sukces.
 
 ## Harmonogram
 
@@ -88,3 +97,33 @@ złe ID podmienia treść nie tego posta, co trzeba.
 Stary kanał miał te same cztery posty pod numerami 7–10. Po przenosinach
 numeracja zaczyna się od nowa, bo kanał jest nowy; kopia tamtych postów razem
 z licznikami reakcji leży w `rollback-2026-09-08/`.
+
+## Kopie zapasowe kanału
+
+Konto Telegrama potrafi zniknąć razem z botem-adminem. Kanały to przeżywają, ale
+na dysku nie było kopii **ani jednego** posta. Stąd dwa narzędzia.
+
+```
+node archive-channels.mjs                    # domyślne trzy kanały
+node archive-channels.mjs forex_passing      # wybrany
+node archive-channels.mjs --no-media         # sam tekst
+```
+
+Czyta publiczny podgląd `t.me/s/<handle>` — bez tokenu, bez konta, bez uprawnień
+admina. Zapisuje `archive/<handle>/messages.json` (id, data, pełny tekst,
+wyświetlenia, adresy mediów) i pobrane pliki do `archive/<handle>/media/`.
+
+Czego nie zdejmie: kanałów **prywatnych** (podgląd istnieje tylko dla publicznych),
+reakcji i oryginałów wideo w pełnej jakości.
+
+Luki w numeracji są normalne: skasowany post zostawia dziurę, a album renderuje się
+jako jeden wpis z ID pierwszego zdjęcia.
+
+W `archive/` leży zdjęta w ten sposób treść STARYCH kanałów (47 postów), które
+zostały porzucone po zamrożeniu konta. To materiał do stopniowego odtworzenia na
+nowych — kolejka treści w panelu PTF wypuszcza po jednym poście na przebieg,
+żeby wracały rytmem, a nie jednym zrzutem.
+
+`rollback-2026-09-08/` to osobna, starsza kopia czterech postów track record zdjęta
+Bot API — niesie to, czego podgląd nie pokazuje: `message_id`, liczniki reakcji per
+emoji i podpisy sprzed edycji. `restore-from-rollback.js` wgrywa je z powrotem.
