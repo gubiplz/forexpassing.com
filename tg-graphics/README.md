@@ -48,7 +48,7 @@ Limit podpisu w Telegramie to 1024 znaki; najdłuższy (high risk) ma ~820.
 | `TG_CHAT` | opcjonalna | domyślnie `@forex_passing_track_record` |
 
 To celowo **inny** sekret niż `TELEGRAM_BOT_TOKEN` używany przez `telegram-spots.yml`:
-tamten bot jest adminem `@fx_passing`, ale nie kanału track record.
+tamten bot jest adminem `@forex_passing`, ale nie kanału track record.
 
 Bot potrzebuje DWÓCH uprawnień na tym kanale: **edycji wiadomości** (plakaty) i
 **zmiany informacji** (opis). Samo prawo publikowania nie wystarczy do żadnego

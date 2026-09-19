@@ -2,6 +2,12 @@
 const { readFileSync, existsSync } = require('node:fs');
 const dir = process.argv[2] || `${__dirname}/rollback-2026-09-08`;
 const TOKEN = process.env.TG_TOKEN;
+// ⚠ JEDYNE MIEJSCE, KTÓRE ZOSTAJE NA STARYM KANALE — i musi zostać.
+// Backupy w rollback-*/ to posty 7–10 z @fx_passingtrackrecord; nowy kanał ma
+// te plakaty pod ID 3–6 (edit.js, MESSAGES). Przestawienie tej stałej na
+// @forex_passing_track_record nie przywróciłoby niczego, tylko nadpisało cztery
+// inne wiadomości. Rollback z tego katalogu działa wyłącznie na kanale, z którego
+// go zdjęto — razem z uchwytem admina wpisanym w caption-*.txt.
 const CHAT = process.env.TG_CHAT || '@fx_passingtrackrecord';
 const MAP = { low: 7, balanced: 8, scaling: 9, high: 10 };
 if (!TOKEN) throw new Error('brak TG_TOKEN');

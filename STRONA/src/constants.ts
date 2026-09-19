@@ -177,12 +177,18 @@ export const FREE_TELEGRAM_HANDLE = '@FXPassing_free'
 // TYP_TELEGRAM_SHOT_SRC: zrzut z Telegrama ze strzałką na "Message us" i na
 // przycisk "Join". Bez niego część ludzi nie wie, w co kliknąć po wejściu.
 //
-// ⚠ NICK ADMINA JEST W TYM PLIKU RETUSZOWANY. Makieta przyszła z
-// „@forexpassingadmin" w obu miejscach, a nasz uchwyt to „@forex_passing_admin"
-// (TELEGRAM_ADMIN_HANDLE wyżej, on też jest właścicielem kanału). Zdanie
-// „our only admin is …" jest zakreślone na czerwono, więc zły nick wskazywałby
-// tam uchwyt, którego nie kontrolujemy. Podmieniając plik SPRAWDŹ OBA
-// WYSTĄPIENIA — to przy „Message …" i to w kółku.
+// ⚠ NICK ADMINA W TYM PLIKU JEST RETUSZOWANY — i do 2026-09-19 NIE BYŁ, mimo że
+// ten komentarz tak twierdził. Zrzut szedł na produkcję z „@fxpassingadmin"
+// w OBU miejscach, w tym w czerwonym kółku przy zdaniu „our only admin is …;
+// anyone else is a scam" — czyli grafika mówiła klientowi, że uchwyt z filmów
+// i z reszty strony jest oszustem. Grep tego nie łapie, bo to piksele, a fałszywy
+// komentarz kazał sądzić, że sprawa załatwiona.
+//
+// PRZY KAŻDEJ ZMIANIE UCHWYTU OTWÓRZ TEN PLIK I ZOBACZ NA OCZY. Dwa wystąpienia:
+// przy „Message …" i to w kółku. Sam post na kanale jest poprawiany na bieżąco,
+// więc nieaktualny bywa wyłącznie zrzut — najtaniej zrobić nowy screenshot
+// z @forex_passing zamiast retuszować (2400x1776, proporcje 1200/888 są wpisane
+// na sztywno w ThankYouPage.tsx, a .mm-typ-shot ma object-fit:cover).
 export const TYP_TELEGRAM_SHOT_SRC: string = '/typ-telegram.webp'
 export const TEAM_PHOTO_SRC: string = '/typ-team.webp'
 
