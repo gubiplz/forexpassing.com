@@ -64,7 +64,14 @@ function odkoduj(s) {
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
     .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
+    // Encje NUMERYCZNE, dziesiętne i szesnastkowe. Telegram koduje tak m.in.
+    // dolara (`&#036;`), więc bez tego archiwum — czyli kopia zapasowa — niosło
+    // „&#036;6,180" zamiast „$6,180". Zapis, który przy odtwarzaniu trzeba
+    // odkodowywać ręcznie, nie jest kopią, tylko półproduktem.
+    .replace(/&#x([0-9a-f]+);/gi, (_, h) => String.fromCodePoint(parseInt(h, 16)))
+    .replace(/&#(\d+);/g, (_, d) => String.fromCodePoint(Number(d)))
+    // `&amp;` na KOŃCU: inaczej „&amp;#036;" rozwinęłoby się w dwóch krokach
+    // do znaku dolara, którego w oryginale nie było.
     .replace(/&amp;/g, '&');
 }
 
