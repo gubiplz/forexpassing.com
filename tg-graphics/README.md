@@ -20,6 +20,7 @@ node refresh.js --dry    # wszystko poza zapisem do Telegrama
 | shoot | `shoot2.js` | zrzut widgetu per profil → `shot2-*.png` |
 | render | `render2.js` | plakat 1:1 z `template2.html` → `poster2-*.png` |
 | edit | `edit.js` | `editMessageMedia` na postach 7–10 |
+| describe | `describe.js` | opis kanału z tych samych liczb (limit 255 zn.) |
 
 Do Telegrama pisze wyłącznie ostatni krok, więc wywrotka po drodze zostawia kanał
 nietknięty.
@@ -49,8 +50,16 @@ Limit podpisu w Telegramie to 1024 znaki; najdłuższy (high risk) ma ~820.
 To celowo **inny** sekret niż `TELEGRAM_BOT_TOKEN` używany przez `telegram-spots.yml`:
 tamten bot jest adminem `@fx_passing`, ale nie kanału track record.
 
+Bot potrzebuje DWÓCH uprawnień na tym kanale: **edycji wiadomości** (plakaty) i
+**zmiany informacji** (opis). Samo prawo publikowania nie wystarczy do żadnego
+z tych kroków.
+
 Uwaga na pułapkę: `getChat` na publicznym kanale udaje się każdemu botowi, także
 takiemu bez uprawnień. Status sprawdzaj przez `getChatMember`.
+
+`describe.js` czyta opis po zapisie i porównuje. `setChatDescription` potrafi
+zwrócić `ok:true` i nie zmienić nic, gdy brakuje prawa zmiany informacji —
+bez odczytu weryfikacyjnego wyglądałoby to na sukces.
 
 ## Harmonogram
 
