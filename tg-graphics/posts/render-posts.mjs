@@ -50,6 +50,21 @@ function obrazek(nazwa, klasa, opisPustego) {
   return `<div class="${klasa} pusty">${opisPustego}</div>`;
 }
 
+/** Drobne ikony ekranu blokady. Rysowane, bo przy tej skali kazdy zrzut
+ *  z archiwalnego JPEG-a bylby rozmyty. */
+function ikona(rodzaj) {
+  if (rodzaj === 'wifi') {
+    return '<svg width="19" height="14" viewBox="0 0 19 14" fill="#1d1f1e">'
+      + '<path d="M9.5 13.2l2.6-3.2a4.1 4.1 0 00-5.2 0zM4.6 7.2l1.5 1.8a6.4 6.4 0'
+      + ' 016.8 0l1.5-1.8a8.7 8.7 0 00-9.8 0zM1.6 3.6l1.5 1.8a11 11 0 0112.8 0l1.5-1.8'
+      + 'a13.3 13.3 0 00-15.8 0z"/></svg>';
+  }
+  return '<svg class="klodka" viewBox="0 0 24 28" fill="none">'
+    + '<path d="M7 11V8a5 5 0 0110 0v3" stroke="#8d8f8e" stroke-width="2.6"'
+    + ' stroke-linecap="round"/>'
+    + '<rect x="3.5" y="11" width="17" height="14" rx="4" fill="#8d8f8e"/></svg>';
+}
+
 const BLOKI = {
   steps: (p) => p.kroki.map((k, i) => `
     <div class="karta krok${k.akcent ? ' akcent' : ''}">
@@ -71,16 +86,27 @@ const BLOKI = {
 
   phone: (p) => `
     <div class="telefon">
-      <div class="wciecie"></div>
-      <div class="ekran"><div class="zegar">10:09</div></div>
-      <div class="powiadomienia">
-        ${p.powiadomienia.map((n) => `
-          <div class="pow">
-            <img src="file://${resolve(ASSETY, 'logo.png')}" alt="">
-            <div><div class="tytul">${n.tytul}</div><div class="tekst">${n.tekst}</div></div>
-            <div class="kiedy">${n.kiedy}</div>
-          </div>`).join('')}
+      <div class="ekran">
+        <div class="wciecie"><span class="glosnik"></span><span class="oko"></span></div>
+        <div class="stan">
+          <span>${p.zegar || '10:09'}</span>
+          <span class="ikony">
+            <span class="zasieg"><i></i><i></i><i></i><i></i></span>
+            ${ikona('wifi')}
+            <span class="bateria"><span></span></span>
+          </span>
+        </div>
+        ${ikona('zamek')}
+        <div class="zegar">${p.zegar || '10:09'}</div>
       </div>
+    </div>
+    <div class="powiadomienia">
+      ${p.powiadomienia.map((n) => `
+        <div class="pow">
+          <img src="file://${resolve(ASSETY, 'logo.png')}" alt="">
+          <div><div class="tytul">${n.tytul}</div><div class="tekst">${n.tekst}</div></div>
+          <div class="kiedy">${n.kiedy}</div>
+        </div>`).join('')}
     </div>`,
 
   stat: (p) => `
@@ -91,6 +117,38 @@ const BLOKI = {
     <div class="paski">
       ${p.pola.map((f) => `<div class="karta pole"><div class="w">${f.w}</div><div class="e">${f.e}</div></div>`).join('')}
     </div>`,
+
+  chat: (p) => `
+    <div class="czat">
+      <div class="belka">
+        <img src="file://${resolve(ASSETY, 'logo.png')}" alt="">
+        <div>
+          <div class="kto">${p.rozmowca}</div>
+          <div class="kiedy">${p.status || 'online'}</div>
+        </div>
+        <span class="zielona-kropka"></span>
+      </div>
+      <div class="rozmowa">
+        ${p.rozmowa.map((w) => `
+          <div class="bombka ${w.od === 'my' ? 'od-nas' : 'od-niego'}">${w.tekst}</div>`).join('')}
+      </div>
+    </div>`,
+
+  ledger: (p) => `
+    <div class="karta ksiega">
+      ${p.wiersze.map((w) => `
+        <div class="wiersz">
+          <div class="data">${w.data}</div>
+          <div class="osoba">${w.osoba}</div>
+          <div class="cert">${ptak}CERTIFIED</div>
+          <div class="kwota">${w.kwota}</div>
+        </div>`).join('')}
+    </div>
+    <div class="karta stopka-ksiegi">
+      <span>${p.stopka_lewa}</span><b>${p.stopka_prawa}</b>
+    </div>`,
+
+ 
 
   cert: (p) => `
     ${obrazek(p.cert, 'cert-obraz', 'certyfikat<br>w drodze')}
@@ -156,9 +214,10 @@ for (const post of posty) {
     const t = document.querySelector('.tresc');
     return { ma: t.scrollHeight, miejsce: t.clientHeight };
   });
-  if (przelew.ma > przelew.miejsce + 1) {
+  if (!post.przyciecie && przelew.ma > przelew.miejsce + 1) {
     throw new Error(`${post.id}: tresc nie miesci sie w kadrze `
-      + `(${przelew.ma} px przy ${przelew.miejsce} px) — skroc ja albo zmniejsz krok`);
+      + `(${przelew.ma} px przy ${przelew.miejsce} px) — skroc ja, zmniejsz krok `
+      + `albo ustaw "przyciecie": true, jesli kadr ma ucinac swiadomie`);
   }
 
   await strona.locator('.poster').screenshot({ path: resolve(WY, `${post.id}.png`) });

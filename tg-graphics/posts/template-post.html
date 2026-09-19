@@ -101,9 +101,15 @@
     z-index: 2;
   }
   .pas .logo { height: 84px; }
-  /* Plakietka jest wycieta z archiwum na przezroczystosc — cien musi
-     dolozyc CSS, inaczej skaluje sie osobno od samej karty. */
-  .pas .plakietka { height: 112px; filter: drop-shadow(0 7px 14px rgba(16,52,36,.16)); }
+  /* Plakietka: oficjalny znak Trustpilota na bialej karcie. Karta jest
+     rysowana CSS-em, bo w przeslanym pliku jej nie ma — sam znak siedzial
+     na wtopionej szachownicy, ktora trzeba bylo wyciac. */
+  .pas .plakietka {
+    height: 112px; display: flex; align-items: center; justify-content: center;
+    padding: 0 17px; background: #fff; border-radius: 19px;
+    box-shadow: 0 7px 16px rgba(16,52,36,.17);
+  }
+  .pas .plakietka img { height: 74px; display: block; }
 
   .play {
     width: 124px;
@@ -253,34 +259,90 @@
   .opowiesc b { font-style: normal; font-weight: 800; color: #14804a; }
 
   /* --- wariant: phone -------------------------------------------------- */
-  .v-phone .tresc { align-items: flex-start; }
+  /* Odwzorowanie kadru z archiwum: telefon jest DUZY i uciety dolna krawedzia,
+     ekran blokady ma pasek stanu, klodke i wielki cienki zegar, a powiadomienia
+     wychodza poza obudowe po obu stronach i przykrywaja dol zegara. */
+  .v-phone .tresc { overflow: hidden; position: relative; padding: 0; }
   .telefon {
-    width: 330px; height: 470px; border-radius: 42px; background: #12171c;
-    padding: 12px; position: relative; box-shadow: 0 22px 46px rgba(16,52,36,.26);
+    position: absolute; top: 4px; left: 50%; transform: translateX(-50%);
+    width: 396px; height: 620px; border-radius: 54px; background: #26262a;
+    padding: 13px; box-shadow: 0 26px 52px rgba(16,52,36,.30);
   }
-  /* Ekran blokady jest ciemny — na jasnym bialy zegar znikal, a to on ma
-     mowic, ze to telefon, a nie biala karta. */
+  /* Przycisk boczny — drobiazg, ale bez niego obudowa wyglada jak ramka. */
+  .telefon::before {
+    content: ''; position: absolute; left: -3px; top: 150px;
+    width: 4px; height: 76px; border-radius: 3px; background: #1b1b1e;
+  }
   .telefon .ekran {
-    width: 100%; height: 100%; border-radius: 32px; overflow: hidden;
-    background: linear-gradient(170deg, #2c4a3c 0%, #16302a 55%, #0d1f1c 100%);
-    display: flex; flex-direction: column; align-items: center; padding-top: 58px;
+    width: 100%; height: 100%; border-radius: 42px; overflow: hidden;
+    background: linear-gradient(180deg, #e2e3e4 0%, #d6d8d8 100%);
+    position: relative;
   }
-  .telefon .zegar { font-size: 76px; font-weight: 300; color: #fff; opacity: .92; letter-spacing: -2px; }
   .telefon .wciecie {
-    position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
-    width: 124px; height: 26px; background: #12171c; border-radius: 0 0 16px 16px; z-index: 3;
+    position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+    width: 186px; height: 33px; background: #26262a;
+    border-radius: 0 0 20px 20px; z-index: 3;
+    display: flex; align-items: center; justify-content: center; gap: 12px;
   }
-  .powiadomienia { position: absolute; left: -46px; top: 190px; width: 470px;
-    display: flex; flex-direction: column; gap: 13px; z-index: 4; }
+  .telefon .wciecie .glosnik {
+    width: 52px; height: 5px; border-radius: 3px; background: #3c3c40;
+  }
+  .telefon .wciecie .oko {
+    width: 11px; height: 11px; border-radius: 50%; background: #14203a;
+    box-shadow: inset 0 0 0 2px #2a3550;
+  }
+  .telefon .stan {
+    position: absolute; top: 9px; left: 0; right: 0; padding: 0 26px;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 19px; font-weight: 700; color: #1d1f1e; z-index: 2;
+  }
+  .telefon .stan .ikony { display: flex; align-items: flex-end; gap: 6px; }
+  .telefon .stan .zasieg { display: flex; align-items: flex-end; gap: 2px; }
+  .telefon .stan .zasieg i {
+    width: 4px; border-radius: 1px; background: #1d1f1e; display: block;
+  }
+  .telefon .stan .zasieg i:nth-child(1) { height: 5px; }
+  .telefon .stan .zasieg i:nth-child(2) { height: 8px; }
+  .telefon .stan .zasieg i:nth-child(3) { height: 11px; }
+  .telefon .stan .zasieg i:nth-child(4) { height: 14px; }
+  .telefon .stan .bateria {
+    width: 26px; height: 13px; border: 2px solid #1d1f1e; border-radius: 4px;
+    padding: 1.5px; position: relative;
+  }
+  .telefon .stan .bateria span {
+    display: block; height: 100%; width: 62%; background: #1d1f1e; border-radius: 1px;
+  }
+  .telefon .klodka {
+    position: absolute; top: 74px; left: 50%; transform: translateX(-50%);
+    width: 26px; height: 30px; z-index: 2;
+  }
+  .telefon .zegar {
+    position: absolute; top: 118px; left: 0; right: 0; text-align: center;
+    font-size: 116px; font-weight: 300; letter-spacing: -3px;
+    color: rgba(255,255,255,.96); z-index: 2;
+  }
+
+  .powiadomienia {
+    position: absolute; top: 196px; left: 50%; transform: translateX(-50%);
+    width: 660px; display: flex; flex-direction: column; gap: 20px; z-index: 4;
+  }
   .pow {
-    background: rgba(255,255,255,.94); border-radius: 20px; padding: 15px 19px;
-    box-shadow: 0 10px 24px rgba(16,52,36,.16); display: flex; gap: 14px; align-items: flex-start;
+    border-radius: 26px; padding: 19px 26px; display: flex; gap: 18px;
+    align-items: flex-start;
+    /* Mleczne szklo: mocniejsze po lewej, przezroczystsze po prawej —
+       dokladnie tak zachowuja sie karty na oryginale. */
+    background: linear-gradient(95deg, rgba(255,255,255,.97) 0%,
+                rgba(255,255,255,.90) 58%, rgba(255,255,255,.74) 100%);
+    backdrop-filter: blur(7px);
+    box-shadow: 0 14px 30px rgba(16,52,36,.16);
   }
-  .pow img { width: 40px; height: 40px; border-radius: 10px; flex: none; object-fit: contain;
-    background: #fff; padding: 3px; }
-  .pow .tytul { font-size: 21px; font-weight: 800; }
-  .pow .tekst { font-size: 21px; line-height: 1.22; margin-top: 2px; }
-  .pow .kiedy { margin-left: auto; font-size: 17px; color: #8c968f; flex: none; }
+  .pow img {
+    width: 62px; height: 62px; border-radius: 15px; flex: none; object-fit: contain;
+    background: #fff; padding: 7px; box-shadow: 0 2px 8px rgba(16,52,36,.14);
+  }
+  .pow .tytul { font-size: 26px; font-weight: 700; letter-spacing: -.2px; }
+  .pow .tekst { font-size: 26px; line-height: 1.24; margin-top: 3px; color: #1a201d; }
+  .pow .kiedy { margin-left: auto; font-size: 22px; color: #8b948e; flex: none; }
 
   /* --- wariant: stat --------------------------------------------------- */
   .v-stat .tresc { flex-direction: column; gap: 22px; }
@@ -296,6 +358,71 @@
   .paski .w { font-family: 'Anton', sans-serif; font-size: 46px; color: var(--atrament); }
   .paski .e { font-size: 20px; color: var(--tekst-cichy); margin-top: 5px;
     text-transform: uppercase; letter-spacing: 1.2px; font-weight: 700; }
+
+  /* --- wariant: chat --------------------------------------------------- */
+  /* Rozmowa z adminem. Kanal jest na Telegramie, wiec okno czatu jest tu
+     formatem rodzimym — czytelnik widzi dokladnie to, co sam za chwile zrobi. */
+  .v-chat .tresc { flex-direction: column; justify-content: center; }
+  .czat {
+    width: 100%; background: #fff; border-radius: 28px; overflow: hidden;
+    border: 1px solid var(--karta-obwodka); box-shadow: 0 18px 38px rgba(16,52,36,.12);
+  }
+  .czat .belka {
+    display: flex; align-items: center; gap: 15px; padding: 17px 26px;
+    background: #f1f7f3; border-bottom: 1px solid rgba(12,60,38,.08);
+  }
+  .czat .belka img {
+    width: 54px; height: 54px; border-radius: 50%; background: #fff; padding: 6px;
+    object-fit: contain; box-shadow: 0 2px 8px rgba(16,52,36,.12);
+  }
+  .czat .kto { font-size: 27px; font-weight: 800; letter-spacing: -.2px; }
+  .czat .kiedy { font-size: 20px; color: #6d7a72; margin-top: 2px; }
+  .czat .zielona-kropka {
+    margin-left: auto; width: 13px; height: 13px; border-radius: 50%;
+    background: #2fae6a; box-shadow: 0 0 0 5px rgba(47,174,106,.16);
+  }
+  .rozmowa { padding: 24px 26px; display: flex; flex-direction: column; gap: 15px; }
+  .bombka {
+    max-width: 76%; padding: 16px 22px; font-size: 27px; line-height: 1.27;
+  }
+  .bombka.od-niego {
+    align-self: flex-start; background: #eef2ef; color: var(--tekst);
+    border-radius: 24px 24px 24px 8px;
+  }
+  .bombka.od-nas {
+    align-self: flex-end; color: #fff; border-radius: 24px 24px 8px 24px;
+    background: linear-gradient(180deg, #34b962 0%, #17915f 100%);
+  }
+
+  /* --- wariant: ledger ------------------------------------------------- */
+  /* Lista wyplat jak wiersze wyciagu. Kwoty sa prawdziwe — pochodza z
+     oplaconych wyplat, kazda ma wystawiony certyfikat. */
+  .v-ledger .tresc { flex-direction: column; gap: 14px; }
+  .ksiega { width: 100%; padding: 6px 0; }
+  .ksiega .wiersz {
+    display: flex; align-items: center; gap: 20px; padding: 15px 30px;
+    border-bottom: 1px solid rgba(12,60,38,.07);
+  }
+  .ksiega .wiersz:last-child { border-bottom: none; }
+  .ksiega .data {
+    width: 96px; flex: none; font-size: 22px; font-weight: 700; color: #6d7a72;
+    text-transform: uppercase; letter-spacing: .4px;
+  }
+  .ksiega .osoba { flex: 1; font-size: 29px; font-weight: 700; }
+  .ksiega .cert {
+    font-size: 19px; color: #1d8a54; font-weight: 700; letter-spacing: .6px;
+    display: flex; align-items: center; gap: 7px;
+  }
+  .ksiega .cert svg { width: 21px; height: 21px; }
+  .ksiega .kwota {
+    width: 176px; text-align: right; flex: none;
+    font-family: 'Anton', sans-serif; font-size: 38px; color: #14804a;
+  }
+  .stopka-ksiegi {
+    width: 100%; padding: 17px 30px; display: flex; justify-content: space-between;
+    align-items: center; font-size: 23px; color: var(--tekst-cichy);
+  }
+  .stopka-ksiegi b { font-size: 27px; color: var(--tekst); }
 
   /* --- wariant: cert --------------------------------------------------- */
   .v-cert .tresc { gap: 30px; align-items: center; }
@@ -339,7 +466,7 @@
 
   <div class="pas">
     <img class="logo" src="__ASSETY__/logo.png" alt="">
-    <img class="plakietka" src="__ASSETY__/trustpilot.svg" alt="">
+    <div class="plakietka"><img src="__ASSETY__/trustpilot-znak.png" alt=""></div>
     <div class="play"><i></i></div>
     <div class="wstazki">
       <div class="wstazka jasna">BUY 1 GET 1 FREE <small>ends soon</small></div>
