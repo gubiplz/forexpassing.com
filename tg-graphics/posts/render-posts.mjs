@@ -176,7 +176,10 @@ function zbudujHtml(post) {
 }
 
 const tylko = process.argv.slice(2);
-const posty = tylko.length ? spec.posty.filter((p) => tylko.includes(p.id)) : spec.posty;
+// Posty z klipem nie maja grafiki do wyrenderowania — ich okladka to kadr
+// z sesji, przygotowany osobno. Limit podpisu obowiazuje je tak samo.
+const doRenderu = spec.posty.filter((p) => p.wariant !== 'video');
+const posty = tylko.length ? doRenderu.filter((p) => tylko.includes(p.id)) : doRenderu;
 if (!posty.length) throw new Error(`nie znalazlem postow: ${tylko.join(', ')}`);
 
 mkdirSync(WY, { recursive: true });
@@ -226,7 +229,7 @@ for (const post of posty) {
 
 // Arkusz kontaktowy: wszystkie grafiki naraz, z numerami — zeby poprawki
 // dalo sie zglosic numerem, a nie opisem.
-const kafle = spec.posty.map((p) => `
+const kafle = doRenderu.map((p) => `
   <figure><img src="file://${resolve(WY, `${p.id}.png`)}"><figcaption>${p.id} · ${p.wariant}</figcaption></figure>`).join('');
 const arkusz = `<!doctype html><meta charset="utf-8"><style>
   body{margin:0;background:#1b1f1d;padding:26px;font:600 20px/1.3 system-ui;color:#d8e6de}
@@ -242,4 +245,12 @@ await strona.waitForTimeout(300);
 await strona.screenshot({ path: resolve(WY, 'contact-sheet.png'), fullPage: true });
 
 await b.close();
+
+const klipy = spec.posty.filter((p) => p.wariant === 'video');
+if (klipy.length) {
+  console.log('\nposty z klipem (bez renderu, okladka z sesji):');
+  for (const p of klipy) {
+    console.log(`  ${p.id}  ${p.klip.padEnd(18)} podpis ${String(podpis(p).length).padStart(4)}/1024`);
+  }
+}
 console.log(`\ngotowe → ${WY}`);
