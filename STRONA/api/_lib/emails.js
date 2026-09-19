@@ -17,7 +17,7 @@
 
 const BRAND = 'Forex Passing';
 const SITE = 'forexpassing.com';
-const TELEGRAM = 'https://t.me/fxpassingadmin';
+const TELEGRAM = 'https://t.me/forex_passing_admin';
 // The free challenge (/freeaccount) is answered from its own account. Kept in
 // step with FREE_TELEGRAM_HREF in src/constants.ts — this file cannot import it,
 // because api/ and src/ are built by different toolchains.
