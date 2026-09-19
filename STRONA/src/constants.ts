@@ -143,15 +143,15 @@ export const CONTACT_EMAIL = 'contact@forexpassing.com'
 // subskrybuje ("Join"), do ADMINA się pisze ("Message us"). /thank-you pokazuje
 // oba obok siebie jako listę oficjalnych kanałów, bo to jedyna obrona przed
 // kimś, kto założy @forexpassing_support i napisze pierwszy.
-export const TELEGRAM_CHANNEL_HREF = 'https://t.me/fx_passing'
-export const TELEGRAM_CHANNEL_HANDLE = '@fx_passing'
+export const TELEGRAM_CHANNEL_HREF = 'https://t.me/forex_passing'
+export const TELEGRAM_CHANNEL_HANDLE = '@forex_passing'
 export const TELEGRAM_ADMIN_HANDLE = '@fxpassingadmin'
 export const SITE_DOMAIN = 'forexpassing.com'
 
 // TRZECI kanał, osobny od dwóch powyższych: tu leci jeden post na wypłatę,
 // z certyfikatem w załączniku. Nie mieszać z TELEGRAM_CHANNEL_HREF — tam idzie
 // zarządzanie kontem, tutaj wyłącznie dowód, że wypłaty się dzieją.
-export const TELEGRAM_PAYOUTS_HREF = 'https://t.me/fx_passingpayouts'
+export const TELEGRAM_PAYOUTS_HREF = 'https://t.me/forex_passing_payouts'
 
 // Darmowy challenge obsługuje OSOBNE konto. Wszystko, co widzi aplikant z
 // /freeaccount — formularz, ekran po wysłaniu, /thank-you?src=free — kieruje

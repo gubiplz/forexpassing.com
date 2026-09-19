@@ -1,4 +1,4 @@
-# Odświeża cztery posty na @fx_passingtrackrecord — grafikę i podpis naraz.
+# Odświeża cztery posty na @forex_passing_track_record — grafikę i podpis naraz.
 #
 # Dane track record rolują się dalej (STRONA/bin/roll-track-record.mjs dokłada
 # sesje), więc opublikowane posty starzeją się same. Pipeline w tg-graphics/
@@ -83,7 +83,7 @@ jobs:
         if: ${{ !inputs.dry }}
         env:
           TG_TOKEN: ${{ secrets.TELEGRAM_TRACK_BOT_TOKEN }}
-          TG_CHAT: '@fx_passingtrackrecord'
+          TG_CHAT: '@forex_passing_track_record'
         run: |
           if [ -z "$TG_TOKEN" ]; then
             echo "::error::brak sekretu TELEGRAM_TRACK_BOT_TOKEN w repozytorium"
@@ -102,7 +102,7 @@ jobs:
 
       - run: npx playwright install --with-deps chromium
 
-      # Osobny sekret od TELEGRAM_BOT_TOKEN: tamten bot jest adminem @fx_passing
+      # Osobny sekret od TELEGRAM_BOT_TOKEN: tamten bot jest adminem @forex_passing
       # (sync opisu kanału), ale nie kanału track record. Jeden token do obu
       # ról wymagałby dodania tego samego bota jako admina wszędzie — a to
       # szersze uprawnienia niż którakolwiek z tych robót potrzebuje.

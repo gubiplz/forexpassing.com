@@ -2,15 +2,17 @@
 // Post zachowuje swoje ID, a więc wyświetlenia i reakcje — a te na kanale track
 // record zbierały się tygodniami i nie ma ich jak odtworzyć.
 //
-// MESSAGES mapuje profil na konkretny post; kolejność jest ta z publikacji
-// 2026-08-20 i nie wolno jej zgadywać przy kolejnym uruchomieniu.
+// MESSAGES mapuje profil na konkretny post; kolejność jest ta z pierwszej
+// publikacji na NOWYM kanale (2026-09-19) i nie wolno jej zgadywać przy
+// kolejnym uruchomieniu. Stary kanał miał te posty pod 7-10 — po przenosinach
+// numery zaczynają się od nowa, bo kanał jest nowy.
 const { readFileSync } = require('node:fs');
 const { buildCaptions } = require('./captions');
 
 const TOKEN = process.env.TG_TOKEN;
-const CHAT = process.env.TG_CHAT || '@fx_passingtrackrecord';
+const CHAT = process.env.TG_CHAT || '@forex_passing_track_record';
 
-const MESSAGES = { low: 7, balanced: 8, scaling: 9, high: 10 };
+const MESSAGES = { low: 3, balanced: 4, scaling: 5, high: 6 };
 
 /**
  * @param {{ dry?: boolean }} opcje
