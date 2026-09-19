@@ -131,11 +131,11 @@ export function fillSpots(template, n) {
  * Telegram tnie opis na 255 znakach — konsumenci sprawdzają to przed wysyłką
  * i wolą się wywalić, niż wysłać obcięty tekst.
  *
- * ⚠ „10" jest wpisane na sztywno i NIE jest tą samą liczbą co licznik: pula
- * dzienna to 10, a licznik startuje od SPOTS_START = 7. Czyta się to jako „z 10
- * miejsc zostało {n}", więc nie jest sprzeczne, ale o północy opis pokaże
- * „(7 remaining)", nie „(10 remaining)". Żeby obie liczby wychodziły z jednego
- * miejsca, wystarczy wpisać tu 7 albo podnieść SPOTS_START do 10.
+ * Pula dzienna w zdaniu wychodzi z SPOTS_START, a nie z osobnej liczby: była
+ * tu wpisana na sztywno jako 10, podczas gdy licznik startuje od SPOTS_START.
+ * O północy opis pokazywał więc „(7 remaining)" z puli „10", co czytało się
+ * jak pomyłka. Teraz OBIE liczby wychodzą z SPOTS_START — dokładnie tej samej
+ * wartości, którą widzi człowiek na /thank-you.
  * ------------------------------------------------------------------------ */
 
 /** Uchwyt zespołu — ten sam co TELEGRAM_ADMIN_HANDLE w constants.ts. */
@@ -146,7 +146,7 @@ export const TG_CHANNEL_CHAT_ID = '@forex_passing';
 
 export const TG_CHANNEL_DESCRIPTION =
   `If can not open, download telegram. Search ${TG_ADMIN_HANDLE} and message.\n\n` +
-  `🚨 Only 10 people can join this group daily (${SPOTS_TOKEN} remaining)`;
+  `🚨 Only ${SPOTS_START} people can join this group daily (${SPOTS_TOKEN} remaining)`;
 
 /** Ile znaków przyjmie opis czatu w Telegramie. */
 export const TG_DESCRIPTION_MAX = 255;
