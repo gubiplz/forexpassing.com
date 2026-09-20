@@ -23,27 +23,24 @@ const GATED_PATHS = new Set([
   '/freeaccount',
 ]);
 
-// Vercel reads this statically, so it has to stay a literal — keep it in sync
-// with GATED_PATHS above. The .html twins are listed because cleanUrls only
-// redirects them, and a redirect the middleware never saw is a way in.
+// Zakres obejmuje WSZYSTKIE strony, nie tylko sciezki bramkowane. Bramka
+// i tak przepuszcza reszte bez zmian (`GATED_PATHS` nizej), a szerszy zakres
+// jest potrzebny budzikom: licznik miejsc ma sie odswiezac przy kazdym
+// wejsciu na strone, a nie dopiero w lejku.
+//
+// Wykluczone: `/api/` (tam bije sam puls — bez tego wywolywalby sam siebie),
+// `/_next/`, stempel builda i zasoby statyczne. Puls przy kazdym obrazku to
+// kilkaset wywolan na jedno wejscie zamiast jednego.
+//
+// UWAGA: `.html` ZOSTAJE w zakresie i dlatego wyjatek wymienia rozszerzenia
+// zasobow z osobna, zamiast wyciac wszystko z kropka. Blizniaki `/meta.html`
+// sa osobna droga wejscia, a bramka po to tu jest, zeby ich pilnowac —
+// wyciecie ich rozszczelniloby zabezpieczenie przy okazji zmiany o budziki.
+//
+// Vercel czyta to statycznie, wiec musi zostac literalem.
 export const config = {
   matcher: [
-    '/meta',
-    '/meta-funnel',
-    '/insta-funnel',
-    '/tiktok-funnel',
-    '/watch',
-    '/thank-you',
-    '/welcome',
-    '/freeaccount',
-    '/meta.html',
-    '/meta-funnel.html',
-    '/insta-funnel.html',
-    '/tiktok-funnel.html',
-    '/watch.html',
-    '/thank-you.html',
-    '/welcome.html',
-    '/freeaccount.html',
+    '/((?!api/|_next/|\\.build-stamp|.*\\.(?:png|jpe?g|webp|gif|svg|ico|css|js|mjs|map|woff2?|ttf|otf|eot|mp4|webm|txt|xml|json|webmanifest)$).*)',
   ],
 };
 
