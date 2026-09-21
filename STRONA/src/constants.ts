@@ -100,8 +100,11 @@ export const WISTIA_TYP_ID: string = 'efyfqeekwt'
  */
 export const WISTIA_TYP_POSTER = '/typ-poster-2.webp'
 
-// Nasz profil na Trustpilocie. Linkujemy go z /thank-you, i to jedyne miejsce,
-// gdzie strona wypuszcza czytelnika na zewnętrzny serwis opinii.
+// Nasz profil na Trustpilocie. NIC GO TERAZ NIE LINKUJE — wisiał na /thank-you
+// pod listą „what you're joining" i został stamtąd zdjęty: strona nie wypuszcza
+// czytelnika na zewnątrz w miejscu, w którym ma napisać do nas. Adres zostaje,
+// bo jest prawdziwy, a razem z nim zostaje ostrzeżenie poniżej — obowiązuje
+// w dniu, w którym ktoś zechce ten link gdziekolwiek wstawić z powrotem.
 //
 // NIE PISZ ŻADNEJ OCENY W ZDANIU, KTÓRE PROWADZI POD TEN ADRES. TrustScore
 // zmienia się bez naszego udziału, przy tej liczbie opinii nawet o kilka
