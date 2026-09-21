@@ -34,7 +34,6 @@ import {
   TELEGRAM_HREF,
   TELEGRAM_PAYOUTS_HREF,
   telegramWith,
-  TRUSTPILOT_HREF,
   WISTIA_TYP_POSTER,
   TYP_ALERTS,
   TYP_SPOTS_BANNER,
@@ -707,21 +706,20 @@ export function ThankYouPage() {
                   </div>
                 ))}
               </div>
-              {/* Bez oceny i bez liczby opinii — patrz komentarz nad
-                  TRUSTPILOT_HREF w constants.ts. To jedyne miejsce, w ktorym
-                  strona wypuszcza czytelnika na zewnetrzny serwis opinii, wiec
-                  zdanie niesie to, czego tam NIE kontrolujemy: opinie sa
-                  publiczne, pod cudzymi nazwiskami i nie da sie ich u nas
-                  edytowac. Kazda liczba wpisana tutaj zestarzalaby sie sama, a
-                  czytelnik zobaczylby rozbieznosc dokladnie w chwili kliknięcia. */}
+              {/* Jedno zdanie, bo stoi rownolegle do podpisu pod zdjeciem zespolu
+                  i obie kolumny maja sie konczyc w tej samej linii — dluzszy
+                  akapit scinal prawa kolumne nizej niz lewa.
+
+                  Zamyka LISTE, nie opinie: mowi, ze te punkty sa zobowiazaniem
+                  na pismie. Celowo „What we owe you", a nie „wszystko powyzej",
+                  bo ocena 4,9 nie jest niczym, co zapisujemy w umowie.
+
+                  Bez odnosnika na zewnatrz. Wczesniej wisial tu link do
+                  Trustpilota — zdjety swiadomie, strona nie wypuszcza juz
+                  czytelnika poza siebie w miejscu, w ktorym ma napisac do nas. */}
               <p className="mm-typ-col-d">
-                What working with us is actually like is not ours to tell — traders who have already
-                been through it write it up in public, under their own names, on a platform where we
-                cannot edit a word. Read it before you write to us, not after.{' '}
-                <a href={TRUSTPILOT_HREF} target="_blank" rel="noopener noreferrer">
-                  Check them yourself
-                </a>
-                .
+                What we owe you on this list is written into the agreement before you sign, not
+                promised in chat.
               </p>
             </div>
           </div>
