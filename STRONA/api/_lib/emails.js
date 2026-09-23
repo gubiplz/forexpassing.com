@@ -104,7 +104,7 @@ function shell({ eyebrow, heading, intro, body }) {
              block remote images by default, so this has to read as the brand
              name on its own. -->
         <tr><td align="center" style="padding:34px 40px 0;">
-          <img src="${ASSETS}/logo-email.png" width="128" height="85" alt="${BRAND}"
+          <img src="${ASSETS}/logo-email-v2.png" width="128" height="85" alt="${BRAND}"
             style="display:block;margin:0 auto;width:128px;height:auto;border:0;outline:none;text-decoration:none;font-size:13px;font-weight:600;color:${INK};" />
         </td></tr>
 
