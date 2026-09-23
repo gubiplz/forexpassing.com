@@ -261,6 +261,11 @@ export default async function handler(req, res) {
     // zostaje pierwszy skok z x-forwarded-for, czyli klient. Odczyt siedzi na
     // początku handlera, bo ten sam adres karmi limit per-IP.
     ip,
+    // Kraj z tego samego adresu, policzony przez Cloudflare (`cf-ipcountry`,
+    // dwie litery albo "XX"). CRM trzyma go obok kraju z prefiksu numeru i
+    // kraju wpisanego w ankiecie — VPN to właśnie ta rozbieżność. Pusty, gdy
+    // Cloudflare zniknie z drogi; CRM traktuje pusty i "XX" tak samo.
+    ipCountry: str(req.headers['cf-ipcountry']).slice(0, 2).toUpperCase(),
     ua: (req.headers['user-agent'] || '').slice(0, 200),
   };
 
