@@ -174,3 +174,68 @@ $$;
 
 revoke all on function public.record_click(text, text, text) from public;
 grant execute on function public.record_click(text, text, text) to anon, authenticated;
+
+-- ---------------------------------------------------------------------------
+-- Referrals filed by the trading desk
+-- ---------------------------------------------------------------------------
+
+-- The desk's backend reports two moments per referred friend: the application
+-- (carrying the partner's slug from /r/<slug>) and the first payout that
+-- actually left. The partner no longer has to type the friend in, and nobody
+-- has to flip "confirmed" by hand.
+--
+-- Only the service role may call it: the desk's backend holds the project's
+-- secret key in its own environment. Nothing that ships to a browser can.
+
+-- One referral per partner and friend: an applicant who applies twice, or a
+-- payout reported twice, updates the row instead of adding another.
+create unique index if not exists referrals_partner_email_uq
+  on public.referrals (partner_id, lower(email));
+
+create or replace function public.sync_referral(
+  p_slug         text,
+  p_email        text,
+  p_account_size text    default null,
+  p_paid         boolean default false
+)
+returns text
+language plpgsql
+set search_path = public
+as $$
+declare
+  v_partner uuid;
+  v_email   text := lower(trim(coalesce(p_email, '')));
+  v_status  text;
+begin
+  select id into v_partner from public.partners where slug = lower(trim(coalesce(p_slug, '')));
+  if v_partner is null then
+    return 'no_partner';
+  end if;
+  if v_email !~ '^[^@\s]+@[^@\s]+\.[^@\s]+$' then
+    return 'bad_email';
+  end if;
+
+  insert into public.referrals (partner_id, email, account_size, status, note)
+  values (
+    v_partner,
+    v_email,
+    nullif(trim(coalesce(p_account_size, '')), ''),
+    case when p_paid then 'confirmed' else 'pending' end,
+    case when p_paid then 'Confirmed automatically: payout released'
+         else 'Added automatically from the application' end
+  )
+  on conflict (partner_id, lower(email)) do update set
+    account_size = coalesce(public.referrals.account_size, excluded.account_size),
+    -- Only ever forward, and only on a payout. A referral we rejected by hand
+    -- stays rejected; nothing moves a confirmed one back to pending.
+    status = case when p_paid and public.referrals.status = 'pending'
+                  then 'confirmed' else public.referrals.status end,
+    note   = case when p_paid and public.referrals.status = 'pending'
+                  then excluded.note else public.referrals.note end
+  returning status into v_status;
+
+  return v_status;
+end;
+$$;
+
+revoke all on function public.sync_referral(text, text, text, boolean) from public, anon, authenticated;
