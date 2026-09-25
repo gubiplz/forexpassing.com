@@ -25,10 +25,22 @@ const POLA = [
 // sessionStorage gubi dokładnie ten przypadek.
 const KLUCZ = 'fp_attr'
 
-/** Zapamiętuje kampanię z adresu, jeśli adres jakąś niesie. */
+// Partner z linku /r/<slug> → /meta?ref=<slug>. Czyta go ApplyFlow.
+const KLUCZ_PARTNERA = 'fp_ref'
+const SLUG_RE = /^[a-z0-9][a-z0-9-]{2,31}$/
+
+/** Zapamiętuje kampanię i partnera z adresu, jeśli adres je niesie. */
 export function parkAttribution(): void {
   try {
     const q = new URLSearchParams(window.location.search)
+
+    // Przed klasyfikacją ruchu, nie w MoneyPage: znajomy otwiera link partnera
+    // najczęściej we wbudowanej przeglądarce Telegrama, która przy pierwszym
+    // wejściu rzadko dostaje werdykt „human". MoneyPage by się wtedy nie
+    // zamontowała i polecenie przepadłoby, zanim ktokolwiek wypełni ankietę.
+    const ref = q.get('ref')?.trim().toLowerCase()
+    if (ref && SLUG_RE.test(ref)) window.localStorage.setItem(KLUCZ_PARTNERA, ref)
+
     const znalezione: Record<string, string> = {}
     for (const pole of POLA) {
       const v = q.get(pole)?.trim()
