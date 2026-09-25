@@ -309,7 +309,6 @@ export const REFERRAL_TIERS_DATA: ReferralTier[] = [
     range: '2–5 referrals',
     per10k: '$1,350',
     commission: '15% commission rate',
-    highlight: true,
     blurb:
       'Refer 2+ traders and unlock enhanced rewards. You still get matching accounts, plus a free $100K bonus funded account, and your commission climbs to 15% on every payout your referrals generate.',
     perks: [
