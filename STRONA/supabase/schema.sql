@@ -5,9 +5,12 @@
 --
 -- Everything a partner can reach goes through row level security: a signed-in
 -- partner reads and writes only their own row and their own referrals. Click
--- counts are written by the /r/<slug> serverless function with the service-role
--- key and are never readable row-by-row from the browser — the dashboard gets
--- aggregates from partner_stats(), which only ever answers about the caller.
+-- counts are written by the /r/<slug> serverless function through
+-- record_click() and are never readable row-by-row from the browser — the
+-- dashboard gets aggregates from partner_stats(), which only ever answers about
+-- the caller.
+--
+-- Live project: forexpassing-partners (ref tfomiwrjzorldayxstmu, us-east-1).
 
 -- ---------------------------------------------------------------------------
 -- Tables
@@ -80,8 +83,9 @@ drop policy if exists referrals_delete_own_pending on public.referrals;
 create policy referrals_delete_own_pending on public.referrals
   for delete using (auth.uid() = partner_id and status = 'pending');
 
--- No policies on referral_clicks: with RLS on and nothing granted, only the
--- service-role key (which bypasses RLS) can touch it.
+-- No policies on referral_clicks: with RLS on and nothing granted, nothing in
+-- the browser can read or write it directly. Clicks come in through
+-- record_click() below, which only ever appends one row for a real partner.
 
 -- ---------------------------------------------------------------------------
 -- Dashboard aggregates
@@ -137,5 +141,36 @@ begin
 end;
 $$;
 
-revoke all on function public.partner_stats() from public;
+-- Supabase grants anon EXECUTE on new functions by default, not through
+-- PUBLIC, so it has to be taken away by name.
+revoke all on function public.partner_stats() from public, anon;
 grant execute on function public.partner_stats() to authenticated;
+
+-- ---------------------------------------------------------------------------
+-- Click recording
+-- ---------------------------------------------------------------------------
+
+-- Called by the /r/<slug> serverless function with the public anon key, so no
+-- service-role key has to live in Vercel. The worst anyone can do with it is
+-- add a click to a partner that exists; clicks are a vanity number, and tiers
+-- come from referrals we confirm by hand.
+create or replace function public.record_click(p_slug text, p_ua text default null, p_referrer text default null)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if p_slug is null or p_slug !~ '^[a-z0-9][a-z0-9-]{2,31}$' then
+    return;
+  end if;
+  if not exists (select 1 from public.partners where partners.slug = p_slug) then
+    return;
+  end if;
+  insert into public.referral_clicks (slug, ua, referrer)
+  values (p_slug, left(p_ua, 400), left(p_referrer, 400));
+end;
+$$;
+
+revoke all on function public.record_click(text, text, text) from public;
+grant execute on function public.record_click(text, text, text) to anon, authenticated;

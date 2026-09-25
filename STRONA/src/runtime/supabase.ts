@@ -6,8 +6,8 @@
 // present — every other page has to keep working without them.
 //
 // The anon key is public by design; what protects the data is row level
-// security (see supabase/schema.sql). The service-role key lives only in the
-// serverless function that counts clicks and is never bundled.
+// security (see supabase/schema.sql). There is no service-role key anywhere:
+// the function that counts clicks uses this same anon key via record_click().
 
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
