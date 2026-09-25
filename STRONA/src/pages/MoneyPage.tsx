@@ -269,19 +269,10 @@ export function MoneyPage() {
 
   useReveal(rootRef)
 
-  // A visitor arriving from a partner link lands here as /meta?ref=<slug>.
-  // Park it so the questionnaire can credit the referral even if they read the
-  // whole page first, or come back later.
-  useEffect(() => {
-    const ref = new URLSearchParams(window.location.search).get('ref')
-    if (ref && /^[a-z0-9][a-z0-9-]{2,31}$/.test(ref)) {
-      try {
-        window.localStorage.setItem('fp_ref', ref)
-      } catch {
-        // Private mode or storage disabled — attribution is best-effort.
-      }
-    }
-  }, [])
+  // The partner's ?ref=<slug> is parked before the first render, in
+  // parkAttribution() (lib/attribution.ts), not here: this page only mounts for
+  // a visitor already judged human, and a friend opening the link in Telegram's
+  // in-app browser often is not on the first request.
 
   useEffect(() => {
     // No value/currency — nothing is sold on this page, the conversion is a Lead.

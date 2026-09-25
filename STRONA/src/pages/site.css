@@ -802,10 +802,11 @@ html{scroll-behavior:smooth}
 .mm-refstat-k{display:block;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--mut)}
 .mm-refstat-v{display:block;font-family:'Anton','Anton Fallback',sans-serif;font-weight:400;font-size:26px;line-height:1;color:var(--teal);margin-top:8px}
 
-/* Tier cards */
-.mm-tiers{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:22px;margin-top:40px;align-items:start}
+/* Tier cards. Stretched to the tallest card and laid out as a column, so the
+   worked example sits on the bottom edge of every card at the same height. */
+.mm-tiers{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:22px;margin-top:40px;align-items:stretch}
 .mm-tier{position:relative;background:#fff;border:1px solid var(--line);border-radius:18px;padding:28px 24px;text-align:left;
-  box-shadow:0 18px 46px -34px rgba(0,0,0,.5)}
+  box-shadow:0 18px 46px -34px rgba(0,0,0,.5);display:flex;flex-direction:column}
 .mm-tier.is-featured{border-color:rgba(22,163,74,.5);box-shadow:0 24px 58px -28px rgba(22,163,74,.42)}
 .mm-tier-flag{position:absolute;top:-13px;left:50%;transform:translateX(-50%);white-space:nowrap;
   background:var(--teal);color:#fff;font-size:10.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;
@@ -823,11 +824,11 @@ html{scroll-behavior:smooth}
 .mm-tier-box-d{display:block;font-size:13px;color:var(--mut);margin-top:2px}
 .mm-tier-blurb{font-size:14px;color:var(--mut);line-height:1.65}
 .mm-tier-h{display:block;font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--mut);margin:20px 0 10px}
-.mm-tier-perks{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px}
+.mm-tier-perks{list-style:none;margin:0 0 18px;padding:0;display:flex;flex-direction:column;gap:9px}
 .mm-tier-perks li{position:relative;padding-left:26px;font-size:14px;line-height:1.55}
 .mm-tier-perks li::before{content:"";position:absolute;left:0;top:4px;width:14px;height:8px;
   border-left:2px solid var(--teal);border-bottom:2px solid var(--teal);transform:rotate(-45deg)}
-.mm-tier-example{margin-top:4px;background:var(--bg2);border-radius:12px;padding:16px 18px}
+.mm-tier-example{margin-top:auto;background:var(--bg2);border-radius:12px;padding:16px 18px}
 .mm-tier-example .mm-tier-h{margin-top:0}
 .mm-tier-example ol{margin:0;padding-left:20px}
 .mm-tier-example li{font-size:13.5px;color:var(--mut);line-height:1.6;margin-bottom:6px}

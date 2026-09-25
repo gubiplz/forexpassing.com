@@ -138,7 +138,15 @@ function AuthCard() {
         return
       }
 
-      const { data, error: err } = await supabase.auth.signUp({ email, password })
+      // The name rides along on the account itself. The partners row is made by
+      // the dashboard, not here: a new session swaps this card for the dashboard
+      // straight away, and when this component wrote the row the dashboard had
+      // already looked for it, found nothing and asked for a name a second time.
+      const { data, error: err } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { data: { display_name: (name || email.split('@')[0]).trim() } },
+      })
       if (err) throw err
 
       // No session means the project requires email confirmation; the partners
@@ -149,9 +157,7 @@ function AuthCard() {
         return
       }
 
-      const created = await createPartnerRow(name || email.split('@')[0])
-      if (created) track('PartnerSignup', 'sign_up', { method: 'password' }, true)
-      else setError('Account created, but the partner profile could not be saved. Try reloading.')
+      track('PartnerSignup', 'sign_up', { method: 'password' }, true)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong. Try again.')
     } finally {
@@ -249,6 +255,11 @@ async function createPartnerRow(displayName: string): Promise<boolean> {
   const id = session.user?.id
   if (!id) return false
 
+  // Already there (a second tab, or a retry after a slow first attempt): the
+  // insert below would hit the primary key on every slug and report failure.
+  const { data: existing } = await supabase.from('partners').select('id').eq('id', id).maybeSingle()
+  if (existing) return true
+
   const base = slugify(displayName) || 'partner'
   for (let attempt = 0; attempt < 6; attempt++) {
     const slug = attempt === 0 ? base : `${base}-${attempt + 1}`
@@ -272,9 +283,23 @@ function Dashboard() {
   const [referrals, setReferrals] = useState<Referral[]>([])
   const [loading, setLoading] = useState(true)
   const [copied, setCopied] = useState(false)
+  const setupTried = useRef(false)
 
   const reload = useCallback(async () => {
-    const [s, r] = await Promise.all([fetchStats(), fetchReferrals()])
+    const [first, r] = await Promise.all([fetchStats(), fetchReferrals()])
+    let s = first
+
+    // First visit after sign-up: make the partners row from the name given on
+    // the form. Only when that name is missing or unusable does FinishSetup ask.
+    if (!s && supabase && !setupTried.current) {
+      setupTried.current = true
+      const { data } = await supabase.auth.getUser()
+      const name = data.user?.user_metadata?.display_name
+      if (typeof name === 'string' && name.trim() && (await createPartnerRow(name.trim()))) {
+        s = await fetchStats()
+      }
+    }
+
     setStats(s)
     setReferrals(r)
     setLoading(false)
