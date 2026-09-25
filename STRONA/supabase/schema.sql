@@ -74,14 +74,13 @@ drop policy if exists referrals_select_own on public.referrals;
 create policy referrals_select_own on public.referrals
   for select using (auth.uid() = partner_id);
 
--- Insert only as yourself and only as pending: status is ours to move.
+-- Partners only READ referrals. Every row comes from sync_referral() below,
+-- filed by the desk from an application that carried the partner's link. The
+-- portal used to let a partner type friends in by hand: those rows had no link
+-- behind them, so nothing could ever confirm them, and anyone's address could
+-- be claimed. With no insert or delete policy, RLS refuses both.
 drop policy if exists referrals_insert_own on public.referrals;
-create policy referrals_insert_own on public.referrals
-  for insert with check (auth.uid() = partner_id and status = 'pending');
-
 drop policy if exists referrals_delete_own_pending on public.referrals;
-create policy referrals_delete_own_pending on public.referrals
-  for delete using (auth.uid() = partner_id and status = 'pending');
 
 -- No policies on referral_clicks: with RLS on and nothing granted, nothing in
 -- the browser can read or write it directly. Clicks come in through

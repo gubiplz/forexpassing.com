@@ -935,7 +935,6 @@ html{scroll-behavior:smooth}
 .mm-dash-tier{font-family:'Anton','Anton Fallback',sans-serif;font-weight:400;font-size:32px;line-height:1;text-transform:uppercase;margin-top:6px}
 .mm-dash-block{background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px 24px}
 .mm-dash-h3{font-size:17px;font-weight:800;margin-bottom:14px}
-.mm-dash-row{display:grid;grid-template-columns:1.4fr 1fr auto;gap:10px}
 .mm-dash-table{width:100%;border-collapse:collapse;font-size:14px}
 .mm-dash-table th{text-align:left;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--mut);
   padding:0 10px 10px 0;border-bottom:1px solid var(--line)}
@@ -951,7 +950,6 @@ html{scroll-behavior:smooth}
   .mm-steps-2{grid-template-columns:1fr}
 }
 @media (max-width:560px){
-  .mm-dash-row{grid-template-columns:1fr}
   .mm-refhero{padding:44px 0 50px}
 }
 /* This used to be a stale second copy of the tier-card rules from the block
