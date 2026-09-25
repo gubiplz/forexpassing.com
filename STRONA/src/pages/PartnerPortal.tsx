@@ -520,8 +520,9 @@ function Dashboard() {
           </table>
         )}
         <p className="mm-form-fine" style={{ textAlign: 'left' }}>
-          A referral turns <strong>confirmed</strong> once the prop firm has actually released a
-          payout to them. We set that by hand, so the number always matches money that moved.
+          Friends who apply through your link show up here on their own. A referral turns{' '}
+          <strong>confirmed</strong> once their first payout has actually been released, so the
+          number always matches money that moved.
         </p>
       </div>
     </div>
@@ -588,7 +589,9 @@ function AddReferral({ onAdded }: { onAdded: () => Promise<void> }) {
         const { error: err } = await supabase
           .from('referrals')
           .insert({ partner_id: u.user?.id, email: email.trim(), account_size: size.trim() || null })
-        if (err) setError(err.message)
+        // 23505: already on the list — typically added automatically when the
+        // friend applied through the partner's link.
+        if (err) setError(err.code === '23505' ? 'That email is already on your list.' : err.message)
         else {
           setEmail('')
           setSize('')
