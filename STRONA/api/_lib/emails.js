@@ -411,6 +411,58 @@ export function notQualifiedEmail({ name }) {
   };
 }
 
+/**
+ * Password reset for the partner portal.
+ *
+ * Supabase Auth sends this one, not sendEmail() below, so it is a template
+ * rather than a finished message: `{{ .ConfirmationURL }}` and `{{ .Email }}`
+ * are filled in by Supabase. Built from the same shell and button as the
+ * application mail so a partner cannot tell the two senders apart.
+ *
+ * bin/email-templates.mjs renders it to supabase/email-templates/; that file is
+ * what goes into Authentication → Emails → Reset password whenever this changes.
+ */
+export function partnerResetTemplate() {
+  const link = '{{ .ConfirmationURL }}';
+
+  const body = `
+    <p style="margin:0 0 26px;">Hi,</p>
+
+    <p style="margin:0 0 30px;color:${SUBTLE};font-size:17px;line-height:1.55;">
+      Someone asked to reset the password for the ${BRAND} partner account registered to
+      <span style="color:${INK};font-weight:600;">{{ .Email }}</span>. If that was you, set a new
+      one below and you will land straight on your dashboard.
+    </p>
+
+    ${button('Set a new password', link)}
+
+    <p style="margin:18px 0 0;color:${FAINT};font-size:14px;line-height:1.5;text-align:center;">
+      The link works once and expires after one hour.
+    </p>
+
+    ${hairline(30)}
+
+    <p style="margin:0 0 14px;color:${FAINT};font-size:13px;line-height:1.6;">
+      Did not ask for this? Ignore this email and your password stays as it is. Nobody can change
+      it without opening the link above.
+    </p>
+
+    <p style="margin:0;color:${FAINT};font-size:13px;line-height:1.6;word-break:break-all;">
+      Button not working? Paste this into your browser:<br />
+      <a href="${link}" style="color:${ACCENT};text-decoration:none;">${link}</a>
+    </p>`;
+
+  return {
+    subject: `Reset your ${BRAND} partner password`,
+    html: shell({
+      eyebrow: 'Partner portal',
+      heading: 'Reset your password.',
+      intro: 'One link and you are back in.',
+      body,
+    }),
+  };
+}
+
 /* -------------------------------------------------------------------------- */
 
 /**
