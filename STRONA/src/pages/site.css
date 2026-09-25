@@ -922,6 +922,12 @@ html{scroll-behavior:smooth}
   padding:10px;border-radius:9px;cursor:pointer;transition:background .15s,color .15s}
 .mm-authtabs button.is-on{background:#fff;color:var(--txt);box-shadow:0 2px 8px rgba(0,0,0,.07)}
 .mm-form-note{font-size:13px;color:var(--teal);text-align:center;margin-top:4px}
+/* Text-only buttons in the auth card: "Forgot password?" under the field,
+   "Back to sign in" centred under the submit button. */
+.mm-linkbtn{justify-self:end;border:0;background:none;padding:6px 0 0;font:inherit;font-size:13px;font-weight:600;
+  color:var(--teal);cursor:pointer}
+.mm-linkbtn:hover{text-decoration:underline}
+.mm-linkbtn-c{justify-self:center;padding-top:0}
 
 .mm-dash{max-width:820px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
 .mm-dash-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap}

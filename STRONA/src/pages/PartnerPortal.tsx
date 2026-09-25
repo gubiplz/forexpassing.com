@@ -3,6 +3,9 @@
 // Signed out: sign in or create a partner account. Signed up, we also insert the
 // partners row, because the slug is what makes the referral link work.
 // Signed in: tier, progress, the tracked link, and the referral ledger.
+// Forgot the password: the sign-in tab sends a reset link by email; the link
+// brings them back here signed in, and the page asks for a new password before
+// showing the dashboard.
 //
 // If Supabase is not configured the page says so instead of throwing — the rest
 // of the site must keep working whether or not the portal has been set up.
@@ -10,10 +13,13 @@
 import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react'
 import { CONTACT_EMAIL, telegramWith } from '../constants'
 import {
+  ARRIVED_FROM_RESET,
   fetchReferrals,
   fetchStats,
   PORTAL_ENABLED,
   referralUrl,
+  RESET_LINK_FAILED,
+  resetRedirectUrl,
   SLUG_RE,
   slugify,
   supabase,
@@ -22,7 +28,7 @@ import {
 } from '../runtime/supabase'
 import { SiteFooter, track, useReveal } from './shared'
 
-type Mode = 'signin' | 'signup'
+type Mode = 'signin' | 'signup' | 'reset'
 
 export function PartnerPortal() {
   const rootRef = useRef<HTMLDivElement>(null)
@@ -30,6 +36,10 @@ export function PartnerPortal() {
 
   const [ready, setReady] = useState(false)
   const [signedIn, setSignedIn] = useState(false)
+  // True from the moment a reset link signs them in until the new password is
+  // saved. Also set by the client's own PASSWORD_RECOVERY event, in case the
+  // address was read before this module saw it.
+  const [recovering, setRecovering] = useState(ARRIVED_FROM_RESET)
 
   useEffect(() => {
     track('ViewContent', 'view_content', { content_name: 'Partner portal' })
@@ -41,7 +51,8 @@ export function PartnerPortal() {
       setSignedIn(Boolean(data.session))
       setReady(true)
     })
-    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
+    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'PASSWORD_RECOVERY') setRecovering(true)
       setSignedIn(Boolean(session))
     })
     return () => sub.subscription.unsubscribe()
@@ -75,6 +86,8 @@ export function PartnerPortal() {
             <NotConfigured />
           ) : !ready ? (
             <p className="mm-disclaimer">Loading…</p>
+          ) : signedIn && recovering ? (
+            <NewPassword onDone={() => setRecovering(false)} />
           ) : signedIn ? (
             <Dashboard />
           ) : (
@@ -116,13 +129,23 @@ function NotConfigured() {
  * ------------------------------------------------------------------------ */
 
 function AuthCard() {
-  const [mode, setMode] = useState<Mode>('signup')
+  // A dead reset link lands here signed out: go straight to the reset form and
+  // say why, instead of a sign-up form that looks like nothing happened.
+  const [mode, setMode] = useState<Mode>(RESET_LINK_FAILED ? 'reset' : 'signup')
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [busy, setBusy] = useState(false)
-  const [error, setError] = useState('')
+  const [error, setError] = useState(
+    RESET_LINK_FAILED ? 'That reset link has expired or was already used. Send yourself a new one.' : '',
+  )
   const [notice, setNotice] = useState('')
+
+  const switchTo = (next: Mode) => {
+    setMode(next)
+    setError('')
+    setNotice('')
+  }
 
   const submit = async (e: FormEvent) => {
     e.preventDefault()
@@ -132,6 +155,17 @@ function AuthCard() {
     setNotice('')
 
     try {
+      if (mode === 'reset') {
+        const { error: err } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+          redirectTo: resetRedirectUrl(),
+        })
+        // Rate limits are worth reporting; "no such user" never reaches us, and
+        // the notice below is worded so it gives nothing away either way.
+        if (err) throw err
+        setNotice('If there is a partner account for that address, a reset link is on its way. Check your inbox and spam folder.')
+        return
+      }
+
       if (mode === 'signin') {
         const { error: err } = await supabase.auth.signInWithPassword({ email, password })
         if (err) throw err
@@ -173,22 +207,28 @@ function AuthCard() {
           role="tab"
           aria-selected={mode === 'signup'}
           className={mode === 'signup' ? 'is-on' : ''}
-          onClick={() => setMode('signup')}
+          onClick={() => switchTo('signup')}
         >
           Create account
         </button>
         <button
           type="button"
           role="tab"
-          aria-selected={mode === 'signin'}
-          className={mode === 'signin' ? 'is-on' : ''}
-          onClick={() => setMode('signin')}
+          aria-selected={mode !== 'signup'}
+          className={mode !== 'signup' ? 'is-on' : ''}
+          onClick={() => switchTo('signin')}
         >
           Sign in
         </button>
       </div>
 
       <form className="mm-form" onSubmit={submit}>
+        {mode === 'reset' && (
+          <p className="mm-form-fine" style={{ textAlign: 'left', marginTop: 0 }}>
+            Enter the email you signed up with and we will send you a link to set a new password.
+          </p>
+        )}
+
         {mode === 'signup' && (
           <div className="mm-field">
             <label htmlFor="pp-name">Display name</label>
@@ -219,24 +259,43 @@ function AuthCard() {
           />
         </div>
 
-        <div className="mm-field">
-          <label htmlFor="pp-pass">Password</label>
-          <input
-            id="pp-pass"
-            className="mm-input"
-            type="password"
-            autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
-            placeholder="••••••••"
-            minLength={8}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
+        {mode !== 'reset' && (
+          <div className="mm-field">
+            <label htmlFor="pp-pass">Password</label>
+            <input
+              id="pp-pass"
+              className="mm-input"
+              type="password"
+              autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
+              placeholder="••••••••"
+              minLength={8}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            {mode === 'signin' && (
+              <button type="button" className="mm-linkbtn" onClick={() => switchTo('reset')}>
+                Forgot password?
+              </button>
+            )}
+          </div>
+        )}
 
         <button type="submit" className="mm-btn mm-btn-lg mm-btn-full" disabled={busy}>
-          {busy ? 'Working…' : mode === 'signup' ? 'Open partner account' : 'Sign in'}
+          {busy
+            ? 'Working…'
+            : mode === 'signup'
+              ? 'Open partner account'
+              : mode === 'reset'
+                ? 'Send reset link'
+                : 'Sign in'}
         </button>
+
+        {mode === 'reset' && (
+          <button type="button" className="mm-linkbtn mm-linkbtn-c" onClick={() => switchTo('signin')}>
+            ← Back to sign in
+          </button>
+        )}
 
         {error && <p className="mm-form-err" role="alert">{error}</p>}
         {notice && <p className="mm-form-note" role="status">{notice}</p>}
@@ -245,6 +304,69 @@ function AuthCard() {
         </p>
       </form>
     </div>
+  )
+}
+
+/** Shown after a reset link has signed the partner in: set the new password. */
+function NewPassword({ onDone }: { onDone: () => void }) {
+  const [password, setPassword] = useState('')
+  const [repeat, setRepeat] = useState('')
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState('')
+
+  return (
+    <form
+      className="mm-authcard mm-form"
+      onSubmit={async (e) => {
+        e.preventDefault()
+        if (!supabase || busy) return
+        if (password !== repeat) {
+          setError('The two passwords do not match.')
+          return
+        }
+        setBusy(true)
+        setError('')
+        const { error: err } = await supabase.auth.updateUser({ password })
+        setBusy(false)
+        if (err) setError(err.message)
+        else onDone()
+      }}
+    >
+      <h3 className="mm-dash-h3">Set a new password</h3>
+      <p className="mm-form-fine" style={{ textAlign: 'left', marginTop: 0 }}>
+        At least 8 characters. You will stay signed in and land on your dashboard.
+      </p>
+      <div className="mm-field">
+        <label htmlFor="pp-new">New password</label>
+        <input
+          id="pp-new"
+          className="mm-input"
+          type="password"
+          autoComplete="new-password"
+          minLength={8}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+      </div>
+      <div className="mm-field">
+        <label htmlFor="pp-new2">Repeat new password</label>
+        <input
+          id="pp-new2"
+          className="mm-input"
+          type="password"
+          autoComplete="new-password"
+          minLength={8}
+          value={repeat}
+          onChange={(e) => setRepeat(e.target.value)}
+          required
+        />
+      </div>
+      <button type="submit" className="mm-btn mm-btn-lg mm-btn-full" disabled={busy}>
+        {busy ? 'Saving…' : 'Save new password'}
+      </button>
+      {error && <p className="mm-form-err" role="alert">{error}</p>}
+    </form>
   )
 }
 

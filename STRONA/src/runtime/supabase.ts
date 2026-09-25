@@ -16,6 +16,23 @@ const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
 
 export const PORTAL_ENABLED = Boolean(url && anonKey);
 
+// Read before createClient below: the client takes the tokens out of the
+// address and clears it, and by then the portal can no longer tell that the
+// visitor came from a password-reset email rather than an ordinary sign-in.
+const arrivalHash = typeof window === 'undefined' ? '' : window.location.hash.replace(/^#/, '');
+const arrival = new URLSearchParams(arrivalHash);
+
+/** Opened from the reset email with a valid link: ask for a new password. */
+export const ARRIVED_FROM_RESET = arrival.get('type') === 'recovery';
+
+/** Opened from a reset email whose link was expired or already used. */
+export const RESET_LINK_FAILED = arrival.has('error_code');
+
+/** Where the reset email sends people back to. Must be on the Supabase redirect allow-list. */
+export function resetRedirectUrl(): string {
+  return `${window.location.origin}/partner-portal`;
+}
+
 export const supabase: SupabaseClient | null = PORTAL_ENABLED
   ? createClient(url as string, anonKey as string, {
       auth: { persistSession: true, autoRefreshToken: true },
