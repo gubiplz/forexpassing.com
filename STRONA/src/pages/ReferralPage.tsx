@@ -76,7 +76,7 @@ const PORTAL_POINTS = [
 const HOW_IT_WORKS: [string, string, string][] = [
   ['1', 'You refer a friend', 'Send them this page. They see the real contract, the guarantees and the terms. Nothing hidden.'],
   ['2', 'Your friend applies', 'They send the questionnaire and get onboarded like any other Forex Passing client.'],
-  ['3', 'We buy you the same size account, free', 'Once they are funded, we fund you a matching challenge account at the same size.'],
+  ['3', 'We buy you the same size account, free', 'Once they buy their account, we fund you a matching one: the same plan at the same size. If they pick Instant Funding, yours is issued after their first payout.'],
   ['4', 'You earn commission on every payout', `We manage both accounts hands-off, and you keep ${REFERRAL_COMMISSION_RANGE} of every payout your referral receives, for as long as they trade with us.`],
 ]
 
@@ -88,6 +88,10 @@ const FAQ: [string, string][] = [
   [
     'When do I get paid?',
     'Your commission is released once your referral has actually received a payout from their funded account. There is no waiting period beyond that. You earn when they earn.',
+  ],
+  [
+    'What if my friend picks Instant Funding?',
+    'You get the same Instant Funding plan at the same size. An Instant account is funded from day one, so yours is issued once your friend has received their first payout. With a 2-Step challenge, yours is issued as soon as they buy.',
   ],
   [
     'Is there a cap on earnings?',

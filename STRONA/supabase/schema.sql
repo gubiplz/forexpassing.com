@@ -179,9 +179,10 @@ grant execute on function public.record_click(text, text, text) to anon, authent
 -- ---------------------------------------------------------------------------
 
 -- The desk's backend reports two moments per referred friend: the application
--- (carrying the partner's slug from /r/<slug>) and the first payout that
--- actually left. The partner no longer has to type the friend in, and nobody
--- has to flip "confirmed" by hand.
+-- (carrying the partner's slug from /r/<slug>) and the purchase of their
+-- account. The partner no longer has to type the friend in, and nobody has to
+-- flip "confirmed" by hand. A later payout reports again (p_paid) as a safety
+-- net for a purchase the desk never saw; on a confirmed row it changes nothing.
 --
 -- Only the service role may call it: the desk's backend holds the project's
 -- secret key in its own environment. Nothing that ships to a browser can.
@@ -220,13 +221,17 @@ begin
     v_email,
     nullif(trim(coalesce(p_account_size, '')), ''),
     case when p_paid then 'confirmed' else 'pending' end,
-    case when p_paid then 'Confirmed automatically: payout released'
+    case when p_paid then 'Confirmed automatically: account purchased'
          else 'Added automatically from the application' end
   )
   on conflict (partner_id, lower(email)) do update set
-    account_size = coalesce(public.referrals.account_size, excluded.account_size),
-    -- Only ever forward, and only on a payout. A referral we rejected by hand
-    -- stays rejected; nothing moves a confirmed one back to pending.
+    -- The application carries the size the friend WANTED; the purchase carries
+    -- the plan they bought, and that is what the matching account follows.
+    account_size = case when p_paid and excluded.account_size is not null
+                        then excluded.account_size
+                        else coalesce(public.referrals.account_size, excluded.account_size) end,
+    -- Only ever forward, and only on a purchase or payout. A referral we
+    -- rejected by hand stays rejected; nothing moves a confirmed one back.
     status = case when p_paid and public.referrals.status = 'pending'
                   then 'confirmed' else public.referrals.status end,
     note   = case when p_paid and public.referrals.status = 'pending'
@@ -238,3 +243,22 @@ end;
 $$;
 
 revoke all on function public.sync_referral(text, text, text, boolean) from public, anon, authenticated;
+
+-- Who owns a slug, for the desk's lead alerts ("referred by …"). The partner's
+-- email lives in auth.users, which only a definer can read; the grant below
+-- keeps the answer to the service role, same as sync_referral.
+create or replace function public.referral_partner(p_slug text)
+returns json
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select json_build_object('name', p.display_name, 'email', u.email)
+  from public.partners p
+  left join auth.users u on u.id = p.id
+  where p.slug = lower(trim(coalesce(p_slug, '')));
+$$;
+
+revoke all on function public.referral_partner(text) from public, anon, authenticated;
+grant execute on function public.referral_partner(text) to service_role;
