@@ -28,6 +28,19 @@ export const ARRIVED_FROM_RESET = arrival.get('type') === 'recovery';
 /** Opened from a reset email whose link was expired or already used. */
 export const RESET_LINK_FAILED = arrival.has('error_code');
 
+// The reset email links straight to /partner-portal?token_hash=…&type=recovery
+// on our own domain (supabase/email-templates/reset-password.html), and the
+// portal redeems the token itself with verifyOtp. The older link went through
+// Supabase's /auth/v1/verify first — a supabase.co address in our email, and a
+// one-time token that mail scanners (Outlook Safe Links, Gmail) could spend by
+// "clicking" it before the partner did. The hash flow above stays for links
+// already sitting in inboxes.
+const arrivalQuery = new URLSearchParams(typeof window === 'undefined' ? '' : window.location.search);
+
+/** One-time token from the reset email, still to be redeemed. Empty otherwise. */
+export const RESET_TOKEN_HASH =
+  arrivalQuery.get('type') === 'recovery' ? (arrivalQuery.get('token_hash') ?? '') : '';
+
 /** Where the reset email sends people back to. Must be on the Supabase redirect allow-list. */
 export function resetRedirectUrl(): string {
   return `${window.location.origin}/partner-portal`;

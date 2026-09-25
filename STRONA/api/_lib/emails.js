@@ -415,15 +415,21 @@ export function notQualifiedEmail({ name }) {
  * Password reset for the partner portal.
  *
  * Supabase Auth sends this one, not sendEmail() below, so it is a template
- * rather than a finished message: `{{ .ConfirmationURL }}` and `{{ .Email }}`
- * are filled in by Supabase. Built from the same shell and button as the
- * application mail so a partner cannot tell the two senders apart.
+ * rather than a finished message: `{{ .SiteURL }}`, `{{ .TokenHash }}` and
+ * `{{ .Email }}` are filled in by Supabase. Built from the same shell and
+ * button as the application mail so a partner cannot tell the two senders
+ * apart.
+ *
+ * The link is on our domain and carries only the token hash; the portal
+ * redeems it with verifyOtp (src/pages/PartnerPortal.tsx). `{{ .ConfirmationURL }}`
+ * would have put a supabase.co address in our email, and its one-time token
+ * can be spent by a mail scanner "clicking" it before the partner does.
  *
  * bin/email-templates.mjs renders it to supabase/email-templates/; that file is
  * what goes into Authentication → Emails → Reset password whenever this changes.
  */
 export function partnerResetTemplate() {
-  const link = '{{ .ConfirmationURL }}';
+  const link = '{{ .SiteURL }}/partner-portal?token_hash={{ .TokenHash }}&type=recovery';
 
   const body = `
     <p style="margin:0 0 26px;">Hi,</p>
