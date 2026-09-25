@@ -494,13 +494,16 @@ function Dashboard() {
         </div>
       </div>
 
-      <AddReferral onAdded={reload} />
-
+      {/* No "add a referral" form: the list fills itself from the link. A row
+          typed in by hand never had a `ref` behind it, so it could never be
+          confirmed and sat as pending forever — and the partner could type in
+          anyone's address. */}
       <div className="mm-dash-block">
         <h3 className="mm-dash-h3">Your referrals</h3>
         {referrals.length === 0 ? (
           <p className="mm-disclaimer" style={{ textAlign: 'left' }}>
-            No referrals yet. Share your link above, or add someone you have already spoken to.
+            No referrals yet. Send your link above to someone you trust. When they apply through
+            it, they appear here.
           </p>
         ) : (
           <table className="mm-dash-table">
@@ -566,63 +569,6 @@ function FinishSetup({ onDone }: { onDone: () => Promise<void> }) {
       <button type="submit" className="mm-btn mm-btn-lg mm-btn-full" disabled={busy}>
         {busy ? 'Saving…' : 'Finish setup'}
       </button>
-      {error && <p className="mm-form-err" role="alert">{error}</p>}
-    </form>
-  )
-}
-
-function AddReferral({ onAdded }: { onAdded: () => Promise<void> }) {
-  const [email, setEmail] = useState('')
-  const [size, setSize] = useState('')
-  const [busy, setBusy] = useState(false)
-  const [error, setError] = useState('')
-
-  return (
-    <form
-      className="mm-dash-block"
-      onSubmit={async (e) => {
-        e.preventDefault()
-        if (!supabase || busy) return
-        setBusy(true)
-        setError('')
-        const { data: u } = await supabase.auth.getUser()
-        const { error: err } = await supabase
-          .from('referrals')
-          .insert({ partner_id: u.user?.id, email: email.trim(), account_size: size.trim() || null })
-        // 23505: already on the list — typically added automatically when the
-        // friend applied through the partner's link.
-        if (err) setError(err.code === '23505' ? 'That email is already on your list.' : err.message)
-        else {
-          setEmail('')
-          setSize('')
-          await onAdded()
-        }
-        setBusy(false)
-      }}
-    >
-      <h3 className="mm-dash-h3">Add a referral</h3>
-      <div className="mm-dash-row">
-        <input
-          className="mm-input"
-          type="email"
-          placeholder="referral@example.com"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          aria-label="Referral email"
-        />
-        <input
-          className="mm-input"
-          type="text"
-          placeholder="Account size, e.g. $50K"
-          value={size}
-          onChange={(e) => setSize(e.target.value)}
-          aria-label="Account size"
-        />
-        <button type="submit" className="mm-btn mm-btn-lg" disabled={busy}>
-          {busy ? 'Adding…' : 'Add'}
-        </button>
-      </div>
       {error && <p className="mm-form-err" role="alert">{error}</p>}
     </form>
   )
