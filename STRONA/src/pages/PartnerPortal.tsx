@@ -539,8 +539,8 @@ function Dashboard() {
         )}
         <p className="mm-form-fine" style={{ textAlign: 'left' }}>
           Friends who apply through your link show up here on their own. A referral turns{' '}
-          <strong>confirmed</strong> once their first payout has actually been released, so the
-          number always matches money that moved.
+          <strong>confirmed</strong> as soon as they buy their account, and that is when your
+          matching account is due. For Instant Funding it follows their first payout.
         </p>
       </div>
     </div>
