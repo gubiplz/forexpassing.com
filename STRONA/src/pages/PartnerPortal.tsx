@@ -19,6 +19,7 @@ import {
   PORTAL_ENABLED,
   referralUrl,
   RESET_LINK_FAILED,
+  RESET_TOKEN_HASH,
   resetRedirectUrl,
   SLUG_RE,
   slugify,
@@ -40,18 +41,32 @@ export function PartnerPortal() {
   // saved. Also set by the client's own PASSWORD_RECOVERY event, in case the
   // address was read before this module saw it.
   const [recovering, setRecovering] = useState(ARRIVED_FROM_RESET)
+  const [linkFailed, setLinkFailed] = useState(RESET_LINK_FAILED)
 
   useEffect(() => {
     track('ViewContent', 'view_content', { content_name: 'Partner portal' })
-    if (!supabase) {
+    const client = supabase
+    if (!client) {
       setReady(true)
       return
     }
-    void supabase.auth.getSession().then(({ data }) => {
+    const start = async () => {
+      if (RESET_TOKEN_HASH) {
+        // Out of the address bar first: the token is single-use, and a reload
+        // or a shared screenshot should not carry it anywhere.
+        window.history.replaceState(null, '', window.location.pathname)
+        const { error } = await client.auth.verifyOtp({ token_hash: RESET_TOKEN_HASH, type: 'recovery' })
+        if (error) setLinkFailed(true)
+        else setRecovering(true)
+      }
+      // Only now: before verifyOtp settles there is no session yet, and the
+      // page would flash the sign-in card at someone who just clicked a link.
+      const { data } = await client.auth.getSession()
       setSignedIn(Boolean(data.session))
       setReady(true)
-    })
-    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
+    }
+    void start()
+    const { data: sub } = client.auth.onAuthStateChange((event, session) => {
       if (event === 'PASSWORD_RECOVERY') setRecovering(true)
       setSignedIn(Boolean(session))
     })
@@ -91,7 +106,7 @@ export function PartnerPortal() {
           ) : signedIn ? (
             <Dashboard />
           ) : (
-            <AuthCard />
+            <AuthCard linkFailed={linkFailed} />
           )}
         </div>
       </section>
@@ -128,16 +143,16 @@ function NotConfigured() {
  * Sign in / create account
  * ------------------------------------------------------------------------ */
 
-function AuthCard() {
+function AuthCard({ linkFailed }: { linkFailed: boolean }) {
   // A dead reset link lands here signed out: go straight to the reset form and
   // say why, instead of a sign-up form that looks like nothing happened.
-  const [mode, setMode] = useState<Mode>(RESET_LINK_FAILED ? 'reset' : 'signup')
+  const [mode, setMode] = useState<Mode>(linkFailed ? 'reset' : 'signup')
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState(
-    RESET_LINK_FAILED ? 'That reset link has expired or was already used. Send yourself a new one.' : '',
+    linkFailed ? 'That reset link has expired or was already used. Send yourself a new one.' : '',
   )
   const [notice, setNotice] = useState('')
 
