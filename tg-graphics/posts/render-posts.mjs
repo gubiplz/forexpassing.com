@@ -29,12 +29,17 @@ const szablon = readFileSync(resolve(TU, 'template-post.html'), 'utf8');
 /** Escapowanie dla Telegrama: parse_mode=HTML zna tylko te trzy encje. */
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
-/** Podpis tak, jak zobaczy go Telegram — z linkiem i stopka. */
+/** Podpis tak, jak zobaczy go Telegram — z linkiem i stopka.
+ *  `link` (opcjonalny) to glowne wezwanie posta, np. strona programu; idzie
+ *  PRZED kontaktem do admina, bo to on jest celem tego posta. */
 function podpis(post) {
+  const glowny = post.link
+    ? `\n\n👉 <a href="${esc(post.link.url)}">${esc(post.link.tekst)}</a>`
+    : '';
   const stopka =
-    '\n\n👉 <a href="https://t.me/forex_passing_admin">Click here to send us a message</a>' +
+    '\n\n💬 <a href="https://t.me/forex_passing_admin">Click here to send us a message</a>' +
     '\n\n❕ Official channel. Our only admin is @forex_passing_admin — anyone else is a scam.';
-  return esc(post.body) + stopka;
+  return esc(post.body) + glowny + (post.link ? stopka : stopka.replace('💬', '👉'));
 }
 
 const ptak = `<svg class="znak" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="#2fae6a"/><path d="M7 12.4l3.2 3.2L17 9" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
