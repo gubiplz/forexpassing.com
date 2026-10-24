@@ -9,7 +9,7 @@
 // [PLACEHOLDERS] in the source data are marked up rather than hidden. Somebody
 // reading it should see exactly which blanks get filled in for them.
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { AGREEMENT, type Block } from '../data/agreement'
 import { track } from '../pages/shared'
@@ -61,79 +61,47 @@ function Blocks({ blocks }: { blocks: Block[] }) {
   )
 }
 
-/** Styles for the dedicated print window — white sheet only, no site chrome. */
-const PRINT_DOC_CSS = `
-  @page { margin: 18mm 16mm; }
-  html, body { margin: 0; padding: 0; background: #fff !important; color: #1b1b1b; }
-  body { font-family: Georgia, 'Times New Roman', Times, serif; font-size: 11.5pt; line-height: 1.7; }
-  article { max-width: 40rem; margin: 0 auto; }
-  p { margin: 0 0 12px; text-align: justify; hyphens: none; -webkit-hyphens: none; }
-  h2 { font-size: 15.5px; font-weight: 700; text-align: center; text-transform: uppercase;
-    letter-spacing: .14em; line-height: 1.45; margin: 0 0 30px; padding-bottom: 18px;
-    border-bottom: 1px solid rgba(0,0,0,.16); }
-  h3 { font-size: 13.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
-    margin: 0 0 14px; color: #111; break-after: avoid; }
-  section { margin-bottom: 30px; }
-  .mm-agr-gap { height: 8px; }
-  .mm-agr-preamble { margin-bottom: 34px; }
-  .mm-agr-lettered { list-style: none; margin: 0 0 12px; padding: 0; }
-  .mm-agr-lettered li { text-align: justify; padding-left: 1.5rem; text-indent: -1.5rem; margin-bottom: 9px; hyphens: none; }
-  .mm-agr-mark { font-weight: 700; font-variant-numeric: tabular-nums; }
-  .mm-agr-listblock { margin-bottom: 14px; }
-  .mm-agr-listlabel { font-weight: 700; margin-bottom: 7px !important; text-align: left !important; }
-  .mm-agr-list { list-style: square; margin: 0 0 0 1.15rem; padding: 0; }
-  .mm-agr-list li { text-align: justify; padding-left: .25rem; margin-bottom: 8px; hyphens: none; }
-  .mm-agr-ph { font-style: italic; background: rgba(0,0,0,.06); border-bottom: 1px solid rgba(0,0,0,.3);
-    padding: 0 4px; white-space: nowrap; }
-  .mm-agr-sign { display: flex; gap: 34px; flex-wrap: wrap; margin-top: 46px; padding-top: 8px;
-    break-inside: avoid; }
-  .mm-agr-sign-col { flex: 1 1 200px; min-width: 0; }
-  .mm-agr-sign-rule { height: 1px; background: rgba(0,0,0,.45); margin-bottom: 8px; }
-  .mm-agr-sign-role { font-size: 11px !important; text-transform: uppercase; letter-spacing: .1em;
-    color: rgba(0,0,0,.55); margin: 0 0 3px !important; text-align: left !important; }
-  .mm-agr-sign-name { font-size: 13.5px !important; margin: 0 !important; text-align: left !important; }
-`
+/** Browsers built into apps (Instagram, Facebook, TikTok…) ignore window.print(). */
+const IN_APP_UA =
+  /FBAN|FBAV|FB_IAB|FBIOS|Instagram|Line\/|MicroMessenger|TikTok|musical_ly|BytedanceWebview|Snapchat|LinkedInApp|; wv\)/i
 
 /**
- * Print from a blank window that contains only the agreement sheet.
+ * Print the page itself, straight from the tap.
  *
- * Printing the modal in place left black rims (dark overlay baked into the PDF)
- * and, before the print CSS fix, stacked the title onto later pages. A dedicated
- * document has nothing to fight: white paper, black type.
+ * The print sheet lives in site.css: with the modal open it hides #root, lays
+ * the modal out as plain white paper and drops the viewer chrome. An earlier
+ * version opened a separate window instead, but window.open() with "noopener"
+ * returns null — visitors got an empty tab while the page behind it printed, and
+ * on a phone they saw only the empty tab. Printing in place also keeps the tap
+ * as the user gesture iOS Safari and Android Chrome want before showing print.
  */
-function printAgreementSheet(sheet: HTMLElement) {
-  const w = window.open('', '_blank', 'noopener,noreferrer,width=820,height=960')
-  if (!w) {
-    window.print()
-    return
+function printAgreement() {
+  const before = document.title
+  // The title is what browsers offer as the PDF's file name.
+  document.title = AGREEMENT.title
+  const restore = () => {
+    document.title = before
+    window.removeEventListener('afterprint', restore)
   }
-  const title = AGREEMENT.title.replace(/</g, '')
-  w.document.open()
-  w.document.write(`<!doctype html><html lang="en"><head><meta charset="utf-8"/>
-<title>${title}</title><style>${PRINT_DOC_CSS}</style></head>
-<body>${sheet.outerHTML}
-<script>
-window.onload = function () {
-  setTimeout(function () {
-    window.focus();
-    window.print();
-  }, 50);
-};
-window.onafterprint = function () { window.close(); };
-<\/script>
-</body></html>`)
-  w.document.close()
+  window.addEventListener('afterprint', restore)
+  window.print()
 }
 
 export function AgreementDocument() {
+  const [inApp, setInApp] = useState(false)
+  const [copied, setCopied] = useState(false)
+
   const print = () => {
     track('ContractPrint', 'contract_print', { source: 'contract' })
-    const sheet = document.querySelector<HTMLElement>('.mm-agr-page')
-    if (!sheet) {
-      window.print()
-      return
-    }
-    printAgreementSheet(sheet)
+    if (IN_APP_UA.test(navigator.userAgent)) setInApp(true)
+    printAgreement()
+  }
+
+  const copyLink = () => {
+    navigator.clipboard?.writeText(window.location.href).then(
+      () => setCopied(true),
+      () => setCopied(false)
+    )
   }
 
   return (
@@ -160,6 +128,19 @@ export function AgreementDocument() {
           </button>
         </span>
       </div>
+
+      {inApp && (
+        <div className="mm-agr-inapp" role="status">
+          <p>
+            If no print window opened, this app&rsquo;s built-in browser can&rsquo;t save PDFs.
+            Open the page in Safari or Chrome (the &hellip; menu, then &ldquo;Open in browser&rdquo;)
+            and tap &ldquo;Print / save as PDF&rdquo; again.
+          </p>
+          <button type="button" className="mm-agr-print" onClick={copyLink}>
+            {copied ? 'Link copied' : 'Copy link'}
+          </button>
+        </div>
+      )}
 
       <div className="mm-agr-sheet" lang="en">
         <article className="mm-agr-page">

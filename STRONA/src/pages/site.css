@@ -1208,6 +1208,11 @@ html{scroll-behavior:smooth}
   background:#fff;border:1px solid var(--line);border-radius:8px;padding:6px 11px;
   transition:border-color .15s,background .15s}
 @media (hover:hover) and (pointer:fine){.mm-agr-print:hover{border-color:var(--teal);background:rgba(22,163,74,.08)}}
+/* Shown only inside app browsers (Instagram, Facebook…), which ignore print.
+   Sits between the bar and the sheet, so it keeps the frame's side borders. */
+.mm-agr-inapp{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 16px;
+  background:#fff8e6;border:1px solid var(--line);border-bottom:0;color:#5b4410}
+.mm-agr-inapp p{flex:1 1 240px;margin:0;font-size:13px;line-height:1.55;text-align:left}
 .mm-agr-sheet{max-height:min(78vh,860px);overflow-y:auto;overscroll-behavior:contain;
   background:#fbfaf7;border:1px solid var(--line);border-radius:0 0 14px 14px;
   padding:44px 30px 40px;
@@ -1254,10 +1259,13 @@ html{scroll-behavior:smooth}
    vertical space — so page 2 and 3 got the title and preamble stamped over
    clauses 4–10. Keep the document in normal flow; hide everything else. */
 @media print{
-  html,body{background:#fff!important;color:#000;overflow:visible!important;
+  @page{margin:18mm 16mm}
+  /* The site runs color-scheme:dark, and Chrome paints the page margins in the
+     scheme's canvas colour — that, not the modal overlay, was the black rim. */
+  html,body{color-scheme:light!important;background:#fff!important;color:#000;overflow:visible!important;
     height:auto!important;max-height:none!important}
   .mm-ticker,.mm-topbar,.mm-sticky-bar,.mm-sticky-cta,.mm-footer,
-  .mm-agr-bar,.mm-agr-note,.mm-modal-close{display:none!important}
+  .mm-agr-bar,.mm-agr-note,.mm-agr-inapp,.mm-modal-close{display:none!important}
 
   /* Modal is portaled onto <body> next to #root. #root keeps min-height:100vh
      even when its children are hidden — that alone prints a blank first page
