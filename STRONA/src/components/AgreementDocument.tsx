@@ -200,9 +200,11 @@ export function ContractModal({ open, onClose }: { open: boolean; onClose: () =>
     window.addEventListener('keydown', onKey)
     const prev = document.body.style.overflow
     document.body.style.overflow = 'hidden'
+    document.body.classList.add('mm-agr-open')
     return () => {
       window.removeEventListener('keydown', onKey)
       document.body.style.overflow = prev
+      document.body.classList.remove('mm-agr-open')
     }
   }, [open, onClose])
 
