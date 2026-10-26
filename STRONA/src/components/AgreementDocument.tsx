@@ -11,7 +11,7 @@
 
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { AGREEMENT, type Block } from '../data/agreement'
+import { AGREEMENT, type Block, type Section as AgreementSection } from '../data/agreement'
 import { track } from '../pages/shared'
 
 /** Splits "paid to [CLIENT_FULL_NAME] today" into text and marked-up blanks. */
@@ -58,6 +58,17 @@ function Blocks({ blocks }: { blocks: Block[] }) {
         )
       })}
     </>
+  )
+}
+
+function Section({ s }: { s: AgreementSection }) {
+  return (
+    <section className="mm-agr-sec">
+      <h3 className="mm-agr-head">
+        {s.number}. {s.heading}
+      </h3>
+      <Blocks blocks={s.blocks} />
+    </section>
   )
 }
 
@@ -156,23 +167,23 @@ export function AgreementDocument() {
             )}
           </div>
 
-          {AGREEMENT.sections.map((s) => (
-            <section className="mm-agr-sec" key={s.number}>
-              <h3 className="mm-agr-head">
-                {s.number}. {s.heading}
-              </h3>
-              <Blocks blocks={s.blocks} />
-            </section>
+          {AGREEMENT.sections.slice(0, -1).map((s) => (
+            <Section s={s} key={s.number} />
           ))}
 
-          <div className="mm-agr-sign">
-            {AGREEMENT.signature.map((s) => (
-              <div className="mm-agr-sign-col" key={s.role}>
-                <div className="mm-agr-sign-rule" />
-                <p className="mm-agr-sign-role">{s.role}</p>
-                <p className="mm-agr-sign-name">{withPlaceholders(s.name)}</p>
-              </div>
-            ))}
+          {/* The closing clause says "by signing below", so on paper it never
+              ends a page with the signatures alone on the next one. */}
+          <div className="mm-agr-end">
+            <Section s={AGREEMENT.sections[AGREEMENT.sections.length - 1]} />
+            <div className="mm-agr-sign">
+              {AGREEMENT.signature.map((s) => (
+                <div className="mm-agr-sign-col" key={s.role}>
+                  <div className="mm-agr-sign-rule" />
+                  <p className="mm-agr-sign-role">{s.role}</p>
+                  <p className="mm-agr-sign-name">{withPlaceholders(s.name)}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </article>
       </div>
