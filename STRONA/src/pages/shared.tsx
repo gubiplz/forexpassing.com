@@ -801,6 +801,16 @@ export function TestimonialCard({ testimonial: t }: { testimonial: Testimonial }
 //
 // The QR is the generic /verify code, exactly as PTF does it: their public API
 // does not publish per-certificate tokens, so no card can link to a single one.
+// Kwota w vUSDT w zdaniu (proof/totals): moneta tokena zamiast „$".
+export function TokenAmount({ value }: { value: string }) {
+  return (
+    <>
+      <img className="mm-coin" src="/cert/vusdt.svg" alt="vUSDT" width={18} height={18} />
+      {value.replace(/^\$/, '')}
+    </>
+  )
+}
+
 export function CertCard({ cert }: { cert: PayoutCert }) {
   return (
     <figure
