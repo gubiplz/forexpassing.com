@@ -818,7 +818,12 @@ export function CertCard({ cert }: { cert: PayoutCert }) {
         <h3 className="mm-cert-title">Certificate</h3>
 
         <div className="mm-cert-amountlabel">{cert.amountLabel}</div>
-        <div className="mm-cert-amount">{cert.amount}</div>
+        <div className="mm-cert-amount">
+          {cert.payout && (
+            <img className="mm-cert-coin" src="/cert/vusdt.svg" alt="vUSDT" width={32} height={32} />
+          )}
+          {cert.payout ? cert.amount.replace(/^\$/, '') : cert.amount}
+        </div>
 
         <div className="mm-cert-presented">presented to</div>
         <div className="mm-cert-person">{cert.trader}</div>
