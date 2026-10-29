@@ -31,6 +31,7 @@ import { TESTIMONIALS } from '../data/testimonials'
 import {
   AutoScroller,
   CertCard,
+  TokenAmount,
   HeroVsl,
   REVIEWS,
   ReviewBadge,
@@ -508,7 +509,7 @@ export function MoneyPage() {
             {PAYOUT_TOTALS && (
               <>
                 <span className="mm-price-proof-item" role="listitem">
-                  <strong>{PAYOUT_TOTALS.totalUsd}</strong> released at {PARTNER_FIRM}
+                  <strong><TokenAmount value={PAYOUT_TOTALS.totalUsd} /></strong> released at {PARTNER_FIRM}
                 </span>
                 <span className="mm-price-proof-sep" aria-hidden="true" />
               </>

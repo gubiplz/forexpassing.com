@@ -233,6 +233,14 @@ html{scroll-behavior:smooth}
 .mm-cert-meta span{font-family:'CertDisplay',sans-serif;font-weight:600;text-transform:uppercase;
   letter-spacing:.15em;font-size:clamp(5.5px,1.35cqw,7.5px);color:#93a3c9}
 
+/* vUSDT token coin inline in a sentence (proof line / totals) */
+.mm-coin{display:inline-block;width:.92em;height:.92em;margin-right:.14em;vertical-align:-.13em;
+  filter:drop-shadow(0 0 .25em rgba(95,240,192,.4))}
+
+/* vUSDT token coin before the payout amount (mirror of PTF .cert-coin) */
+.mm-cert-amount .mm-cert-coin{display:inline-block;width:.53em;height:.53em;margin:0 .11em 0 0;
+  vertical-align:.08em;filter:drop-shadow(0 0 .2em rgba(95,240,192,.45)) drop-shadow(0 .06em .12em rgba(0,0,0,.5))}
+
 /* payout variant — green amount and its own motif */
 .mm-certcard.is-payout .mm-cert-amount{color:#57e6b6;
   text-shadow:0 0 30px rgba(95,240,192,.4),0 0 70px rgba(15,157,108,.3)}

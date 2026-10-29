@@ -39,6 +39,9 @@ const EXTRA_TOKENS = [
 ];
 
 const money = (n) => `$${Number(n).toLocaleString('en-US')}`;
+// Wypłaty są w vUSDT (token, nie dolary) — kwota bez „$", monetę dokłada
+// karta (CertCard). Rozmiar konta zostaje w „$".
+const tokenAmt = (n) => Number(n).toLocaleString('en-US');
 
 const res = await fetch(API);
 if (!res.ok) {
@@ -72,7 +75,7 @@ const certs = rows
       // "Payout" / "Funded trader" / "Phase 1 passed" — etykieta prosto z API.
       eyebrow: payout ? 'Payout' : String(r.kind_label ?? '').trim(),
       amountLabel: payout ? 'for the amount of' : 'Account size',
-      amount: money(payout ? r.amount_usd : r.account_size),
+      amount: payout ? tokenAmt(r.amount_usd) : money(r.account_size),
       trader: String(r.trader ?? '').trim(),
       date: fmtDate(r.issued_at),
       // Druga metryka: przy wypłacie rozmiar konta, przy reszcie nazwa programu.
@@ -87,7 +90,9 @@ const certs = rows
 
 // Strona certyfikatu jest renderowana serwerowo, więc wystarczy wyciąć pola.
 const field = (html, cls) => {
-  const m = html.match(new RegExp(`class="${cls}"[^>]*>([\\s\\S]*?)<`));
+  // Do pierwszego </ — kwota ma teraz przed sobą <img> monety vUSDT, a stare
+  // `>([\\s\\S]*?)<` łapało pusty string między `>` a `<img`.
+  const m = html.match(new RegExp(`class="${cls}"[^>]*>([\\s\\S]*?)</`));
   return m ? m[1].replace(/<[^>]*>/g, '').trim() : '';
 };
 // Kafelki "Data" / "Account size" na dole certyfikatu: <div><b>wartość</b><span>etykieta</span>
@@ -136,7 +141,7 @@ for (const token of EXTRA_TOKENS) {
     payout: true,
     eyebrow: 'Payout',
     amountLabel: 'for the amount of',
-    amount: money(usd),
+    amount: tokenAmt(usd),
     trader: shorten(field(html, 'cert-person')),
     date: `${MON[Number(iso.slice(5, 7)) - 1]} ${Number(iso.slice(8, 10))}, ${iso.slice(0, 4)}`,
     metaLabel: 'Account size',

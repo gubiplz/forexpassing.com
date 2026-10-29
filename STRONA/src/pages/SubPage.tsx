@@ -34,6 +34,7 @@ type ProofPageKey = Exclude<
 import {
   AutoScroller,
   CertCard,
+  TokenAmount,
   REVIEWS,
   ReviewBadge,
   ReviewCard,
@@ -174,9 +175,9 @@ function Payouts() {
       <div className="mm-wrap">
         {PAYOUT_TOTALS && (
           <p className="mm-lead mm-center mm-lead-mid">
-            <strong>{PAYOUT_TOTALS.totalUsd}</strong> released across{' '}
+            <strong><TokenAmount value={PAYOUT_TOTALS.totalUsd} /></strong> released across{' '}
             <strong>{PAYOUT_TOTALS.count}</strong> payouts, largest{' '}
-            <strong>{PAYOUT_TOTALS.largestUsd}</strong>, with{' '}
+            <strong><TokenAmount value={PAYOUT_TOTALS.largestUsd} /></strong>, with{' '}
             <strong>{PAYOUT_TOTALS.fundedAccounts}</strong> accounts funded.
           </p>
         )}
