@@ -1267,7 +1267,7 @@ html{scroll-behavior:smooth}
    vertical space — so page 2 and 3 got the title and preamble stamped over
    clauses 4–10. Keep the document in normal flow; hide everything else. */
 @media print{
-  @page{margin:10mm 14mm}
+  @page{margin:18mm 20mm}
   /* The site runs color-scheme:dark, and Chrome paints the page margins in the
      scheme's canvas colour — that, not the modal overlay, was the black rim.
      text-size-adjust: iOS Safari otherwise inflates the type when it prints. */
@@ -1296,34 +1296,26 @@ html{scroll-behavior:smooth}
   .mm-agr-sheet{max-height:none!important;overflow:visible!important;border:0!important;
     border-radius:0!important;box-shadow:none!important;background:#fff!important;
     padding:0!important}
-  /* Sized in points to fit the whole agreement on two A4 / Letter pages. Adding
-     clauses means re-checking that, or the signatures spill onto a third. */
-  .mm-agr-page{max-width:none;font-size:9.5pt;line-height:1.34}
-  .mm-agr-page p{margin:0 0 4pt}
-  .mm-agr-title{font-size:11pt;letter-spacing:.12em;margin:0 0 9pt;padding-bottom:6pt}
-  .mm-agr-preamble{margin-bottom:9pt}
-  .mm-agr-preamble p{margin:0 0 1.5pt}
-  .mm-agr-gap{height:0}
-  .mm-agr-sec{margin-bottom:7pt}
-  .mm-agr-head{font-size:9pt;margin:0 0 3pt}
-  .mm-agr-lettered{margin:0 0 4pt}
-  .mm-agr-lettered li{margin-bottom:2pt}
-  .mm-agr-listblock{margin-bottom:4pt}
-  .mm-agr-listlabel{margin-bottom:2pt!important}
-  .mm-agr-list li{margin-bottom:1.5pt}
-  .mm-agr-ph{padding:0 2pt}
-  .mm-agr-sign{margin-top:34pt;padding-top:0;gap:28pt}
+  /* The print is the viewer's own sheet at paper size (Georgia 11.5pt / 1.7,
+     the screen spacing between clauses) — four A4 pages. Every size is pinned
+     here so a phone's own breakpoints and text inflation cannot change it. */
+  .mm-agr-page{max-width:none;font-size:11.5pt!important;line-height:1.7}
+  .mm-agr-page p{margin:0 0 12px}
+  .mm-agr-title{font-size:15.5px;margin:0 0 30px;padding-bottom:18px}
+  .mm-agr-preamble{margin-bottom:34px}
+  .mm-agr-sec{margin-bottom:30px}
+  .mm-agr-head{font-size:13.5px;margin:0 0 14px}
+  /* Blanks stay shaded on paper even with "Background graphics" switched off. */
+  .mm-agr-ph{-webkit-print-color-adjust:exact;print-color-adjust:exact}
   /* Browsers drop backgrounds when printing by default; a border survives. */
-  .mm-agr-sign-rule{height:0;background:none;border-top:1px solid #000;margin-bottom:4pt}
-  .mm-agr-sign-role{font-size:7.5pt!important}
-  .mm-agr-sign-name{font-size:9.5pt!important}
+  .mm-agr-sign-rule{height:0;background:none;border-top:1px solid rgba(0,0,0,.45)}
   /* Auto hyphens look like a broken layout in a saved PDF ("ac-count", "de-scription"). */
   .mm-agr-page,.mm-agr-page p,.mm-agr-lettered li,.mm-agr-list li{
     hyphens:none!important;-webkit-hyphens:none!important;-ms-hyphens:none!important}
   /* Avoid orphaned headings; do NOT lock whole sections — long clauses must
      be allowed to split or the engine clips them across page edges. */
   .mm-agr-head{break-after:avoid;page-break-after:avoid}
-  .mm-agr-sign{break-inside:avoid;page-break-inside:avoid}
+  .mm-agr-sign,.mm-agr-end{break-inside:avoid;page-break-inside:avoid}
   .mm-agr-page p,.mm-agr-page li{orphans:2;widows:2}
 }
 @media (max-width:640px){
