@@ -844,11 +844,6 @@ export function CertCard({ cert }: { cert: PayoutCert }) {
         </div>
 
         <div className="mm-cert-foot">
-          <div className="mm-cert-sign">
-            <b className="mm-sig">Matthew Harrison</b>
-            <i className="mm-sig-line" />
-            <span>Chief Executive Officer</span>
-          </div>
           <div className="mm-cert-qr">
             <span className="mm-qr-box" dangerouslySetInnerHTML={{ __html: VERIFY_QR_SVG }} />
             <span>Scan to verify</span>

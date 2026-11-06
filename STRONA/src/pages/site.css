@@ -184,8 +184,6 @@ html{scroll-behavior:smooth}
   font-weight:400 700;font-style:normal;font-display:swap}
 @font-face{font-family:'CertMono';src:url('/cert/jbmono.woff2') format('woff2');
   font-weight:400 600;font-style:normal;font-display:swap}
-@font-face{font-family:'CertSignature';src:url('/cert/signature.woff2') format('woff2');
-  font-weight:400;font-style:normal;font-display:block}
 
 .mm-certcard{container-type:inline-size;flex:0 0 auto;position:relative;
   width:340px;padding:4px;border-radius:16px;
@@ -250,19 +248,9 @@ html{scroll-behavior:smooth}
     url('/cert/cert-motif-payout.svg') center bottom/102% auto no-repeat,
     linear-gradient(168deg,#0b142c 0%,#070d1e 52%,#050914 100%)}
 
-.mm-cert-foot{margin-top:auto;width:100%;display:grid;grid-template-columns:1fr auto;align-items:end;
+.mm-cert-foot{margin-top:auto;width:100%;display:grid;grid-template-columns:auto;justify-content:center;align-items:end;
   gap:clamp(8px,2.4cqw,14px);padding:clamp(7px,2cqw,11px) clamp(10px,6cqw,24px) 0;
   border-top:1px solid rgba(120,170,255,.22)}
-.mm-cert-sign{display:flex;flex-direction:column;align-items:center;gap:0;justify-self:start;
-  text-align:center;min-width:0;margin-bottom:clamp(14px,7.1cqw,26px)}
-.mm-sig-line{align-self:stretch;height:1px;
-  background:linear-gradient(90deg,transparent,rgba(147,163,201,.7) 18%,rgba(147,163,201,.7) 82%,transparent)}
-.mm-sig{font-family:'CertSignature','Snell Roundhand','Segoe Script',cursive;font-weight:400;
-  font-size:clamp(18px,6.4cqw,32px);line-height:.85;letter-spacing:-.01em;color:#e8edff;
-  display:inline-block;transform:rotate(-4deg) skewX(-3deg);text-shadow:0 0 1px rgba(232,237,255,.3);
-  margin-bottom:-.22em;padding:0 .4em .02em}
-.mm-cert-sign span{font-family:'CertDisplay',sans-serif;font-weight:600;text-transform:uppercase;
-  letter-spacing:.14em;font-size:clamp(4.5px,1.3cqw,6.5px);color:#93a3c9;margin-top:.5em}
 .mm-cert-qr{display:flex;flex-direction:column;align-items:center;gap:.4em}
 .mm-qr-box{display:block;width:clamp(38px,13cqw,54px);aspect-ratio:1/1;background:#fff;
   border-radius:5px;padding:3px}
