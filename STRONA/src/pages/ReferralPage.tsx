@@ -18,7 +18,7 @@ import {
   REFERRAL_PAYOUT_RANGE,
   REFERRAL_TIERS,
   REFERRAL_TIERS_DATA,
-  REFUND_WINDOW,
+  GUARANTEE_WINDOW,
   telegramWith,
 } from '../constants'
 import { fetchStats, PORTAL_ENABLED, referralUrl, type PartnerStats } from '../runtime/supabase'
@@ -52,7 +52,7 @@ const NOT_SCARED: [string, string][] = [
   ],
   [
     'Same failure protections.',
-    `If we breach the rules and lose the account, the remedies are spelled out: refunded fees plus a ${GUARANTEE_CREDIT} credit, not a handshake.`,
+    `If we breach the rules and lose the account, the remedies are spelled out: the next evaluation on us or a ${GUARANTEE_CREDIT} credit, not a handshake.`,
   ],
   [
     "They're not the guinea pig.",
@@ -61,8 +61,8 @@ const NOT_SCARED: [string, string][] = [
 ]
 
 const SAME_GUARANTEES: string[] = [
-  `Challenge failure or a breach caused by us → remedies in writing, including refunded fees plus a ${GUARANTEE_CREDIT} credit.`,
-  `${REFUND_WINDOW} refund guarantee, the same window and the same wording as the published offer.`,
+  `A breach caused by us → remedies in writing: the next evaluation on us or a ${GUARANTEE_CREDIT} credit.`,
+  `${GUARANTEE_WINDOW} guarantee, the same window and the same wording as the published offer.`,
   `Profit-share clarity: ${CLIENT_SPLIT} client / ${OUR_SPLIT} Forex Passing on payouts, the same structure they see at onboarding.`,
 ]
 

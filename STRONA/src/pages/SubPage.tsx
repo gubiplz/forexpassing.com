@@ -16,7 +16,7 @@ import {
   GUARANTEE_CREDIT,
   PARTNER_FIRM,
   PARTNER_FIRM_HREF,
-  REFUND_WINDOW,
+  GUARANTEE_WINDOW,
 } from '../constants'
 import { ContractModal } from '../components/AgreementDocument'
 import { TrackRecordModal } from '../components/TrackRecord'
@@ -81,7 +81,7 @@ const META: Record<ProofPageKey, Meta> = {
     eyebrow: 'Transparency · Protection · Real traders',
     title: 'We put everything',
     accent: 'in writing',
-    lead: `You shouldn't have to guess what happens if something goes wrong. Read the agreement, see how traders rate us, and know exactly how our guarantee works, including the refund guarantee that runs for ${REFUND_WINDOW} if we don't pass or you want out.`,
+    lead: `You shouldn't have to guess what happens if something goes wrong. Read the agreement, see how traders rate us, and know exactly how our guarantee works: if we break the firm's rules and lose the account within ${GUARANTEE_WINDOW}, the next evaluation is on us.`,
     leadTone: 'alert' as const,
   },
 }
@@ -308,8 +308,8 @@ const PROMISES: [string, string][] = [
     'If we lose the account, you are covered by what the agreement says, not by a vague promise made on a landing page.',
   ],
   [
-    `A window of ${REFUND_WINDOW}.`,
-    `Evaluation failed, or you simply want out inside ${REFUND_WINDOW}? The guarantee clause covers both, and it is clause 5, not a footnote.`,
+    `A window of ${GUARANTEE_WINDOW}.`,
+    `If we break the firm's rules and lose the account within ${GUARANTEE_WINDOW} of the start of trading, clause 5 covers it, not a footnote. It does not cover a voluntary exit or an evaluation that simply ran out.`,
   ],
   [
     'Nothing starts before the rule check.',
@@ -319,24 +319,24 @@ const PROMISES: [string, string][] = [
 
 const GUARANTEES: [string, React.ReactNode][] = [
   [
-    'If we lose your challenge',
+    'If we break the rules and lose your challenge',
     <>
       <strong>the next evaluation is on us</strong>, bought by us at the same size and traded under
-      the same agreement. That is clause 5(c), not a line on a landing page.
+      the same agreement. That is clause 5(a), not a line on a landing page.
     </>,
   ],
   [
-    'Or your money back',
+    `Or a ${GUARANTEE_CREDIT} credit`,
     <>
-      you take back what you paid us <strong>plus a {GUARANTEE_CREDIT} credit</strong> toward the
-      next attempt. Which of the two you take is your call, not ours.
+      a <strong>{GUARANTEE_CREDIT} credit</strong> toward an evaluation at our partner prop firm.
+      Which of the two you take is your call, not ours. Neither is a cash refund.
     </>,
   ],
   [
-    `${REFUND_WINDOW} to decide`,
+    `${GUARANTEE_WINDOW} from the start of trading`,
     <>
-      whether the evaluation fails or you decide you want out. The terms and the process are in the
-      written contract.
+      for an account lost through our breach of the firm's rules. A voluntary exit is not covered.
+      The terms and the process are in the written contract.
     </>,
   ],
   [

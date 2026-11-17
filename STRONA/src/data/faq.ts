@@ -12,11 +12,12 @@
 import {
   CLIENT_SPLIT,
   EVAL_DISCOUNT,
+  GUARANTEE_CREDIT,
   GUARANTEE_LINE,
   OUR_SPLIT,
   PARTNER_FIRM,
   PASS_WINDOW,
-  REFUND_WINDOW,
+  GUARANTEE_WINDOW,
 } from '../constants'
 
 export type FaqItem = { q: string; a: string }
@@ -27,7 +28,7 @@ export const FAQ: FaqItem[] = [
   { q: `How does the ${CLIENT_SPLIT}/${OUR_SPLIT} split work?`, a: `You keep ${CLIENT_SPLIT} of every payout, we take ${OUR_SPLIT}. The firm pays you first. Our share is invoiced after the money has actually landed with you.` },
   { q: 'When exactly do you get paid?', a: 'Only after a payout is released by the prop firm. There is no fee for trying, no monthly charge, and nothing to pay while an evaluation is running.' },
   { q: 'What if you fail the challenge?', a: `${GUARANTEE_LINE} The exact wording is clause 5 of the agreement. Read it before you sign, not after.` },
-  { q: 'How long is the guarantee?', a: `${REFUND_WINDOW}. Inside that window you pick the remedy without an interrogation; you return the managed account to us and we settle up.` },
+  { q: 'How long is the guarantee?', a: `${GUARANTEE_WINDOW} from the start of trading. Inside that window you pick the remedy without an interrogation: the next evaluation of the same size on us, or a ${GUARANTEE_CREDIT} credit toward one. It covers an account lost through our breach of the firm\'s rules, not a voluntary exit, and it is not a cash refund.` },
   { q: 'How long does it take to pass?', a: `Usually ${PASS_WINDOW}, depending on the firm’s rules (minimum trading days and daily drawdown mostly) and on the market. It can take longer. It can also fail; nobody can promise otherwise.` },
   { q: 'Which prop firms do you work with?', a: `Only firms whose terms permit a third party to trade the account. We work with ${PARTNER_FIRM} and check the current rules for whichever firm you bring before anything starts.` },
   { q: 'Is this even allowed?', a: 'It depends entirely on the firm. Some permit managed accounts under an agreement, others ban it outright and will void results. We check yours first and tell you straight if the answer is no.' },

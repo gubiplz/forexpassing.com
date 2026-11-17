@@ -139,7 +139,7 @@ export const QUALIFICATION: Step[] = [
       EVAL_DISCOUNT
         ? `You buy the prop firm evaluation. Our partner link takes ${EVAL_DISCOUNT} off the price.`
         : 'You buy the prop firm evaluation, in your own name.',
-      'We guarantee the pass and manage the account for you.',
+      'We manage the account for you. If we break the firm\'s rules and lose it, the next evaluation is on us.',
       `You get paid. Once the payout has landed, you send us ${OUR_SPLIT} and keep ${CLIENT_SPLIT}. Not before.`,
     ],
     // Carries what the deleted anti-impersonation tile used to say, without

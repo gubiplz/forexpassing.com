@@ -22,7 +22,7 @@ import {
   FORM_PREVIEW_LABEL,
   FORM_PREVIEW_PLACEHOLDER,
   PASS_WINDOW,
-  REFUND_WINDOW,
+  GUARANTEE_WINDOW,
   APPLY_ANCHOR,
 } from '../constants'
 import { FAQ } from '../data/faq'
@@ -93,7 +93,7 @@ const TICKER = [
   EVAL_DISCOUNT ? `${EVAL_DISCOUNT} off your evaluation` : 'No subscription',
   'Written management agreement',
   'The account stays in your name',
-  `${REFUND_WINDOW} guarantee`,
+  `${GUARANTEE_WINDOW} guarantee`,
 ]
 
 function TopTicker() {
@@ -556,15 +556,15 @@ export function MoneyPage() {
           </p>
           <div className="mm-checks">
             <CheckRow
-              title="If we lose your account, the next evaluation is on us."
-              detail="We buy it, at the same size, and trade it under the same agreement. That is clause 5(c), not a line on a landing page."
+              title="If we break the firm's rules and lose your account, the next evaluation is on us."
+              detail="We buy it, at the same size, and trade it under the same agreement. That is clause 5(a), not a line on a landing page."
             />
             <CheckRow
-              title={`Or take your money back, plus a ${GUARANTEE_CREDIT} service credit.`}
-              detail="Your choice, not ours. A losing evaluation that stayed inside the firm's rules is not a breach; markets do that, and no service can promise otherwise."
+              title={`Or a ${GUARANTEE_CREDIT} credit toward an evaluation at our partner prop firm.`}
+              detail="Your choice, not ours. Neither remedy is a cash refund. A losing evaluation that stayed inside the firm's rules is not a breach; markets do that, and no service can promise otherwise."
             />
             <CheckRow
-              title={`${REFUND_WINDOW} to decide, on either remedy.`}
+              title={`${GUARANTEE_WINDOW} from the start of trading, on either remedy.`}
               detail="The exact wording is in the management agreement. Read it before you sign, not after."
             />
           </div>
@@ -807,11 +807,11 @@ export function MoneyPage() {
               <p>
                 If we lose the account on our own rule breach →{' '}
                 <span className="mm-teal">
-                  you get back every fee you paid us, plus {GUARANTEE_CREDIT} on top.
+                  the next evaluation is on us, or a {GUARANTEE_CREDIT} credit toward one.
                 </span>
               </p>
               <p>
-                Plus a guarantee that runs <span className="mm-teal">{REFUND_WINDOW}</span>, written
+                Plus a guarantee that runs <span className="mm-teal">{GUARANTEE_WINDOW}</span>, written
                 into the agreement before you sign it.
               </p>
             </div>

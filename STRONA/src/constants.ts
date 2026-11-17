@@ -24,7 +24,7 @@ export const PASS_WINDOW = '7–14 days'
 // ankieta nie mogą obiecywać dwóch różnych kwot.
 export const FREE_CHALLENGE_SIZE = '$25K'
 export const GUARANTEE_CREDIT = '$500'
-export const REFUND_WINDOW = '120 days'
+export const GUARANTEE_WINDOW = '120 days'
 
 // ⚠ ZNIŻKA PARTNERSKA NA CHALLENGE — obietnica wobec klienta.
 // To NIE jest przelew od nas: klient płaci mniej w kasie prop firmy, bo kupuje
@@ -40,11 +40,15 @@ export const EVAL_DISCOUNT_NOTE = 'through our partner link, sent once you are a
 
 // Gwarancja w jednym zdaniu — jedno źródło dla strony ofertowej, ankiety i FAQ.
 // Każdy jej człon MUSI mieć pokrycie w umowie (src/data/agreement.ts §5):
-// kolejne podejście na nasz koszt = remedium c), zwrot + kredyt = a) i b),
-// okno = REFUND_WINDOW. Zmiana tego zdania bez zmiany §5 robi z niego kłamstwo.
+// kolejne podejście na nasz koszt = remedium a), kredyt u partnerskiej prop firmy = b),
+// okno = GUARANTEE_WINDOW od startu tradingu. REGUŁA BIZNESOWA (ustalona 2026-10-29):
+// tylko konto stracone przez NASZE złamanie zasad firmy; ŻADNEGO zwrotu gotówki;
+// nie obejmuje dobrowolnego wyjścia klienta ani ewaluacji zakończonej bez breachu.
+// Zmiana tego zdania bez zmiany §5 robi z niego kłamstwo.
 export const GUARANTEE_LINE =
-  `Lose the account with us and the next evaluation is on us, or you take back every fee you paid ` +
-  `us plus a ${GUARANTEE_CREDIT} credit. Your choice, for ${REFUND_WINDOW}.`
+  `If we break the firm's rules and lose the account, the next evaluation of the same size is on us, ` +
+  `or you take a ${GUARANTEE_CREDIT} credit toward an evaluation at our partner prop firm. Your choice, ` +
+  `within ${GUARANTEE_WINDOW} of the start of trading. It is not a cash refund.`
 
 // Kwestionariusz → worker (routes/event.ts) lub funkcja Vercela (api/event/subscribe.js).
 export const APPLY_ENDPOINT = '/api/event/subscribe'

@@ -20,7 +20,7 @@ import {
   GUARANTEE_CREDIT,
   OUR_SPLIT,
   PASS_WINDOW,
-  REFUND_WINDOW,
+  GUARANTEE_WINDOW,
 } from '../constants'
 
 export type Block =
@@ -135,27 +135,26 @@ export const AGREEMENT: Agreement = {
       blocks: [
         {
           type: 'paragraph',
-          text: 'An evaluation may fail. Where the account is breached, disqualified or otherwise lost while the Company is trading it, the Client shall be entitled to choose one of the following remedies:',
+          text: 'An evaluation may fail. Where the account is breached or lost because the Company, while trading it, broke a rule of the proprietary trading firm (including its daily loss limit, maximum drawdown, news or weekend rules), the Client shall be entitled to choose one of the following remedies:',
         },
         {
           type: 'lettered',
           items: [
-            'a refund of all amounts the Client has paid to the Company in respect of that account; or',
-            `a refund of those amounts together with a ${GUARANTEE_CREDIT} credit toward the cost of a further evaluation; or`,
-            'a further evaluation of the same size, with the same firm or another firm whose rules permit management by a third party, purchased at the cost of the Company and traded under this Agreement.',
+            'a further evaluation of the same size, with the same firm or another firm whose rules permit management by a third party, purchased at the cost of the Company and traded under this Agreement; or',
+            `a credit of ${GUARANTEE_CREDIT} toward the cost of an evaluation at the Company\'s partner proprietary trading firm.`,
           ],
         },
         {
           type: 'paragraph',
-          text: `The choice between these remedies rests solely with the Client. This clause may be relied upon for ${REFUND_WINDOW} from the date on which trading begins.`,
+          text: `The choice between these remedies rests solely with the Client. This clause may be relied upon for ${GUARANTEE_WINDOW} from the date on which trading begins. Neither remedy is paid in cash, and no fee is refunded under this Section.`,
         },
         {
           type: 'paragraph',
-          text: 'Where the Client elects the remedy at (c), the Company pays for one further evaluation. This Section then applies to that evaluation as it applied to the first.',
+          text: 'Where the Client elects the remedy at (a), the Company pays for one further evaluation. This Section then applies to that evaluation as it applied to the first.',
         },
         {
           type: 'paragraph',
-          text: 'Save for the remedy at (c), this clause covers what the Client has paid the Company. It does not cover the fee the Client paid the proprietary trading firm for the first evaluation, which is a matter between the Client and that firm.',
+          text: 'This Section does not apply where an evaluation ends without a breach of the firm\'s rules (for example, because the profit target was not reached or a time limit expired), where the firm closes, refuses or changes an account by its own decision, where the loss follows an act or omission of the Client (including trading the account or changing its password), or where the Client ends the management voluntarily. The fee the Client paid the proprietary trading firm for the first evaluation is a matter between the Client and that firm and is not refunded under this Section.',
         },
         {
           type: 'paragraph',
