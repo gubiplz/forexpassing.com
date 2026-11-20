@@ -15,6 +15,8 @@
 // domeny.
 
 import { useEffect, useState } from 'react'
+import { BorderBeam } from 'border-beam'
+import { ThinkingOrb } from 'thinking-orbs'
 import { CONTACT_EMAIL, PARTNER_FIRM, TELEGRAM_HREF } from '../constants'
 import { SiteFooter, TopBar } from './shared'
 
@@ -128,11 +130,17 @@ export function PayPage({ token }: { token: string }) {
       <section className="mm-section mm-pay">
         <div className="mm-wrap mm-pay-wrap">
           {stan.k === 'loading' && (
-            <div className="mm-pay-card mm-pay-wait" aria-live="polite">
-              <div className="mm-pay-bar" />
-              <div className="mm-pay-bar mm-pay-bar-sm" />
-              <p className="mm-pay-note">Loading your order…</p>
-            </div>
+            // libraries.dev: order lookup can take >3 s → beam on the card + orb by the label.
+            <BorderBeam size="md" colorVariant="ocean" theme="light" active>
+              <div className="mm-pay-card mm-pay-wait" aria-live="polite">
+                <div className="mm-pay-bar" />
+                <div className="mm-pay-bar mm-pay-bar-sm" />
+                <p className="mm-pay-note" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                  <ThinkingOrb state="searching" size={20} theme="light" />
+                  Loading your order…
+                </p>
+              </div>
+            </BorderBeam>
           )}
 
           {stan.k === 'missing' && (
@@ -291,9 +299,12 @@ export function PayPage({ token }: { token: string }) {
                 onClick={doKasy}
                 disabled={otwieram}
               >
-                {otwieram
-                  ? 'Opening secure checkout…'
-                  : `Pay ${kwota(stan.zam.amount, stan.zam.currency)} by card`}
+                {otwieram ? (
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 10 }}>
+                    <ThinkingOrb state="connecting" size={20} theme="dark" />
+                    Opening secure checkout…
+                  </span>
+                ) : `Pay ${kwota(stan.zam.amount, stan.zam.currency)} by card`}
               </button>
 
               {blad && (

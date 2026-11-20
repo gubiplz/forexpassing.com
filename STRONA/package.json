@@ -13,8 +13,10 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.109.0",
+    "border-beam": "^1.4.1",
     "react": "^19.2.4",
-    "react-dom": "^19.2.4"
+    "react-dom": "^19.2.4",
+    "thinking-orbs": "^0.3.2"
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.44.0",
