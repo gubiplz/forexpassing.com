@@ -23,6 +23,19 @@ const TELEGRAM = 'https://t.me/forex_passing_admin';
 // because api/ and src/ are built by different toolchains.
 const FREE_TELEGRAM = 'https://t.me/FXPassing_free';
 const CONTACT = 'contact@forexpassing.com';
+// Footer of every email: why the person gets it and how to stop it. Forex Passing keeps no
+// mailing list, so "unsubscribe" is a request to the contact inbox (also in List-Unsubscribe).
+const UNSUBSCRIBE = `mailto:${CONTACT}?subject=unsubscribe`;
+const PRIVACY = `https://${SITE}/privacy`;
+const WHY = `You're receiving this because you sent a request on ${SITE}.`;
+const TEXT_FOOTER = [
+  `${BRAND} · https://${SITE} · ${CONTACT}`,
+  'Trading carries risk. A prop firm evaluation can fail and no outcome is',
+  'guaranteed. Nothing here is investment advice.',
+  '',
+  WHY,
+  `No more emails from us: ${UNSUBSCRIBE} · Privacy: ${PRIVACY}`,
+];
 
 /**
  * Telegram prefills the composer from ?text=, so the chat opens with the first
@@ -142,6 +155,11 @@ function shell({ eyebrow, heading, intro, body }) {
           Trading carries risk. A prop firm evaluation can fail and no outcome is guaranteed.
           Nothing here is investment advice.
         </td></tr>
+        <tr><td align="center" style="padding:0 24px 22px;color:${FAINT};font-size:11px;line-height:1.6;">
+          ${WHY}
+          <a href="${UNSUBSCRIBE}" style="color:${FAINT};text-decoration:underline;">Unsubscribe</a>
+          &nbsp;·&nbsp; <a href="${PRIVACY}" style="color:${FAINT};text-decoration:underline;">Privacy policy</a>
+        </td></tr>
       </table>
 
     </td></tr>
@@ -250,9 +268,7 @@ export function qualifiedEmail({ name, free = false }) {
     'Someone from the team will reach out within one business day.',
     'Nothing has been charged and nothing is owed.',
     '',
-    `${BRAND} · https://${SITE} · ${CONTACT}`,
-    'Trading carries risk. A prop firm evaluation can fail and no outcome is',
-    'guaranteed. Nothing here is investment advice.',
+    ...TEXT_FOOTER,
   ].join('\n');
 
   return {
@@ -316,9 +332,7 @@ export function infoEmail({ name }) {
     'Nothing has been charged and nothing is owed. You can also just reply to',
     'this message and a person will answer.',
     '',
-    `${BRAND} · https://${SITE} · ${CONTACT}`,
-    'Trading carries risk. A prop firm evaluation can fail and no outcome is',
-    'guaranteed. Nothing here is investment advice.',
+    ...TEXT_FOOTER,
   ].join('\n');
 
   return {
@@ -394,9 +408,7 @@ export function notQualifiedEmail({ name }) {
     `If any of that changes, apply again or message us: ${TELEGRAM_REJECTED}`,
     'Nothing has been charged and nothing is owed.',
     '',
-    `${BRAND} · https://${SITE} · ${CONTACT}`,
-    'Trading carries risk. A prop firm evaluation can fail and no outcome is',
-    'guaranteed. Nothing here is investment advice.',
+    ...TEXT_FOOTER,
   ].join('\n');
 
   return {
@@ -507,10 +519,10 @@ export async function sendEmail({ to, subject, html, text }) {
         text,
         reply_to: CONTACT,
         headers: {
-          // Gmail and Yahoo expect these on anything they treat as bulk, and
-          // they cost nothing on transactional mail.
-          'List-Unsubscribe': `<mailto:${CONTACT}?subject=unsubscribe>`,
-          'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+          // Gmail and Yahoo expect List-Unsubscribe on anything they treat as bulk.
+          // No List-Unsubscribe-Post: one-click (RFC 8058) needs an HTTPS URL, and
+          // announcing it next to a mailto-only header reads as a broken setup.
+          'List-Unsubscribe': `<${UNSUBSCRIBE}>`,
         },
       }),
       signal: AbortSignal.timeout(TIMEOUT_MS),
