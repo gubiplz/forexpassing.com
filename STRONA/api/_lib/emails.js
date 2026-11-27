@@ -26,7 +26,7 @@ const CONTACT = 'contact@forexpassing.com';
 // Footer of every email: why the person gets it and how to stop it. Forex Passing keeps no
 // mailing list, so "unsubscribe" is a request to the contact inbox (also in List-Unsubscribe).
 const UNSUBSCRIBE = `mailto:${CONTACT}?subject=unsubscribe`;
-const PRIVACY = `https://${SITE}/privacy.html`;
+const PRIVACY = `https://${SITE}/privacy`;
 const WHY = `You're receiving this because you sent a request on ${SITE}.`;
 const TEXT_FOOTER = [
   `${BRAND} · https://${SITE} · ${CONTACT}`,
